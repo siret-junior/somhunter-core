@@ -37,7 +37,7 @@ AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg)
 	std::random_device rd;
 	std::mt19937 rng(rd());
 
-	info("SOM worker starting");
+	info_d("SOM worker starting");
 
 	while (!parent->terminate) {
 
@@ -63,7 +63,7 @@ AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg)
 			n = scores.size();
 			parent->new_data = false;
 			parent->m_ready = false;
-			info("SOM worker got new work");
+			info_d("SOM worker got new work");
 		}
 
 		if (parent->new_data || parent->terminate)
@@ -109,7 +109,7 @@ AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg)
 		    present_mask,
 		    rng);
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-		debug("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+		debug_d("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
 		                  << " [ms]");
 
 		if (parent->new_data || parent->terminate)
@@ -141,7 +141,7 @@ AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg)
 				threads[i].join();
 		}
 		end = std::chrono::high_resolution_clock::now();
-		debug("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+		debug_d("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
 		                      << " [ms]");
 
 		if (parent->new_data || parent->terminate)
@@ -163,7 +163,7 @@ AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg)
 		 * may break in the middle
 		 */
 	}
-	info("SOM worker terminating");
+	info_d("SOM worker terminating");
 }
 
 AsyncSom::AsyncSom(const Config& cfg)
@@ -174,11 +174,11 @@ AsyncSom::AsyncSom(const Config& cfg)
 
 AsyncSom::~AsyncSom()
 {
-	info("requesting SOM worker termination");
+	info_d("requesting SOM worker termination");
 	terminate = true;
 	new_data_wakeup.notify_all();
 	worker.join();
-	info("SOM worker terminated");
+	info_d("SOM worker terminated");
 }
 
 void

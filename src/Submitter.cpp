@@ -138,14 +138,14 @@ poster_thread(const std::string& submit_url,
 		std::filesystem::create_directories(cfg.VBS_submit_archive_dir);
 
 	if (!std::filesystem::is_directory(cfg.VBS_submit_archive_dir))
-		warn("wtf, directory was not created");
+		warn_d("wtf, directory was not created");
 
 	{
 		std::string path = cfg.VBS_submit_archive_dir + std::string("/") + std::to_string(timestamp()) +
 		                   cfg.VBS_submit_archive_log_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
-			warn("Could not write a log file!");
+			warn_d("Could not write a log file!");
 		} else {
 			// Only print this if not empty
 			if (!data.empty())
@@ -218,9 +218,9 @@ poster_thread(const std::string& submit_url,
 		auto res = curl_easy_perform(curl);
 
 		if (res == CURLE_OK) {
-			info("GET request OK: " << url);
+			info_d("GET request OK: " << url);
 		} else {
-			warn("GET request failed with cURL error: " << curl_easy_strerror(res));
+			warn_d("GET request failed with cURL error: " << curl_easy_strerror(res));
 		}
 
 		if (cfg.extra_verbose_log) {
@@ -244,7 +244,7 @@ getter_thread(const std::string& submit_url, const std::string& query, bool& fin
 		std::filesystem::create_directory(cfg.VBS_submit_archive_dir);
 
 	if (!std::filesystem::is_directory(cfg.VBS_submit_archive_dir))
-		warn("wtf, directory was not created");
+		warn_d("wtf, directory was not created");
 
 	{
 		auto ts{ timestamp() };
@@ -252,7 +252,7 @@ getter_thread(const std::string& submit_url, const std::string& query, bool& fin
 		                   std::string("_submit") + cfg.VBS_submit_archive_log_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
-			warn("Could not write a log file!");
+			warn_d("Could not write a log file!");
 		}
 
 		o << "{\n\ttype=\"submit\",\n\ttimestamp=" << ts << ", \n\tquery=\"" << query << "\"\n}";
@@ -308,9 +308,9 @@ getter_thread(const std::string& submit_url, const std::string& query, bool& fin
 		auto res = curl_easy_perform(curl);
 
 		if (res == CURLE_OK) {
-			info("GET request OK: " << url);
+			info_d("GET request OK: " << url);
 		} else {
-			warn("GET request failed with cURL error: " << curl_easy_strerror(res));
+			warn_d("GET request failed with cURL error: " << curl_easy_strerror(res));
 		}
 
 		if (cfg.extra_verbose_log) {
@@ -388,10 +388,10 @@ Submitter::login_to_DRES() const
 		curl_easy_cleanup(curl);
 
 		if (res != CURLE_OK) {
-			warn("DRES server login request returned cURL error: " << curl_easy_strerror(res));
+			warn_d("DRES server login request returned cURL error: " << curl_easy_strerror(res));
 			return false;
 		} else {
-			info("DRES server login request returned: " << http_code);
+			info_d("DRES server login request returned: " << http_code);
 		}
 
 		// Parse the response
@@ -399,7 +399,7 @@ Submitter::login_to_DRES() const
 		auto res_json{ json11::Json::parse(res_buffer, err) };
 		if (!err.empty()) {
 			std::string msg{ "Error parsing JSON response: " + res_buffer };
-			warn(msg);
+			warn_d(msg);
 			throw std::runtime_error(msg);
 		}
 
@@ -408,10 +408,10 @@ Submitter::login_to_DRES() const
 
 		// If login failed
 		if (!login_status) {
-			warn("DRES server login failed! Message: " << login_status_desc);
+			warn_d("DRES server login failed! Message: " << login_status_desc);
 			return false;
 		}
-		info("DRES server login OK... Message: " << login_status_desc);
+		info_d("DRES server login OK... Message: " << login_status_desc);
 		return true;
 	}
 	return false;
@@ -431,7 +431,7 @@ std::string filepath{ LOG_LOGS_DIR + "actions_" + get_formated_timestamp("%d-%m-
 act_log.open(filepath, std::ios::out);
 if (!act_log.is_open()) {
 	std::string msg{ "Error openning file: " + filepath };
-	warn(msg);
+	warn_d(msg);
 
 #	ifndef NDEBUG
 	throw std::runtime_error(msg);
@@ -457,7 +457,7 @@ act_log << std::unitbuf;
 	req_log.open(filepath, std::ios::out);
 	if (!req_log.is_open()) {
 		std::string msg{ "Error openning file: " + filepath };
-		warn(msg);
+		warn_d(msg);
 
 #	ifndef NDEBUG
 		throw std::runtime_error(msg);

@@ -150,7 +150,7 @@ Config::parse_json_config(const std::string& filepath)
 	std::ifstream ifs{ filepath };
 	if (!ifs.is_open()) {
 		std::string msg{ "Error opening file: " + filepath };
-		warn(msg);
+		warn_d(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -174,7 +174,7 @@ Config::parse_json_config_string(const std::string& cfg_file_contents)
 
 	if (!err.empty()) {
 		std::string msg{ "Error parsing JSON config string." };
-		warn(msg);
+		warn_d(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -250,7 +250,7 @@ Config::parse_submitter_config(const json11::Json& json)
 	else {
 #ifndef NDEBUG
 		std::string msg{ "Uknown submit server type: " + res.server_type };
-		warn(msg);
+		warn_d(msg);
 		throw std::runtime_error(msg);
 #endif
 	}

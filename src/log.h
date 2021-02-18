@@ -40,25 +40,25 @@
 			          << std::endl;                                                                        \
 		} while (0)
 
-#	define warn(x) _write_log("* ", x)
+#	define warn_d(x) _write_log("* ", x)
 #else
-#	define warn(x)
+#	define warn_d(x)
 #	define _write_log(level, x)
 #endif
 
 #if LOGLEVEL > 1
-#	define info(x) _write_log("- ", x)
+#	define info_d(x) _write_log("- ", x)
 #else
-#	define info(x) _dont_write_log
+#	define info_d(x) _dont_write_log
 #endif
 
 #if LOGLEVEL > 2
-#	define debug(x) _write_log(". ", x)
+#	define debug_d(x) _write_log(". ", x)
 #else
-#	define debug(x) _dont_write_log
+#	define debug_d(x) _dont_write_log
 #endif
 
-#define print(x) std::cout << x << std::endl;
+#define print_d(x) std::cout << x << std::endl;
 
 #if NDEBUG
 #	define ASSERT(cond, msg)

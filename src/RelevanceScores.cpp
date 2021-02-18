@@ -356,7 +356,7 @@ ScoreModel::apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& screen
 
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = end - start;
-	debug("Bayes took " << elapsed.count());
+	debug_d("Bayes took " << elapsed.count());
 
 	normalize();
 }
@@ -371,7 +371,7 @@ ScoreModel::normalize()
 			smax = _scores[ii];
 
 	if (smax < MINIMAL_SCORE) {
-		warn("all images have negligible score!");
+		warn_d("all images have negligible score!");
 		smax = MINIMAL_SCORE;
 	}
 

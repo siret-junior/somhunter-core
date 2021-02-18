@@ -32,6 +32,7 @@
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 #include "Filters.h"
+#include "ImageManipulator.h"
 #include "KeywordRanker.h"
 #include "RelevanceScores.h"
 #include "UserContext.h"
@@ -42,16 +43,26 @@
 
 class TESTER_SomHunter;
 
-/* This is the main backend class. */
+/**
+ * The main API of the SOMHunter Core.
+ *
+ * \todo Export for a library compilation.
+ */
 class SomHunter
 {
-	// *** LOADED DATASET ***
+	// ********************************
+	// Loaded dataset
+	//		(shared for all the users)
+	// ********************************
 	const DatasetFrames frames;
 	const DatasetFeatures features;
 	const KeywordRanker keywords;
 	const Config config;
 
-	// *** USER CONTEXT ***
+	// ********************************
+	// User contexts
+	//		(private for each unique user session)
+	// ********************************
 	UserContext user; // This will become std::vector<UserContext>
 
 public:
@@ -64,6 +75,10 @@ public:
 	  , keywords(cfg, frames)
 	  , user(cfg.user_token, cfg, frames, features)
 	{}
+
+	// ********************************
+	// Interactive search calls
+	// ********************************
 
 	/**
 	 * Returns display of desired type
@@ -133,6 +148,13 @@ public:
 	/** Returns true if the user's SOM is ready */
 	bool som_ready() const;
 
+	/** Resets current search context and starts new search */
+	void reset_search_session();
+
+	// ********************************
+	// Remote server related calls
+	// ********************************
+
 	/**
 	 * Tries to login into the DRES evaluation server
 	 *		https://github.com/lucaro/DRES
@@ -142,8 +164,9 @@ public:
 	/** Sumbits frame with given id to VBS server */
 	void submit_to_server(ImageId frame_id);
 
-	/** Resets current search context and starts new search */
-	void reset_search_session();
+	// ********************************
+	// Logging calls
+	// ********************************
 
 	/*
 	 * Log events that need to be triggered from the outside (e.g. the UI).
@@ -151,6 +174,55 @@ public:
 	void log_video_replay(ImageId frame_ID, float delta_X);
 	void log_scroll(DisplayType t, float delta_Y);
 	void log_text_query_change(const std::string& text_query);
+
+	// ********************************
+	// Image manipulation utilites
+	// ********************************
+
+	/**
+	 * Loads the image from the provided filepath.
+	 *
+	 * \exception std::runtime_error If the loading fails.
+	 */
+	LoadedImage load_image(const std::string& filepath) const { return ImageManipulator::load(filepath); }
+
+	/**
+	 * Writes the provided image into the JPG file.
+	 *
+	 * \exception std::runtime_error If the writing fails.
+	 */
+	void store_jpg_image(const std::string& filepath,
+	                     const std::vector<float>& in,
+	                     size_t w,
+	                     size_t h,
+	                     size_t quality,
+	                     size_t num_channels) const
+	{
+		return ImageManipulator::store_jpg(filepath, in, w, h, quality, num_channels);
+	}
+
+	/**
+	 * Creates a new resized copy of the provided image matrix.
+	 *
+	 * \exception std::runtime_error If the resizing fails.
+	 * 
+	 * \param in	Image pixel matrix.
+	 * \param orig_w	Original image width in pixels.
+	 * \param orig_h	Original image height in pixels.
+	 * \param orig_w	Target image width in pixels.
+	 * \param orig_h	Target image height in pixels.
+	 * \param num_channels	Number of channels aka number of elements representing one pixel.
+	 * \return New copy of resized image.
+	 */
+	std::vector<float> resize_image(const std::vector<float>& in,
+	                                size_t orig_w,
+	                                size_t orig_h,
+	                                size_t new_w,
+	                                size_t new_h,
+	                                size_t num_channels = 3) const
+	{
+		return ImageManipulator::resize(in, orig_w, orig_h, new_w, new_h, num_channels);
+	}
 
 private:
 	/**

@@ -34,9 +34,9 @@ class TESTER_SomHunter
 public:
 	static void run_all_tests(const std::string &cfg_fpth)
 	{
-		print("====================================================");
-		print("\tInitializing the `SomHunter` class tests...");
-		print("====================================================");
+		print_d("====================================================");
+		print_d("\tInitializing the `SomHunter` class tests...");
+		print_d("====================================================");
 
 		// Parse config file
 		auto config = Config::parse_json_config(cfg_fpth);
@@ -48,7 +48,7 @@ public:
 		// Instantiate the SOMHunter
 		SomHunter core{ config };
 
-		print("Running all the SomHunter class tests...");
+		print_d("Running all the SomHunter class tests...");
 
 		TEST_like_frames(core);
 		TEST_bookmark_frames(core);
@@ -59,15 +59,15 @@ public:
 		TEST_rescore_filters(core);
 #endif
 
-		print("====================================================");
-		print("\tIf you got here, all `SomHunter` tests were OK...");
-		print("====================================================");
+		print_d("====================================================");
+		print_d("\tIf you got here, all `SomHunter` tests were OK...");
+		print_d("====================================================");
 	}
 
 private:
 	static void TEST_like_frames(SomHunter &core)
 	{
-		print("\t Testing `SomHunter::like_frames` method...");
+		print_d("\t Testing `SomHunter::like_frames` method...");
 
 		auto [disp, likes, bookmarks]{ core.get_display(DisplayType::DTopN, 0, 0) };
 		size_t size{ disp.size() };
@@ -110,12 +110,12 @@ private:
 		core.like_frames(all);
 		ASSERT(likes.size() == 0, "All frames SHOULD NOT be liked.");
 
-		print("\t Testing `SomHunter::like_frames` finished.");
+		print_d("\t Testing `SomHunter::like_frames` finished.");
 	}
 
 	static void TEST_bookmark_frames(SomHunter& core)
 	{
-		print("\t Testing `SomHunter::bookmark_frames` method...");
+		print_d("\t Testing `SomHunter::bookmark_frames` method...");
 
 		auto [disp, likes, bookmarks] { core.get_display(DisplayType::DTopN, 0, 0) };
 		size_t size{ disp.size() };
@@ -158,12 +158,12 @@ private:
 		core.bookmark_frames(all);
 		ASSERT(bookmarks.size() == 0, "All frames SHOULD NOT be bookmarked.");
 
-		print("\t Testing `SomHunter::bookmark_frames` finished.");
+		print_d("\t Testing `SomHunter::bookmark_frames` finished.");
 	}
 
 	static void TEST_autocomplete_keywords(SomHunter &core)
 	{
-		print(
+		print_d(
 		  "\t Testing `SomHunter::autocomplete_keywords` method...");
 
 		/*
@@ -176,7 +176,7 @@ private:
 		};
 #else
 		std::vector<KeywordId> correct{};
-		warn("No test values for this dataset.");
+		warn_d("No test values for this dataset.");
 #endif
 		for (auto &&[key, val] : correct) {
 			auto ac_res{ core.autocomplete_keywords(key, 10) };
@@ -202,13 +202,13 @@ private:
 		ac_res = core.autocomplete_keywords("", 10);
 		ASSERT(ac_res.empty(), "Results should be empty!");
 
-		print(
+		print_d(
 		  "\t Testing `SomHunter::autocomplete_keywords` finished.");
 	}
 
 	static void TEST_rescore(SomHunter &core)
 	{
-		print("\t Testing `SomHunter::TEST_rescore` method...");
+		print_d("\t Testing `SomHunter::TEST_rescore` method...");
 
 		FramePointerRange disp{};
 
@@ -317,12 +317,12 @@ private:
 			"Incorrect frame in the display.");
 #endif
 
-		print("\t Testing `SomHunter::TEST_rescore` finished.");
+		print_d("\t Testing `SomHunter::TEST_rescore` finished.");
 	}
 
 	static void TEST_rescore_filters(SomHunter& core)
 	{
-		print("\t Testing `SomHunter::TEST_rescore` score filter...");
+		print_d("\t Testing `SomHunter::TEST_rescore` score filter...");
 
 		std::vector<std::tuple<std::string, Hour, Hour, uint8_t>> input{
 			{ "", Hour(0), Hour(24), uint8_t(0x00) }, // Empty result
@@ -377,7 +377,7 @@ private:
 			++t_i;
 		}
 
-		print("\t Testing `SomHunter::TEST_rescore` score filter finished...");
+		print_d("\t Testing `SomHunter::TEST_rescore` score filter finished...");
 	}
 
 };
@@ -459,9 +459,9 @@ class TESTER_Config
 public:
 	static void run_all_tests(const std::string &/*cfg_fpth*/)
 	{
-		print("====================================================");
-		print("\tInitializing the `Config` struct tests...");
-		print("====================================================");
+		print_d("====================================================");
+		print_d("\tInitializing the `Config` struct tests...");
+		print_d("====================================================");
 
 		// Parse config file
 		Config config = Config::parse_json_config_string(json_contents);
@@ -469,15 +469,15 @@ public:
 		TEST_parse_json_config(config);
 		TEST_LSC_addition(config);
 
-		print("====================================================");
-		print("\tIf you got here, all `Config` tests were OK...");
-		print("====================================================");
+		print_d("====================================================");
+		print_d("\tIf you got here, all `Config` tests were OK...");
+		print_d("====================================================");
 	}
 
 private:
 	static void TEST_parse_json_config(const Config &c)
 	{
-		print("\t Testing `Config::parse_json_config`...");
+		print_d("\t Testing `Config::parse_json_config`...");
 
 		ASSERT(c.user_token == "admin", "Incorrect parse.");
 
@@ -531,15 +531,15 @@ private:
 		ASSERT(c.topn_frames_per_video == 3, "Incorrect parse.");
 		ASSERT(c.topn_frames_per_shot == 1, "Incorrect parse.");
 
-		print("\t Finishing `Config::parse_json_config`...");
+		print_d("\t Finishing `Config::parse_json_config`...");
 	}
 
 	static void TEST_LSC_addition(const Config &config)
 	{
-		print("\t Testing `Config::parse_json_config` for LSC changes...");
+		print_d("\t Testing `Config::parse_json_config` for LSC changes...");
 
 		ASSERT(config.LSC_metadata_file == "data/LSC2020_5days/lsc2020-metadata.csv", "Incorrect parse.");
 
-		print("\t Finishing `Config::parse_json_config` for LSC changes...");
+		print_d("\t Finishing `Config::parse_json_config` for LSC changes...");
 	}
 };

@@ -1,1 +1,4 @@
 build
+3rdparty/libtorch/
+3rdparty/cuda_libtorch.zip
+3rdparty/libtorch.zip

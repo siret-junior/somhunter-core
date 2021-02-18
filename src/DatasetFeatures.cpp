@@ -34,7 +34,7 @@ DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Config& config)
 	data.resize(features_dim * n);
 	std::ifstream in(config.features_file, std::ios::binary);
 	if (!in.good()) {
-		warn("Features file doesn't look good");
+		warn_d("Features file doesn't look good");
 		throw std::runtime_error("missing features file");
 	}
 
@@ -42,7 +42,7 @@ DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Config& config)
 	in.ignore(config.features_file_data_off);
 
 	if (!in.read(reinterpret_cast<char*>(data.data()), sizeof(float) * data.size()))
-		warn("Feature matrix reading problems");
+		warn_d("Feature matrix reading problems");
 	else
-		info("Feature matrix loaded OK");
+		info_d("Feature matrix loaded OK");
 }

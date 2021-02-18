@@ -32,7 +32,7 @@ DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
 {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
 
-	info("Loading top image keywords from " << filepath);
+	info_d("Loading top image keywords from " << filepath);
 	if (!inFile) {
 		throw std::runtime_error("Error opening file: " + filepath);
 	}
@@ -67,7 +67,7 @@ DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
 		++line_idx;
 	}
 
-	info("Top keywords loaded OK");
+	info_d("Top keywords loaded OK");
 	return result_vec;
 }
 
@@ -77,13 +77,13 @@ DatasetFrames::DatasetFrames(const Config& config)
 	frames_path_prefix = config.frames_path_prefix;
 	offs = config.filename_offsets;
 
-	info("Loading frames...");
+	info_d("Loading frames...");
 
 	// Open the "frames list" file
 	std::ifstream in(config.frames_list_file);
 	if (!in.good()) {
 		auto msg{ "Failed to open " + config.frames_list_file };
-		warn(msg);
+		warn_d(msg);
 #ifndef NDEBUG
 		throw std::runtime_error(msg);
 #endif
@@ -99,7 +99,7 @@ DatasetFrames::DatasetFrames(const Config& config)
 		ifs_meta.open(config.LSC_metadata_file);
 		if (!ifs_meta.good()) {
 			auto msg{ "Failed to open " + config.LSC_metadata_file };
-			warn(msg);
+			warn_d(msg);
 #ifndef NDEBUG
 			throw std::runtime_error(msg);
 #endif
@@ -127,7 +127,7 @@ DatasetFrames::DatasetFrames(const Config& config)
 				if (!getline(ifs_meta, md_line)) {
 #ifndef NDEBUG
 					auto msg{ "Not enough lines in " + config.LSC_metadata_file };
-					warn(msg);
+					warn_d(msg);
 					throw std::runtime_error(msg);
 #endif
 				}
@@ -175,9 +175,9 @@ DatasetFrames::DatasetFrames(const Config& config)
 	}
 
 	if (size() == 0_z)
-		warn("No frames loaded");
+		warn_d("No frames loaded");
 	else
-		info("Loaded " << size() << " frames.");
+		info_d("Loaded " << size() << " frames.");
 }
 
 VideoFrame

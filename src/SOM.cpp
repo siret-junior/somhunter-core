@@ -115,12 +115,12 @@ som(size_t /*n*/,
     const float alphasB[2],
     const float radiiB[2],
     const std::vector<float>& scores,
-    const std::vector<bool>& present_mask,
+    const std::vector<bool>& /*present_mask*/,
     std::mt19937& rng)
 {
-	info("build begin");
+	info_d("build begin");
 	std::discrete_distribution<size_t> random(scores.begin(), scores.end());
-	info("build end");
+	info_d("build end");
 
 	float thresholdA0 = radiiA[0];
 	float alphaA0 = alphasA[0];

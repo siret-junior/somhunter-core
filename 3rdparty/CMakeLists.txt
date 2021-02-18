@@ -6,11 +6,6 @@ target_include_directories(somhunter
 )
 
 set(HEADERS
-	stb/stb.h
-	stb/stb_image.h
-	stb/stb_image_resize.h
-	stb/stb_image_write.h
-
 	json11/json11.hpp
 )
 

@@ -70,7 +70,7 @@ str_to_int(const std::string_view& str)
 	auto conv_res = std::from_chars(str.data(), str.data() + str.size(), result);
 
 	if (conv_res.ptr != (str.data() + str.size())) {
-		warn("Incorrect string in str_to_int");
+		warn_d("Incorrect string in str_to_int");
 #ifndef NDEBUG
 		throw std::runtime_error("Incorrect string in str_to_int");
 #endif
