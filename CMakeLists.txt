@@ -48,7 +48,7 @@ endif (UNIX)
 
 if (WIN32)
     execute_process (
-        COMMAND powershell -File "${CMAKE_HOME_DIRECTORY}/scripts/install_libtorch.ps1" "${LIBTORCH_URL_PREBUILT_WIN}" "${LIBTORCH_INSTALL_DIR}"
+        COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_HOME_DIRECTORY}/scripts/install_libtorch.ps1" "${LIBTORCH_URL_PREBUILT_WIN}" "${LIBTORCH_INSTALL_DIR}"
         ECHO_OUTPUT_VARIABLE
         ECHO_ERROR_VARIABLE
         RESULTS_VARIABLE INSTALL_LIBTORCH_RES
@@ -93,8 +93,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 # Don't know why!
 set_target_properties(torch PROPERTIES
-  IMPORTED_IMPLIB "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/"
-  IMPORTED_LOCATION "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/"
+  IMPORTED_IMPLIB "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.lib"
+  IMPORTED_LOCATION "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.dll"
 )
 
 #
