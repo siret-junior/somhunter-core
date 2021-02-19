@@ -32,7 +32,7 @@ if (WITH_CUDA)
     set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cu102/libtorch-win-shared-with-deps-1.7.1.zip")
     set(LIBTORCH_URL_PREBUILT_UNIX "https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip")
 else (WITH_CUDA)
-    set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-debug-1.7.1%2Bcpu.zip")
+    set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.7.1%2Bcpu.zip")
     set(LIBTORCH_URL_PREBUILT_UNIX "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcpu.zip")
 endif (WITH_CUDA)
 

@@ -3,6 +3,10 @@
 $lib_URL=$args[0]
 $install_dir=$args[1]
 
+# Without this PS cmdlets won't parse it as an URL
+$lib_URL=$lib_URL.Replace('+', '%2B') 
+$lib_URL=$lib_URL.Replace('\', '/') 
+
 Write-Host ""
 Write-Host ">>> Installing libTorch >>>"
 
@@ -11,7 +15,7 @@ try {
     if (!(Test-Path "${install_dir}/libtorch.zip")) {
         Write-Host "Downloading the library from ${lib_URL}... " -ForegroundColor "Yellow"
         New-Item -Path ${install_dir} -ItemType Directory -Force > $null
-        Start-BitsTransfer ${lib_URL} -Destination "${install_dir}/libtorch.zip"
+        Start-BitsTransfer -Source "${lib_URL}" -Destination "${install_dir}\libtorch.zip"
     } else {
         Write-Host "Lib file found... " -ForegroundColor "Yellow"
     }
