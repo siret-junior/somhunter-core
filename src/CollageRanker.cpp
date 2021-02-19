@@ -54,7 +54,7 @@ CollageRanker::CollageRanker(const Config& config)
 
 	kw_pca_mat = torch::tensor(KeywordRanker::parse_float_vector(
 	                             config.kw_PCA_mat_file, config.pre_PCA_features_dim * config.kw_PCA_mat_dim))
-	               .reshape({ long long(config.kw_PCA_mat_dim), long long(config.pre_PCA_features_dim) })
+	               .reshape({ (long long)(config.kw_PCA_mat_dim), (long long)(config.pre_PCA_features_dim) })
 	               .permute({ 1, 0 });
 	kw_pca_mean_vec =
 	  torch::tensor(KeywordRanker::parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim));

@@ -91,11 +91,13 @@ find_package(CURL REQUIRED)
 find_package(Torch REQUIRED) 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}") 
 
-# Don't know why!
-set_target_properties(torch PROPERTIES
-  IMPORTED_IMPLIB "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.lib"
-  IMPORTED_LOCATION "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.dll"
-)
+if (WIN32)
+    # Don't know why!
+    set_target_properties(torch PROPERTIES
+    IMPORTED_IMPLIB "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.lib"
+    IMPORTED_LOCATION "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.dll"
+    )
+endif (WIN32)
 
 #
 # Subdirectories

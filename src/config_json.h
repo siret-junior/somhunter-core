@@ -220,8 +220,8 @@ Config::parse_json_config_string(const std::string& cfg_file_contents)
 
 		           json["LSC_metadata_file"].string_value(),
 
-	  					 json["model_W2VV_img_bias"].string_value(),
-  						 json["model_W2VV_img_weigths"].string_value(),
+		           json["model_W2VV_img_bias"].string_value(),
+		           json["model_W2VV_img_weigths"].string_value(),
 		           json["model_ResNet_file"].string_value(),
 		           json["model_ResNext_file"].string_value() };
 

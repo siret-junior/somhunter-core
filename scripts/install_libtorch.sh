@@ -22,7 +22,7 @@ else
 fi
 
 
-if ! [ -f "${INSTALL_DIR}/libtorch.zip" ]
+if ! [ -d "${INSTALL_DIR}/libtorch/" ]
 then
     echo "Unzipping the library..."
     if ! unzip -o "${INSTALL_DIR}/libtorch.zip" -d "${INSTALL_DIR}"; then
