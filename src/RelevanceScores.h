@@ -60,7 +60,7 @@ public:
 	bool operator==(const ScoreModel& other) const;
 	float operator[](ImageId i) const { return _scores[i]; }
 
-	void reset();
+	void reset(float val = 1.0F);
 
 	/** Multiplies the relevance score with the provided value. */
 	float adjust(ImageId i, float prob);

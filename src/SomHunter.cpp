@@ -283,6 +283,13 @@ SomHunter::rescore(const std::string& text_query,
 	return RescoreResult{ user.ctx.ID, user.history };
 }
 
+void
+SomHunter::rescore(Collage& collage)
+{
+	user.submitter.poll();
+	collageRanker.score(collage);
+}
+
 bool
 SomHunter::som_ready() const
 {
@@ -488,7 +495,7 @@ SomHunter::get_som_display()
 	}
 	auto end = std::chrono::steady_clock::now();
 	debug_d("Fixing clusters took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-	                              << " [ms]");
+	                                << " [ms]");
 
 	// Log
 	user.submitter.log_show_som_display(frames, ids);
@@ -575,7 +582,7 @@ FramePointerRange
 SomHunter::get_page_from_last(PageId page)
 {
 	debug_d("Getting page " << page << ", page size " << config.display_page_size << ", current display size "
-	                      << current_display.size());
+	                        << current_display.size());
 
 	size_t begin_off{ std::min(user.ctx.current_display.size(), page * config.display_page_size) };
 	size_t end_off{ std::min(user.ctx.current_display.size(),
@@ -594,10 +601,10 @@ SomHunter::get_page_from_last(PageId page)
 }
 
 void
-SomHunter::reset_scores()
+SomHunter::reset_scores(float val)
 {
 	user.ctx.used_tools.reset();
-	user.ctx.scores.reset();
+	user.ctx.scores.reset(val);
 }
 
 const UserContext&

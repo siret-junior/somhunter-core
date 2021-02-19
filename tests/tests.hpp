@@ -449,7 +449,12 @@ const char *json_contents = R"(
 	"kw_PCA_mean_vec_file": "data/LSC2020_5days/LSC-5days.w2vv.pca.mean.bin",
 	"kw_PCA_mat_file": "data/LSC2020_5days/LSC-5days.w2vv.pca.matrix.bin",
 	
-    "LSC_metadata_file": "data/LSC2020_5days/lsc2020-metadata.csv"
+  "LSC_metadata_file": "data/LSC2020_5days/lsc2020-metadata.csv",
+
+	"model_W2VV_img_bias": "data/LSC2020_5days/nn_models/w2vv-img_bias-2048floats.bin",
+  "model_W2VV_img_weigths": "data/LSC2020_5days/nn_models/w2vv-img_weight-2048x4096floats.bin",
+	"model_ResNet_file": "data/LSC2020_5days/nn_models/traced_Resnet152.pt",
+	"model_ResNext_file": "data/LSC2020_5days/nn_models/traced_Resnext101.pt"
   
 }
 )";
@@ -541,5 +546,17 @@ private:
 		ASSERT(config.LSC_metadata_file == "data/LSC2020_5days/lsc2020-metadata.csv", "Incorrect parse.");
 
 		print_d("\t Finishing `Config::parse_json_config` for LSC changes...");
+	}
+
+	static void TEST_collage_addition(const Config &config)
+	{
+		print_d("\t Testing `Config::parse_json_config` for collage changes...");
+
+		ASSERT(config.model_W2VV_img_bias == "data/LSC2020_5days/nn_models/w2vv-img_bias-2048floats.bin", "Incorrect parse.");
+		ASSERT(config.model_W2VV_img_weigths == "data/LSC2020_5days/nn_models/w2vv-img_weight-2048x4096floats.bin", "Incorrect parse.");
+		ASSERT(config.model_ResNet_file == "data/LSC2020_5days/nn_models/traced_Resnet152.pt", "Incorrect parse.");
+		ASSERT(config.model_ResNext_file == "data/LSC2020_5days/nn_models/traced_Resnext101.pt", "Incorrect parse.");
+
+		print_d("\t Finishing `Config::parse_json_config` for collage changes...");
 	}
 };

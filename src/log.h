@@ -31,31 +31,31 @@
 
 #if LOGLEVEL > 0
 
-#	define _dont_write_log                                                                                        \
+#	define _dont_write_log_d                                                                                      \
 		do {                                                                                                   \
 		} while (0)
-#	define _write_log(level, x)                                                                                   \
+#	define _write_log_d(level, x)                                                                                 \
 		do {                                                                                                   \
 			std::cerr << level << x << "\n\t(" << __func__ << " in " __FILE__ " :" << __LINE__ << ")"      \
 			          << std::endl;                                                                        \
 		} while (0)
 
-#	define warn_d(x) _write_log("* ", x)
+#	define warn_d(x) _write_log_d("* ", x)
 #else
 #	define warn_d(x)
-#	define _write_log(level, x)
+#	define _write_log_d(level, x)
 #endif
 
 #if LOGLEVEL > 1
-#	define info_d(x) _write_log("- ", x)
+#	define info_d(x) _write_log_d("- ", x)
 #else
-#	define info_d(x) _dont_write_log
+#	define info_d(x) _dont_write_log_d
 #endif
 
 #if LOGLEVEL > 2
-#	define debug_d(x) _write_log(". ", x)
+#	define debug_d(x) _write_log_d(". ", x)
 #else
-#	define debug_d(x) _dont_write_log
+#	define debug_d(x) _dont_write_log_d
 #endif
 
 #define print_d(x) std::cout << x << std::endl;

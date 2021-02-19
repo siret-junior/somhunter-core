@@ -99,12 +99,12 @@ ScoreModel::operator==(const ScoreModel& other) const
 }
 
 void
-ScoreModel::reset()
+ScoreModel::reset(float val)
 {
 	invalidate_cache();
 
 	for (auto& i : _scores)
-		i = 1.0f;
+		i = val;
 }
 
 float

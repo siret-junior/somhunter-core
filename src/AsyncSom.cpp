@@ -110,7 +110,7 @@ AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg)
 		    rng);
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 		debug_d("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-		                  << " [ms]");
+		                    << " [ms]");
 
 		if (parent->new_data || parent->terminate)
 			continue;
@@ -142,7 +142,7 @@ AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg)
 		}
 		end = std::chrono::high_resolution_clock::now();
 		debug_d("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-		                      << " [ms]");
+		                        << " [ms]");
 
 		if (parent->new_data || parent->terminate)
 			continue;

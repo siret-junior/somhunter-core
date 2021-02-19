@@ -131,6 +131,11 @@ struct Config
 
 	std::string LSC_metadata_file;
 
+	std::string model_W2VV_img_bias;
+	std::string model_W2VV_img_weigths;
+	std::string model_ResNet_file;
+	std::string model_ResNext_file;
+
 	static Config parse_json_config(const std::string& filepath);
 	static Config parse_json_config_string(const std::string& cfg_file_contents);
 
@@ -213,7 +218,12 @@ Config::parse_json_config_string(const std::string& cfg_file_contents)
 		           size_t(json["topn_frames_per_video"].int_value()),
 		           size_t(json["topn_frames_per_shot"].int_value()),
 
-		           json["LSC_metadata_file"].string_value() };
+		           json["LSC_metadata_file"].string_value(),
+
+	  					 json["model_W2VV_img_bias"].string_value(),
+  						 json["model_W2VV_img_weigths"].string_value(),
+		           json["model_ResNet_file"].string_value(),
+		           json["model_ResNext_file"].string_value() };
 
 	return cfg;
 }

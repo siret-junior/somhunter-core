@@ -29,6 +29,7 @@
 
 #include "utils.h"
 
+#include "CollageRanker.h"
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 #include "Filters.h"
@@ -54,10 +55,11 @@ class SomHunter
 	// Loaded dataset
 	//		(shared for all the users)
 	// ********************************
+	const Config config;
 	const DatasetFrames frames;
 	const DatasetFeatures features;
 	const KeywordRanker keywords;
-	const Config config;
+	CollageRanker collageRanker;
 
 	// ********************************
 	// User contexts
@@ -73,6 +75,7 @@ public:
 	  , frames(cfg)
 	  , features(frames, cfg)
 	  , keywords(cfg, frames)
+	  , collageRanker(cfg)
 	  , user(cfg.user_token, cfg, frames, features)
 	{}
 
@@ -101,6 +104,8 @@ public:
 	/** Returns the nearest supported keyword matches to the provided
 	 * prefix. */
 	std::vector<const Keyword*> autocomplete_keywords(const std::string& prefix, size_t count) const;
+
+	void rescore(Collage& collage);
 
 	/**
 	 * Applies all algorithms for score computation and updates context.
@@ -205,7 +210,7 @@ public:
 	 * Creates a new resized copy of the provided image matrix.
 	 *
 	 * \exception std::runtime_error If the resizing fails.
-	 * 
+	 *
 	 * \param in	Image pixel matrix.
 	 * \param orig_w	Original image width in pixels.
 	 * \param orig_h	Original image height in pixels.
@@ -256,7 +261,7 @@ private:
 	// Gets only part of last display
 	FramePointerRange get_page_from_last(PageId page);
 
-	void reset_scores();
+	void reset_scores(float val = 1.0F);
 
 	/** Adds currently active search context to the history and starts a new
 	 * context (with next contiguous ID number) */
