@@ -56,7 +56,8 @@ public:
 	                      size_t w,
 	                      size_t h,
 	                      size_t quality = 100,
-	                      size_t num_channels = 3);
+	                      size_t num_channels = 3,
+	                      bool are_ints = false);
 
 	/**
 	 * Creates a new resized copy of the provided image matrix.

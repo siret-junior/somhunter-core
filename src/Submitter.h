@@ -43,9 +43,10 @@ using namespace std::literals;
 #include "DatasetFrames.h"
 #include "RelevanceScores.h"
 
+#include "CollageRanker.h"
 #include "KeywordRanker.h"
-using ImageKeywords = KeywordRanker;
 
+using ImageKeywords = KeywordRanker;
 using namespace json11;
 
 class Submitter
@@ -103,6 +104,8 @@ public:
 	                            const size_t topn_frames_per_shot);
 
 	void log_text_query_change(const std::string& query_sentence);
+
+	void log_collage_query(const Collage& collage);
 
 	void log_like(const DatasetFrames& frames,
 	              const std::set<ImageId>& likes,

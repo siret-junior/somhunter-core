@@ -90,6 +90,7 @@ struct SubmitterConfig
 
 	std::string log_submitted_dir;
 	std::string log_actions_dir;
+	std::string log_collages_dir;
 	std::string log_requests_dir;
 	std::string log_file_suffix;
 	bool extra_verbose_log;
@@ -242,6 +243,7 @@ Config::parse_submitter_config(const json11::Json& json)
 
 	res.log_submitted_dir = json["log_submitted_dir"].string_value();
 	res.log_actions_dir = json["log_actions_dir"].string_value();
+	res.log_collages_dir = json["log_collages_dir"].string_value();
 	res.log_requests_dir = json["log_requests_dir"].string_value();
 	res.log_file_suffix = json["log_file_suffix"].string_value();
 	res.extra_verbose_log = json["extra_verbose_log"].bool_value();

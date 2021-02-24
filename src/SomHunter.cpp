@@ -250,6 +250,7 @@ SomHunter::rescore(const std::string& text_query,
 	if (collage.images.empty()) {
 		rescore_keywords(text_query);
 	} else {
+		user.submitter.log_collage_query(collage);
 		collageRanker.score(collage);
 	}
 	apply_filters();

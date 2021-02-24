@@ -221,9 +221,10 @@ public:
 	                     size_t w,
 	                     size_t h,
 	                     size_t quality,
-	                     size_t num_channels) const
+	                     size_t num_channels,
+	                     bool are_ints = false) const
 	{
-		return ImageManipulator::store_jpg(filepath, in, w, h, quality, num_channels);
+		return ImageManipulator::store_jpg(filepath, in, w, h, quality, num_channels, are_ints);
 	}
 
 	/**

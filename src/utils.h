@@ -35,6 +35,8 @@
 #include <string>
 #include <string_view>
 
+#include <cereal/archives/binary.hpp>
+
 #include "log.h"
 
 template<typename DataType>

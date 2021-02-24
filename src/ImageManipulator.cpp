@@ -84,13 +84,20 @@ ImageManipulator::store_jpg(const std::string& filepath,
                             size_t w,
                             size_t h,
                             size_t quality,
-                            size_t num_channels)
+                            size_t num_channels,
+                            bool are_ints)
 {
 	std::vector<uint8_t> raw_data;
 	raw_data.reserve(in.size());
 
-	std::transform(
-	  in.begin(), in.end(), std::back_inserter(raw_data), [](const float& x) { return uint8_t(x * 255); });
+	// if \in [0.0, 1.0]
+	if (!are_ints) {
+		std::transform(
+		  in.begin(), in.end(), std::back_inserter(raw_data), [](const float& x) { return uint8_t(x * 255); });
+	} else {
+		std::transform(
+		  in.begin(), in.end(), std::back_inserter(raw_data), [](const float& x) { return uint8_t(x); });
+	}
 
 	auto res{ stbi_write_jpg(filepath.c_str(), w, h, num_channels, raw_data.data(), quality) };
 

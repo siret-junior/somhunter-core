@@ -23,12 +23,13 @@
 #include <stdio.h>
 #include <thread>
 
-#include <cereal/archives/binary.hpp>
-
 #include "SomHunter.h"
 
 // If the `TESTER_SomHunter` should do its job.
 //#define RUN_TESTER
+
+#define TEST_DATA_DIR "../../tests/data"
+#define TEST_COLLAGE_DATA_DIR TEST_DATA_DIR "/collages/"
 
 #ifdef RUN_TESTER
 
@@ -84,17 +85,18 @@ main()
 	/*
 	 * Test serilalization of Collage class
 	 */
-#	if 0
+#	if 1
+
 	Collage c;
 	c.break_point = 4;
 	c.pixel_heights.push_back(99);
 
-
 	// Dump to the file
 	serialize_to_file(c, "out.bin");
 
-	// Read from the file
-	Collage cc{ deserialize_from_file<Collage>("out.bin") };
+	Collage c1{ deserialize_from_file<Collage>(TEST_COLLAGE_DATA_DIR "collage_1_0.bin") };
+	
+	core.rescore(c1, nullptr);
 
 	/* -------------------------------- */
 #	endif
