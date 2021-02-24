@@ -134,15 +134,15 @@ poster_thread(const std::string& submit_url,
 	 * archived
 	 */
 
-	if (!std::filesystem::is_directory(cfg.VBS_submit_archive_dir))
-		std::filesystem::create_directories(cfg.VBS_submit_archive_dir);
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
+		std::filesystem::create_directories(cfg.log_submitted_dir);
 
-	if (!std::filesystem::is_directory(cfg.VBS_submit_archive_dir))
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
 		warn_d("wtf, directory was not created");
 
 	{
-		std::string path = cfg.VBS_submit_archive_dir + std::string("/") + std::to_string(timestamp()) +
-		                   cfg.VBS_submit_archive_log_suffix;
+		std::string path = cfg.log_submitted_dir + std::string("/") + std::to_string(timestamp()) +
+		                   cfg.log_file_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
 			warn_d("Could not write a log file!");
@@ -240,16 +240,16 @@ static void
 getter_thread(const std::string& submit_url, const std::string& query, bool& finished, const SubmitterConfig& cfg)
 {
 
-	if (!std::filesystem::is_directory(cfg.VBS_submit_archive_dir))
-		std::filesystem::create_directory(cfg.VBS_submit_archive_dir);
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
+		std::filesystem::create_directory(cfg.log_submitted_dir);
 
-	if (!std::filesystem::is_directory(cfg.VBS_submit_archive_dir))
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
 		warn_d("wtf, directory was not created");
 
 	{
 		auto ts{ timestamp() };
-		std::string path = cfg.VBS_submit_archive_dir + std::string("/") + std::to_string(ts) +
-		                   std::string("_submit") + cfg.VBS_submit_archive_log_suffix;
+		std::string path = cfg.log_submitted_dir + std::string("/") + std::to_string(ts) +
+		                   std::string("_submit") + cfg.log_file_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
 			warn_d("Could not write a log file!");
@@ -423,10 +423,10 @@ Submitter::Submitter(const SubmitterConfig& config)
 
 #ifdef LOG_LOGS
 	  { // Make sure the directory exists
-	    if (!(std::filesystem::exists(LOG_LOGS_DIR))){ std::filesystem::create_directories(LOG_LOGS_DIR);
+	    if (!(std::filesystem::exists(cfg.log_actions_dir))){ std::filesystem::create_directories(cfg.log_actions_dir);
 }
 
-std::string filepath{ LOG_LOGS_DIR + "actions_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
+std::string filepath{ cfg.log_actions_dir + "/actions_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
 
 act_log.open(filepath, std::ios::out);
 if (!act_log.is_open()) {
@@ -447,11 +447,11 @@ act_log << std::unitbuf;
 #ifdef LOG_CURL_REQUESTS
 {
 	// Make sure the directory exists
-	if (!(std::filesystem::exists(LOG_CURL_REQUESTS_DIR))) {
-		std::filesystem::create_directories(LOG_CURL_REQUESTS_DIR);
+	if (!(std::filesystem::exists(cfg.log_requests_dir))) {
+		std::filesystem::create_directories(cfg.log_requests_dir);
 	}
 
-	std::string filepath{ LOG_CURL_REQUESTS_DIR + "requests_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
+	std::string filepath{ cfg.log_requests_dir + "/requests_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
 		              ".log" };
 
 	req_log.open(filepath, std::ios::out);

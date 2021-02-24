@@ -24,14 +24,7 @@
 
 //#define DEBUG_CURL_REQUESTS
 #define LOG_LOGS
-#ifdef LOG_LOGS
-#	define LOG_LOGS_DIR "logs/actions/"s
-#endif // LOG_LOGS
-
 #define LOG_CURL_REQUESTS
-#ifdef LOG_CURL_REQUESTS
-#	define LOG_CURL_REQUESTS_DIR "logs/requests/"s
-#endif // LOG_CURL_REQUESTS
 
 #include <memory>
 #include <string>

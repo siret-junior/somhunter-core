@@ -88,8 +88,10 @@ struct SubmitterConfig
 	size_t team_ID;
 	size_t member_ID;
 
-	std::string VBS_submit_archive_dir;
-	std::string VBS_submit_archive_log_suffix;
+	std::string log_submitted_dir;
+	std::string log_actions_dir;
+	std::string log_requests_dir;
+	std::string log_file_suffix;
 	bool extra_verbose_log;
 
 	size_t send_logs_to_server_period;
@@ -238,8 +240,10 @@ Config::parse_submitter_config(const json11::Json& json)
 	res.team_ID = size_t(json["team_ID"].int_value());
 	res.member_ID = size_t(json["member_ID"].int_value());
 
-	res.VBS_submit_archive_dir = json["VBS_submit_archive_dir"].string_value();
-	res.VBS_submit_archive_log_suffix = json["VBS_submit_archive_log_suffix"].string_value();
+	res.log_submitted_dir = json["log_submitted_dir"].string_value();
+	res.log_actions_dir = json["log_actions_dir"].string_value();
+	res.log_requests_dir = json["log_requests_dir"].string_value();
+	res.log_file_suffix = json["log_file_suffix"].string_value();
 	res.extra_verbose_log = json["extra_verbose_log"].bool_value();
 
 	res.send_logs_to_server_period = size_t(json["send_logs_to_server_period"].int_value());

@@ -409,8 +409,10 @@ const char *json_contents = R"(
 		"team_ID": 4,
 		"member_ID": 1,
 	  
-		"VBS_submit_archive_dir": "logs/submitted_logs/",
-		"VBS_submit_archive_log_suffix": ".json",
+		"log_submitted_dir": "logs/submitted_logs/",
+		"log_actions_dir": "logs/actions/",
+		"log_requests_dir": "logs/requests/",
+		"log_file_suffix": ".json",
 		"extra_verbose_log": false,
 	  
 		"send_logs_to_server_period": 10000,
@@ -490,8 +492,10 @@ private:
 		ASSERT(sbc.submit_to_VBS == true, "Incorrect parse.");
 		ASSERT(sbc.team_ID == 4_z, "Incorrect parse.");
 		ASSERT(sbc.member_ID == 1_z, "Incorrect parse.");
-		ASSERT(sbc.VBS_submit_archive_dir == "logs/submitted_logs/", "Incorrect parse.");
-		ASSERT(sbc.VBS_submit_archive_log_suffix == ".json", "Incorrect parse.");
+		ASSERT(sbc.log_submitted_dir == "logs/submitted_logs/", "Incorrect parse.");
+		ASSERT(sbc.log_actions_dir == "logs/actions/", "Incorrect parse.");
+		ASSERT(sbc.log_requests_dir == "logs/requests/", "Incorrect parse.");
+		ASSERT(sbc.log_file_suffix == ".json", "Incorrect parse.");
 		ASSERT(sbc.extra_verbose_log == false, "Incorrect parse.");
 		ASSERT(sbc.send_logs_to_server_period == 10000_z, "Incorrect parse.");
 		ASSERT(sbc.apply_log_action_timeout == false, "Incorrect parse.");
