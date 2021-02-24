@@ -27,6 +27,7 @@
 
 // If the `TESTER_SomHunter` should do its job.
 //#define RUN_TESTER
+#define TEST_COLLAGE_QUERIES
 
 #define TEST_DATA_DIR "../../tests/data"
 #define TEST_COLLAGE_DATA_DIR TEST_DATA_DIR "/collages/"
@@ -82,24 +83,20 @@ main()
 	 * Test features here...
 	 * ******************************** */
 
-	/*
-	 * Test serilalization of Collage class
-	 */
-#	if 1
+	/* !!!!!!!!!!!!!!!!!!!!!!!!!!
+	 * Test collage queries
+	 * !!!!!!!!!!!!!!!!!!!!!!!!!! */
+#	ifdef TEST_COLLAGE_QUERIES
+	namespace fs = std::filesystem;
 
-	Collage c;
-	c.break_point = 4;
-	c.pixel_heights.push_back(99);
-
-	// Dump to the file
-	serialize_to_file(c, "out.bin");
-
-	Collage c1{ deserialize_from_file<Collage>(TEST_COLLAGE_DATA_DIR "collage_1_0.bin") };
-	
-	core.rescore(c1, nullptr);
+	for (auto& p : fs::directory_iterator(TEST_COLLAGE_DATA_DIR)) {
+		std::cout << "Running collage query from: " << p.path() << std::endl;
+		Collage c{ deserialize_from_file<Collage>(p.path().string()) };
+		core.rescore(c, nullptr);
+	}
 
 	/* -------------------------------- */
-#	endif
+#	endif // TEST_COLLAGE_QUERIES
 
 	/*
 	 * Test ImageManipulator

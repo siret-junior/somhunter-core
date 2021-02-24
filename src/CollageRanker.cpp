@@ -120,17 +120,20 @@ CollageRanker::get_features(Collage& collage)
 	feature = feature.unsqueeze(0).permute({ 1, 0, 2 });
 	feature = torch::tanh(torch::matmul(feature, weights).squeeze(1) + bias);
 
-	float a[] = { 1.0, 2, 3, 5, 6, 7 };
-	torch::Tensor b = torch::from_blob(a, { 2, 3 });
+	// norm
+	feature = torch::div(feature, get_L2norm(feature));
 
-	std::cout << b << std::endl;
+	debug_d("normalized\n");
 
-	debug_d("normalizing\n");
-	try {
-		auto norm = torch::linalg::linalg_norm(b, 2, { 1 }, true, torch::kFloat32);
-	} catch (const c10::IndexError& e) {
-		std::cout << e.what() << std::endl;
-	}
+	// PCA
+	feature = feature - kw_pca_mean_vec;
+	feature = feature.unsqueeze(0).permute({ 1, 0, 2 });
+	feature = torch::matmul(feature, kw_pca_mat).squeeze(1);
+
+	// norm
+	feature = torch::div(feature, get_L2norm(feature));
+
+	std::cout << feature << "\n";
 
 	return feature;
 }
