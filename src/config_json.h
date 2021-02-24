@@ -113,7 +113,8 @@ struct Config
 	VideoFilenameOffsets filename_offsets;
 
 	std::string frames_list_file;
-	std::string frames_path_prefix;
+	std::string frames_dir;
+	std::string thumbs_dir;
 
 	size_t features_file_data_off;
 	std::string features_file;
@@ -202,7 +203,9 @@ Config::parse_json_config_string(const std::string& cfg_file_contents)
 		           },
 
 		           json["frames_list_file"].string_value(),
-		           json["frames_path_prefix"].string_value(),
+		           
+							 json["frames_dir"].string_value(),
+							 json["thumbs_dir"].string_value(),
 
 		           size_t(json["features_file_data_off"].int_value()),
 		           json["features_file"].string_value(),

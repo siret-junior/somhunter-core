@@ -74,7 +74,9 @@ DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
 DatasetFrames::DatasetFrames(const Config& config)
 {
 	// Save the config values
-	frames_path_prefix = config.frames_path_prefix;
+	frames_dir = config.frames_dir;
+	thumbs_dir = config.thumbs_dir;
+
 	offs = config.filename_offsets;
 
 	info_d("Loading frames...");

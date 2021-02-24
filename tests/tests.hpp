@@ -437,8 +437,10 @@ const char *json_contents = R"(
 	},
 
 	"kws_file": "data/LSC2020_5days/word2idx.txt",
-	"frames_path_prefix": "/images/LSC2020_5days/thumbs/",
+
 	"frames_list_file": "data/LSC2020_5days/LSC-5days.keyframes.dataset",
+	"frames_dir": "data/ITEC_w2vv/frames/",
+	"thumbs_dir": "data/ITEC_w2vv/thumbs/",
 
 	"features_file_data_off": 0,
 	"features_dim": 128,
@@ -524,7 +526,9 @@ private:
 		ASSERT(c.filename_offsets.frame_num_len == 8_z, "Incorrect parse.");
 
 		ASSERT(c.frames_list_file == "data/LSC2020_5days/LSC-5days.keyframes.dataset", "Incorrect parse.");
-		ASSERT(c.frames_path_prefix == "/images/LSC2020_5days/thumbs/", "Incorrect parse.");
+		ASSERT(c.frames_dir == "data/ITEC_w2vv/frames/", "Incorrect parse.");
+		ASSERT(c.thumbs_dir == "data/ITEC_w2vv/thumbs/", "Incorrect parse.");
+
 		ASSERT(c.features_file_data_off == 0_z, "Incorrect parse.");
 		ASSERT(c.features_file == "data/LSC2020_5days/LSC-5days.w2vv.bin", "Incorrect parse.");
 		ASSERT(c.features_dim == 128, "Incorrect parse.");

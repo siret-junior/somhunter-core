@@ -165,13 +165,14 @@ class DatasetFrames
 	std::vector<FrameRange> _video_ID_to_frame_range;
 	std::vector<VideoFrame> _frames;
 
-	std::string frames_path_prefix;
+	std::string frames_dir;
+	std::string thumbs_dir;
 	VideoFilenameOffsets offs{};
 
 public:
 	DatasetFrames(const Config& config);
 
-	std::string operator[](ImageId i) const { return frames_path_prefix + std::string{ _frames.at(i).filename }; }
+	std::string operator[](ImageId i) const { return frames_dir + std::string{ _frames.at(i).filename }; }
 
 	std::vector<VideoFrame>::iterator end() { return _frames.end(); };
 	std::vector<VideoFrame>::iterator begin() { return _frames.begin(); };
