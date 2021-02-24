@@ -20,7 +20,7 @@ CollageRanker::CollageRanker(const Config& config)
 	try {
 		resnext101 = torch::jit::load(config.model_ResNext_file);
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error openning ResNext model file: " + config.model_ResNext_file + "\n" + e.what()};
+		std::string msg{ "Error openning ResNext model file: " + config.model_ResNext_file + "\n" + e.what() };
 		warn_d(msg);
 
 #ifndef NDEBUG

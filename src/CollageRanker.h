@@ -9,6 +9,10 @@
 #include <torch/torch.h>
 #include <vector>
 
+#include <cereal/types/complex.hpp>
+#include <cereal/types/string.hpp>
+#include <cereal/types/vector.hpp>
+
 #ifndef COLLAGE
 #	define COLLAGE
 
@@ -93,6 +97,25 @@ public:
 			                            channels);
 		}
 	}
+
+	/**
+	 * by Cereal header-only lib
+	 * https://uscilab.github.io/cereal/quickstart.html
+	 * https://uscilab.github.io/cereal/stl_support.html
+	 */
+	template<class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(lefts,
+		        tops,
+		        relative_heights,
+		        relative_widths,
+		        pixel_heights,
+		        pixel_widths,
+		        images,
+		        break_point,
+		        channels);
+	}
 };
 
 class CollageRanker
@@ -112,5 +135,7 @@ private:
 	at::Tensor get_features(Collage&);
 	at::Tensor get_L2norm(at::Tensor data);
 };
+
+static Collage DEFAULT_COLLAGE;
 
 #endif

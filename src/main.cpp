@@ -23,10 +23,12 @@
 #include <stdio.h>
 #include <thread>
 
+#include <cereal/archives/binary.hpp>
+
 #include "SomHunter.h"
 
 // If the `TESTER_SomHunter` should do its job.
-#define RUN_TESTER
+//#define RUN_TESTER
 
 #ifdef RUN_TESTER
 
@@ -75,15 +77,32 @@ main()
 	// Instantiate the SOMHunter
 	SomHunter core{ config };
 
-	/*
+	/* ********************************
 	 * Test features here...
+	 * ******************************** */
+
+	/*
+	 * Test serilalization of Collage class
 	 */
+#	if 0
+	Collage c;
+	c.break_point = 4;
+	c.pixel_heights.push_back(99);
+
+
+	// Dump to the file
+	serialize_to_file(c, "out.bin");
+
+	// Read from the file
+	Collage cc{ deserialize_from_file<Collage>("out.bin") };
+
+	/* -------------------------------- */
+#	endif
 
 	/*
 	 * Test ImageManipulator
 	 */
-
-	/*
+#	if 0
 	std::string orig_img{ "testimg.jpg" };
 	auto img{ core.load_image(orig_img) };
 
@@ -105,7 +124,9 @@ main()
 	        if (tmp_img.h != new_h)
 	                throw std::logic_error("Height does not match!");
 	}
-	*/
+
+#	endif
+
 	debug_d("this is debug log");
 	info_d("this is info log");
 	warn_d("this is warn log");

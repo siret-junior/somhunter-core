@@ -37,6 +37,46 @@
 
 #include "log.h"
 
+template<typename DataType>
+void
+serialize_to_file(DataType data, const std::string filepath)
+{
+
+	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
+	if (!ofs) {
+		std::string msg{ "Error openning file: " + filepath };
+		warn_d(msg);
+
+#ifndef NDEBUG
+		throw std::runtime_error(msg);
+#endif // NDEBUG
+		return;
+	}
+
+	cereal::BinaryOutputArchive out_archive(ofs);
+	out_archive(data);
+}
+
+template<typename DataType>
+DataType
+deserialize_from_file(const std::string filepath)
+{
+
+	std::ifstream ifs(filepath, std::ios::in | std::ios::binary);
+	if (!ifs) {
+		std::string msg{ "Error openning file: " + filepath };
+		warn_d(msg);
+
+		throw std::runtime_error(msg);
+	}
+
+	cereal::BinaryInputArchive in_archive(ifs);
+
+	DataType data;
+	in_archive(data);
+	return data;
+}
+
 /*!
  * Returns string representing current time and date in formated
  * string based on provided format.

@@ -113,12 +113,31 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
-	RescoreResult rescore(const std::string& text_query = ""s,
-	                      Collage& collage = Collage{},
+	RescoreResult rescore(const std::string& text_query,
+	                      Collage& collage,
 	                      const Filters* p_filters = nullptr,
 	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
 	                      const std::string& screenshot_fpth = ""s,
 	                      const std::string& label = ""s);
+
+	RescoreResult rescore(const std::string& text_query,
+	                      const Filters* p_filters = nullptr,
+	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
+	                      const std::string& screenshot_fpth = ""s,
+	                      const std::string& label = ""s)
+	{
+		Collage c; // NULL instance
+		return rescore(text_query, c, p_filters, src_search_ctx_ID, screenshot_fpth, label);
+	}
+
+	RescoreResult rescore(Collage& collage,
+	                      const Filters* p_filters = nullptr,
+	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
+	                      const std::string& screenshot_fpth = ""s,
+	                      const std::string& label = ""s)
+	{
+		return rescore(""s, collage, p_filters, src_search_ctx_ID, screenshot_fpth, label);
+	}
 
 	/** Switches the search context for the user to the provided index in
 	 *  the history and returns reference to it.

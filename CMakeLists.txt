@@ -17,6 +17,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
 
+
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /experimental:external /external:anglebrackets /external:W0" )
+else (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4" )
+endif (MSVC)
+
 #
 # Prepare dependencies
 #
