@@ -351,7 +351,7 @@ private:
 				WeekDaysFilter{days_mask}
 			};
 
-			core.rescore(tq, &fs);
+			core.rescore(tq, Collage{}, &fs);
 			auto disp{ core.get_topn_display(0) };
 
 			size_t i{ 0 };

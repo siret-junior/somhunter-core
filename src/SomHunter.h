@@ -113,7 +113,8 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
-	RescoreResult rescore(const std::string& text_query,
+	RescoreResult rescore(const std::string& text_query = ""s,
+	                      Collage& collage = Collage{},
 	                      const Filters* p_filters = nullptr,
 	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
 	                      const std::string& screenshot_fpth = ""s,

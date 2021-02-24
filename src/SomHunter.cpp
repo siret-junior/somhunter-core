@@ -209,6 +209,7 @@ SomHunter::apply_filters()
 
 RescoreResult
 SomHunter::rescore(const std::string& text_query,
+                   Collage& collage,
                    const Filters* p_filters,
                    size_t src_search_ctx_ID,
                    const std::string& screenshot_fpth,
@@ -245,7 +246,12 @@ SomHunter::rescore(const std::string& text_query,
 	// Store likes for the logging purposees
 	auto old_likes{ user.ctx.likes };
 
-	rescore_keywords(text_query);
+	// If NOT COLLAGE
+	if (collage.images.empty()) {
+		rescore_keywords(text_query);
+	} else {
+		collageRanker.score(collage);
+	}
 	apply_filters();
 	rescore_feedback();
 
