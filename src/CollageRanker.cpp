@@ -9,7 +9,7 @@ CollageRanker::CollageRanker(const Config& config)
 	try {
 		resnet152 = torch::jit::load(config.model_ResNet_file);
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error openning ResNet model file: " + config.model_ResNet_file };
+		std::string msg{ "Error openning ResNet model file: " + config.model_ResNet_file + "\n" + e.what() };
 		warn_d(msg);
 
 #ifndef NDEBUG
@@ -20,7 +20,7 @@ CollageRanker::CollageRanker(const Config& config)
 	try {
 		resnext101 = torch::jit::load(config.model_ResNext_file);
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error openning ResNext model file: " + config.model_ResNext_file };
+		std::string msg{ "Error openning ResNext model file: " + config.model_ResNext_file + "\n" + e.what()};
 		warn_d(msg);
 
 #ifndef NDEBUG
@@ -31,7 +31,7 @@ CollageRanker::CollageRanker(const Config& config)
 	try {
 		bias = torch::tensor(KeywordRanker::parse_float_vector(config.model_W2VV_img_bias, 2048));
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error loading W2VV FC bias: " + config.model_W2VV_img_bias };
+		std::string msg{ "Error loading W2VV FC bias: " + config.model_W2VV_img_bias + "\n" + e.what() };
 		warn_d(msg);
 
 #ifndef NDEBUG
@@ -44,7 +44,7 @@ CollageRanker::CollageRanker(const Config& config)
 		            .reshape({ 2048, 4096 })
 		            .permute({ 1, 0 });
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error loading W2VV FC weights: " + config.model_W2VV_img_weigths };
+		std::string msg{ "Error loading W2VV FC weights: " + config.model_W2VV_img_weigths + "\n" + e.what() };
 		warn_d(msg);
 
 #ifndef NDEBUG
@@ -77,7 +77,7 @@ CollageRanker::get_L2norm(at::Tensor data)
 {
 	at::Tensor norm = torch::zeros({ data.sizes()[0], 1 });
 
-	for (size_t i = 0; i < data.sizes()[0]; i++)
+	for (int64_t i = 0; i < data.sizes()[0]; i++)
 		norm[i] = torch::sqrt(torch::sum(data[i] * data[i]));
 
 	return norm;
