@@ -3,41 +3,36 @@
 Use cmake for build
 
 
-## Building from source
+# Build
 
-Prerequisites:
+## Prerequisites
 - `libcurl` (see below for installation on various platforms)
-- `libopencv`
-- `libtorch` (libraries will be downloaded by the CMake build script)
+- `libtorch` (this will be downloaded and installed during CMake script execution, you shouldn't worry about this)
 
-### Getting the dependencies on UNIX systems
+## UNIX systems
 
 You should be able to install all dependencies from the package management. On
 Debian-based systems (including Ubuntu and Mint) the following should work:
 
 ```
-apt-get install build-essential libcurl4-openssl-dev nodejs yarnpkg
+apt-get install build-essential libcurl4-openssl-dev 
 ```
-
-The build system uses `pkg-config` to find libCURL -- if that fails, either
-install the CURL pkgconfig file manually, or customize the build configuration
-in `core/binding.gyp` to fit your setup.
 
 Similar (similarly named) packages should be available on most other distributions.
 
-### Getting the dependencies on Windows
+## Windows
 
-The build systems expects dependency libraries to reside in the `c:\Program Files\curl\` directory. You
-may want to install it using
-[vcpkg](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019) as
-follows:
+The build systems expects dependency installed at "usual" locations. That is usually `c:\Program Files\curl\` directory. 
+But to avoid any problems is is good to use [vcpkg](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019) for managing those for you.
 
-- download and install `vcpkg`
-- install and export `libcurl` & `libopencv`:
+1) Download and install `vcpkg`
+2) Install libcurl (dependecncies will be handled by the package manager)
+```sh
+vcpkg install curl:x64-windows
 ```
-vcpkg install curl:x64-windows opencv3:x64-windows
-vcpkg export --raw curl:x64-windows opencv3:x64-windows
-```
-- copy the directories with the exported libs to `c:\Program Files\curl\` & `c:\Program Files\opencv\` so that directories `include` and `bin` lie directly inside those.
+This will output how to tell CMake about this. Something like `-DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake"`).
 
-Second option is to provide CMake the appropriate toolchain path to your `vcpkg` directory (e.g. `-DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake"`). With this you won't need to do the exporting.
+Now just run CMake as usual with this additional option. Example for VS 2019 solution may look like this:
+```sh
+cmake .. -G "Visual Studio 16 2019" -A x64  -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE="Debug"
+```
