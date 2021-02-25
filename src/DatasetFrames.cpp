@@ -34,7 +34,9 @@ DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
 
 	info_d("Loading top image keywords from " << filepath);
 	if (!inFile) {
-		throw std::runtime_error("Error opening file: " + filepath);
+		std::string msg{ "Error opening file: " + filepath };
+		warn_d(msg);
+		throw std::runtime_error(msg);
 	}
 
 	// pure hypers need to be loaded first because of IDs
@@ -51,8 +53,11 @@ DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
 		for (std::string token; std::getline(line_buffer_ss, token, '~');)
 			tokens.push_back(token);
 
-		if (tokens.size() < 2)
-			throw std::runtime_error("Error parsing " + filepath);
+		if (tokens.size() < 2) {
+			std::string msg{ "Error parsing file: " + filepath };
+			warn_d(msg);
+			throw std::runtime_error(msg);
+		}
 
 		std::string token; // tmp
 
@@ -86,9 +91,7 @@ DatasetFrames::DatasetFrames(const Config& config)
 	if (!in.good()) {
 		auto msg{ "Failed to open " + config.frames_list_file };
 		warn_d(msg);
-#ifndef NDEBUG
 		throw std::runtime_error(msg);
-#endif
 	}
 
 	bool parse_metadata{ false };
@@ -102,9 +105,7 @@ DatasetFrames::DatasetFrames(const Config& config)
 		if (!ifs_meta.good()) {
 			auto msg{ "Failed to open " + config.LSC_metadata_file };
 			warn_d(msg);
-#ifndef NDEBUG
 			throw std::runtime_error(msg);
-#endif
 		}
 	}
 
@@ -127,11 +128,9 @@ DatasetFrames::DatasetFrames(const Config& config)
 
 				// Read one metadata line
 				if (!getline(ifs_meta, md_line)) {
-#ifndef NDEBUG
 					auto msg{ "Not enough lines in " + config.LSC_metadata_file };
 					warn_d(msg);
 					throw std::runtime_error(msg);
-#endif
 				}
 
 				// Parse this line
@@ -186,13 +185,13 @@ VideoFrame
 DatasetFrames::parse_video_filename(std::string&& filename)
 {
 	// Extract string representing video ID
-	std::string_view videoIdString(filename.data() + offs.vid_ID_off, offs.vid_ID_len);
+	std::string videoIdString(filename.data() + offs.vid_ID_off, offs.vid_ID_len);
 
 	// Extract string representing shot ID
-	std::string_view shotIdString(filename.data() + offs.shot_ID_off, offs.shot_ID_len);
+	std::string shotIdString(filename.data() + offs.shot_ID_off, offs.shot_ID_len);
 
 	// Extract string representing frame number
-	std::string_view frameNumberString(filename.data() + offs.frame_num_off, offs.frame_num_len);
+	std::string frameNumberString(filename.data() + offs.frame_num_off, offs.frame_num_len);
 
 	return VideoFrame(
 	  std::move(filename), str_to_int(videoIdString), str_to_int(shotIdString), str_to_int(frameNumberString), 0);

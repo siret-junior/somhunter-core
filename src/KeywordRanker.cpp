@@ -31,7 +31,9 @@ KeywordRanker::parse_kw_classes_text_file(const std::string& filepath, const Dat
 	info_d("loading keyword classes from " << filepath);
 
 	if (!inFile) {
-		throw std::runtime_error("Error opening file: " + filepath);
+		std::string msg{ "Error opening file: " + filepath };
+		warn_d(msg);
+		throw std::runtime_error(msg);
 	}
 
 	std::vector<Keyword> result_keywords;
@@ -99,8 +101,11 @@ KeywordRanker::parse_float_vector(const std::string& filepath, size_t dim, size_
 	std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
 
 	// If failed to open file
-	if (!ifs)
-		throw std::runtime_error("Error opening file: " + filepath);
+	if (!ifs) {
+		std::string msg{ "Error opening file: " + filepath };
+		warn_d(msg);
+		throw std::runtime_error(msg);
+	}
 
 	// Get end of file
 	auto end = ifs.tellg();
@@ -113,7 +118,9 @@ KeywordRanker::parse_float_vector(const std::string& filepath, size_t dim, size_
 
 	// If emtpy file
 	if (size == 0) {
-		throw std::runtime_error("Empty file opened!");
+		std::string msg{ "Empty file opened: " + filepath };
+		warn_d(msg);
+		throw std::runtime_error(msg);
 	}
 
 	// Calculate byte length of each row (dim_N * sizeof(float))
@@ -156,7 +163,9 @@ KeywordRanker::parse_float_matrix(const std::string& filepath, size_t row_dim, s
 
 	// If failed to open file
 	if (!ifs) {
-		throw std::runtime_error("Error opening file: " + filepath);
+		std::string msg{ "Error opening file: " + filepath };
+		warn_d(msg);
+		throw std::runtime_error(msg);
 	}
 
 	// Get end of file
@@ -170,7 +179,9 @@ KeywordRanker::parse_float_matrix(const std::string& filepath, size_t row_dim, s
 
 	// If emtpy file
 	if (size == 0) {
-		throw std::runtime_error("Empty file opened!");
+		std::string msg{ "Empty file opened: " + filepath };
+		warn_d(msg);
+		throw std::runtime_error(msg);
 	}
 
 	// Calculate byte length of each row (dim_N * sizeof(float))

@@ -434,10 +434,7 @@ act_log.open(filepath, std::ios::out);
 if (!act_log.is_open()) {
 	std::string msg{ "Error openning file: " + filepath };
 	warn_d(msg);
-
-#	ifndef NDEBUG
 	throw std::runtime_error(msg);
-#	endif // NDEBUG
 }
 
 // Enable automatic flushing
@@ -460,10 +457,7 @@ act_log << std::unitbuf;
 	if (!req_log.is_open()) {
 		std::string msg{ "Error openning file: " + filepath };
 		warn_d(msg);
-
-#	ifndef NDEBUG
 		throw std::runtime_error(msg);
-#	endif // NDEBUG
 	}
 
 	// Enable automatic flushing
@@ -721,7 +715,9 @@ Submitter::log_collage_query(const Collage& collage)
 	// Write log info
 	std::ofstream o(path + "query_info.json");
 	if (!o) {
-		throw std::runtime_error("Could not write a log file:" + path + "query_info.json");
+		std::string msg{ "Could not write a log file: " + path + "query_info.json" };
+		warn_d(msg);
+		throw std::runtime_error(msg);
 	}
 
 	Json json = Json::object{

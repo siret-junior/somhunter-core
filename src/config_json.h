@@ -203,9 +203,9 @@ Config::parse_json_config_string(const std::string& cfg_file_contents)
 		           },
 
 		           json["frames_list_file"].string_value(),
-		           
-							 json["frames_dir"].string_value(),
-							 json["thumbs_dir"].string_value(),
+
+		           json["frames_dir"].string_value(),
+		           json["thumbs_dir"].string_value(),
 
 		           size_t(json["features_file_data_off"].int_value()),
 		           json["features_file"].string_value(),
@@ -267,11 +267,9 @@ Config::parse_submitter_config(const json11::Json& json)
 	}
 	// If error value
 	else {
-#ifndef NDEBUG
 		std::string msg{ "Uknown submit server type: " + res.server_type };
 		warn_d(msg);
 		throw std::runtime_error(msg);
-#endif
 	}
 
 	return res;

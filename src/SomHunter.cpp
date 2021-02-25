@@ -60,11 +60,9 @@ SomHunter::get_display(DisplayType d_type, ImageId selected_image, PageId page, 
 			break;
 
 		default:
-			warn_d("Unsupported display requested.");
-#ifndef NDEBUG
-			throw std::runtime_error("Unsupported display requested.");
-#endif // !NDEBUG
-
+			std::string msg{ "Unsupported display requested: " + std::to_string(int(d_type)) };
+			warn_d(msg);
+			throw std::runtime_error(msg);
 			break;
 	}
 
@@ -634,9 +632,7 @@ SomHunter::switch_search_context(size_t index,
 	if (index >= user.history.size()) {
 		std::string msg{ "Index is out of bounds: " + index };
 		warn_d(msg);
-#ifndef NDEBUG
 		throw std::runtime_error(msg);
-#endif // NDEBUG
 	}
 
 	info_d("Switching to context '" << index << "'...");

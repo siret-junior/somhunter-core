@@ -11,10 +11,7 @@ CollageRanker::CollageRanker(const Config& config)
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error openning ResNet model file: " + config.model_ResNet_file + "\n" + e.what() };
 		warn_d(msg);
-
-#ifndef NDEBUG
 		throw std::runtime_error(msg);
-#endif // NDEBUG
 	}
 
 	try {
@@ -22,10 +19,7 @@ CollageRanker::CollageRanker(const Config& config)
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error openning ResNext model file: " + config.model_ResNext_file + "\n" + e.what() };
 		warn_d(msg);
-
-#ifndef NDEBUG
 		throw std::runtime_error(msg);
-#endif // NDEBUG
 	}
 
 	try {
@@ -33,10 +27,7 @@ CollageRanker::CollageRanker(const Config& config)
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error loading W2VV FC bias: " + config.model_W2VV_img_bias + "\n" + e.what() };
 		warn_d(msg);
-
-#ifndef NDEBUG
 		throw std::runtime_error(msg);
-#endif // NDEBUG
 	}
 
 	try {
@@ -46,10 +37,7 @@ CollageRanker::CollageRanker(const Config& config)
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error loading W2VV FC weights: " + config.model_W2VV_img_weigths + "\n" + e.what() };
 		warn_d(msg);
-
-#ifndef NDEBUG
 		throw std::runtime_error(msg);
-#endif // NDEBUG
 	}
 
 	kw_pca_mat = torch::tensor(KeywordRanker::parse_float_vector(

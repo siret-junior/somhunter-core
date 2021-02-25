@@ -48,10 +48,7 @@ serialize_to_file(DataType data, const std::string filepath)
 	if (!ofs) {
 		std::string msg{ "Error openning file: " + filepath };
 		warn_d(msg);
-
-#ifndef NDEBUG
 		throw std::runtime_error(msg);
-#endif // NDEBUG
 		return;
 	}
 
@@ -68,7 +65,6 @@ deserialize_from_file(const std::string filepath)
 	if (!ifs) {
 		std::string msg{ "Error openning file: " + filepath };
 		warn_d(msg);
-
 		throw std::runtime_error(msg);
 	}
 
@@ -104,7 +100,7 @@ get_formated_timestamp(const std::string& fmt)
 }
 
 inline int
-str_to_int(const std::string_view& str)
+str_to_int(const std::string& str)
 {
 	int result = 0;
 
@@ -112,10 +108,9 @@ str_to_int(const std::string_view& str)
 	auto conv_res = std::from_chars(str.data(), str.data() + str.size(), result);
 
 	if (conv_res.ptr != (str.data() + str.size())) {
-		warn_d("Incorrect string in str_to_int");
-#ifndef NDEBUG
-		throw std::runtime_error("Incorrect string in str_to_int");
-#endif
+		std::string msg{ "Incorrect string to covnert: " + str };
+		warn_d(msg);
+		throw std::runtime_error(msg);
 	}
 
 	return result;
@@ -136,7 +131,10 @@ inline float
 d_manhattan(const std::vector<T>& left, const std::vector<T>& right)
 {
 	if (left.size() != right.size()) {
+		warn_d("Vectors have different sizes.");
+#ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
+#endif
 	}
 
 	float s = 0;
@@ -152,7 +150,10 @@ inline float
 d_sqeucl(const std::vector<T>& left, const std::vector<T>& right)
 {
 	if (left.size() != right.size()) {
+		warn_d("Vectors have different sizes.");
+#ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
+#endif
 	}
 
 	float s = 0;
@@ -198,7 +199,10 @@ inline std::vector<T>
 VecSub(const std::vector<T>& left, const std::vector<T>& right)
 {
 	if (left.size() != right.size()) {
+		warn_d("Vectors have different sizes.");
+#ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
+#endif
 	}
 
 	std::vector<T> result;
@@ -218,7 +222,10 @@ inline std::vector<T>
 VecAdd(const std::vector<T>& left, const std::vector<T>& right)
 {
 	if (left.size() != right.size()) {
+		warn_d("Vectors have different sizes.");
+#ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
+#endif
 	}
 
 	std::vector<T> result;
@@ -249,7 +256,10 @@ inline std::vector<T>
 VecMult(const std::vector<T>& left, const std::vector<T>& right)
 {
 	if (left.size() != right.size()) {
+		warn_d("Vectors have different sizes.");
+#ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
+#endif
 	}
 
 	std::vector<T> result;
@@ -266,7 +276,10 @@ inline T
 VecDot(const std::vector<T>& left, const std::vector<T>& right)
 {
 	if (left.size() != right.size()) {
+		warn_d("Vectors have different sizes.");
+#ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
+#endif
 	}
 
 	std::vector<T> sum = VecMult<T>(left, right);
@@ -279,7 +292,10 @@ inline std::vector<T>
 MatVecProd(const std::vector<std::vector<T>>& mat, const std::vector<T>& vec)
 {
 	if (mat.empty() || mat[0].size() != vec.size()) {
-		throw std::runtime_error("Vectors have different sizes or is mat empty.");
+		warn_d("Vectors have different sizes.");
+#ifndef NDEBUG
+		throw std::runtime_error("Vectors have different sizes.");
+#endif
 	}
 
 	std::vector<T> result;
@@ -307,8 +323,12 @@ VecNorm(const std::vector<T>& left)
 
 	if (vec_size > 0.0f)
 		return VecMult(left, (1.0f / vec_size));
-	else
-		throw std::runtime_error("Zero vec");
+	else {
+		warn_d("Zero vector!");
+#ifndef NDEBUG
+		throw std::runtime_error("Zero vector!");
+#endif
+	}
 }
 
 /**

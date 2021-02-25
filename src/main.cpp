@@ -106,22 +106,22 @@ main()
 	auto img{ core.load_image(orig_img) };
 
 	for (size_t i{ 0 }; i < 10; ++i) {
-	        size_t new_w{ irand(10_z, 2000_z) };
-	        size_t new_h{ irand(10_z, 2000_z) };
+	  size_t new_w{ irand(10_z, 2000_z) };
+	  size_t new_h{ irand(10_z, 2000_z) };
 
-	        std::string new_file{ "testimg_edited_" + std::to_string(i) + ".jpg" };
+	  std::string new_file{ "testimg_edited_" + std::to_string(i) + ".jpg" };
 
-	        auto tmp_data{ core.resize_image(img.data, img.w, img.h, new_w, new_h, img.num_channels) };
-	        core.store_jpg_image(new_file, tmp_data, new_w, new_h, 50, img.num_channels);
+	  auto tmp_data{ core.resize_image(img.data, img.w, img.h, new_w, new_h, img.num_channels) };
+	  core.store_jpg_image(new_file, tmp_data, new_w, new_h, 50, img.num_channels);
 
-	        // Check!
-	        auto tmp_img{ core.load_image(new_file) };
+	  // Check!
+	  auto tmp_img{ core.load_image(new_file) };
 
-	        if (tmp_img.w != new_w)
-	                throw std::logic_error("Width does not match!");
+	  if (tmp_img.w != new_w)
+			throw std::logic_error("Width does not match!");
 
-	        if (tmp_img.h != new_h)
-	                throw std::logic_error("Height does not match!");
+	  if (tmp_img.h != new_h)
+	    throw std::logic_error("Height does not match!");
 	}
 
 #	endif
