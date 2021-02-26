@@ -14,8 +14,18 @@ Use cmake for build
 You should be able to install all dependencies from the package management. On
 Debian-based systems (including Ubuntu and Mint) the following should work:
 
-```
+```sh
 apt-get install build-essential libcurl4-openssl-dev 
+```
+
+```sh
+mkdir build && cd build
+
+# Debug
+cmake .. -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -march=native"-DCMAKE_BUILD_TYPE="Debug"
+
+# Release
+cmake .. -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -march=native"-DCMAKE_BUILD_TYPE="Release"
 ```
 
 Similar (similarly named) packages should be available on most other distributions.
@@ -34,5 +44,11 @@ This will output how to tell CMake about this. Something like `-DCMAKE_TOOLCHAIN
 
 Now just run CMake as usual with this additional option. Example for VS 2019 solution may look like this:
 ```sh
+mkdir build && cd build
+
+# Debug
 cmake .. -G "Visual Studio 16 2019" -A x64  -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE="Debug"
+
+# Release
+cmake .. -G "Visual Studio 16 2019" -A x64  -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE="Release"
 ```
