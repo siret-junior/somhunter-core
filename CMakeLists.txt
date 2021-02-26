@@ -14,7 +14,7 @@ set(BUILD_PLUGINS_STATIC ON
     CACHE BOOL "prevent problems with dynamic builds")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+#set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 
 
 SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
@@ -24,7 +24,7 @@ SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP /experimental:external /external:anglebrackets /external:W0" )
 else (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4" )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 endif (MSVC)
 
 #

@@ -18,14 +18,14 @@ Debian-based systems (including Ubuntu and Mint) the following should work:
 apt-get install build-essential libcurl4-openssl-dev 
 ```
 
-```sh
+```bash
 mkdir build && cd build
 
 # Debug
-cmake .. -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -march=native"-DCMAKE_BUILD_TYPE="Debug"
+cmake .. -DCMAKE_BUILD_TYPE="Debug"
 
 # Release
-cmake .. -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -march=native"-DCMAKE_BUILD_TYPE="Release"
+cmake .. -DCMAKE_BUILD_TYPE="Release"
 ```
 
 Similar (similarly named) packages should be available on most other distributions.
@@ -40,7 +40,7 @@ But to avoid any problems is is good to use [vcpkg](https://docs.microsoft.com/e
 ```sh
 vcpkg install curl:x64-windows
 ```
-This will output how to tell CMake about this. Something like `-DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake"`).
+This will output how to tell CMake about this. Something like `-DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake"`.
 
 Now just run CMake as usual with this additional option. Example for VS 2019 solution may look like this:
 ```sh
