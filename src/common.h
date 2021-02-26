@@ -49,6 +49,12 @@ using ScreenImgsCont = std::vector<ImageId>;
 using FeatureMatrix = std::vector<std::vector<float>>;
 using FeatureVector = std::vector<float>;
 
+template<typename T = float>
+using StdMatrix = std::vector<std::vector<T>>;
+
+template<typename T = float>
+using StdVector = std::vector<T>;
+
 using LikesCont = std::set<ImageId>;
 using BookmarksCont = std::set<ImageId>;
 using ShownFramesCont = std::set<ImageId>;

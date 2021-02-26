@@ -26,7 +26,7 @@
 #include "SomHunter.h"
 
 // If the `TESTER_SomHunter` should do its job.
-//#define RUN_TESTER
+#define RUN_TESTER
 #define TEST_COLLAGE_QUERIES
 
 #define TEST_DATA_DIR "../../tests/data"
@@ -90,6 +90,11 @@ main()
 	namespace fs = std::filesystem;
 
 	for (auto& p : fs::directory_iterator(TEST_COLLAGE_DATA_DIR)) {
+
+		// Skip directories
+		if (p.is_directory())
+			continue;
+
 		std::cout << "Running collage query from: " << p.path() << std::endl;
 		Collage c{ deserialize_from_file<Collage>(p.path().string()) };
 		core.rescore(c, nullptr);

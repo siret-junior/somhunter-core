@@ -357,6 +357,23 @@ d_cos_normalized(const std::vector<float>& left, const float* right, size_t dim)
 	return 1.0f - s;
 }
 
+/**
+ * Vectors must have unit size!
+ */
+inline float
+cos_sim_normalized(const std::vector<float>& left, const float* right, size_t dim)
+{
+	float s = 0.0f;
+	const float* iv = left.data();
+	const float* jv = right;
+
+	for (size_t d = 0; d < dim; ++d) {
+		s += iv[d] * jv[d];
+	}
+
+	return s;
+}
+
 inline static float
 square(float a)
 {
@@ -415,6 +432,26 @@ bool
 is_set(T mask, size_t i)
 {
 	return ((mask >> i) & 0x01) == 1;
+}
+
+template<typename Container>
+void
+print_matrix(const Container& mat)
+{
+
+	for (auto&& row : mat) {
+		print_vector(row);
+	}
+}
+
+template<typename Container>
+void
+print_vector(const Container& row)
+{
+	for (auto&& v : row) {
+		std::cout << "\t" << std::fixed << std::setprecision(4) << v;
+	}
+	std::cout << std::endl;
 }
 
 #endif // UTILS_H_

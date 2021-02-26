@@ -356,7 +356,7 @@ KeywordRanker::apply_temp_queries(std::vector<std::vector<float>>& dist_cache,
                                   size_t query_idx,
                                   float& result_dist,
                                   const DatasetFeatures& features,
-                                  const DatasetFrames& frames) const
+                                  const DatasetFrames& frames)
 {
 	// If no queries left
 	if (query_idx >= queries.size())
@@ -401,20 +401,29 @@ KeywordRanker::apply_temp_queries(std::vector<std::vector<float>>& dist_cache,
 }
 
 std::vector<std::pair<ImageId, float>>
-KeywordRanker::get_sorted_frames(const std::vector<std::vector<KeywordId>>& positive,
+KeywordRanker::get_sorted_frames(const std::vector<std::vector<KeywordId>>& kws,
                                  const std::vector<std::vector<KeywordId>>& /*negative*/,
                                  const DatasetFeatures& features,
                                  const DatasetFrames& frames,
-                                 const Config& cfg) const
+                                 const Config& /*cfg*/) const
 {
-	const size_t result_dim = cfg.kw_PCA_mat_dim;
+	auto query_vecs{ embedd_text_queries(kws) };
 
+	// Compute the scores for each frame for this query
+	std::vector<float> scores{ score_vectors(query_vecs, features, frames) };
+
+	// Get sorted results
+	auto id_scores{ sort_by_score(scores) };
+
+	return id_scores;
+}
+
+StdMatrix<float>
+KeywordRanker::embedd_text_queries(const StdMatrix<KeywordId>& keyword_queries) const
+{
 	std::vector<std::vector<float>> query_vecs;
 
-	for (auto&& kw_IDs : positive) {
-		//
-		// Embed keywords
-		//
+	for (auto&& kw_IDs : keyword_queries) {
 		// Initialize zero vector
 		std::vector<float> score_vec(kw_pca_mean_vec.size(), 0.0f);
 
@@ -431,44 +440,90 @@ KeywordRanker::get_sorted_frames(const std::vector<std::vector<KeywordId>>& posi
 			return std::tanh(score);
 		});
 
-		std::vector<float> sentence_vec =
-
-		  MatVecProd(kw_pca_mat, VecSub(VecNorm(score_vec), kw_pca_mean_vec));
+		std::vector<float> sentence_vec = MatVecProd(kw_pca_mat, VecSub(VecNorm(score_vec), kw_pca_mean_vec));
 
 		sentence_vec = VecNorm(sentence_vec);
 
 		query_vecs.emplace_back(std::move(sentence_vec));
 	}
 
-	std::vector<std::vector<float>> dist_cache;
-	dist_cache.resize(query_vecs.size(), std::vector(features.size(), std::numeric_limits<float>::quiet_NaN()));
+	return query_vecs;
+}
 
-	std::vector<std::pair<ImageId, float>> scores;
-	for (ImageId img_ID = 0; img_ID < features.size(); ++img_ID) {
-		const float* p_img_fea_vec = features.fv(img_ID);
+StdVector<float>
+KeywordRanker::score_vectors(StdMatrix<float> query_vecs, const DatasetFeatures& features, const DatasetFrames& frames)
+{
+	size_t target_dim{ query_vecs.front().size() };
+
+	// Result is final score \in [0.0F, 1.0F] of `query_vecs` as temporal query
+	std::vector<float> scores;
+	scores.reserve(features.size());
+
+	// i-th index is for i-th query vector
+	std::vector<std::vector<float>> distance_cache;
+	distance_cache.resize(query_vecs.size(), std::vector(features.size(), std::numeric_limits<float>::quiet_NaN()));
+
+	// For all frame_IDs
+	for (ImageId frame_ID = 0; frame_ID < features.size(); ++frame_ID) {
+		const float* raw_frame_features = features.fv(frame_ID);
 
 		// Get cosine distance and scale it to [0.0f, 1.0f]
-		float dist = dist_cache[0][img_ID];
-		// If not yet cached
+		float dist = distance_cache[0][frame_ID];
+
+		// If not yet cached, compute it
 		if (std::isnan(dist)) {
-			dist = d_cos_normalized(query_vecs.front(), p_img_fea_vec, result_dim) / 2.0f;
-			dist_cache[0][img_ID] = dist;
-		} else {
-			std::cout << "cached" << std::endl;
+			dist = d_cos_normalized(query_vecs.front(), raw_frame_features, target_dim) / 2.0f;
+			distance_cache[0][frame_ID] = dist;
 		}
 
 		// This will adjust `dist` based on temporal queries
-		apply_temp_queries(dist_cache, img_ID, query_vecs, 1, dist, features, frames);
+		apply_temp_queries(distance_cache, frame_ID, query_vecs, 1, dist, features, frames);
 
-		scores.emplace_back(ImageId(img_ID), dist);
+		scores.emplace_back(dist);
+	}
+
+	return scores;
+}
+
+void
+KeywordRanker::report_results(StdVector<std::pair<ImageId, float>> sorted_results,
+                              const DatasetFrames& frames,
+                              size_t num)
+{
+
+	size_t i{ 0 };
+	for (auto&& [frame_ID, score] : sorted_results) {
+		++i;
+
+		auto filepath{ frames[frame_ID] };
+		std::cout << i << "\t ";
+		std::cout << std::fixed << std::setprecision(4) << score << " => " << filepath << std::endl;
+
+		if (i >= num)
+			break;
+	}
+}
+
+std::vector<std::pair<ImageId, float>>
+KeywordRanker::sort_by_score(StdVector<float> scores)
+{
+
+	// Zip scores with frame IDs
+	std::vector<std::pair<ImageId, float>> id_scores;
+	id_scores.reserve(scores.size());
+	{
+		size_t i{ 0 };
+		std::transform(scores.begin(), scores.end(), std::back_inserter(id_scores), [&i](const float& x) {
+			return std::pair{ i++, x };
+		});
 	}
 
 	// Sort results
-	std::sort(scores.begin(),
-	          scores.end(),
+	std::sort(id_scores.begin(),
+	          id_scores.end(),
 	          [](const std::pair<size_t, float>& left, const std::pair<size_t, float>& right) {
 		          return left.second < right.second;
 	          });
 
-	return scores;
+	return id_scores;
 }

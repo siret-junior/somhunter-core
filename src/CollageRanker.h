@@ -1,20 +1,56 @@
-#include "ImageManipulator.h"
-#include "KeywordRanker.h"
-#include "log.h"
+#ifndef COLLAGE_RANKER_H_
+#define COLLAGE_RANKER_H_
+
+#include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <torch/script.h>
-#include <torch/torch.h>
 #include <vector>
 
 #include <cereal/types/complex.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
+#include <torch/script.h>
+#include <torch/torch.h>
 
-#ifndef COLLAGE
-#	define COLLAGE
+#include "log.h"
+
+#include "ImageManipulator.h"
+#include "KeywordRanker.h"
+
+template<typename DType>
+std::vector<std::vector<DType>>
+to_std_matrix(const at::Tensor& tensor_features)
+{
+	if (tensor_features.sizes().size() != 2) {
+		throw std::runtime_error("Not 2x<dim> matrix.");
+	}
+
+	size_t num_rows{ size_t(tensor_features.sizes()[0]) };
+	size_t num_cols{ size_t(tensor_features.sizes()[1]) };
+
+	std::vector<std::vector<DType>> mat;
+	mat.reserve(num_rows);
+
+	// Iterate over the rows
+	float* data_ptr = static_cast<float*>(tensor_features.data_ptr());
+	for (int ir = 0; ir < num_rows; ++ir) {
+		std::vector<DType> row;
+		row.assign(data_ptr, data_ptr + num_cols);
+		data_ptr += num_cols;
+
+		mat.emplace_back(std::move(row));
+	}
+
+	//// iterate through all elements
+	// for (int i = 0; i < tensor_features.numel(); ++i)
+	//{
+	//	printf("%dth Element: %f\n", i, *data_ptr++);
+	//}
+
+	return mat;
+}
 
 class Collage
 {
@@ -33,72 +69,14 @@ public:
 	int break_point = 0;
 	int channels = 0;
 
-	void print() const
-	{
-		std::cout << "COLLAGE BEGIN\n";
-		std::cout << "Images: " << images.size() << "\n";
-		std::cout << "Break: " << break_point << "\n\n";
-		for (size_t i = 0; i < images.size(); i++) {
-			std::cout << "\t#" << i << ":\n";
-			std::cout << "\t\tLeft: " << lefts[i] << ":\n";
-			std::cout << "\t\tTop: " << tops[i] << ":\n";
-			std::cout << "\t\tHeight: " << relative_heights[i] << ":\n";
-			std::cout << "\t\tWidth: " << relative_widths[i] << ":\n";
-			std::cout << "\t\tP_Height: " << pixel_heights[i] << ":\n";
-			std::cout << "\t\tP_Width: " << pixel_widths[i] << ":\n";
-			std::cout << "\t\tSize: " << images[i].size() << ":\n";
-			std::cout << "\n";
-		}
-		std::cout << "COLLAGE END\n";
-	}
-
-	void RGBA_to_BGR()
-	{
-		if (channels == 3)
-			return;
-
-		std::vector<std::vector<float>> rgb_images;
-
-		for (size_t i = 0; i < images.size(); i++) {
-			std::vector<float> image;
-			for (size_t j = 0; j < images[i].size(); j += 4) {
-				image.push_back(images[i][j + 2]);
-				image.push_back(images[i][j + 1]);
-				image.push_back(images[i][j + 0]);
-			}
-			rgb_images.push_back(image);
-		}
-		images = rgb_images;
-		channels = 3;
-	}
-
-	void resize_all(int W = 224, int H = 224)
-	{
-		std::vector<std::vector<float>> resized_images;
-		for (size_t i = 0; i < images.size(); i++) {
-			std::vector<float> image =
-			  ImageManipulator::resize(images[i], pixel_widths[i], pixel_heights[i], W, H, channels);
-			pixel_widths[i] = W;
-			pixel_heights[i] = H;
-			resized_images.push_back(image);
-		}
-		images = resized_images;
-	}
-
-	void save_all(std::string prefix = "")
-	{
-		// expects RGB [0,1]
-		for (size_t i = 0; i < images.size(); i++) {
-			ImageManipulator::store_jpg(prefix + "im" + std::to_string(i) + ".jpg",
-			                            images[i],
-			                            pixel_widths[i],
-			                            pixel_heights[i],
-			                            100,
-			                            channels);
-		}
-	}
+	void print() const;
+	void RGBA_to_BGR();
+	void resize_all(int W = 224, int H = 224);
+	void save_all(const std::string& prefix = "");
 
 	/**
+	 * This allows portable binary serialization of Collage instances to files.
+	 *
 	 * by Cereal header-only lib
 	 * https://uscilab.github.io/cereal/quickstart.html
 	 * https://uscilab.github.io/cereal/stl_support.html
@@ -122,7 +100,7 @@ class CollageRanker
 {
 public:
 	CollageRanker(const Config& config);
-	void score(Collage&);
+	void score(Collage&, ScoreModel& model, const DatasetFeatures& features, const DatasetFrames& frames);
 
 private:
 	torch::jit::script::Module resnet152;
@@ -136,6 +114,7 @@ private:
 	at::Tensor get_L2norm(at::Tensor data);
 };
 
-static Collage DEFAULT_COLLAGE;
+// This serves for default parameters of type Collage&
+static Collage DEFAULT_COLLAGE{};
 
-#endif
+#endif // COLLAGE_RANKER_H_

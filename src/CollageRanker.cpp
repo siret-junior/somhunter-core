@@ -1,7 +1,76 @@
+
 #include "CollageRanker.h"
-#include "ImageManipulator.h"
-#include <math.h>
-#include <string>
+
+void
+Collage::print() const
+{
+	std::cout << "COLLAGE BEGIN\n";
+	std::cout << "Images: " << images.size() << "\n";
+	std::cout << "Break: " << break_point << "\n\n";
+	for (size_t i = 0; i < images.size(); i++) {
+		std::cout << "\t#" << i << ":\n";
+		std::cout << "\t\tLeft: " << lefts[i] << ":\n";
+		std::cout << "\t\tTop: " << tops[i] << ":\n";
+		std::cout << "\t\tHeight: " << relative_heights[i] << ":\n";
+		std::cout << "\t\tWidth: " << relative_widths[i] << ":\n";
+		std::cout << "\t\tP_Height: " << pixel_heights[i] << ":\n";
+		std::cout << "\t\tP_Width: " << pixel_widths[i] << ":\n";
+		std::cout << "\t\tSize: " << images[i].size() << ":\n";
+		std::cout << "\n";
+	}
+	std::cout << "COLLAGE END\n";
+}
+
+void
+Collage::RGBA_to_BGR()
+{
+	if (channels == 3)
+		return;
+
+	std::vector<std::vector<float>> rgb_images;
+
+	for (size_t i = 0; i < images.size(); i++) {
+		std::vector<float> image;
+		for (size_t j = 0; j < images[i].size(); j += 4) {
+			image.push_back(images[i][j + 2]);
+			image.push_back(images[i][j + 1]);
+			image.push_back(images[i][j + 0]);
+		}
+		rgb_images.push_back(image);
+	}
+	images = rgb_images;
+	channels = 3;
+}
+
+void
+Collage::resize_all(int W, int H)
+{
+	std::vector<std::vector<float>> resized_images;
+	for (size_t i = 0; i < images.size(); i++) {
+		std::vector<float> image =
+		  ImageManipulator::resize(images[i], pixel_widths[i], pixel_heights[i], W, H, channels);
+		pixel_widths[i] = W;
+		pixel_heights[i] = H;
+		resized_images.push_back(image);
+	}
+	images = resized_images;
+}
+
+void
+Collage::save_all(const std::string& prefix)
+{
+	// expects RGB [0,1]
+	for (size_t i = 0; i < images.size(); i++) {
+		ImageManipulator::store_jpg(prefix + "im" + std::to_string(i) + ".jpg",
+		                            images[i],
+		                            pixel_widths[i],
+		                            pixel_heights[i],
+		                            100,
+		                            channels);
+	}
+}
+
+// --------------------------------
 
 CollageRanker::CollageRanker(const Config& config)
 {
@@ -49,13 +118,50 @@ CollageRanker::CollageRanker(const Config& config)
 }
 
 void
-CollageRanker::score(Collage& collage)
+CollageRanker::score(Collage& collage,
+                     ScoreModel& /*model*/,
+                     const DatasetFeatures& features,
+                     const DatasetFrames& frames)
 {
 	if (collage.images.size() > 0) {
 		collage.RGBA_to_BGR();
 		collage.resize_all(224, 224);
 
-		at::Tensor feature = get_features(collage);
+		at::Tensor tensor_features = get_features(collage);
+
+		// Convert tensor to STD containered matrix
+		auto collage_vectors{ to_std_matrix<float>(tensor_features) };
+		// print_matrix(mat);
+
+		// Split by `break` index
+		StdMatrix<float> q0(collage_vectors.begin(), collage_vectors.begin() + collage.break_point);
+		StdMatrix<float> q1(collage_vectors.begin() + collage.break_point, collage_vectors.end());
+
+		// ========================================
+		// \todo
+
+		// Aggregate multiple vectors per query into single one
+		StdMatrix<float> query_vectors;
+		if (!q0.empty())
+			query_vectors.emplace_back(q0.front()); // Dummy
+		if (!q1.empty())
+			query_vectors.emplace_back(q1.front()); // Dummy
+
+		/* `features` is matrix of dataset frames it is going to score against
+		 *		- for each subregion we need to send in different variable
+		 * `frames` is just structure describing each frame
+		 * 		- it can stay the same for each subregion
+		 */
+		auto scores{ KeywordRanker::score_vectors(query_vectors, features, frames) };
+		print_vector(scores);
+
+		auto sorted_results{ KeywordRanker::sort_by_score(scores) };
+		KeywordRanker::report_results(sorted_results, frames);
+
+		// \todo The scores in the `model` should be updated somewhere here
+
+		// \todo
+		// ========================================
 	}
 }
 

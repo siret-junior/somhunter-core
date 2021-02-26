@@ -105,8 +105,6 @@ public:
 	 * prefix. */
 	std::vector<const Keyword*> autocomplete_keywords(const std::string& prefix, size_t count) const;
 
-	void rescore(Collage& collage);
-
 	/**
 	 * Applies all algorithms for score computation and updates context.
 	 *

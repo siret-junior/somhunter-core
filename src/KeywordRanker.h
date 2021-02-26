@@ -24,6 +24,7 @@
 
 #include <cassert>
 #include <fstream>
+#include <iomanip>
 #include <map>
 #include <set>
 #include <string>
@@ -91,6 +92,18 @@ public:
 	KeywordRanker& operator=(KeywordRanker&&) = default;
 	~KeywordRanker() noexcept = default;
 
+	static StdVector<float> score_vectors(StdMatrix<float> query_vecs,
+	                                      const DatasetFeatures& features,
+	                                      const DatasetFrames& frames);
+
+	static StdVector<std::pair<ImageId, float>> sort_by_score(StdVector<float> scores);
+
+	static void report_results(StdVector<std::pair<ImageId, float>> sorted_results,
+	                           const DatasetFrames& frames,
+	                           size_t num = 10);
+
+	StdMatrix<float> embedd_text_queries(const StdMatrix<KeywordId>& kws) const;
+
 	/**
 	 * Gets all string representants of this keyword.
 	 */
@@ -116,13 +129,13 @@ public:
 	                         const Config& cfg) const;
 
 private:
-	void apply_temp_queries(std::vector<std::vector<float>>& dist_cache,
-	                        ImageId img_ID,
-	                        const FeatureMatrix& queries,
-	                        size_t query_idx,
-	                        float& result_dist,
-	                        const DatasetFeatures& features,
-	                        const DatasetFrames& frames) const;
+	static void apply_temp_queries(std::vector<std::vector<float>>& dist_cache,
+	                               ImageId img_ID,
+	                               const FeatureMatrix& queries,
+	                               size_t query_idx,
+	                               float& result_dist,
+	                               const DatasetFeatures& features,
+	                               const DatasetFrames& frames);
 
 	/**
 	 * Sorts all images based on provided query and retrieves vector

@@ -248,8 +248,8 @@ SomHunter::rescore(const std::string& text_query,
 	if (collage.images.empty()) {
 		rescore_keywords(text_query);
 	} else {
-		user.submitter.log_collage_query(collage);
-		collageRanker.score(collage);
+		user.submitter.log_collage_query(collage); // < This triggers log into the /logs/collage/
+		collageRanker.score(collage, user.ctx.scores, features, frames);
 	}
 	apply_filters();
 	rescore_feedback();
@@ -286,13 +286,6 @@ SomHunter::rescore(const std::string& text_query,
 	                                      config.topn_frames_per_shot);
 
 	return RescoreResult{ user.ctx.ID, user.history };
-}
-
-void
-SomHunter::rescore(Collage& collage)
-{
-	user.submitter.poll();
-	collageRanker.score(collage);
 }
 
 bool

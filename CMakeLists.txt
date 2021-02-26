@@ -14,8 +14,11 @@ set(BUILD_PLUGINS_STATIC ON
     CACHE BOOL "prevent problems with dynamic builds")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+
 
 SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
+
 
 
 if (MSVC)
