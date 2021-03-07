@@ -1,5 +1,5 @@
-
 #include "CollageRanker.h"
+#include "utils.h"
 
 void
 Collage::print() const
@@ -115,11 +115,24 @@ CollageRanker::CollageRanker(const Config& config)
 	               .permute({ 1, 0 });
 	kw_pca_mean_vec =
 	  torch::tensor(KeywordRanker::parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim));
+
+	try {
+		for(int i = 0; i < config.collage_regions; i++)
+		{
+			FeatureMatrix m = KeywordRanker::parse_float_matrix(config.collage_region_file_prefix + std::to_string(i) + ".bin", 128, 0);
+			region_data.push_back(m);
+		}
+	} catch (const c10::Error& e) {
+		std::string msg{ "Error loading region data \n"};
+		warn_d(msg);
+		throw std::runtime_error(msg);
+	}
+	
 }
 
 void
 CollageRanker::score(Collage& collage,
-                     ScoreModel& /*model*/,
+                     ScoreModel& model,
                      const DatasetFeatures& features,
                      const DatasetFrames& frames)
 {
@@ -133,35 +146,69 @@ CollageRanker::score(Collage& collage,
 		auto collage_vectors{ to_std_matrix<float>(tensor_features) };
 		// print_matrix(mat);
 
-		// Split by `break` index
-		StdMatrix<float> q0(collage_vectors.begin(), collage_vectors.begin() + collage.break_point);
-		StdMatrix<float> q1(collage_vectors.begin() + collage.break_point, collage_vectors.end());
+		// get best IOU regions for each image in collage
+		auto regions = get_RoIs(collage);
 
-		// ========================================
-		// \todo
+		// get scores for all collage images and whole dataset of region
+		std::vector<std::vector<float>> scores;
+		for(std::size_t i = 0; i < collage_vectors.size(); i++)
+			scores.push_back(score_image(collage_vectors[i], regions[i]));
 
-		// Aggregate multiple vectors per query into single one
-		StdMatrix<float> query_vectors;
-		if (!q0.empty())
-			query_vectors.emplace_back(q0.front()); // Dummy
-		if (!q1.empty())
-			query_vectors.emplace_back(q1.front()); // Dummy
+		// first query
+		StdMatrix<float> s0(scores.begin(), scores.begin() + collage.break_point);
+		auto mean0 = average_scores(s0);
+		
+		std::vector<float> final_score;
 
-		/* `features` is matrix of dataset frames it is going to score against
-		 *		- for each subregion we need to send in different variable
-		 * `frames` is just structure describing each frame
-		 * 		- it can stay the same for each subregion
-		 */
-		auto scores{ KeywordRanker::score_vectors(query_vectors, features, frames) };
-		print_vector(scores);
+		if(scores.begin() + collage.break_point == scores.end())
+			final_score = mean0;
+		else // second query
+		{
+			StdMatrix<float> s1(scores.begin() + collage.break_point, scores.end());
+			auto mean1 = average_scores(s1);
 
-		auto sorted_results{ KeywordRanker::sort_by_score(scores) };
+			//applied temporal query
+			size_t window = 5;
+			for(size_t i = 0; i < mean0.size(); i++)
+			{
+				auto begin_it = frames.get_frame_it(i);
+				begin_it++;
+				if(begin_it == frames.end())
+					break;
+
+				auto end_it = begin_it;
+				VideoId vid_ID = begin_it->video_ID;
+
+				// move iterator window times or stop if end of video/file
+				for(size_t j = 0; j < window; j++)
+				{
+					end_it++;
+					if(end_it == frames.end() || end_it->video_ID != vid_ID)
+						break;
+				}
+
+				// get min between begin_it and end_it from mean1
+				float min;
+				if(end_it == frames.end())
+					min = *std::min_element(mean1.begin() + begin_it->frame_ID, mean1.end());
+				else
+					min = *std::min_element(mean1.begin() + begin_it->frame_ID, mean1.begin() + end_it->frame_ID);
+
+				mean0[i] = mean0[i] * min;
+			}
+
+			final_score = mean0;
+		}
+
+		auto sorted_results{ KeywordRanker::sort_by_score(final_score) };
 		KeywordRanker::report_results(sorted_results, frames);
 
-		// \todo The scores in the `model` should be updated somewhere here
+		// Update the model
+		for (auto&& [frame_ID, dist] : sorted_results) {
+			model.adjust(frame_ID, std::exp(dist * -50));
+		}
 
-		// \todo
-		// ========================================
+		model.normalize();
 	}
 }
 
@@ -230,4 +277,67 @@ CollageRanker::get_features(Collage& collage)
 	std::cout << feature << "\n";
 
 	return feature;
+}
+
+std::vector<std::size_t>
+CollageRanker::get_RoIs(Collage& collage)
+{
+	std::vector<std::size_t> regions;
+	for(std::size_t i = 0; i < collage.size(); i++)
+		regions.push_back(get_RoI(collage[i]));
+	return regions;
+}
+
+std::size_t 
+CollageRanker::get_RoI(Collage::image image)
+{
+	std::vector<float> iou;
+	for(std::size_t i = 0; i < RoIs.size(); i++)
+	{
+		auto& roi = RoIs[i];
+		auto int_l = std::max(image.left, roi[0]);
+		auto int_t = std::max(image.top, roi[1]);
+		auto int_r = std::min(image.left + image.relative_width, roi[0] + roi[2]);
+		auto int_b = std::min(image.top + image.relative_height,  roi[1] + roi[3]);
+		if(int_r < int_l || int_b < int_t)
+        	iou.push_back(0);
+		else
+		{
+			auto intersection = (int_r - int_l) * (int_b - int_t);
+			auto uni = ((image.relative_width * image.relative_height) + (roi[2] * roi[3])) - intersection;
+			iou.push_back(intersection/uni);
+		}
+	}
+	return std::distance(iou.begin(), std::max_element(iou.begin(), iou.end()));
+}
+
+std::vector<float> 
+CollageRanker::score_image(std::vector<float> feature, std::size_t region)
+{
+	std::vector<float> score;
+	for(size_t i = 0; i < region_data[region].size(); i++)
+		score.push_back(d_cos_normalized(feature, region_data[region][i]));
+	return score;
+}
+
+
+std::vector<float>
+CollageRanker::average_scores(std::vector<std::vector<float>> scores)
+{
+	size_t count = scores.size();
+	std::vector<float> result;
+	std::cout << "COUNT " << count << "\n";
+	if(count == 0)
+		return result;
+
+	for(size_t i = 0; i < scores[0].size(); i++)
+	{
+		float sum = 0;
+		for(size_t j = 0; j < count; j++)
+		{
+			sum += scores[j][i];
+		}
+		result.push_back(sum / count);
+	}
+	return result;
 }

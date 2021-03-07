@@ -140,6 +140,9 @@ struct Config
 	std::string model_ResNet_file;
 	std::string model_ResNext_file;
 
+	std::string collage_region_file_prefix;
+	int collage_regions;
+
 	static Config parse_json_config(const std::string& filepath);
 	static Config parse_json_config_string(const std::string& cfg_file_contents);
 
@@ -229,7 +232,10 @@ Config::parse_json_config_string(const std::string& cfg_file_contents)
 		           json["model_W2VV_img_bias"].string_value(),
 		           json["model_W2VV_img_weigths"].string_value(),
 		           json["model_ResNet_file"].string_value(),
-		           json["model_ResNext_file"].string_value() };
+		           json["model_ResNext_file"].string_value(),
+
+		           json["collage_region_file_prefix"].string_value(),
+		           json["collage_regions"].int_value()};
 
 	return cfg;
 }

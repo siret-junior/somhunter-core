@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <algorithm> 
 #include <vector>
 
 #include <cereal/types/complex.hpp>
@@ -18,6 +19,7 @@
 
 #include "ImageManipulator.h"
 #include "KeywordRanker.h"
+#include "common.h"
 
 template<typename DType>
 std::vector<std::vector<DType>>
@@ -35,7 +37,7 @@ to_std_matrix(const at::Tensor& tensor_features)
 
 	// Iterate over the rows
 	float* data_ptr = static_cast<float*>(tensor_features.data_ptr());
-	for (int ir = 0; ir < num_rows; ++ir) {
+	for (std::size_t ir = 0; ir < num_rows; ++ir) {
 		std::vector<DType> row;
 		row.assign(data_ptr, data_ptr + num_cols);
 		data_ptr += num_cols;
@@ -67,7 +69,10 @@ public:
 
 	// temporal query delimiter
 	int break_point = 0;
+
 	int channels = 0;
+	std::size_t len = 0;
+	inline std::size_t size() {return len;}
 
 	void print() const;
 	void RGBA_to_BGR();
@@ -94,6 +99,30 @@ public:
 		        break_point,
 		        channels);
 	}
+
+	struct image 
+	{
+		float left;
+		float top;
+		float relative_height;
+		float relative_width;
+		unsigned int pixel_height;
+		unsigned int pixel_width;
+		std::vector<float>& img;
+	};
+
+	image operator[](std::size_t idx)
+	{ 
+		return image{
+						lefts[idx], 
+						tops[idx],
+						relative_heights[idx], 
+						relative_widths[idx],  
+						pixel_heights[idx],
+						pixel_widths[idx],
+						images[idx]
+					};
+	}
 };
 
 class CollageRanker
@@ -110,8 +139,33 @@ private:
 	torch::Tensor kw_pca_mat;
 	torch::Tensor kw_pca_mean_vec;
 
+	std::vector<FeatureMatrix> region_data;
+
 	at::Tensor get_features(Collage&);
 	at::Tensor get_L2norm(at::Tensor data);
+
+	std::vector<std::size_t> get_RoIs(Collage& collage);
+	std::size_t get_RoI(Collage::image);
+
+	std::vector<float> score_image(std::vector<float> feature, std::size_t region);
+	std::vector<float> average_scores(std::vector<std::vector<float>> scores);
+
+	const std::vector<std::vector<float>> RoIs = {
+		{0.0, 0.0, 1.0, 1.0},
+		{0.1, 0.2, 0.4, 0.6},
+		{0.3, 0.2, 0.4, 0.6},
+		{0.5, 0.2, 0.4, 0.6},
+
+		{0.0, 0.0, 0.4, 0.6},
+		{0.2, 0.0, 0.4, 0.6},
+		{0.4, 0.0, 0.4, 0.6},
+		{0.6, 0.0, 0.4, 0.6},
+
+		{0.0, 0.4, 0.4, 0.6},
+		{0.2, 0.4, 0.4, 0.6},
+		{0.4, 0.4, 0.4, 0.6},
+		{0.6, 0.4, 0.4, 0.6},	
+	};
 };
 
 // This serves for default parameters of type Collage&
