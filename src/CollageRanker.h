@@ -1,12 +1,12 @@
 #ifndef COLLAGE_RANKER_H_
 #define COLLAGE_RANKER_H_
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <algorithm> 
 #include <vector>
 
 #include <cereal/types/complex.hpp>
@@ -72,7 +72,7 @@ public:
 
 	int channels = 0;
 	std::size_t len = 0;
-	inline std::size_t size() {return len;}
+	inline std::size_t size() { return len; }
 
 	void print() const;
 	void RGBA_to_BGR();
@@ -100,7 +100,7 @@ public:
 		        channels);
 	}
 
-	struct image 
+	struct image
 	{
 		float left;
 		float top;
@@ -112,16 +112,10 @@ public:
 	};
 
 	image operator[](std::size_t idx)
-	{ 
-		return image{
-						lefts[idx], 
-						tops[idx],
-						relative_heights[idx], 
-						relative_widths[idx],  
-						pixel_heights[idx],
-						pixel_widths[idx],
-						images[idx]
-					};
+	{
+		return image{ lefts[idx],           tops[idx],          relative_heights[idx],
+			      relative_widths[idx], pixel_heights[idx], pixel_widths[idx],
+			      images[idx] };
 	}
 };
 
@@ -151,20 +145,11 @@ private:
 	std::vector<float> average_scores(std::vector<std::vector<float>> scores);
 
 	const std::vector<std::vector<float>> RoIs = {
-		{0.0, 0.0, 1.0, 1.0},
-		{0.1, 0.2, 0.4, 0.6},
-		{0.3, 0.2, 0.4, 0.6},
-		{0.5, 0.2, 0.4, 0.6},
+		{ 0.0, 0.0, 1.0, 1.0 }, { 0.1, 0.2, 0.4, 0.6 }, { 0.3, 0.2, 0.4, 0.6 }, { 0.5, 0.2, 0.4, 0.6 },
 
-		{0.0, 0.0, 0.4, 0.6},
-		{0.2, 0.0, 0.4, 0.6},
-		{0.4, 0.0, 0.4, 0.6},
-		{0.6, 0.0, 0.4, 0.6},
+		{ 0.0, 0.0, 0.4, 0.6 }, { 0.2, 0.0, 0.4, 0.6 }, { 0.4, 0.0, 0.4, 0.6 }, { 0.6, 0.0, 0.4, 0.6 },
 
-		{0.0, 0.4, 0.4, 0.6},
-		{0.2, 0.4, 0.4, 0.6},
-		{0.4, 0.4, 0.4, 0.6},
-		{0.6, 0.4, 0.4, 0.6},	
+		{ 0.0, 0.4, 0.4, 0.6 }, { 0.2, 0.4, 0.4, 0.6 }, { 0.4, 0.4, 0.4, 0.6 }, { 0.6, 0.4, 0.4, 0.6 },
 	};
 };
 

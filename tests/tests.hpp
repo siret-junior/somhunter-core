@@ -534,8 +534,8 @@ private:
 		ASSERT(c.features_dim == 128, "Incorrect parse.");
 
 		ASSERT(c.pre_PCA_features_dim == 2048, "Incorrect parse.");
-		ASSERT(c.kw_bias_vec_file == "data/LSC2020_5days/txt_bias-2048floats.bin", "Incorrect parse.");
 		ASSERT(c.kw_scores_mat_file == "data/LSC2020_5days/txt_weight-11147x2048floats.bin", "Incorrect parse.");
+		ASSERT(c.kw_bias_vec_file == "data/LSC2020_5days/txt_bias-2048floats.bin", "Incorrect parse.");
 		ASSERT(c.kw_PCA_mean_vec_file == "data/LSC2020_5days/LSC-5days.w2vv.pca.mean.bin", "Incorrect parse.");
 		ASSERT(c.kw_PCA_mat_file == "data/LSC2020_5days/LSC-5days.w2vv.pca.matrix.bin", "Incorrect parse.");
 		ASSERT(c.kw_PCA_mat_dim == 128, "Incorrect parse.");

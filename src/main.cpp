@@ -27,7 +27,7 @@
 
 // If the `TESTER_SomHunter` should do its job.
 #define RUN_TESTER
-#define TEST_COLLAGE_QUERIES
+//#define TEST_COLLAGE_QUERIES
 
 #define TEST_DATA_DIR "../../tests/data"
 #define TEST_COLLAGE_DATA_DIR TEST_DATA_DIR "/collages/"
@@ -137,7 +137,7 @@ main()
 	print_d("This is non-decorated plain STDOUT print.");
 
 	// Try autocomplete
-	auto ac_res{ core.autocomplete_keywords("cat", 30) };
+	auto ac_res{ core.autocomplete_keywords("Cat", 30) };
 	for (auto&& p_kw : ac_res) {
 		std::cout << p_kw->synset_strs.front() << std::endl;
 	}

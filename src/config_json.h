@@ -235,7 +235,7 @@ Config::parse_json_config_string(const std::string& cfg_file_contents)
 		           json["model_ResNext_file"].string_value(),
 
 		           json["collage_region_file_prefix"].string_value(),
-		           json["collage_regions"].int_value()};
+		           json["collage_regions"].int_value() };
 
 	return cfg;
 }

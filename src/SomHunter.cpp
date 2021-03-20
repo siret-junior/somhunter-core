@@ -144,8 +144,10 @@ SomHunter::autocomplete_keywords(const std::string& prefix, size_t count) const
 	if (prefix.empty())
 		return std::vector<const Keyword*>{};
 
+	auto lowercase_prefix{ to_lowercase(prefix) };
+
 	// Get the keywrods IDs
-	auto kw_IDs{ keywords.find(prefix, count) };
+	auto kw_IDs{ keywords.find(lowercase_prefix, count) };
 
 	// Create vector of ptrs to corresponding keyword instances
 	std::vector<const Keyword*> res;

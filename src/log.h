@@ -60,16 +60,12 @@
 
 #define print_d(x) std::cout << x << std::endl;
 
-#if NDEBUG
-#	define ASSERT(cond, msg)
-#else
-#	define ASSERT(cond, msg)                                                                                      \
-		do {                                                                                                   \
-			if (!(cond)) {                                                                                 \
-				std::cerr << msg << std::endl;                                                         \
-				throw std::logic_error(msg);                                                           \
-			}                                                                                              \
-		} while (false);
-#endif // NDEBUG
+#define ASSERT(cond, msg)                                                                                              \
+	do {                                                                                                           \
+		if (!(cond)) {                                                                                         \
+			std::cerr << msg << std::endl;                                                                 \
+			throw std::logic_error(msg);                                                                   \
+		}                                                                                                      \
+	} while (false);
 
 #endif // log_h

@@ -327,6 +327,8 @@ VecNorm(const std::vector<T>& left)
 		warn_d("Zero vector!");
 #ifndef NDEBUG
 		throw std::runtime_error("Zero vector!");
+#else
+		return std::vector<T>{};
 #endif
 	}
 }
@@ -452,6 +454,16 @@ print_vector(const Container& row)
 		std::cout << "\t" << std::fixed << std::setprecision(4) << v;
 	}
 	std::cout << std::endl;
+}
+
+inline std::string
+to_lowercase(const std::string& old)
+{
+	std::string transformed;
+
+	std::transform(old.begin(), old.end(), std::back_inserter(transformed), ::tolower);
+
+	return transformed;
 }
 
 #endif // UTILS_H_
