@@ -40,41 +40,4 @@ set(SOURCES
 	CollageRanker.cpp
 )
 
-# 
-# Create the binary
-#
-add_executable(somhunter
-	${SOURCES}
-	${HEADERS}
-)
-
-# 
-# Link it with the libraries
-#
-target_include_directories(somhunter 
-	PRIVATE
-		${CURL_INCLUDE_DIR}
-)
-
-target_link_libraries(somhunter 
-	PRIVATE
-		${CURL_LIBRARIES}
-		${TORCH_LIBRARIES}
-		Threads::Threads
-		#opencv_ml opencv_dnn opencv_core opencv_flann # Perarations
-)
-
-
-# 
-# Setup its properties
-#
-set_target_properties(somhunter PROPERTIES CXX_STANDARD 17)
-
-if (MSVC) 
-  file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll") 
-  add_custom_command(TARGET somhunter 
-                     POST_BUILD 
-                     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-                     ${TORCH_DLLS} 
-                     $<TARGET_FILE_DIR:somhunter>) 
-endif (MSVC)
+target_sources(${SOMHUNTER_TARGET} PRIVATE ${SOURCES} ${HEADERS})

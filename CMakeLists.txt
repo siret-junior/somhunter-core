@@ -1,63 +1,81 @@
+
+# ####################################
+# General project setup
+# ####################################
 cmake_minimum_required(VERSION 3.13)
 
-# 
-# Project setup
-#
 project(somhunter)
-
-add_compile_definitions("NOMINMAX")
-
-# Disable "unsafe" warnings in the MSVC toolchain
-add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
 
 set(BUILD_PLUGINS_STATIC ON
     CACHE BOOL "prevent problems with dynamic builds")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 
+# Specify build targets
+set(SOMHUNTER_TARGET somhunter)
 
 SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
 
-
-
 if (MSVC)
+    # Set warning level 0 to everything included with angle brackets
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP /experimental:external /external:anglebrackets /external:W0" )
 else (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 endif (MSVC)
 
+# -march=native option
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
+if(COMPILER_SUPPORTS_MARCH_NATIVE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+endif()
+
+
 #
-# Prepare dependencies
+# Global preprocessor defines
 #
+add_compile_definitions("NOMINMAX")
+# Disable "unsafe" warnings in the MSVC toolchain
+add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
+
+# ####################################
+# Dependencies
+# ####################################
+
 # ####################################
 # Download & extract libTorch
-
 set(LIBTORCH_INSTALL_DIR "${CMAKE_HOME_DIRECTORY}/3rdparty/")
 
 # Prebuilt binaries URLs:
 #   More here: https://pytorch.org/get-started/locally/
-
 if (WITH_CUDA)
-    
-    if (CMAKE_BUILD_TYPE MATCHES Debug)
-        set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cu102/libtorch-win-shared-with-deps-debug-1.7.1.zip")
-    else ()
+    message("Building WITH CUDA...")
+    if (CMAKE_BUILD_TYPE MATCHES Release)
+        message("Building with RELEASE libtorch...")
         set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cu102/libtorch-win-shared-with-deps-1.7.1.zip")
+    else ()
+        message("Building with DEBUG libtorch...")
+        set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cu102/libtorch-win-shared-with-deps-debug-1.7.1.zip")
     endif ()
     
     set(LIBTORCH_URL_PREBUILT_UNIX "https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip")
 else (WITH_CUDA)
-    if (CMAKE_BUILD_TYPE MATCHES Debug)
-        set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-debug-1.7.1%2Bcpu.zip")
-    else ()
+    message("Building WITHOUT CUDA...")
+    if (CMAKE_BUILD_TYPE MATCHES Release)
+        message("Building with RELEASE libtorch...")
         set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.7.1%2Bcpu.zip")
+    else ()
+        message("Building with DEBUG libtorch...")
+        set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-debug-1.7.1%2Bcpu.zip")
     endif ()
 
     set(LIBTORCH_URL_PREBUILT_UNIX "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcpu.zip")
 endif (WITH_CUDA)
 
 
+#
+# Run install script
+# 
 if (UNIX)
     execute_process (
         COMMAND sh "${CMAKE_HOME_DIRECTORY}/scripts/install_libtorch.sh" "${LIBTORCH_URL_PREBUILT_UNIX}" "${LIBTORCH_INSTALL_DIR}"
@@ -88,17 +106,7 @@ endif (INSTALL_LIBTORCH_RES)
 
 set(CMAKE_PREFIX_PATH "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch/")
 
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
-if(COMPILER_SUPPORTS_MARCH_NATIVE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-endif()
-
 ####################################
-
-# 
-# Include dependencies
-#
 
 # pthreads
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -108,9 +116,10 @@ find_package(Threads REQUIRED)
 find_package(CURL REQUIRED) 
 
 # OpenCV - preparations
-#find_package(OpenCV CONFIG REQUIRED)
+find_package(OpenCV REQUIRED)
 
 # libTorch
+set(TORCH_DIR "3rdparty/libtorch")
 find_package(Torch REQUIRED) 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}") 
 
@@ -122,9 +131,44 @@ if (WIN32)
     )
 endif (WIN32)
 
-#
+# ####################################
+# Create the target
+# ####################################
+add_executable(${SOMHUNTER_TARGET})
+set_target_properties(${SOMHUNTER_TARGET} PROPERTIES CXX_STANDARD 17)
+
+# ####################################
+# Linking
+# ####################################
+target_include_directories(${SOMHUNTER_TARGET} 
+	PRIVATE
+		${CURL_INCLUDE_DIR}
+        ${OpenCV_INCLUDE_DIRS}
+)
+
+target_link_libraries(${SOMHUNTER_TARGET} 
+    PRIVATE
+        ${OpenCV_LIBS}
+        ${CURL_LIBRARIES}
+		${TORCH_LIBRARIES}
+		Threads::Threads
+)
+
+# ####################################
+# Custom commands
+# ####################################
+if (MSVC) 
+  file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll") 
+  add_custom_command(TARGET somhunter 
+                     POST_BUILD 
+                     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+                     ${TORCH_DLLS} 
+                     $<TARGET_FILE_DIR:somhunter>) 
+endif (MSVC)
+
+# ####################################
 # Subdirectories
-#
+# ####################################
 add_subdirectory(src)
 add_subdirectory(3rdparty)
 add_subdirectory(tests)

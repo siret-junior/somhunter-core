@@ -65,7 +65,7 @@ int
 main()
 {
 	/* Change this accordingly. */
-	const std::string cfg_fpth{ "../../config.json" };
+	const std::string cfg_fpth{ "../config.json" };
 
 #ifdef RUN_TESTER
 	TESTER_SomHunter::run_all_tests(cfg_fpth);

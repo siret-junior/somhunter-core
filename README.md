@@ -15,7 +15,7 @@ You should be able to install all dependencies from the package management. On
 Debian-based systems (including Ubuntu and Mint) the following should work:
 
 ```sh
-apt-get install build-essential libcurl4-openssl-dev 
+apt-get install build-essential libcurl4-openssl-dev libopencv-dev 
 ```
 
 ```bash
@@ -51,4 +51,9 @@ cmake .. -G "Visual Studio 16 2019" -A x64  -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scr
 
 # Release
 cmake .. -G "Visual Studio 16 2019" -A x64  -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE="Release"
+
+# Alternative
+cmake .. -G "Visual Studio 16 2019" -A x64 \
+    -DCURL_DIR=~/source/repos/vcpkg/installed/x64-windows/share/curl/ \
+    -DOpenCV_DIR=~/source/repos/vcpkg/installed/x64-windows/share/opencv/
 ```
