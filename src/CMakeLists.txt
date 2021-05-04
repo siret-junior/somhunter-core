@@ -20,6 +20,8 @@ set(HEADERS
 	SearchContext.h
 	ImageManipulator.h
 	CollageRanker.h
+
+	Extractor.h
 )
 
 set(SOURCES
@@ -38,6 +40,8 @@ set(SOURCES
 	SearchContext.cpp
 	ImageManipulator.cpp
 	CollageRanker.cpp
+
+	Extractor.cpp
 )
 
 target_sources(${SOMHUNTER_TARGET} PRIVATE ${SOURCES} ${HEADERS})

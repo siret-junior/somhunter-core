@@ -23,7 +23,11 @@
 #include <stdio.h>
 #include <thread>
 
+#include "utils.h"
+
+#include "Extractor.h"
 #include "SomHunter.h"
+using namespace sh;
 
 // If the `TESTER_SomHunter` should do its job.
 #define RUN_TESTER
@@ -67,6 +71,10 @@ main()
 	/* Change this accordingly. */
 	const std::string cfg_fpth{ "../config.json" };
 
+	// *** Extractor ***
+	Extractor e;
+	e.run();
+
 #ifdef RUN_TESTER
 	TESTER_SomHunter::run_all_tests(cfg_fpth);
 	TESTER_Config::run_all_tests(cfg_fpth);
@@ -82,6 +90,9 @@ main()
 	/* ********************************
 	 * Test features here...
 	 * ******************************** */
+
+	// *** SHA file checksum ***
+	std::cout << "SHA256: " << SHA256_sum("../config.json") << std::endl;
 
 	/* !!!!!!!!!!!!!!!!!!!!!!!!!!
 	 * Test collage queries

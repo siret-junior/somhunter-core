@@ -36,6 +36,7 @@
 #include <string_view>
 
 #include <cereal/archives/binary.hpp>
+#include <sha256.h>
 
 #include "log.h"
 
@@ -464,6 +465,35 @@ to_lowercase(const std::string& old)
 	std::transform(old.begin(), old.end(), std::back_inserter(transformed), ::tolower);
 
 	return transformed;
+}
+
+/**
+ * Computes the SHA256 hash for the given file and returns it.
+ */
+inline std::string
+SHA256_sum(const std::string& filepath)
+{
+	// \todo test with large files
+	SHA256 hash;
+
+	std::ifstream f(filepath, std::ios::binary);
+	if (!f.is_open()) {
+		std::string msg{ "Unable to open file '" + filepath + "'." };
+		warn_d(msg);
+		throw std::runtime_error{ msg };
+	}
+
+	const size_t buff_size = 4096;
+	char* buffer = new char[buff_size];
+
+	while (f) {
+		f.read(buffer, buff_size);
+		size_t bytes_read = size_t(f.gcount());
+
+		hash.add(buffer, bytes_read);
+	}
+
+	return hash.getHash();
 }
 
 #endif // UTILS_H_

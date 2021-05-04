@@ -13,6 +13,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Specify build targets
 set(SOMHUNTER_TARGET somhunter)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
 
@@ -130,6 +131,19 @@ if (WIN32)
     IMPORTED_LOCATION "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.dll"
     )
 endif (WIN32)
+
+#
+# Add structure to the project (as the FS structure)
+#
+file(
+  GLOB_RECURSE SOMHUNTER_SOURCE_FILEPATHS
+  "*.h"
+  "*.hpp"
+  "*.cpp"
+  "*.cc"
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOMHUNTER_SOURCE_FILEPATHS}) 
 
 # ####################################
 # Create the target
