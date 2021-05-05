@@ -28,9 +28,7 @@
 #include "log.h"
 
 DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Config& config)
-  : n(p.size())
-  , features_dim(config.features_dim)
-{
+    : n(p.size()), features_dim(config.features_dim) {
 	data.resize(features_dim * n);
 	std::ifstream in(config.features_file, std::ios::binary);
 	if (!in.good()) {

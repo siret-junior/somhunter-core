@@ -49,10 +49,10 @@ using ScreenImgsCont = std::vector<ImageId>;
 using FeatureMatrix = std::vector<std::vector<float>>;
 using FeatureVector = std::vector<float>;
 
-template<typename T = float>
+template <typename T = float>
 using StdMatrix = std::vector<std::vector<T>>;
 
-template<typename T = float>
+template <typename T = float>
 using StdVector = std::vector<T>;
 
 using LikesCont = std::set<ImageId>;
@@ -64,15 +64,12 @@ using ShownFramesCont = std::set<ImageId>;
 #define VIDEO_ID_ERR_VAL (std::numeric_limits<VideoId>::max)()
 
 /** Value indicating error/invalid/"NULL" value for the given type. */
-template<typename T>
-constexpr T
-ERR_VAL()
-{
+template <typename T>
+constexpr T ERR_VAL() {
 	return std::numeric_limits<T>::max();
 }
 
-enum class DisplayType
-{
+enum class DisplayType {
 	DNull,
 	DTopKNN,
 	DLoading,
@@ -86,29 +83,19 @@ enum class DisplayType
 	NumItems
 };
 
-inline DisplayType
-str_to_disp_type(const std::string& type_str)
-{
+inline DisplayType str_to_disp_type(const std::string& type_str) {
 	/* !!! THIS MUST MATCH WITH `config/strings.json` FILE !!! */
-	if (type_str == "topn_display")
-		return DisplayType::DTopN;
-	if (type_str == "topn_context_display")
-		return DisplayType::DTopNContext;
-	if (type_str == "SOM_display")
-		return DisplayType::DSom;
-	if (type_str == "topknn_display")
-		return DisplayType::DTopKNN;
-	if (type_str == "video_detail")
-		return DisplayType::DVideoDetail;
-	if (type_str == "video_replay")
-		return DisplayType::DVideoReplay;
+	if (type_str == "topn_display") return DisplayType::DTopN;
+	if (type_str == "topn_context_display") return DisplayType::DTopNContext;
+	if (type_str == "SOM_display") return DisplayType::DSom;
+	if (type_str == "topknn_display") return DisplayType::DTopKNN;
+	if (type_str == "video_detail") return DisplayType::DVideoDetail;
+	if (type_str == "video_replay") return DisplayType::DVideoReplay;
 
 	return DisplayType::NumItems;
 }
 
-inline std::string
-disp_type_to_str(DisplayType type)
-{
+inline std::string disp_type_to_str(DisplayType type) {
 	std::string disp_type;
 	switch (type) {
 		case DisplayType::DTopN:
@@ -142,32 +129,20 @@ disp_type_to_str(DisplayType type)
 /*!
  * User defined size literal.
  */
-constexpr size_t operator""_z(unsigned long long int x)
-{
-	return static_cast<size_t>(x);
-}
+constexpr size_t operator""_z(unsigned long long int x) { return static_cast<size_t>(x); }
 
 /** What tools has been used during current search session.
  *  We need to send this info to logs.
  */
 struct Filters;
 
-struct UsedTools
-{
-	bool operator==(const UsedTools& other) const
-	{
-		return (KWs_used == other.KWs_used && bayes_used == other.bayes_used &&
-		        topknn_used == other.topknn_used);
+struct UsedTools {
+	bool operator==(const UsedTools& other) const {
+		return (KWs_used == other.KWs_used && bayes_used == other.bayes_used && topknn_used == other.topknn_used);
 	}
-	UsedTools()
-	  : KWs_used(false)
-	  , bayes_used(false)
-	  , topknn_used(false)
-	  , filters(nullptr)
-	{}
+	UsedTools() : KWs_used(false), bayes_used(false), topknn_used(false), filters(nullptr) {}
 
-	void reset()
-	{
+	void reset() {
 		KWs_used = false;
 		bayes_used = false;
 		topknn_used = false;
@@ -181,27 +156,23 @@ struct UsedTools
 	const Filters* filters;
 };
 
-struct SubmitData
-{
+struct SubmitData {
 	SubmitData()
-	  : want_submit(false)
-	  , frame_ID(IMAGE_ID_ERR_VAL)
+	    : want_submit(false),
+	      frame_ID(IMAGE_ID_ERR_VAL)
 
 	{}
 
-	bool push_submit(ImageId fr_ID)
-	{
+	bool push_submit(ImageId fr_ID) {
 		// If we're busy, notify caller
-		if (want_submit)
-			return false;
+		if (want_submit) return false;
 
 		want_submit = true;
 		frame_ID = fr_ID;
 		return true;
 	}
 
-	ImageId get_and_pop_submit()
-	{
+	ImageId get_and_pop_submit() {
 		want_submit = false;
 		return frame_ID;
 	}
@@ -218,4 +189,4 @@ using Weekday = uint8_t;
 using Hour = uint8_t;
 using LscId = std::string;
 
-#endif // COMMON_H_
+#endif  // COMMON_H_

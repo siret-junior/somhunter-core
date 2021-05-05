@@ -29,8 +29,7 @@
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 
-class ScoreModel
-{
+class ScoreModel {
 	/** Current score distribution for the frames. */
 	std::vector<float> _scores;
 
@@ -51,11 +50,7 @@ class ScoreModel
 
 public:
 	ScoreModel(const DatasetFrames& p)
-	  : _scores(p.size(), 1.0F)
-	  , _mask(p.size(), true)
-	  , _cache_dirty{ true }
-	  , _cache_ctx_dirty{ true }
-	{}
+	    : _scores(p.size(), 1.0F), _mask(p.size(), true), _cache_dirty{ true }, _cache_ctx_dirty{ true } {}
 
 	bool operator==(const ScoreModel& other) const;
 	float operator[](ImageId i) const { return _scores[i]; }
@@ -78,14 +73,12 @@ public:
 	/** Normalizes the score distribution. */
 	void normalize();
 
-	void invalidate_cache()
-	{
+	void invalidate_cache() {
 		_cache_dirty = true;
 		_cache_ctx_dirty = true;
 	}
 
-	void reset_mask()
-	{
+	void reset_mask() {
 		invalidate_cache();
 		std::transform(_mask.begin(), _mask.end(), _mask.begin(), [](const bool&) { return true; });
 	};
@@ -94,8 +87,7 @@ public:
 	bool is_masked(ImageId ID) const { return _mask[ID]; }
 
 	/** Sets the mask value for the frame. */
-	bool set_mask(ImageId ID, bool val)
-	{
+	bool set_mask(ImageId ID, bool val) {
 		invalidate_cache();
 		return _mask[ID] = val;
 	}
@@ -108,18 +100,14 @@ public:
 	/**
 	 * Gets the images with the highest scores but respecting the provided
 	 * limits. */
-	std::vector<ImageId> top_n(const DatasetFrames& frames,
-	                           size_t n,
-	                           size_t from_vid_limit = 0,
+	std::vector<ImageId> top_n(const DatasetFrames& frames, size_t n, size_t from_vid_limit = 0,
 	                           size_t from_shot_limit = 0) const;
 
 	/**
 	 * Gets the images with the highest scores while respecting the
 	 * provided limits and each frame is wrapped by it's context based on
 	 * the number of frames per line. */
-	std::vector<ImageId> top_n_with_context(const DatasetFrames& frames,
-	                                        size_t n,
-	                                        size_t from_vid_limit,
+	std::vector<ImageId> top_n_with_context(const DatasetFrames& frames, size_t n, size_t from_vid_limit,
 	                                        size_t from_shot_limit) const;
 
 	/** Samples `n` random frames from the current scores distribution. */

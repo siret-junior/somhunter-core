@@ -36,18 +36,14 @@ class DatasetFrames;
 class DatasetFeatures;
 
 /** Represents exactly one state of ONE user that uses this core. */
-class UserContext
-{
+class UserContext {
 public:
 	UserContext() = delete;
-	UserContext(const std::string& user_token,
-	            const Config& cfg,
-	            const DatasetFrames& frames,
+	UserContext(const std::string& user_token, const Config& cfg, const DatasetFrames& frames,
 	            const DatasetFeatures features);
 
 	bool operator==(const UserContext& other) const;
-	void reset()
-	{
+	void reset() {
 		// Reset SearchContext
 		ctx.reset();
 		// Make sure we're not pushing in any old screenshot
@@ -77,18 +73,16 @@ public:
 };
 
 /** Result type `get_display` returns */
-struct GetDisplayResult
-{
+struct GetDisplayResult {
 	FramePointerRange frames;
 	const LikesCont& likes;
 	const LikesCont& bookmarks;
 };
 
 /** Result type `rescore` returns */
-struct RescoreResult
-{
+struct RescoreResult {
 	size_t curr_ctx_ID;
 	const std::vector<SearchContext>& history;
 };
 
-#endif // USER_CONTEXT_H_
+#endif  // USER_CONTEXT_H_

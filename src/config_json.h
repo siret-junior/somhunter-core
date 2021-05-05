@@ -31,8 +31,7 @@
 #include "log.h"
 #include "utils.h"
 
-struct VideoFilenameOffsets
-{
+struct VideoFilenameOffsets {
 	size_t filename_off;
 	size_t vid_ID_off;
 	size_t vid_ID_len;
@@ -46,8 +45,7 @@ struct VideoFilenameOffsets
  *
  * https://github.com/klschoef/vbsserver/
  */
-struct ServerConfigVbs
-{
+struct ServerConfigVbs {
 	std::string submit_URL;
 	std::string submit_rerank_URL;
 	std::string submit_interaction_URL;
@@ -57,8 +55,7 @@ struct ServerConfigVbs
  *
  * https://github.com/lucaro/DRES
  */
-struct ServerConfigDres
-{
+struct ServerConfigDres {
 	std::string submit_URL;
 	std::string submit_rerank_URL;
 	std::string submit_interaction_URL;
@@ -78,8 +75,7 @@ using ServerConfig = std::variant<ServerConfigVbs, ServerConfigDres>;
  * \see ServerConfigVbs
  * \see ServerConfigDres
  */
-struct SubmitterConfig
-{
+struct SubmitterConfig {
 	/** If submit actions will create actual HTTP request */
 	bool submit_to_VBS;
 
@@ -104,8 +100,7 @@ struct SubmitterConfig
 /** Parsed current config of the core.
  * \see ParseJsonConfig
  */
-struct Config
-{
+struct Config {
 	std::string user_token;
 	SubmitterConfig submitter_config;
 
@@ -156,9 +151,7 @@ private:
  *
  * That means basically what we have in config.h now (paths etc.)
  */
-inline Config
-Config::parse_json_config(const std::string& filepath)
-{
+inline Config Config::parse_json_config(const std::string& filepath) {
 	std::ifstream ifs{ filepath };
 	if (!ifs.is_open()) {
 		std::string msg{ "Error opening file: " + filepath };
@@ -178,9 +171,7 @@ Config::parse_json_config(const std::string& filepath)
 	return parse_json_config_string(cfg_file_contents);
 }
 
-inline Config
-Config::parse_json_config_string(const std::string& cfg_file_contents)
-{
+inline Config Config::parse_json_config_string(const std::string& cfg_file_contents) {
 	std::string err;
 	auto json{ json11::Json::parse(cfg_file_contents, err) };
 
@@ -191,58 +182,56 @@ Config::parse_json_config_string(const std::string& cfg_file_contents)
 	}
 
 	auto cfg = Config{ json["user_token"].string_value(),
-		           parse_submitter_config(json["submitter_config"]),
+		               parse_submitter_config(json["submitter_config"]),
 
-		           size_t(json["max_frame_filename_len"].int_value()),
+		               size_t(json["max_frame_filename_len"].int_value()),
 
-		           VideoFilenameOffsets{
-		             size_t(json["filename_offsets"]["fr_filename_off"].int_value()),
-		             size_t(json["filename_offsets"]["fr_filename_vid_ID_off"].int_value()),
-		             size_t(json["filename_offsets"]["fr_filename_vid_ID_len"].int_value()),
-		             size_t(json["filename_offsets"]["fr_filename_shot_ID_off"].int_value()),
-		             size_t(json["filename_offsets"]["fr_filename_shot_ID_len"].int_value()),
-		             size_t(json["filename_offsets"]["fr_filename_frame_num_off"].int_value()),
-		             size_t(json["filename_offsets"]["fr_filename_frame_num_len"].int_value()),
-		           },
+		               VideoFilenameOffsets{
+		                   size_t(json["filename_offsets"]["fr_filename_off"].int_value()),
+		                   size_t(json["filename_offsets"]["fr_filename_vid_ID_off"].int_value()),
+		                   size_t(json["filename_offsets"]["fr_filename_vid_ID_len"].int_value()),
+		                   size_t(json["filename_offsets"]["fr_filename_shot_ID_off"].int_value()),
+		                   size_t(json["filename_offsets"]["fr_filename_shot_ID_len"].int_value()),
+		                   size_t(json["filename_offsets"]["fr_filename_frame_num_off"].int_value()),
+		                   size_t(json["filename_offsets"]["fr_filename_frame_num_len"].int_value()),
+		               },
 
-		           json["frames_list_file"].string_value(),
+		               json["frames_list_file"].string_value(),
 
-		           json["frames_dir"].string_value(),
-		           json["thumbs_dir"].string_value(),
+		               json["frames_dir"].string_value(),
+		               json["thumbs_dir"].string_value(),
 
-		           size_t(json["features_file_data_off"].int_value()),
-		           json["features_file"].string_value(),
-		           size_t(json["features_dim"].int_value()),
+		               size_t(json["features_file_data_off"].int_value()),
+		               json["features_file"].string_value(),
+		               size_t(json["features_dim"].int_value()),
 
-		           size_t(json["pre_PCA_features_dim"].int_value()),
-		           json["kw_bias_vec_file"].string_value(),
-		           json["kw_scores_mat_file"].string_value(),
-		           json["kw_PCA_mean_vec_file"].string_value(),
-		           json["kw_PCA_mat_file"].string_value(),
-		           size_t(json["kw_PCA_mat_dim"].int_value()),
+		               size_t(json["pre_PCA_features_dim"].int_value()),
+		               json["kw_bias_vec_file"].string_value(),
+		               json["kw_scores_mat_file"].string_value(),
+		               json["kw_PCA_mean_vec_file"].string_value(),
+		               json["kw_PCA_mat_file"].string_value(),
+		               size_t(json["kw_PCA_mat_dim"].int_value()),
 
-		           json["kws_file"].string_value(),
+		               json["kws_file"].string_value(),
 
-		           size_t(json["display_page_size"].int_value()),
-		           size_t(json["topn_frames_per_video"].int_value()),
-		           size_t(json["topn_frames_per_shot"].int_value()),
+		               size_t(json["display_page_size"].int_value()),
+		               size_t(json["topn_frames_per_video"].int_value()),
+		               size_t(json["topn_frames_per_shot"].int_value()),
 
-		           json["LSC_metadata_file"].string_value(),
+		               json["LSC_metadata_file"].string_value(),
 
-		           json["model_W2VV_img_bias"].string_value(),
-		           json["model_W2VV_img_weigths"].string_value(),
-		           json["model_ResNet_file"].string_value(),
-		           json["model_ResNext_file"].string_value(),
+		               json["model_W2VV_img_bias"].string_value(),
+		               json["model_W2VV_img_weigths"].string_value(),
+		               json["model_ResNet_file"].string_value(),
+		               json["model_ResNext_file"].string_value(),
 
-		           json["collage_region_file_prefix"].string_value(),
-		           json["collage_regions"].int_value() };
+		               json["collage_region_file_prefix"].string_value(),
+		               json["collage_regions"].int_value() };
 
 	return cfg;
 }
 
-inline SubmitterConfig
-Config::parse_submitter_config(const json11::Json& json)
-{
+inline SubmitterConfig Config::parse_submitter_config(const json11::Json& json) {
 	SubmitterConfig res;
 
 	res.submit_to_VBS = json["submit_to_VBS"].bool_value();
@@ -281,26 +270,21 @@ Config::parse_submitter_config(const json11::Json& json)
 	return res;
 }
 
-inline ServerConfigVbs
-Config::parse_vbs_config(const json11::Json& json)
-{
-	return ServerConfigVbs{ json["submit_URL"].string_value(),
-		                json["submit_rerank_URL"].string_value(),
-		                json["submit_interaction_URL"].string_value() };
+inline ServerConfigVbs Config::parse_vbs_config(const json11::Json& json) {
+	return ServerConfigVbs{ json["submit_URL"].string_value(), json["submit_rerank_URL"].string_value(),
+		                    json["submit_interaction_URL"].string_value() };
 }
 
-inline ServerConfigDres
-Config::parse_dres_config(const json11::Json& json)
-{
+inline ServerConfigDres Config::parse_dres_config(const json11::Json& json) {
 	return ServerConfigDres{ json["submit_URL"].string_value(),
-		                 json["submit_rerank_URL"].string_value(),
-		                 json["submit_interaction_URL"].string_value(),
+		                     json["submit_rerank_URL"].string_value(),
+		                     json["submit_interaction_URL"].string_value(),
 
-		                 json["cookie_file"].string_value(),
+		                     json["cookie_file"].string_value(),
 
-		                 json["login_URL"].string_value(),
-		                 json["username"].string_value(),
-		                 json["password"].string_value() };
+		                     json["login_URL"].string_value(),
+		                     json["username"].string_value(),
+		                     json["password"].string_value() };
 }
 
-#endif // CONFIG_JSON_H_
+#endif  // CONFIG_JSON_H_

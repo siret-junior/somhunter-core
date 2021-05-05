@@ -7,8 +7,7 @@
 
 namespace sh {
 
-class Extractor
-{
+class Extractor {
 public:
 	Extractor();
 
@@ -29,5 +28,5 @@ private:
 	std::string frames{ "data/ITEC_w2vv/ITEC.keyframes.dataset" };
 };
 
-};
-#endif // EXTRACTOR_H_
+};      // namespace sh
+#endif  // EXTRACTOR_H_

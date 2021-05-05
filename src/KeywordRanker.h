@@ -36,8 +36,7 @@
 #include "config_json.h"
 #include "utils.h"
 
-struct Keyword
-{
+struct Keyword {
 	KeywordId kw_ID;
 	SynsetId synset_ID;
 	SynsetStrings synset_strs;
@@ -47,8 +46,7 @@ struct Keyword
 	std::vector<const VideoFrame*> top_ex_imgs;
 };
 
-class KeywordRanker
-{
+class KeywordRanker {
 	std::vector<Keyword> keywords;
 	FeatureMatrix kw_features;
 	FeatureVector kw_features_bias_vec;
@@ -56,8 +54,7 @@ class KeywordRanker
 	FeatureVector kw_pca_mean_vec;
 
 public:
-	static std::vector<Keyword> parse_kw_classes_text_file(const std::string& filepath,
-	                                                       const DatasetFrames& frames);
+	static std::vector<Keyword> parse_kw_classes_text_file(const std::string& filepath, const DatasetFrames& frames);
 
 	/**
 	 * Parses float matrix from a binary file that is written in row-major
@@ -78,12 +75,11 @@ public:
 	static FeatureVector parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0);
 
 	inline KeywordRanker(const Config& config, const DatasetFrames& frames)
-	  : keywords(parse_kw_classes_text_file(config.kws_file, frames))
-	  , kw_features(parse_float_matrix(config.kw_scores_mat_file, config.pre_PCA_features_dim))
-	  , kw_features_bias_vec(parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim))
-	  , kw_pca_mat(parse_float_matrix(config.kw_PCA_mat_file, config.pre_PCA_features_dim))
-	  , kw_pca_mean_vec(parse_float_vector(config.kw_PCA_mean_vec_file, config.pre_PCA_features_dim))
-	{}
+	    : keywords(parse_kw_classes_text_file(config.kws_file, frames)),
+	      kw_features(parse_float_matrix(config.kw_scores_mat_file, config.pre_PCA_features_dim)),
+	      kw_features_bias_vec(parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim)),
+	      kw_pca_mat(parse_float_matrix(config.kw_PCA_mat_file, config.pre_PCA_features_dim)),
+	      kw_pca_mean_vec(parse_float_vector(config.kw_PCA_mean_vec_file, config.pre_PCA_features_dim)) {}
 
 	KeywordRanker(const KeywordRanker&) = delete;
 	KeywordRanker& operator=(const KeywordRanker&) = delete;
@@ -92,14 +88,12 @@ public:
 	KeywordRanker& operator=(KeywordRanker&&) = default;
 	~KeywordRanker() noexcept = default;
 
-	static StdVector<float> score_vectors(StdMatrix<float> query_vecs,
-	                                      const DatasetFeatures& features,
+	static StdVector<float> score_vectors(StdMatrix<float> query_vecs, const DatasetFeatures& features,
 	                                      const DatasetFrames& frames);
 
 	static StdVector<std::pair<ImageId, float>> sort_by_score(StdVector<float> scores);
 
-	static void report_results(StdVector<std::pair<ImageId, float>> sorted_results,
-	                           const DatasetFrames& frames,
+	static void report_results(StdVector<std::pair<ImageId, float>> sorted_results, const DatasetFrames& frames,
 	                           size_t num = 10);
 
 	StdMatrix<float> embedd_text_queries(const StdMatrix<KeywordId>& kws) const;
@@ -107,8 +101,7 @@ public:
 	/**
 	 * Gets all string representants of this keyword.
 	 */
-	const Keyword& operator[](KeywordId idx) const
-	{
+	const Keyword& operator[](KeywordId idx) const {
 		// Get all keywords with this Keyword ID
 		return keywords[idx];
 	}
@@ -116,26 +109,16 @@ public:
 	KwSearchIds find(const std::string& search, size_t num_limit = 10) const;
 
 	void rank_query(const std::vector<std::vector<KeywordId>>& positive,
-	                const std::vector<std::vector<KeywordId>>& negative,
-	                ScoreModel& model,
-	                const DatasetFeatures& features,
-	                const DatasetFrames& frames,
-	                const Config& cfg) const;
+	                const std::vector<std::vector<KeywordId>>& negative, ScoreModel& model,
+	                const DatasetFeatures& features, const DatasetFrames& frames, const Config& cfg) const;
 
-	void rank_sentence_query(const std::string& sentence_query_raw,
-	                         ScoreModel& model,
-	                         const DatasetFeatures& features,
-	                         const DatasetFrames& frames,
-	                         const Config& cfg) const;
+	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model, const DatasetFeatures& features,
+	                         const DatasetFrames& frames, const Config& cfg) const;
 
 private:
-	static void apply_temp_queries(std::vector<std::vector<float>>& dist_cache,
-	                               ImageId img_ID,
-	                               const FeatureMatrix& queries,
-	                               size_t query_idx,
-	                               float& result_dist,
-	                               const DatasetFeatures& features,
-	                               const DatasetFrames& frames);
+	static void apply_temp_queries(std::vector<std::vector<float>>& dist_cache, ImageId img_ID,
+	                               const FeatureMatrix& queries, size_t query_idx, float& result_dist,
+	                               const DatasetFeatures& features, const DatasetFrames& frames);
 
 	/**
 	 * Sorts all images based on provided query and retrieves vector
@@ -145,8 +128,7 @@ private:
 	std::vector<std::pair<ImageId, float>> get_sorted_frames(const std::vector<std::vector<KeywordId>>& positive,
 	                                                         const std::vector<std::vector<KeywordId>>& negative,
 	                                                         const DatasetFeatures& features,
-	                                                         const DatasetFrames& frames,
-	                                                         const Config& cfg) const;
+	                                                         const DatasetFrames& frames, const Config& cfg) const;
 };
 
-#endif // IMAGE_KEYWORDS_W2VV_H_
+#endif  // IMAGE_KEYWORDS_W2VV_H_

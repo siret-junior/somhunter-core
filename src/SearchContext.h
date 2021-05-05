@@ -43,16 +43,14 @@ class DatasetFeatures;
  *
  * It can be ome point in HISTORY.
  */
-class SearchContext
-{
+class SearchContext {
 public:
 	SearchContext() = delete;
 	SearchContext(size_t ID, const Config& cfg, const DatasetFrames& frames);
 
 	bool operator==(const SearchContext& other) const;
 
-	void reset()
-	{
+	void reset() {
 		scores.reset_mask();
 		reset_filters();
 	}
@@ -87,4 +85,4 @@ public:
 	/** Filters based on metadata (hour, weekday). */
 	Filters filters;
 };
-#endif // SEARCH_CONTEXT_H_
+#endif  // SEARCH_CONTEXT_H_

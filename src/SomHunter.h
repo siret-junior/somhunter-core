@@ -49,8 +49,7 @@ class TESTER_SomHunter;
  *
  * \todo Export for a library compilation.
  */
-class SomHunter
-{
+class SomHunter {
 	// ********************************
 	// Loaded dataset
 	//		(shared for all the users)
@@ -65,19 +64,18 @@ class SomHunter
 	// User contexts
 	//		(private for each unique user session)
 	// ********************************
-	UserContext user; // This will become std::vector<UserContext>
+	UserContext user;  // This will become std::vector<UserContext>
 
 public:
 	SomHunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
 	inline SomHunter(const Config& cfg)
-	  : config(cfg)
-	  , frames(cfg)
-	  , features(frames, cfg)
-	  , keywords(cfg, frames)
-	  , collageRanker(cfg)
-	  , user(cfg.user_token, cfg, frames, features)
-	{}
+	    : config(cfg),
+	      frames(cfg),
+	      features(frames, cfg),
+	      keywords(cfg, frames),
+	      collageRanker(cfg),
+	      user(cfg.user_token, cfg, frames, features) {}
 
 	// ********************************
 	// Interactive search calls
@@ -89,10 +87,7 @@ public:
 	 *	Some diplays may even support paging (e.g. top_n) or
 	 * selection of one frame (e.g. top_knn)
 	 */
-	GetDisplayResult get_display(DisplayType d_type,
-	                             ImageId selected_image = 0,
-	                             PageId page = 0,
-	                             bool log_it = true);
+	GetDisplayResult get_display(DisplayType d_type, ImageId selected_image = 0, PageId page = 0, bool log_it = true);
 
 	/** Inverts the like states of the provided frames and returns the new
 	 * states. */
@@ -111,29 +106,20 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
-	RescoreResult rescore(const std::string& text_query,
-	                      Collage& collage,
-	                      const Filters* p_filters = nullptr,
-	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
-	                      const std::string& screenshot_fpth = ""s,
+	RescoreResult rescore(const std::string& text_query, Collage& collage, const Filters* p_filters = nullptr,
+	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
 	                      const std::string& label = ""s);
 
-	RescoreResult rescore(const std::string& text_query,
-	                      const Filters* p_filters = nullptr,
-	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
-	                      const std::string& screenshot_fpth = ""s,
-	                      const std::string& label = ""s)
-	{
-		Collage c; // NULL instance
+	RescoreResult rescore(const std::string& text_query, const Filters* p_filters = nullptr,
+	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
+	                      const std::string& label = ""s) {
+		Collage c;  // NULL instance
 		return rescore(text_query, c, p_filters, src_search_ctx_ID, screenshot_fpth, label);
 	}
 
-	RescoreResult rescore(Collage& collage,
-	                      const Filters* p_filters = nullptr,
-	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
-	                      const std::string& screenshot_fpth = ""s,
-	                      const std::string& label = ""s)
-	{
+	RescoreResult rescore(Collage& collage, const Filters* p_filters = nullptr,
+	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
+	                      const std::string& label = ""s) {
 		return rescore(""s, collage, p_filters, src_search_ctx_ID, screenshot_fpth, label);
 	}
 
@@ -143,10 +129,8 @@ public:
 	 * To be extended with the `user_token` argument with multiple users
 	 * support.
 	 */
-	const UserContext& switch_search_context(size_t index,
-	                                         size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
-	                                         const std::string& screenshot_fpth = "",
-	                                         const std::string& label = "");
+	const UserContext& switch_search_context(size_t index, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
+	                                         const std::string& screenshot_fpth = "", const std::string& label = "");
 
 	void apply_filters();
 
@@ -214,14 +198,8 @@ public:
 	 *
 	 * \exception std::runtime_error If the writing fails.
 	 */
-	void store_jpg_image(const std::string& filepath,
-	                     const std::vector<float>& in,
-	                     size_t w,
-	                     size_t h,
-	                     size_t quality,
-	                     size_t num_channels,
-	                     bool are_ints = false) const
-	{
+	void store_jpg_image(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h, size_t quality,
+	                     size_t num_channels, bool are_ints = false) const {
 		return ImageManipulator::store_jpg(filepath, in, w, h, quality, num_channels, are_ints);
 	}
 
@@ -238,13 +216,8 @@ public:
 	 * \param num_channels	Number of channels aka number of elements representing one pixel.
 	 * \return New copy of resized image.
 	 */
-	std::vector<float> resize_image(const std::vector<float>& in,
-	                                size_t orig_w,
-	                                size_t orig_h,
-	                                size_t new_w,
-	                                size_t new_h,
-	                                size_t num_channels = 3) const
-	{
+	std::vector<float> resize_image(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
+	                                size_t new_h, size_t num_channels = 3) const {
 		return ImageManipulator::resize(in, orig_w, orig_h, new_w, new_h, num_channels);
 	}
 
@@ -284,8 +257,7 @@ private:
 
 	/** Adds currently active search context to the history and starts a new
 	 * context (with next contiguous ID number) */
-	void push_search_ctx()
-	{
+	void push_search_ctx() {
 		// Make sure we're not pushing in any old screenshot
 		user.ctx.screenshot_fpth = "";
 

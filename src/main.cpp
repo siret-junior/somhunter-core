@@ -19,8 +19,8 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <chrono>
 #include <stdio.h>
+#include <chrono>
 #include <thread>
 
 #include "utils.h"
@@ -58,22 +58,13 @@ using namespace sh;
 
 #endif
 
-void
-print_display(const FramePointerRange& d)
-{
-	for (auto iter = d.begin(); iter != d.end(); iter++)
-		std::cout << (*iter)->frame_ID << std::endl;
+void print_display(const FramePointerRange& d) {
+	for (auto iter = d.begin(); iter != d.end(); iter++) std::cout << (*iter)->frame_ID << std::endl;
 }
 
-int
-main()
-{
+int main() {
 	/* Change this accordingly. */
 	const std::string cfg_fpth{ "../config.json" };
-
-	// *** Extractor ***
-	Extractor e;
-	e.run();
 
 #ifdef RUN_TESTER
 	TESTER_SomHunter::run_all_tests(cfg_fpth);
@@ -101,10 +92,8 @@ main()
 	namespace fs = std::filesystem;
 
 	for (auto& p : fs::directory_iterator(TEST_COLLAGE_DATA_DIR)) {
-
 		// Skip directories
-		if (p.is_directory())
-			continue;
+		if (p.is_directory()) continue;
 
 		std::cout << "Running collage query from: " << p.path() << std::endl;
 		Collage c{ deserialize_from_file<Collage>(p.path().string()) };
@@ -112,7 +101,7 @@ main()
 	}
 
 	/* -------------------------------- */
-#	endif // TEST_COLLAGE_QUERIES
+#	endif  // TEST_COLLAGE_QUERIES
 
 	/*
 	 * Test ImageManipulator

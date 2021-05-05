@@ -49,8 +49,7 @@ using namespace std::literals;
 using ImageKeywords = KeywordRanker;
 using namespace json11;
 
-class Submitter
-{
+class Submitter {
 	std::vector<std::thread> submit_threads;
 	std::vector<std::unique_ptr<bool>> finish_flags;
 	std::vector<Json> backlog;
@@ -65,7 +64,7 @@ class Submitter
 	/** Just a shortcut so we have the unified log prefix. */
 	auto& alog() { return act_log << get_formated_timestamp("%H:%M:%S") << "\t" << timestamp() << "\t"; }
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 
 #ifdef LOG_CURL_REQUESTS
 
@@ -73,7 +72,7 @@ class Submitter
 	/** Just a shortcut so we have the unified log prefix. */
 	auto& rlog() { return req_log << get_formated_timestamp("%H:%M:%S") << "\t" << timestamp() << "\t"; }
 
-#endif // LOG_CURL_REQUESTS
+#endif  // LOG_CURL_REQUESTS
 
 public:
 	Submitter(const SubmitterConfig& config);
@@ -93,28 +92,18 @@ public:
 	void submit_and_log_submit(const DatasetFrames& frames, DisplayType disp_type, ImageId frame_ID);
 
 	/** Called whenever we rescore (Bayes/LD) */
-	void submit_and_log_rescore(const DatasetFrames& frames,
-	                            const ScoreModel& scores,
-	                            const std::set<ImageId>& likes,
-	                            const UsedTools& used_tools,
-	                            DisplayType disp_type,
-	                            const std::vector<ImageId>& topn_imgs,
-	                            const std::string& sentence_query,
-	                            const size_t topn_frames_per_video,
-	                            const size_t topn_frames_per_shot);
+	void submit_and_log_rescore(const DatasetFrames& frames, const ScoreModel& scores, const std::set<ImageId>& likes,
+	                            const UsedTools& used_tools, DisplayType disp_type,
+	                            const std::vector<ImageId>& topn_imgs, const std::string& sentence_query,
+	                            const size_t topn_frames_per_video, const size_t topn_frames_per_shot);
 
 	void log_text_query_change(const std::string& query_sentence);
 
 	void log_collage_query(const Collage& collage);
 
-	void log_like(const DatasetFrames& frames,
-	              const std::set<ImageId>& likes,
-	              DisplayType disp_type,
-	              ImageId frame_ID);
+	void log_like(const DatasetFrames& frames, const std::set<ImageId>& likes, DisplayType disp_type, ImageId frame_ID);
 
-	void log_unlike(const DatasetFrames& frames,
-	                const std::set<ImageId>& likes,
-	                DisplayType disp_type,
+	void log_unlike(const DatasetFrames& frames, const std::set<ImageId>& likes, DisplayType disp_type,
 	                ImageId frame_ID);
 
 	void log_show_som_display(const DatasetFrames& frames, const std::vector<ImageId>& imgs);

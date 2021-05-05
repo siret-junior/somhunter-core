@@ -20,15 +20,12 @@ using namespace sh;
 
 namespace fs = std::filesystem;
 
-std::vector<float>
-parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0)
-{
+std::vector<float> parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0) {
 	// Open file for reading as binary from the end side
 	std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
 
 	// If failed to open file
-	if (!ifs)
-		throw std::runtime_error("Error opening file: " + filepath);
+	if (!ifs) throw std::runtime_error("Error opening file: " + filepath);
 
 	// Get end of file
 	auto end = ifs.tellg();
@@ -76,9 +73,7 @@ parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset 
 	return features_vector;
 }
 
-std::vector<cv::Rect>
-get_RoIs(int width, int height)
-{
+std::vector<cv::Rect> get_RoIs(int width, int height) {
 	std::vector<std::vector<float>> RoIs = {
 		{ 0.0, 0.0, 1.0, 1.0 }, { 0.1, 0.2, 0.4, 0.6 }, { 0.3, 0.2, 0.4, 0.6 }, { 0.5, 0.2, 0.4, 0.6 },
 
@@ -94,15 +89,9 @@ get_RoIs(int width, int height)
 	return rects;
 }
 
-torch::Tensor
-get_features(cv::Mat image,
-             torch::jit::script::Module resnext101,
-             torch::jit::script::Module resnet152,
-             torch::Tensor weights,
-             torch::Tensor bias,
-             torch::Tensor kw_pca_mat,
-             torch::Tensor kw_pca_mean_vec)
-{
+torch::Tensor get_features(cv::Mat image, torch::jit::script::Module resnext101, torch::jit::script::Module resnet152,
+                           torch::Tensor weights, torch::Tensor bias, torch::Tensor kw_pca_mat,
+                           torch::Tensor kw_pca_mean_vec) {
 	cv::Size s = image.size();
 
 	std::vector<cv::Rect> RoIs = get_RoIs(s.width, s.height);
@@ -116,8 +105,7 @@ get_features(cv::Mat image,
 		cv::resize(region, region, cv::Size(224, 224), 0, 0, cv::INTER_AREA);
 
 		auto tensor_image =
-		  torch::from_blob(region.data, { region.rows, region.cols, region.channels() }, at::kByte)
-		    .to(torch::kFloat);
+		    torch::from_blob(region.data, { region.rows, region.cols, region.channels() }, at::kByte).to(torch::kFloat);
 
 		torch::Tensor t_means = torch::from_blob(means, { 3 }).unsqueeze_(0).unsqueeze_(0);
 
@@ -160,8 +148,7 @@ get_features(cv::Mat image,
 	return feature;
 }
 
-Extractor::Extractor()
-{
+Extractor::Extractor() {
 	try {
 		resnet152 = torch::jit::load("data/nn_models/traced_Resnet152.pt");
 	} catch (const c10::Error& e) {
@@ -178,22 +165,20 @@ Extractor::Extractor()
 
 	bias = torch::tensor(parse_float_vector("data/nn_models/w2vv-img_bias-2048floats.bin", 2048));
 	weights = torch::tensor(parse_float_vector("data/nn_models/w2vv-img_weight-2048x4096floats.bin", 4096 * 2048))
-	            .reshape({ 2048, 4096 })
-	            .permute({ 1, 0 });
+	              .reshape({ 2048, 4096 })
+	              .permute({ 1, 0 });
 
 	kw_pca_mat = torch::tensor(parse_float_vector("data/ITEC_w2vv/ITEC_20200411.w2vv.pca.matrix.bin", 128 * 2048))
-	               .reshape({ 128, 2048 })
-	               .permute({ 1, 0 });
+	                 .reshape({ 128, 2048 })
+	                 .permute({ 1, 0 });
 	kw_pca_mean_vec = torch::tensor(parse_float_vector("data/ITEC_w2vv/ITEC_20200411.w2vv.pca.mean.bin", 2048));
 }
 
-void
-Extractor::run()
-{
+void Extractor::run() {
 	std::vector<std::fstream> datafiles;
 	for (int i = 0; i < 12; i++) {
 		datafiles.push_back(
-		  std::fstream(out_dir + "/region_" + std::to_string(i) + ".bin", std::ios::out | std::ios::binary));
+		    std::fstream(out_dir + "/region_" + std::to_string(i) + ".bin", std::ios::out | std::ios::binary));
 	}
 
 	std::string thumb;
@@ -210,12 +195,10 @@ Extractor::run()
 			throw std::runtime_error(msg);
 		}
 
-		torch::Tensor features =
-		  get_features(src, resnext101, resnet152, weights, bias, kw_pca_mat, kw_pca_mean_vec);
+		torch::Tensor features = get_features(src, resnext101, resnet152, weights, bias, kw_pca_mat, kw_pca_mean_vec);
 
 		for (size_t i = 0; i < 12; i++) {
-			datafiles[i].write(reinterpret_cast<const char*>(features[i].data_ptr<float>()),
-			                   128 * sizeof(float));
+			datafiles[i].write(reinterpret_cast<const char*>(features[i].data_ptr<float>()), 128 * sizeof(float));
 		}
 	}
 

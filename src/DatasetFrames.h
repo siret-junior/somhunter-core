@@ -36,24 +36,17 @@ struct VideoFrame;
 
 using VideoFramePointer = const VideoFrame*;
 
-struct VideoFrame
-{
-	VideoFrame(std::string&& filename,
-	           VideoId video_ID,
-	           ShotId shot_ID,
-	           ImageId frame_number,
-	           ImageId image_ID,
-	           uint8_t weekday = ERR_VAL<uint8_t>(),
-	           uint8_t hour = ERR_VAL<uint8_t>())
-	  : filename{ std::move(filename) }
-	  , video_ID{ video_ID }
-	  , shot_ID{ shot_ID }
-	  , frame_number{ frame_number }
-	  , frame_ID{ image_ID }
-	  , LSC_id{ "" }
-	  , weekday{ weekday }
-	  , hour{ hour }
-	{}
+struct VideoFrame {
+	VideoFrame(std::string&& filename, VideoId video_ID, ShotId shot_ID, ImageId frame_number, ImageId image_ID,
+	           uint8_t weekday = ERR_VAL<uint8_t>(), uint8_t hour = ERR_VAL<uint8_t>())
+	    : filename{ std::move(filename) },
+	      video_ID{ video_ID },
+	      shot_ID{ shot_ID },
+	      frame_number{ frame_number },
+	      frame_ID{ image_ID },
+	      LSC_id{ "" },
+	      weekday{ weekday },
+	      hour{ hour } {}
 
 	std::string filename;
 	VideoId video_ID;
@@ -75,29 +68,23 @@ struct VideoFrame
 /**
  * Represents CONTINOUS range of frames.
  */
-struct FrameRange
-{
+struct FrameRange {
 	std::vector<VideoFrame>::iterator _begin;
 	std::vector<VideoFrame>::iterator _end;
 
 	FrameRange() = default;
-	FrameRange(std::vector<VideoFrame>::iterator b, std::vector<VideoFrame>::iterator e)
-	  : _begin(b)
-	  , _end(e)
-	{}
+	FrameRange(std::vector<VideoFrame>::iterator b, std::vector<VideoFrame>::iterator e) : _begin(b), _end(e) {}
 
 	size_t size() const { return _end - _begin; }
 	/**
 	 * Returns VideoFrame reference to the frame with given index
 	 * in this frame range.
 	 */
-	const VideoFrame& operator[](size_t idx) const
-	{
+	const VideoFrame& operator[](size_t idx) const {
 		// Iterator is random access so this is fine
 		return *(_begin + idx);
 	}
-	VideoFrame& operator[](size_t idx)
-	{
+	VideoFrame& operator[](size_t idx) {
 		// Iterator is random access so this is fine
 		return *(_begin + idx);
 	}
@@ -112,8 +99,7 @@ struct FrameRange
 /**
  * Represents CONTINOUS range of const frame pointers.
  */
-class FramePointerRange
-{
+class FramePointerRange {
 	std::vector<VideoFramePointer>::const_iterator _begin;
 	std::vector<VideoFramePointer>::const_iterator _end;
 	bool _valid{ false };
@@ -122,15 +108,8 @@ public:
 	FramePointerRange() = default;
 	FramePointerRange(std::vector<VideoFramePointer>::const_iterator b,
 	                  std::vector<VideoFramePointer>::const_iterator e)
-	  : _begin(b)
-	  , _end(e)
-	  , _valid(true)
-	{}
-	FramePointerRange(const std::vector<VideoFramePointer>& v)
-	  : _begin(v.cbegin())
-	  , _end(v.cend())
-	  , _valid(true)
-	{}
+	    : _begin(b), _end(e), _valid(true) {}
+	FramePointerRange(const std::vector<VideoFramePointer>& v) : _begin(v.cbegin()), _end(v.cend()), _valid(true) {}
 
 	/**
 	 * Returns true iff FramePointerRange contains valid range
@@ -143,13 +122,11 @@ public:
 	 * Returns VideoFramePointer reference to the frame with given index
 	 * in this frame range.
 	 */
-	const VideoFramePointer& operator[](size_t idx) const
-	{
+	const VideoFramePointer& operator[](size_t idx) const {
 		// Iterator is random access so this is fine
 		return *(_begin + idx);
 	}
-	const VideoFramePointer& operator[](size_t idx)
-	{
+	const VideoFramePointer& operator[](size_t idx) {
 		// Iterator is random access so this is fine
 		return *(_begin + idx);
 	}
@@ -159,8 +136,7 @@ public:
 	std::vector<VideoFramePointer>::const_iterator end() const { return _end; }
 };
 
-class DatasetFrames
-{
+class DatasetFrames {
 	/** Map from video ID to range of image IDs */
 	std::vector<FrameRange> _video_ID_to_frame_range;
 	std::vector<VideoFrame> _frames;
@@ -190,8 +166,7 @@ public:
 
 	size_t size() const { return _frames.size(); }
 
-	VideoId get_video_id(ImageId img_ID) const
-	{
+	VideoId get_video_id(ImageId img_ID) const {
 		if (img_ID >= _frames.size()) {
 			return VIDEO_ID_ERR_VAL;
 		} else {
@@ -209,8 +184,7 @@ public:
 	 * Returns new instance of FrameRange representing all frames from
 	 * prvided video ID in interval [frame_num_from, frame_num_to]
 	 */
-	FrameRange get_shot_frames(VideoId video_ID, size_t frame_num_from, size_t frame_num_to) const
-	{
+	FrameRange get_shot_frames(VideoId video_ID, size_t frame_num_from, size_t frame_num_to) const {
 		// Get video range
 		auto video_range = _video_ID_to_frame_range[video_ID];
 

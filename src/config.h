@@ -32,7 +32,7 @@
  */
 
 #define MAX_NUM_TEMP_QUERIES 2
-#define KW_TEMPORAL_SPAN 5 // frames
+#define KW_TEMPORAL_SPAN 5  // frames
 
 /*
  * Scoring/SOM stuff
@@ -54,7 +54,7 @@ constexpr size_t DISP_TOPN_CTX_RESULT_LIMIT = 10000;
 /** What display we'll jump to after a rescore. */
 constexpr DisplayType POST_RESCORE_DISPLAY = DisplayType::DTopNContext;
 
-#define DEFAULT_RESCORE 0 // 0=bayes, 1=LD
+#define DEFAULT_RESCORE 0  // 0=bayes, 1=LD
 
 #define FADE_ON_HOVER 0
 #define DRAW_FRAME_INFO 0
@@ -65,7 +65,7 @@ constexpr DisplayType POST_RESCORE_DISPLAY = DisplayType::DTopNContext;
  * Logging
  */
 
-#define LOGLEVEL 1 // 3 = debug, 2 = info, 1 = warnings, 0 = none
+#define LOGLEVEL 1  // 3 = debug, 2 = info, 1 = warnings, 0 = none
 
 #define LD_LOG_DIR "./logs/"
 #define LD_LOG_FILENAME "ld"

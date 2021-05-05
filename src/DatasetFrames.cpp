@@ -27,9 +27,7 @@
 
 #include <fstream>
 
-std::vector<std::vector<KeywordId>>
-DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
-{
+std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath) {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
 
 	info_d("Loading top image keywords from " << filepath);
@@ -45,13 +43,11 @@ DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
 	// read the input file by lines
 	size_t line_idx = 0;
 	for (std::string line_text_buffer; std::getline(inFile, line_text_buffer);) {
-
 		std::stringstream line_buffer_ss(line_text_buffer);
 
 		std::vector<std::string> tokens;
 
-		for (std::string token; std::getline(line_buffer_ss, token, '~');)
-			tokens.push_back(token);
+		for (std::string token; std::getline(line_buffer_ss, token, '~');) tokens.push_back(token);
 
 		if (tokens.size() < 2) {
 			std::string msg{ "Error parsing file: " + filepath };
@@ -59,7 +55,7 @@ DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
 			throw std::runtime_error(msg);
 		}
 
-		std::string token; // tmp
+		std::string token;  // tmp
 
 		// Keywrod IDs
 		std::vector<KeywordId> kw_IDs;
@@ -76,8 +72,7 @@ DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
 	return result_vec;
 }
 
-DatasetFrames::DatasetFrames(const Config& config)
-{
+DatasetFrames::DatasetFrames(const Config& config) {
 	// Save the config values
 	frames_dir = config.frames_dir;
 	thumbs_dir = config.thumbs_dir;
@@ -110,7 +105,6 @@ DatasetFrames::DatasetFrames(const Config& config)
 	}
 
 	{
-
 		ImageId i = 0;
 		size_t prev_frame_vid_ID = SIZE_T_ERR_VAL;
 
@@ -119,13 +113,11 @@ DatasetFrames::DatasetFrames(const Config& config)
 
 		std::string md_line;
 		for (std::string s; getline(in, s); ++i) {
-
 			std::string tmp;
 
 			auto vf = DatasetFrames::parse_video_filename(std::move(s));
 
 			if (parse_metadata) {
-
 				// Read one metadata line
 				if (!getline(ifs_meta, md_line)) {
 					auto msg{ "Not enough lines in " + config.LSC_metadata_file };
@@ -181,9 +173,7 @@ DatasetFrames::DatasetFrames(const Config& config)
 		info_d("Loaded " << size() << " frames.");
 }
 
-VideoFrame
-DatasetFrames::parse_video_filename(std::string&& filename)
-{
+VideoFrame DatasetFrames::parse_video_filename(std::string&& filename) {
 	// Extract string representing video ID
 	std::string videoIdString(filename.data() + offs.vid_ID_off, offs.vid_ID_len);
 
@@ -193,13 +183,11 @@ DatasetFrames::parse_video_filename(std::string&& filename)
 	// Extract string representing frame number
 	std::string frameNumberString(filename.data() + offs.frame_num_off, offs.frame_num_len);
 
-	return VideoFrame(
-	  std::move(filename), str_to_int(videoIdString), str_to_int(shotIdString), str_to_int(frameNumberString), 0);
+	return VideoFrame(std::move(filename), str_to_int(videoIdString), str_to_int(shotIdString),
+	                  str_to_int(frameNumberString), 0);
 }
 
-std::tuple<Weekday, Hour, LscId>
-DatasetFrames::parse_metadata_line(const std::string& line)
-{
+std::tuple<Weekday, Hour, LscId> DatasetFrames::parse_metadata_line(const std::string& line) {
 	// !!! Beware that the data MUST NOT contain the separator char
 	// TODO: Use propper CSV parser
 	auto tokens{ split(line, ';') };
@@ -214,9 +202,7 @@ DatasetFrames::parse_metadata_line(const std::string& line)
 	return std::tuple{ wd, h, LSC_id };
 }
 
-std::vector<VideoFramePointer>
-DatasetFrames::ids_to_video_frame(const std::vector<ImageId>& ids) const
-{
+std::vector<VideoFramePointer> DatasetFrames::ids_to_video_frame(const std::vector<ImageId>& ids) const {
 	std::vector<VideoFramePointer> res;
 	res.reserve(ids.size());
 	for (ImageId i : ids) {
@@ -231,9 +217,7 @@ DatasetFrames::ids_to_video_frame(const std::vector<ImageId>& ids) const
 	return res;
 }
 
-std::vector<VideoFramePointer>
-DatasetFrames::range_to_video_frame(const FrameRange& ids)
-{
+std::vector<VideoFramePointer> DatasetFrames::range_to_video_frame(const FrameRange& ids) {
 	std::vector<VideoFramePointer> res;
 	res.reserve(ids.size());
 	for (auto iter = ids.begin(); iter != ids.end(); ++iter) {

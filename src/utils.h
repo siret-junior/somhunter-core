@@ -35,16 +35,13 @@
 #include <string>
 #include <string_view>
 
-#include <cereal/archives/binary.hpp>
 #include <sha256.h>
+#include <cereal/archives/binary.hpp>
 
 #include "log.h"
 
-template<typename DataType>
-void
-serialize_to_file(DataType data, const std::string filepath)
-{
-
+template <typename DataType>
+void serialize_to_file(DataType data, const std::string filepath) {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
 	if (!ofs) {
 		std::string msg{ "Error openning file: " + filepath };
@@ -57,11 +54,8 @@ serialize_to_file(DataType data, const std::string filepath)
 	out_archive(data);
 }
 
-template<typename DataType>
-DataType
-deserialize_from_file(const std::string filepath)
-{
-
+template <typename DataType>
+DataType deserialize_from_file(const std::string filepath) {
 	std::ifstream ifs(filepath, std::ios::in | std::ios::binary);
 	if (!ifs) {
 		std::string msg{ "Error openning file: " + filepath };
@@ -89,9 +83,7 @@ deserialize_from_file(const std::string filepath)
  *  @param fmt  Format string using the same rules as put_time method.
  *  @return   String representing current date and time in desired format.
  */
-inline std::string
-get_formated_timestamp(const std::string& fmt)
-{
+inline std::string get_formated_timestamp(const std::string& fmt) {
 	auto now = std::chrono::system_clock::now();
 	auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
@@ -100,9 +92,7 @@ get_formated_timestamp(const std::string& fmt)
 	return ss.str();
 }
 
-inline int
-str_to_int(const std::string& str)
-{
+inline int str_to_int(const std::string& str) {
 	int result = 0;
 
 	// Convert and check if successful
@@ -117,20 +107,16 @@ str_to_int(const std::string& str)
 	return result;
 }
 
-template<typename T, typename S>
-static inline T
-str2(const S& s)
-{
+template <typename T, typename S>
+static inline T str2(const S& s) {
 	std::stringstream ss(s);
 	T r;
 	ss >> r;
 	return r;
 }
 
-template<typename T>
-inline float
-d_manhattan(const std::vector<T>& left, const std::vector<T>& right)
-{
+template <typename T>
+inline float d_manhattan(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
 		warn_d("Vectors have different sizes.");
 #ifndef NDEBUG
@@ -146,10 +132,8 @@ d_manhattan(const std::vector<T>& left, const std::vector<T>& right)
 	return s;
 }
 
-template<typename T>
-inline float
-d_sqeucl(const std::vector<T>& left, const std::vector<T>& right)
-{
+template <typename T>
+inline float d_sqeucl(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
 		warn_d("Vectors have different sizes.");
 #ifndef NDEBUG
@@ -164,22 +148,14 @@ d_sqeucl(const std::vector<T>& left, const std::vector<T>& right)
 	return s;
 }
 
-template<typename T>
-inline float
-d_eucl(const std::vector<T>& left, const std::vector<T>& right)
-{
+template <typename T>
+inline float d_eucl(const std::vector<T>& left, const std::vector<T>& right) {
 	return sqrtf(d_sqeucl(left, right));
 }
 
-inline static float
-squaref(float a)
-{
-	return a * a;
-}
+inline static float squaref(float a) { return a * a; }
 
-inline float
-d_cos(const std::vector<float>& left, const std::vector<float>& right)
-{
+inline float d_cos(const std::vector<float>& left, const std::vector<float>& right) {
 	float s = 0.0f;
 	float w1 = 0.0f;
 	float w2 = 0.0f;
@@ -190,15 +166,12 @@ d_cos(const std::vector<float>& left, const std::vector<float>& right)
 		w1 += squaref(left[i]);
 		w2 += squaref(right[i]);
 	}
-	if (w1 == 0 && w2 == 0)
-		return 0;
+	if (w1 == 0 && w2 == 0) return 0;
 	return 1.0f - (s / (sqrtf(w1) * sqrtf(w2)));
 }
 
-template<typename T>
-inline std::vector<T>
-VecSub(const std::vector<T>& left, const std::vector<T>& right)
-{
+template <typename T>
+inline std::vector<T> VecSub(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
 		warn_d("Vectors have different sizes.");
 #ifndef NDEBUG
@@ -218,10 +191,8 @@ VecSub(const std::vector<T>& left, const std::vector<T>& right)
 	return result;
 }
 
-template<typename T>
-inline std::vector<T>
-VecAdd(const std::vector<T>& left, const std::vector<T>& right)
-{
+template <typename T>
+inline std::vector<T> VecAdd(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
 		warn_d("Vectors have different sizes.");
 #ifndef NDEBUG
@@ -241,10 +212,8 @@ VecAdd(const std::vector<T>& left, const std::vector<T>& right)
 	return result;
 }
 
-template<typename T, typename S>
-inline std::vector<T>
-VecMult(const std::vector<T>& left, S right)
-{
+template <typename T, typename S>
+inline std::vector<T> VecMult(const std::vector<T>& left, S right) {
 	std::vector<T> result(left.size());
 
 	std::transform(left.begin(), left.end(), result.begin(), [right](const T& l) { return l * right; });
@@ -252,10 +221,8 @@ VecMult(const std::vector<T>& left, S right)
 	return result;
 }
 
-template<typename T>
-inline std::vector<T>
-VecMult(const std::vector<T>& left, const std::vector<T>& right)
-{
+template <typename T>
+inline std::vector<T> VecMult(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
 		warn_d("Vectors have different sizes.");
 #ifndef NDEBUG
@@ -265,17 +232,14 @@ VecMult(const std::vector<T>& left, const std::vector<T>& right)
 
 	std::vector<T> result;
 
-	std::transform(left.begin(), left.end(), right.begin(), std::back_inserter(result), [](const T& l, const T& r) {
-		return l * r;
-	});
+	std::transform(left.begin(), left.end(), right.begin(), std::back_inserter(result),
+	               [](const T& l, const T& r) { return l * r; });
 
 	return result;
 }
 
-template<typename T>
-inline T
-VecDot(const std::vector<T>& left, const std::vector<T>& right)
-{
+template <typename T>
+inline T VecDot(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
 		warn_d("Vectors have different sizes.");
 #ifndef NDEBUG
@@ -288,10 +252,8 @@ VecDot(const std::vector<T>& left, const std::vector<T>& right)
 	return std::accumulate(sum.begin(), sum.end(), 0.0f, std::plus<T>());
 }
 
-template<typename T>
-inline std::vector<T>
-MatVecProd(const std::vector<std::vector<T>>& mat, const std::vector<T>& vec)
-{
+template <typename T>
+inline std::vector<T> MatVecProd(const std::vector<std::vector<T>>& mat, const std::vector<T>& vec) {
 	if (mat.empty() || mat[0].size() != vec.size()) {
 		warn_d("Vectors have different sizes.");
 #ifndef NDEBUG
@@ -303,23 +265,18 @@ MatVecProd(const std::vector<std::vector<T>>& mat, const std::vector<T>& vec)
 	result.resize(mat.size());
 
 	size_t i = 0;
-	for (auto&& mat_row_vec : mat)
-		result[i++] = VecDot(mat_row_vec, vec);
+	for (auto&& mat_row_vec : mat) result[i++] = VecDot(mat_row_vec, vec);
 
 	return result;
 }
 
-template<typename T>
-inline float
-VecLen(const std::vector<T>& left)
-{
+template <typename T>
+inline float VecLen(const std::vector<T>& left) {
 	return sqrtf(VecDot(left, left));
 }
 
-template<typename T>
-inline std::vector<T>
-VecNorm(const std::vector<T>& left)
-{
+template <typename T>
+inline std::vector<T> VecNorm(const std::vector<T>& left) {
 	float vec_size = VecLen(left);
 
 	if (vec_size > 0.0f)
@@ -337,18 +294,14 @@ VecNorm(const std::vector<T>& left)
 /**
  * Vectors must have unit size!
  */
-inline float
-d_cos_normalized(const std::vector<float>& left, const std::vector<float>& right)
-{
+inline float d_cos_normalized(const std::vector<float>& left, const std::vector<float>& right) {
 	return 1.0f - VecDot(left, right);
 }
 
 /**
  * Vectors must have unit size!
  */
-inline float
-d_cos_normalized(const std::vector<float>& left, const float* right, size_t dim)
-{
+inline float d_cos_normalized(const std::vector<float>& left, const float* right, size_t dim) {
 	float s = 0.0f;
 	const float* iv = left.data();
 	const float* jv = right;
@@ -363,9 +316,7 @@ d_cos_normalized(const std::vector<float>& left, const float* right, size_t dim)
 /**
  * Vectors must have unit size!
  */
-inline float
-cos_sim_normalized(const std::vector<float>& left, const float* right, size_t dim)
-{
+inline float cos_sim_normalized(const std::vector<float>& left, const float* right, size_t dim) {
 	float s = 0.0f;
 	const float* iv = left.data();
 	const float* jv = right;
@@ -377,25 +328,17 @@ cos_sim_normalized(const std::vector<float>& left, const float* right, size_t di
 	return s;
 }
 
-inline static float
-square(float a)
-{
-	return a * a;
-}
+inline static float square(float a) { return a * a; }
 
-inline int64_t
-timestamp()
-{
+inline int64_t timestamp() {
 	using namespace std::chrono;
 	return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
 
 /** Returns pseudorandom integral number sampled from
  *  the uniform distribution [from, to]. */
-template<typename T>
-T
-irand(T from, T to)
-{
+template <typename T>
+T irand(T from, T to) {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<T> dist(from, to);
@@ -405,10 +348,8 @@ irand(T from, T to)
 
 /** Returns pseudorandom floating point number sampled from
  *  the uniform distribution [from, to). */
-template<typename T>
-T
-frand(T from, T to)
-{
+template <typename T>
+T frand(T from, T to) {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<T> dist(from, to);
@@ -416,9 +357,7 @@ frand(T from, T to)
 	return dist(gen);
 }
 
-inline std::vector<std::string>
-split(const std::string& str, char delim)
-{
+inline std::vector<std::string> split(const std::string& str, char delim) {
 	std::vector<std::string> result;
 	std::stringstream ss(str);
 	std::string item;
@@ -430,36 +369,27 @@ split(const std::string& str, char delim)
 	return result;
 }
 
-template<typename T>
-bool
-is_set(T mask, size_t i)
-{
+template <typename T>
+bool is_set(T mask, size_t i) {
 	return ((mask >> i) & 0x01) == 1;
 }
 
-template<typename Container>
-void
-print_matrix(const Container& mat)
-{
-
+template <typename Container>
+void print_matrix(const Container& mat) {
 	for (auto&& row : mat) {
 		print_vector(row);
 	}
 }
 
-template<typename Container>
-void
-print_vector(const Container& row)
-{
+template <typename Container>
+void print_vector(const Container& row) {
 	for (auto&& v : row) {
 		std::cout << "\t" << std::fixed << std::setprecision(4) << v;
 	}
 	std::cout << std::endl;
 }
 
-inline std::string
-to_lowercase(const std::string& old)
-{
+inline std::string to_lowercase(const std::string& old) {
 	std::string transformed;
 
 	std::transform(old.begin(), old.end(), std::back_inserter(transformed), ::tolower);
@@ -470,9 +400,7 @@ to_lowercase(const std::string& old)
 /**
  * Computes the SHA256 hash for the given file and returns it.
  */
-inline std::string
-SHA256_sum(const std::string& filepath)
-{
+inline std::string SHA256_sum(const std::string& filepath) {
 	// \todo test with large files
 	SHA256 hash;
 
@@ -496,4 +424,4 @@ SHA256_sum(const std::string& filepath)
 	return hash.getHash();
 }
 
-#endif // UTILS_H_
+#endif  // UTILS_H_

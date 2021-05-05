@@ -48,7 +48,7 @@
 using namespace std;
 
 // some small numbers first!
-static const float min_boost = 0.00001f; // lower limit for the parameter
+static const float min_boost = 0.00001f;  // lower limit for the parameter
 
 // this is added before normalizing the distances
 static const float zero_avoidance = 0.00000001f;
@@ -56,15 +56,12 @@ static const float zero_avoidance = 0.00000001f;
 // a tiny epsilon for preventing singularities
 static const float koho_gravity = 0.00000001f;
 
-struct dist_id
-{
+struct dist_id {
 	float dist;
 	size_t id;
 };
 
-static inline void
-hswap(dist_id& a, dist_id& b)
-{
+static inline void hswap(dist_id& a, dist_id& b) {
 	dist_id c = a;
 	a = b;
 	b = c;
@@ -102,22 +99,10 @@ heap_down(dist_id *heap, size_t start, size_t lim)
 }
 #endif
 
-void
-som(size_t /*n*/,
-    size_t k,
-    size_t dim,
-    size_t niter,
-    const std::vector<float>& points,
-    std::vector<float>& koho,
-    const std::vector<float>& nhbrdist,
-    const float alphasA[2],
-    const float radiiA[2],
-    const float alphasB[2],
-    const float radiiB[2],
-    const std::vector<float>& scores,
-    const std::vector<bool>& /*present_mask*/,
-    std::mt19937& rng)
-{
+void som(size_t /*n*/, size_t k, size_t dim, size_t niter, const std::vector<float>& points, std::vector<float>& koho,
+         const std::vector<float>& nhbrdist, const float alphasA[2], const float radiiA[2], const float alphasB[2],
+         const float radiiB[2], const std::vector<float>& scores, const std::vector<bool>& /*present_mask*/,
+         std::mt19937& rng) {
 	info_d("build begin");
 	std::discrete_distribution<size_t> random(scores.begin(), scores.end());
 	info_d("build end");
@@ -158,29 +143,20 @@ som(size_t /*n*/,
 			float alpha;
 
 			if (d > thresholdA) {
-				if (d > thresholdB)
-					continue;
+				if (d > thresholdB) continue;
 				alpha = alphaB;
 			} else
 				alpha = alphaA;
 
-			for (size_t j = 0; j < dim; ++j)
-				koho[j + i * dim] += alpha * (points[j + point * dim] - koho[j + i * dim]);
+			for (size_t j = 0; j < dim; ++j) koho[j + i * dim] += alpha * (points[j + point * dim] - koho[j + i * dim]);
 		}
 	}
 }
 
 /* this serves for classification into small clusters */
-void
-mapPointsToKohos(size_t start,
-                 size_t end,
-                 size_t k,
-                 size_t dim,
-                 const std::vector<float>& points,
-                 const std::vector<float>& koho,
-                 std::vector<size_t>& mapping,
-                 const std::vector<bool>& present_mask)
-{
+void mapPointsToKohos(size_t start, size_t end, size_t k, size_t dim, const std::vector<float>& points,
+                      const std::vector<float>& koho, std::vector<size_t>& mapping,
+                      const std::vector<bool>& present_mask) {
 	for (size_t point = start; point < end; ++point) {
 		if (present_mask[point]) {
 			size_t nearest = 0;

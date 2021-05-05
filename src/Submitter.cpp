@@ -32,22 +32,18 @@
 
 #ifdef DEBUG_CURL_REQUESTS
 
-static void
-curl_dump(const char* text, FILE* stream, unsigned char* ptr, size_t size, char nohex)
-{
+static void curl_dump(const char* text, FILE* stream, unsigned char* ptr, size_t size, char nohex) {
 	size_t i;
 	size_t c;
 
 	unsigned int width = 0x10;
 
-	if (nohex)
-		/* without the hex output, we can fit more on screen */
+	if (nohex) /* without the hex output, we can fit more on screen */
 		width = 0x40;
 
 	fprintf(stream, "%s, %10.10lu bytes (0x%8.8lx)\n", text, (unsigned long)size, (unsigned long)size);
 
 	for (i = 0; i < size; i += width) {
-
 		fprintf(stream, "%4.4lx: ", (unsigned long)i);
 
 		if (!nohex) {
@@ -79,9 +75,7 @@ curl_dump(const char* text, FILE* stream, unsigned char* ptr, size_t size, char 
 	fflush(stream);
 }
 
-static int
-trace_fn(CURL* handle, curl_infotype type, char* dt, size_t size, void* userp)
-{
+static int trace_fn(CURL* handle, curl_infotype type, char* dt, size_t size, void* userp) {
 	struct data* config = (struct data*)userp;
 	const char* text;
 
@@ -114,22 +108,15 @@ trace_fn(CURL* handle, curl_infotype type, char* dt, size_t size, void* userp)
 	return 0;
 }
 
-#endif // DEBUG_CURL_REQUESTS
+#endif  // DEBUG_CURL_REQUESTS
 
-static size_t
-res_cb(char* contents, size_t size, size_t nmemb, void* userp)
-{
+static size_t res_cb(char* contents, size_t size, size_t nmemb, void* userp) {
 	static_cast<std::string*>(userp)->append(contents, size * nmemb);
 	return size * nmemb;
 }
 
-static void
-poster_thread(const std::string& submit_url,
-              const std::string& query,
-              const std::string& data,
-              bool& finished,
-              const SubmitterConfig& cfg)
-{
+static void poster_thread(const std::string& submit_url, const std::string& query, const std::string& data,
+                          bool& finished, const SubmitterConfig& cfg) {
 	/*
 	 * write the stuff into a file just to be sure and have it nicely
 	 * archived
@@ -138,24 +125,20 @@ poster_thread(const std::string& submit_url,
 	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
 		std::filesystem::create_directories(cfg.log_submitted_dir);
 
-	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
-		warn_d("wtf, directory was not created");
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) warn_d("wtf, directory was not created");
 
 	{
-		std::string path =
-		  cfg.log_submitted_dir + std::string("/") + std::to_string(timestamp()) + cfg.log_file_suffix;
+		std::string path = cfg.log_submitted_dir + std::string("/") + std::to_string(timestamp()) + cfg.log_file_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
 			warn_d("Could not write a log file!");
 		} else {
 			// Only print this if not empty
-			if (!data.empty())
-				o << data << std::endl;
+			if (!data.empty()) o << data << std::endl;
 		}
 	}
 
 	if (cfg.extra_verbose_log) {
-
 		// Subtract ',' to '\n'
 		std::string data_not_so_pretty_fmtd(data);
 		std::replace(data_not_so_pretty_fmtd.begin(), data_not_so_pretty_fmtd.end(), ',', '\n');
@@ -182,7 +165,7 @@ poster_thread(const std::string& submit_url,
 		curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, trace_fn);
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
-#endif // DEBUG_CURL_REQUESTS
+#endif  // DEBUG_CURL_REQUESTS
 
 		curl_easy_setopt(curl, CURLOPT_HEADER, 0);
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
@@ -237,20 +220,16 @@ poster_thread(const std::string& submit_url,
 	finished = true;
 }
 
-static void
-getter_thread(const std::string& submit_url, const std::string& query, bool& finished, const SubmitterConfig& cfg)
-{
+static void getter_thread(const std::string& submit_url, const std::string& query, bool& finished,
+                          const SubmitterConfig& cfg) {
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) std::filesystem::create_directory(cfg.log_submitted_dir);
 
-	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
-		std::filesystem::create_directory(cfg.log_submitted_dir);
-
-	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
-		warn_d("wtf, directory was not created");
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) warn_d("wtf, directory was not created");
 
 	{
 		auto ts{ timestamp() };
-		std::string path = cfg.log_submitted_dir + std::string("/") + std::to_string(ts) +
-		                   std::string("_submit") + cfg.log_file_suffix;
+		std::string path = cfg.log_submitted_dir + std::string("/") + std::to_string(ts) + std::string("_submit") +
+		                   cfg.log_file_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
 			warn_d("Could not write a log file!");
@@ -273,7 +252,7 @@ getter_thread(const std::string& submit_url, const std::string& query, bool& fin
 		curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, trace_fn);
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
-#endif // DEBUG_CURL_REQUESTS
+#endif  // DEBUG_CURL_REQUESTS
 
 		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 		curl_easy_setopt(curl, CURLOPT_HEADER, 0);
@@ -327,9 +306,7 @@ getter_thread(const std::string& submit_url, const std::string& query, bool& fin
 	finished = true;
 }
 
-bool
-Submitter::login_to_DRES() const
-{
+bool Submitter::login_to_DRES() const {
 	auto s_cfg{ std::get<ServerConfigDres>(cfg.server_cfg) };
 
 	CURL* curl;
@@ -338,13 +315,12 @@ Submitter::login_to_DRES() const
 	std::string res_buffer;
 
 	if (curl) {
-
 #ifdef DEBUG_CURL_REQUESTS
 
 		curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, trace_fn);
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
-#endif // DEBUG_CURL_REQUESTS
+#endif  // DEBUG_CURL_REQUESTS
 
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_easy_setopt(curl, CURLOPT_URL, s_cfg.login_URL.c_str());
@@ -358,8 +334,8 @@ Submitter::login_to_DRES() const
 		headers = curl_slist_append(headers, "Content-Type: application/json");
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-		const std::string data_str{ "{ \"username\": \""s + s_cfg.username + "\" ,\"password\": \""s +
-			                    s_cfg.password + "\" }" };
+		const std::string data_str{ "{ \"username\": \""s + s_cfg.username + "\" ,\"password\": \""s + s_cfg.password +
+			                        "\" }" };
 
 		const char* data = data_str.c_str();
 
@@ -419,13 +395,13 @@ Submitter::login_to_DRES() const
 }
 
 Submitter::Submitter(const SubmitterConfig& config)
-  : last_submit_timestamp(timestamp())
-  , cfg(config){
+    : last_submit_timestamp(timestamp()),
+      cfg(config){
 
 #ifdef LOG_LOGS
-	  { // Make sure the directory exists
-	    if (!(std::filesystem::exists(cfg.log_actions_dir))){
-	      std::filesystem::create_directories(cfg.log_actions_dir);
+	      { // Make sure the directory exists
+	        if (!(std::filesystem::exists(cfg.log_actions_dir))){
+	            std::filesystem::create_directories(cfg.log_actions_dir);
 }
 
 std::string filepath{ cfg.log_actions_dir + "/actions_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
@@ -441,7 +417,7 @@ if (!act_log.is_open()) {
 act_log << std::unitbuf;
 }
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 
 #ifdef LOG_CURL_REQUESTS
 {
@@ -450,8 +426,7 @@ act_log << std::unitbuf;
 		std::filesystem::create_directories(cfg.log_requests_dir);
 	}
 
-	std::string filepath{ cfg.log_requests_dir + "/requests_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
-		              ".log" };
+	std::string filepath{ cfg.log_requests_dir + "/requests_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
 
 	req_log.open(filepath, std::ios::out);
 	if (!req_log.is_open()) {
@@ -464,20 +439,16 @@ act_log << std::unitbuf;
 	req_log << std::unitbuf;
 }
 
-#endif // LOG_CURL_REQUESTS
+#endif  // LOG_CURL_REQUESTS
 }
 
-Submitter::~Submitter()
-{
+Submitter::~Submitter() {
 	send_backlog_only();
 
-	for (auto& t : submit_threads)
-		t.join();
+	for (auto& t : submit_threads) t.join();
 }
 
-void
-Submitter::submit_and_log_submit(const DatasetFrames& frames, DisplayType disp_type, ImageId frame_ID)
-{
+void Submitter::submit_and_log_submit(const DatasetFrames& frames, DisplayType disp_type, ImageId frame_ID) {
 	log_submit(frames, disp_type, frame_ID);
 
 	auto vf = frames.get_frame(frame_ID);
@@ -485,7 +456,6 @@ Submitter::submit_and_log_submit(const DatasetFrames& frames, DisplayType disp_t
 	std::stringstream query_ss;
 
 	if (is_DRES_server()) {
-
 		// LSC submit
 #ifdef SUBMIT_FILENAME_ID
 
@@ -494,24 +464,21 @@ Submitter::submit_and_log_submit(const DatasetFrames& frames, DisplayType disp_t
 		// Non-LSC submit
 #else
 
-		query_ss << "item=" << std::setfill('0') << std::setw(5)
-		         << (vf.video_ID + 1)             //< !! VBS videos start from 1
-		         << "&frame=" << vf.frame_number; //< !! VBS frame numbers start at 0
+		query_ss << "item=" << std::setfill('0') << std::setw(5) << (vf.video_ID + 1)  //< !! VBS videos start from 1
+		         << "&frame=" << vf.frame_number;  //< !! VBS frame numbers start at 0
 
-#endif // SUBMIT_FILENAME_ID
+#endif  // SUBMIT_FILENAME_ID
 
 	} else {
 		query_ss << "team=" << cfg.team_ID << "&member=" << cfg.member_ID
-		         << "&video=" << (vf.video_ID + 1) //< !! VBS videos start from 1
-		         << "&frame=" << vf.frame_number;  //< !! VBS frame numbers start at 0
+		         << "&video=" << (vf.video_ID + 1)  //< !! VBS videos start from 1
+		         << "&frame=" << vf.frame_number;   //< !! VBS frame numbers start at 0
 	}
 
 	send_query_with_backlog(query_ss.str());
 }
 
-void
-Submitter::log_submit(const DatasetFrames& /*frames*/, DisplayType disp_type, ImageId frame_ID)
-{
+void Submitter::log_submit(const DatasetFrames& /*frames*/, DisplayType disp_type, ImageId frame_ID) {
 #ifdef LOG_LOGS
 
 	alog() << "submit_frame\t"
@@ -519,27 +486,22 @@ Submitter::log_submit(const DatasetFrames& /*frames*/, DisplayType disp_type, Im
 	       << "frame_ID=" << frame_ID << "\t"
 	       << "disp_type=" << disp_type_to_str(disp_type) << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_rerank(const DatasetFrames& /*frames*/,
-                      DisplayType /*from_disp_type*/,
-                      const std::vector<ImageId>& /*topn_imgs*/)
-{
+void Submitter::log_rerank(const DatasetFrames& /*frames*/, DisplayType /*from_disp_type*/,
+                           const std::vector<ImageId>& /*topn_imgs*/) {
 	// @todo we can log them for our purporses
 }
 
-void
-Submitter::send_backlog_only()
-{
+void Submitter::send_backlog_only() {
 	// Send interaction logs
 	if (!backlog.empty()) {
 		Json a = Json::object{ { "timestamp", double(timestamp()) },
-			               { "events", std::move(backlog) },
-			               { "type", "interaction" },
-			               { "teamId", int(cfg.team_ID) },
-			               { "memberId", int(cfg.member_ID) } };
+			                   { "events", std::move(backlog) },
+			                   { "type", "interaction" },
+			                   { "teamId", int(cfg.team_ID) },
+			                   { "memberId", int(cfg.member_ID) } };
 		backlog.clear();
 		start_poster(get_interaction_URL(), ""s, a.dump());
 	}
@@ -548,18 +510,11 @@ Submitter::send_backlog_only()
 	last_submit_timestamp = timestamp();
 }
 
-void
-Submitter::submit_and_log_rescore(const DatasetFrames& frames,
-                                  const ScoreModel& scores,
-                                  const std::set<ImageId>& likes,
-                                  const UsedTools& used_tools,
-                                  DisplayType /*disp_type*/,
-                                  const std::vector<ImageId>& topn_imgs,
-                                  const std::string& sentence_query,
-                                  const size_t topn_frames_per_video,
-                                  const size_t topn_frames_per_shot)
-{
-
+void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreModel& scores,
+                                       const std::set<ImageId>& likes, const UsedTools& used_tools,
+                                       DisplayType /*disp_type*/, const std::vector<ImageId>& topn_imgs,
+                                       const std::string& sentence_query, const size_t topn_frames_per_video,
+                                       const size_t topn_frames_per_shot) {
 	std::vector<Json> results;
 	results.reserve(topn_imgs.size());
 
@@ -583,7 +538,7 @@ Submitter::submit_and_log_rescore(const DatasetFrames& frames,
 			                                { "score", double(scores[img_ID]) },
 			                                { "rank", int(i) } });
 
-#endif // SUBMIT_FILENAME_ID
+#endif  // SUBMIT_FILENAME_ID
 
 			++i;
 		}
@@ -598,7 +553,6 @@ Submitter::submit_and_log_rescore(const DatasetFrames& frames,
 
 	// If Top KNN request
 	if (used_tools.topknn_used) {
-
 		// Mark this as KNN request
 		query_val += "show_knn;";
 
@@ -608,7 +562,6 @@ Submitter::submit_and_log_rescore(const DatasetFrames& frames,
 	}
 	// Else normal rescore
 	else {
-
 		// Just mark that this was NOT KNN request
 		query_val += "normal_rescore;";
 
@@ -660,15 +613,15 @@ Submitter::submit_and_log_rescore(const DatasetFrames& frames,
 	Json values_arr = Json::array(values);
 
 	Json top = Json::object{ { "teamId", int(cfg.team_ID) },
-		                 { "memberId", int(cfg.member_ID) },
-		                 { "timestamp", double(timestamp()) },
-		                 { "usedCategories", used_cats },
-		                 { "usedTypes", used_types },
-		                 { "sortType", sort_types },
-		                 { "resultSetAvailability", "top" },
-		                 { "type", "result" },
-		                 { "values", values_arr },
-		                 { "results", std::move(result_json_arr) } };
+		                     { "memberId", int(cfg.member_ID) },
+		                     { "timestamp", double(timestamp()) },
+		                     { "usedCategories", used_cats },
+		                     { "usedTypes", used_types },
+		                     { "sortType", sort_types },
+		                     { "resultSetAvailability", "top" },
+		                     { "type", "result" },
+		                     { "values", values_arr },
+		                     { "results", std::move(result_json_arr) } };
 
 	start_poster(get_rerank_URL(), "", top.dump());
 
@@ -676,7 +629,6 @@ Submitter::submit_and_log_rescore(const DatasetFrames& frames,
 
 	// KNN is not rescore, so we ignore it
 	if (!used_tools.topknn_used) {
-
 		auto& ss{ alog() };
 
 		ss << "rescore\t"
@@ -686,8 +638,7 @@ Submitter::submit_and_log_rescore(const DatasetFrames& frames,
 		{
 			size_t ii{ 0 };
 			for (auto&& l : likes) {
-				if (ii > 0)
-					ss << ",";
+				if (ii > 0) ss << ",";
 
 				ss << l;
 				++ii;
@@ -697,13 +648,10 @@ Submitter::submit_and_log_rescore(const DatasetFrames& frames,
 		ss << "]\t" << std::endl;
 	}
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_collage_query(const Collage& collage)
-{
-
+void Submitter::log_collage_query(const Collage& collage) {
 	auto path{ cfg.log_collages_dir + "/"s + std::to_string(timestamp()) + "/"s };
 
 	// One directory for each query
@@ -730,29 +678,20 @@ Submitter::log_collage_query(const Collage& collage)
 
 	// Write images
 	for (size_t i{ 0 }; i < collage.images.size(); ++i) {
-
 		std::string idx{ std::to_string(collage.break_point) };
 
-		ImageManipulator::store_jpg(path + idx + "_img_"s + std::to_string(i) + ".jpg",
-		                            collage.images[i],
-		                            collage.pixel_widths[i],
-		                            collage.pixel_heights[i],
-		                            60,
-		                            collage.channels,
-		                            true);
+		ImageManipulator::store_jpg(path + idx + "_img_"s + std::to_string(i) + ".jpg", collage.images[i],
+		                            collage.pixel_widths[i], collage.pixel_heights[i], 60, collage.channels, true);
 	}
 }
 
-void
-Submitter::log_text_query_change(const std::string& text_query)
-{
+void Submitter::log_text_query_change(const std::string& text_query) {
 	static int64_t last_logged{ 0 };
 
 	// If timeout should be handled here
 	if (cfg.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_logged + cfg.log_action_timeout > size_t(timestamp()))
-			return;
+		if (last_logged + cfg.log_action_timeout > size_t(timestamp())) return;
 	}
 
 #ifdef LOG_LOGS
@@ -760,16 +699,12 @@ Submitter::log_text_query_change(const std::string& text_query)
 	alog() << "text_query\t"
 	       << "text_query=\"" << text_query << "\"" << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 
 	push_event("text", "jointEmbedding", text_query);
 }
-void
-Submitter::log_like(const DatasetFrames& frames,
-                    const std::set<ImageId>& likes,
-                    DisplayType /*disp_type*/,
-                    ImageId frame_ID)
-{
+void Submitter::log_like(const DatasetFrames& frames, const std::set<ImageId>& likes, DisplayType /*disp_type*/,
+                         ImageId frame_ID) {
 	auto vf = frames.get_frame(frame_ID);
 
 #ifdef LOG_LOGS
@@ -778,7 +713,7 @@ Submitter::log_like(const DatasetFrames& frames,
 	       << "frame_ID=" << frame_ID << "\t"
 	       << "liked=" << (likes.count(frame_ID) == 1 ? "true" : "false") << "\t" << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 
 	std::stringstream data_ss;
 	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";like;";
@@ -786,12 +721,8 @@ Submitter::log_like(const DatasetFrames& frames,
 	push_event("image", "feedbackModel", data_ss.str());
 }
 
-void
-Submitter::log_unlike(const DatasetFrames& frames,
-                      const std::set<ImageId>& likes,
-                      DisplayType /*disp_type*/,
-                      ImageId frame_ID)
-{
+void Submitter::log_unlike(const DatasetFrames& frames, const std::set<ImageId>& likes, DisplayType /*disp_type*/,
+                           ImageId frame_ID) {
 	auto vf = frames.get_frame(frame_ID);
 
 #ifdef LOG_LOGS
@@ -800,7 +731,7 @@ Submitter::log_unlike(const DatasetFrames& frames,
 	       << "frame_ID=" << frame_ID << "\t"
 	       << "liked=" << (likes.count(frame_ID) == 1 ? "true" : "false") << "\t" << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 
 	std::stringstream data_ss;
 	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";unlike;";
@@ -808,57 +739,48 @@ Submitter::log_unlike(const DatasetFrames& frames,
 	push_event("image", "feedbackModel", data_ss.str());
 }
 
-void
-Submitter::log_show_random_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/)
-{
+void Submitter::log_show_random_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/) {
 	push_event("browsing", "randomSelection", "random_display;");
 
 #ifdef LOG_LOGS
 
 	alog() << "show_random_display\t" << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_show_som_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/)
-{
+void Submitter::log_show_som_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/) {
 	push_event("browsing", "exploration", "som_display");
 
 #ifdef LOG_LOGS
 
 	alog() << "show_SOM_display\t" << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_show_topn_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/)
-{
+void Submitter::log_show_topn_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/) {
 	push_event("browsing", "rankedList", "topn_display");
 
 #ifdef LOG_LOGS
 
 	alog() << "show_topN_display\t" << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_show_topn_context_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/)
-{
+void Submitter::log_show_topn_context_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/) {
 	push_event("browsing", "rankedList", "topn_context_display;");
 
 #ifdef LOG_LOGS
 
 	alog() << "show_topN_context_display\t" << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_show_topknn_display(const DatasetFrames& frames, ImageId frame_ID, const std::vector<ImageId>& /*imgs*/)
-{
+void Submitter::log_show_topknn_display(const DatasetFrames& frames, ImageId frame_ID,
+                                        const std::vector<ImageId>& /*imgs*/) {
 	auto vf = frames.get_frame(frame_ID);
 
 	std::stringstream data_ss;
@@ -871,12 +793,10 @@ Submitter::log_show_topknn_display(const DatasetFrames& frames, ImageId frame_ID
 	alog() << "show_topKNN_display\t"
 	       << "frame_ID=" << frame_ID << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_show_detail_display(const DatasetFrames& frames, ImageId frame_ID)
-{
+void Submitter::log_show_detail_display(const DatasetFrames& frames, ImageId frame_ID) {
 	auto vf = frames.get_frame(frame_ID);
 
 	std::stringstream data_ss;
@@ -889,20 +809,17 @@ Submitter::log_show_detail_display(const DatasetFrames& frames, ImageId frame_ID
 	alog() << "show_detail_display\t"
 	       << "frame_ID=" << frame_ID << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_show_video_replay(const DatasetFrames& frames, ImageId frame_ID, float delta)
-{
+void Submitter::log_show_video_replay(const DatasetFrames& frames, ImageId frame_ID, float delta) {
 	static int64_t last_replay_submit = 0;
 	static ImageId last_frame_ID = IMAGE_ID_ERR_VAL;
 
 	// If timeout should be handled here
 	if (cfg.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_replay_submit + cfg.log_action_timeout > size_t(timestamp()) && frame_ID == last_frame_ID)
-			return;
+		if (last_replay_submit + cfg.log_action_timeout > size_t(timestamp()) && frame_ID == last_frame_ID) return;
 	}
 
 	last_replay_submit = timestamp();
@@ -922,12 +839,10 @@ Submitter::log_show_video_replay(const DatasetFrames& frames, ImageId frame_ID, 
 	       << "video_ID=" << vf.video_ID << "\t"
 	       << "dir=" << (delta > 0.0F ? "forward" : "backwards") << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_type, float dirY)
-{
+void Submitter::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_type, float dirY) {
 	std::string ev_type("rankedList");
 	std::string disp_type;
 
@@ -963,8 +878,7 @@ Submitter::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_typ
 	// If timeout should be handled here
 	if (cfg.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_logged + cfg.log_action_timeout > size_t(timestamp()) && from_disp_type == last_disp_type)
-			return;
+		if (last_logged + cfg.log_action_timeout > size_t(timestamp()) && from_disp_type == last_disp_type) return;
 	}
 
 	last_logged = timestamp();
@@ -981,41 +895,33 @@ Submitter::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_typ
 	       << "dir=" << (dirY > 0 ? "up" : "down") << "\t"
 	       << "disp_type=" << disp_type << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::log_reset_search()
-{
+void Submitter::log_reset_search() {
 	push_event("browsing", "resetAll", "");
 
 #ifdef LOG_LOGS
 
 	alog() << "reset_all\t" << std::endl;
 
-#endif // LOG_LOGS
+#endif  // LOG_LOGS
 }
 
-void
-Submitter::start_poster(const std::string& submit_url, const std::string& query_string, const std::string& post_data)
-{
+void Submitter::start_poster(const std::string& submit_url, const std::string& query_string,
+                             const std::string& post_data) {
 	finish_flags.emplace_back(std::make_unique<bool>(false));
-	submit_threads.emplace_back(
-	  poster_thread, submit_url, query_string, post_data, std::ref(*(finish_flags.back())), cfg);
+	submit_threads.emplace_back(poster_thread, submit_url, query_string, post_data, std::ref(*(finish_flags.back())),
+	                            cfg);
 }
 
-void
-Submitter::start_getter(const std::string& submit_url, const std::string& query_string)
-{
+void Submitter::start_getter(const std::string& submit_url, const std::string& query_string) {
 	finish_flags.emplace_back(std::make_unique<bool>(false));
 	submit_threads.emplace_back(getter_thread, submit_url, query_string, std::ref(*(finish_flags.back())), cfg);
 }
 
-void
-Submitter::poll()
-{
-	if (last_submit_timestamp + cfg.send_logs_to_server_period < size_t(timestamp()))
-		send_backlog_only();
+void Submitter::poll() {
+	if (last_submit_timestamp + cfg.send_logs_to_server_period < size_t(timestamp())) send_backlog_only();
 
 	for (size_t i = 0; i < submit_threads.size();)
 		if (*finish_flags[i]) {
@@ -1026,9 +932,7 @@ Submitter::poll()
 			++i;
 }
 
-void
-Submitter::send_query_with_backlog(const std::string& query_string)
-{
+void Submitter::send_query_with_backlog(const std::string& query_string) {
 	// Send the submit
 	start_getter(get_submit_URL(), query_string);
 
@@ -1036,10 +940,7 @@ Submitter::send_query_with_backlog(const std::string& query_string)
 	send_backlog_only();
 }
 
-void
-Submitter::push_event(const std::string& cat, const std::string& type, const std::string& value)
-{
-
+void Submitter::push_event(const std::string& cat, const std::string& type, const std::string& value) {
 	std::vector<Json> types{ type };
 	Json types_arr = Json::array(types);
 
@@ -1050,15 +951,9 @@ Submitter::push_event(const std::string& cat, const std::string& type, const std
 	backlog.emplace_back(std::move(a));
 }
 
-bool
-Submitter::is_DRES_server() const
-{
-	return std::holds_alternative<ServerConfigDres>(cfg.server_cfg);
-}
+bool Submitter::is_DRES_server() const { return std::holds_alternative<ServerConfigDres>(cfg.server_cfg); }
 
-const std::string&
-Submitter::get_submit_URL() const
-{
+const std::string& Submitter::get_submit_URL() const {
 	if (std::holds_alternative<ServerConfigDres>(cfg.server_cfg)) {
 		return std::get<ServerConfigDres>(cfg.server_cfg).submit_URL;
 	}
@@ -1066,9 +961,7 @@ Submitter::get_submit_URL() const
 	return std::get<ServerConfigVbs>(cfg.server_cfg).submit_URL;
 }
 
-const std::string&
-Submitter::get_rerank_URL() const
-{
+const std::string& Submitter::get_rerank_URL() const {
 	if (std::holds_alternative<ServerConfigDres>(cfg.server_cfg)) {
 		return std::get<ServerConfigDres>(cfg.server_cfg).submit_rerank_URL;
 	}
@@ -1076,9 +969,7 @@ Submitter::get_rerank_URL() const
 	return std::get<ServerConfigVbs>(cfg.server_cfg).submit_rerank_URL;
 }
 
-const std::string&
-Submitter::get_interaction_URL() const
-{
+const std::string& Submitter::get_interaction_URL() const {
 	if (std::holds_alternative<ServerConfigDres>(cfg.server_cfg)) {
 		return std::get<ServerConfigDres>(cfg.server_cfg).submit_interaction_URL;
 	}

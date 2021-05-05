@@ -24,15 +24,9 @@
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 
-UserContext::UserContext(const std::string& user_token,
-                         const Config& cfg,
-                         const DatasetFrames& frames,
+UserContext::UserContext(const std::string& user_token, const Config& cfg, const DatasetFrames& frames,
                          const DatasetFeatures features)
-  : ctx(0, cfg, frames)
-  , user_token(user_token)
-  , submitter(cfg.submitter_config)
-  , async_SOM(cfg)
-{
+    : ctx(0, cfg, frames), user_token(user_token), submitter(cfg.submitter_config), async_SOM(cfg) {
 	async_SOM.start_work(features, ctx.scores);
 
 	/*
@@ -42,8 +36,6 @@ UserContext::UserContext(const std::string& user_token,
 	history.emplace_back(ctx);
 }
 
-bool
-UserContext::operator==(const UserContext& other) const
-{
+bool UserContext::operator==(const UserContext& other) const {
 	return (ctx == other.ctx && user_token == other.user_token && history == other.history);
 }

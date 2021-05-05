@@ -35,9 +35,7 @@
 
 #include "log.h"
 
-LoadedImage
-ImageManipulator::load(const std::string& filepath)
-{
+LoadedImage ImageManipulator::load(const std::string& filepath) {
 	//#define WITH_HDR
 
 	int w{ 0 };
@@ -78,25 +76,17 @@ ImageManipulator::load(const std::string& filepath)
 	return LoadedImage{ size_t(w), size_t(h), size_t(num_channels), std::move(data) };
 }
 
-void
-ImageManipulator::store_jpg(const std::string& filepath,
-                            const std::vector<float>& in,
-                            size_t w,
-                            size_t h,
-                            size_t quality,
-                            size_t num_channels,
-                            bool are_ints)
-{
+void ImageManipulator::store_jpg(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
+                                 size_t quality, size_t num_channels, bool are_ints) {
 	std::vector<uint8_t> raw_data;
 	raw_data.reserve(in.size());
 
 	// if \in [0.0, 1.0]
 	if (!are_ints) {
-		std::transform(
-		  in.begin(), in.end(), std::back_inserter(raw_data), [](const float& x) { return uint8_t(x * 255); });
+		std::transform(in.begin(), in.end(), std::back_inserter(raw_data),
+		               [](const float& x) { return uint8_t(x * 255); });
 	} else {
-		std::transform(
-		  in.begin(), in.end(), std::back_inserter(raw_data), [](const float& x) { return uint8_t(x); });
+		std::transform(in.begin(), in.end(), std::back_inserter(raw_data), [](const float& x) { return uint8_t(x); });
 	}
 
 	auto res{ stbi_write_jpg(filepath.c_str(), w, h, num_channels, raw_data.data(), quality) };
@@ -108,14 +98,8 @@ ImageManipulator::store_jpg(const std::string& filepath,
 	}
 }
 
-std::vector<float>
-ImageManipulator::resize(const std::vector<float>& in,
-                         size_t orig_w,
-                         size_t orig_h,
-                         size_t new_w,
-                         size_t new_h,
-                         size_t num_channels)
-{
+std::vector<float> ImageManipulator::resize(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
+                                            size_t new_h, size_t num_channels) {
 	std::vector<float> out(new_w * new_h * num_channels, 0.0F);
 
 	auto res{ stbir_resize_float(in.data(), orig_w, orig_h, 0, out.data(), new_w, new_h, 0, num_channels) };

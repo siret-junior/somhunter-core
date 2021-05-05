@@ -28,15 +28,13 @@
 #include "common.h"
 #include "utils.h"
 
-class WeekDaysFilter
-{
+class WeekDaysFilter {
 public:
 	/** Default state is all dayes */
 	WeekDaysFilter() { _days.fill(true); }
 
 	/** Construct from the bit mask */
-	WeekDaysFilter(uint8_t mask)
-	{
+	WeekDaysFilter(uint8_t mask) {
 		// Set the according days, ignore the last 2 bits
 		for (size_t i{ 0 }; i < 7; ++i) {
 			_days[i] = is_set(mask, i);
@@ -53,16 +51,11 @@ private:
 	std::array<bool, 7> _days;
 };
 
-class TimeFilter
-{
+class TimeFilter {
 public:
 	/** Default state is the whole day */
-	TimeFilter()
-	  : from(0)
-	  , to(24){};
-	TimeFilter(Hour from, Hour to)
-	  : from(from)
-	  , to(to){};
+	TimeFilter() : from(0), to(24){};
+	TimeFilter(Hour from, Hour to) : from(from), to(to){};
 
 	bool operator==(const TimeFilter& other) const { return (from == other.from && to == other.to); }
 
@@ -71,18 +64,15 @@ public:
 };
 
 /** Container for all the available filters for the rescore */
-struct Filters
-{
+struct Filters {
 	TimeFilter time;
 	WeekDaysFilter days;
 
 	bool operator==(const Filters& other) const { return (time == other.time && days == other.days); }
-	bool is_default() const
-	{
-		if (time == TimeFilter{} && days == WeekDaysFilter{})
-			return true;
+	bool is_default() const {
+		if (time == TimeFilter{} && days == WeekDaysFilter{}) return true;
 
 		return false;
 	}
 };
-#endif // FILTERS_H_
+#endif  // FILTERS_H_

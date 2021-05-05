@@ -25,29 +25,12 @@
 #include <random>
 #include <vector>
 
-void
-som(size_t n,
-    size_t k,
-    size_t dim,
-    size_t niter,
-    const std::vector<float>& points,
-    std::vector<float>& koho,
-    const std::vector<float>& nhbrdist,
-    const float alphasA[2],
-    const float radiiA[2],
-    const float alphasB[2],
-    const float radiiB[2],
-    const std::vector<float>& scores,
-    const std::vector<bool>& present_mask,
-    std::mt19937& rng);
+void som(size_t n, size_t k, size_t dim, size_t niter, const std::vector<float>& points, std::vector<float>& koho,
+         const std::vector<float>& nhbrdist, const float alphasA[2], const float radiiA[2], const float alphasB[2],
+         const float radiiB[2], const std::vector<float>& scores, const std::vector<bool>& present_mask,
+         std::mt19937& rng);
 
-void
-mapPointsToKohos(size_t start,
-                 size_t end,
-                 size_t k,
-                 size_t dim,
-                 const std::vector<float>& points,
-                 const std::vector<float>& koho,
-                 std::vector<size_t>& mapping,
-                 const std::vector<bool>& present_mask);
+void mapPointsToKohos(size_t start, size_t end, size_t k, size_t dim, const std::vector<float>& points,
+                      const std::vector<float>& koho, std::vector<size_t>& mapping,
+                      const std::vector<bool>& present_mask);
 #endif

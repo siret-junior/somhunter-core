@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
+#include <torch/script.h>
+#include <torch/torch.h>
 #include <cereal/types/complex.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
-#include <torch/script.h>
-#include <torch/torch.h>
 
 #include "log.h"
 
@@ -21,10 +21,8 @@
 #include "KeywordRanker.h"
 #include "common.h"
 
-template<typename DType>
-std::vector<std::vector<DType>>
-to_std_matrix(const at::Tensor& tensor_features)
-{
+template <typename DType>
+std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features) {
 	if (tensor_features.sizes().size() != 2) {
 		throw std::runtime_error("Not 2x<dim> matrix.");
 	}
@@ -54,8 +52,7 @@ to_std_matrix(const at::Tensor& tensor_features)
 	return mat;
 }
 
-class Collage
-{
+class Collage {
 public:
 	std::vector<float> lefts;
 	std::vector<float> tops;
@@ -88,22 +85,13 @@ public:
 	 * https://uscilab.github.io/cereal/quickstart.html
 	 * https://uscilab.github.io/cereal/stl_support.html
 	 */
-	template<class Archive>
-	void serialize(Archive& archive)
-	{
-		archive(lefts,
-		        tops,
-		        relative_heights,
-		        relative_widths,
-		        pixel_heights,
-		        pixel_widths,
-		        images,
-		        break_point,
+	template <class Archive>
+	void serialize(Archive& archive) {
+		archive(lefts, tops, relative_heights, relative_widths, pixel_heights, pixel_widths, images, break_point,
 		        channels);
 	}
 
-	struct image
-	{
+	struct image {
 		float left;
 		float top;
 		float relative_height;
@@ -113,16 +101,13 @@ public:
 		std::vector<float>& img;
 	};
 
-	image operator[](std::size_t idx)
-	{
-		return image{ lefts[idx],           tops[idx],          relative_heights[idx],
-			      relative_widths[idx], pixel_heights[idx], pixel_widths[idx],
-			      images[idx] };
+	image operator[](std::size_t idx) {
+		return image{ lefts[idx],        tops[idx],  relative_heights[idx], relative_widths[idx], pixel_heights[idx],
+			          pixel_widths[idx], images[idx] };
 	}
 };
 
-class CollageRanker
-{
+class CollageRanker {
 public:
 	CollageRanker(const Config& config);
 	void score(Collage&, ScoreModel& model, const DatasetFeatures& features, const DatasetFrames& frames);
@@ -158,4 +143,4 @@ private:
 // This serves for default parameters of type Collage&
 static Collage DEFAULT_COLLAGE{};
 
-#endif // COLLAGE_RANKER_H_
+#endif  // COLLAGE_RANKER_H_

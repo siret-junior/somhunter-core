@@ -27,8 +27,7 @@
 #include "config.h"
 #include "log.h"
 
-struct LoadedImage
-{
+struct LoadedImage {
 	size_t w;
 	size_t h;
 	size_t num_channels;
@@ -36,8 +35,7 @@ struct LoadedImage
 };
 
 /** Provides utilities for image manipulation and processing. */
-class ImageManipulator
-{
+class ImageManipulator {
 public:
 	/**
 	 * Loads the image from the provided filepath.
@@ -51,25 +49,16 @@ public:
 	 *
 	 * \exception std::runtime_error If the writing fails.
 	 */
-	static void store_jpg(const std::string& filepath,
-	                      const std::vector<float>& in,
-	                      size_t w,
-	                      size_t h,
-	                      size_t quality = 100,
-	                      size_t num_channels = 3,
-	                      bool are_ints = false);
+	static void store_jpg(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
+	                      size_t quality = 100, size_t num_channels = 3, bool are_ints = false);
 
 	/**
 	 * Creates a new resized copy of the provided image matrix.
 	 *
 	 * \exception std::runtime_error If the resizing fails.
 	 */
-	static std::vector<float> resize(const std::vector<float>& in,
-	                                 size_t orig_w,
-	                                 size_t orig_h,
-	                                 size_t new_w,
-	                                 size_t new_h,
-	                                 size_t num_channels = 3);
+	static std::vector<float> resize(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
+	                                 size_t new_h, size_t num_channels = 3);
 };
 
-#endif // IMAGE_MANIPULATOR_
+#endif  // IMAGE_MANIPULATOR_

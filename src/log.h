@@ -31,13 +31,12 @@
 
 #if LOGLEVEL > 0
 
-#	define _dont_write_log_d                                                                                      \
-		do {                                                                                                   \
+#	define _dont_write_log_d \
+		do {                  \
 		} while (0)
-#	define _write_log_d(level, x)                                                                                 \
-		do {                                                                                                   \
-			std::cerr << level << x << "\n\t(" << __func__ << " in " __FILE__ " :" << __LINE__ << ")"      \
-			          << std::endl;                                                                        \
+#	define _write_log_d(level, x)                                                                                  \
+		do {                                                                                                        \
+			std::cerr << level << x << "\n\t(" << __func__ << " in " __FILE__ " :" << __LINE__ << ")" << std::endl; \
 		} while (0)
 
 #	define warn_d(x) _write_log_d("* ", x)
@@ -60,12 +59,12 @@
 
 #define print_d(x) std::cout << x << std::endl;
 
-#define ASSERT(cond, msg)                                                                                              \
-	do {                                                                                                           \
-		if (!(cond)) {                                                                                         \
-			std::cerr << msg << std::endl;                                                                 \
-			throw std::logic_error(msg);                                                                   \
-		}                                                                                                      \
+#define ASSERT(cond, msg)                  \
+	do {                                   \
+		if (!(cond)) {                     \
+			std::cerr << msg << std::endl; \
+			throw std::logic_error(msg);   \
+		}                                  \
 	} while (false);
 
-#endif // log_h
+#endif  // log_h

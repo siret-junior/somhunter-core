@@ -24,17 +24,11 @@
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 
-SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFrames& frames)
-  : ID(ID)
-  , scores(frames)
-{}
+SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFrames& frames) : ID(ID), scores(frames) {}
 
-bool
-SearchContext::operator==(const SearchContext& other) const
-{
+bool SearchContext::operator==(const SearchContext& other) const {
 	return (ID == other.ID && used_tools == other.used_tools && current_display == other.current_display &&
 	        curr_disp_type == other.curr_disp_type && scores == other.scores &&
-	        last_text_query == other.last_text_query && likes == other.likes &&
-	        shown_images == other.shown_images && screenshot_fpth == other.screenshot_fpth &&
-	        filters == other.filters);
+	        last_text_query == other.last_text_query && likes == other.likes && shown_images == other.shown_images &&
+	        screenshot_fpth == other.screenshot_fpth && filters == other.filters);
 }
