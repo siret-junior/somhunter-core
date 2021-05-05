@@ -10,6 +10,7 @@ set(SOURCES
 target_include_directories(somhunter 
 	PUBLIC
 		.
+		../src
 )
 
 target_sources(somhunter 
