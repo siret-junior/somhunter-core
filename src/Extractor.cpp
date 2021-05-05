@@ -203,7 +203,7 @@ Extractor::run()
 		std::cout << thumb << '\n';
 		auto filepath{ thumbs + thumb };
 		cv::Mat src = cv::imread(filepath);
-		cv::cvtColor( src, src, cv::COLOR_BGR2RGB );
+		cv::cvtColor(src, src, cv::COLOR_BGR2RGB);
 		if (src.data == NULL) {
 			std::string msg{ "Error reading thumbnail at '" + filepath + "'!" };
 			warn_d(msg);
