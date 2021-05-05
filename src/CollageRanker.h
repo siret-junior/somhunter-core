@@ -75,7 +75,9 @@ public:
 	inline std::size_t size() { return len; }
 
 	void print() const;
-	void RGBA_to_BGR();
+
+	// Images are expected to be in RGB format
+	void RGBA_to_RGB();
 	void resize_all(int W = 224, int H = 224);
 	void save_all(const std::string& prefix = "");
 

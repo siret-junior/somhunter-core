@@ -18,7 +18,7 @@
 #include "Extractor.h"
 using namespace sh;
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 std::vector<float>
 parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0)
@@ -113,7 +113,7 @@ get_features(cv::Mat image,
 
 	for (int i = 0; i < RoIs.size(); i++) {
 		cv::Mat region = image(RoIs[i]);
-		cv::resize(region, region, cv::Size(224, 224));
+		cv::resize(region, region, cv::Size(224, 224), 0, 0, cv::INTER_AREA);
 
 		auto tensor_image =
 		  torch::from_blob(region.data, { region.rows, region.cols, region.channels() }, at::kByte)
@@ -203,6 +203,7 @@ Extractor::run()
 		std::cout << thumb << '\n';
 		auto filepath{ thumbs + thumb };
 		cv::Mat src = cv::imread(filepath);
+		cv::cvtColor( src, src, cv::COLOR_BGR2RGB );
 		if (src.data == NULL) {
 			std::string msg{ "Error reading thumbnail at '" + filepath + "'!" };
 			warn_d(msg);

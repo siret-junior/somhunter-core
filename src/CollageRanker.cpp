@@ -22,7 +22,7 @@ Collage::print() const
 }
 
 void
-Collage::RGBA_to_BGR()
+Collage::RGBA_to_RGB()
 {
 	if (channels == 3)
 		return;
@@ -32,9 +32,9 @@ Collage::RGBA_to_BGR()
 	for (size_t i = 0; i < images.size(); i++) {
 		std::vector<float> image;
 		for (size_t j = 0; j < images[i].size(); j += 4) {
-			image.push_back(images[i][j + 2]);
-			image.push_back(images[i][j + 1]);
 			image.push_back(images[i][j + 0]);
+			image.push_back(images[i][j + 1]);
+			image.push_back(images[i][j + 2]);
 		}
 		rgb_images.push_back(image);
 	}
@@ -136,7 +136,7 @@ CollageRanker::score(Collage& collage,
                      const DatasetFrames& frames)
 {
 	if (collage.images.size() > 0) {
-		collage.RGBA_to_BGR();
+		collage.RGBA_to_RGB();
 		collage.resize_all(224, 224);
 
 		at::Tensor tensor_features = get_features(collage);
