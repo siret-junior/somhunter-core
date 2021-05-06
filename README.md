@@ -7,7 +7,45 @@ Use cmake for build
 
 ## Prerequisites
 - `libcurl` (see below for installation on various platforms)
+- `OpenCV` (see below for installation on various platforms)
 - `libtorch` (this will be downloaded and installed during CMake script execution, you shouldn't worry about this)
+
+## Windows
+Because Windows does not have unified package manager with dev packages, you need to provide the dependency libraries manually OR use some other package manager. We recommend using [vcpkg](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019) for dependency management. It works quite well with CMake (and also on Linux distros).
+
+### Installing vcpkg
+1) Download and install `vcpkg`
+2) Install required dependencies for your architecture and system (e.g. for x64 windows)
+```sh
+./vcpkg install curl:x64-windows
+./vcpkg install opencv4:x64-windows
+```
+3) Get path to the CMake toolchain file
+
+```sh
+./vcpkg integrate install
+```
+
+This will output how to tell CMake about this. Something like 
+```
+CMake projects should use: "-DCMAKE_TOOLCHAIN_FILE="c:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+```
+
+### Building somhunter-core
+
+Now just run CMake as usual with this additional option. Example for VS 2019 solution may look like this:
+```sh
+mkdir build
+cd build
+
+# Debug
+cmake .. -G "Visual Studio 16 2019" -A x64  -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="~/source/repos/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    
+# Release
+cmake .. -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="~/source/repos/vcpkg/scripts/buildsystems/vcpkg.cmake" 
+    
+```
+
 
 ## UNIX systems
 
@@ -30,30 +68,3 @@ cmake .. -DCMAKE_BUILD_TYPE="Release"
 
 Similar (similarly named) packages should be available on most other distributions.
 
-## Windows
-
-The build systems expects dependency installed at "usual" locations. That is usually `c:\Program Files\curl\` directory. 
-But to avoid any problems is is good to use [vcpkg](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019) for managing those for you.
-
-1) Download and install `vcpkg`
-2) Install libcurl (dependecncies will be handled by the package manager)
-```sh
-vcpkg install curl:x64-windows
-```
-This will output how to tell CMake about this. Something like `-DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake"`.
-
-Now just run CMake as usual with this additional option. Example for VS 2019 solution may look like this:
-```sh
-mkdir build && cd build
-
-# Debug
-cmake .. -G "Visual Studio 16 2019" -A x64  -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE="Debug"
-
-# Release
-cmake .. -G "Visual Studio 16 2019" -A x64  -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE="Release"
-
-# Alternative
-cmake .. -G "Visual Studio 16 2019" -A x64 \
-    -DCURL_DIR=~/source/repos/vcpkg/installed/x64-windows/share/curl/ \
-    -DOpenCV_DIR=~/source/repos/vcpkg/installed/x64-windows/share/opencv/
-```

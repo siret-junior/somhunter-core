@@ -1,4 +1,8 @@
+
 #include "CollageRanker.h"
+
+#include <filesystem>
+
 #include "utils.h"
 
 void Collage::print() const {
@@ -61,14 +65,26 @@ void Collage::save_all(const std::string& prefix) {
 
 CollageRanker::CollageRanker(const Config& config) {
 	try {
+		if (!std::filesystem::exists(config.model_ResNet_file)) {
+			std::string msg{"Unable to open file '" + config.model_ResNext_file + "'."};
+			warn_d(msg);
+			throw std::runtime_error{msg};
+		}
 		resnet152 = torch::jit::load(config.model_ResNet_file);
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error openning ResNet model file: " + config.model_ResNet_file + "\n" + e.what() };
+		msg.append("\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? Windows libtorch debug/release libs are NOT ABI compatible.");
 		warn_d(msg);
 		throw std::runtime_error(msg);
 	}
 
 	try {
+		if (!std::filesystem::exists(config.model_ResNext_file)) {
+			std::string msg{"Unable to open file '" + config.model_ResNext_file + "'."};
+			msg.append("\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? Windows libtorch debug/release libs are NOT ABI compatible.");
+			warn_d(msg);
+			throw std::runtime_error{msg};
+		}
 		resnext101 = torch::jit::load(config.model_ResNext_file);
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error openning ResNext model file: " + config.model_ResNext_file + "\n" + e.what() };

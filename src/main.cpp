@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <chrono>
+#include <filesystem>
 #include <thread>
 
 #include "utils.h"
@@ -63,8 +64,14 @@ void print_display(const FramePointerRange& d) {
 }
 
 int main() {
-	/* Change this accordingly. */
-	const std::string cfg_fpth{ "../config.json" };
+	/*	cd to the parent dir (root of the project)
+	 *  `cd ..`
+	 *	Change this accordingly. 	*/
+	auto path = std::filesystem::current_path();
+	std::filesystem::current_path(path.parent_path());
+	std::cout << "Running at " << std::filesystem::current_path() << "..." << std::endl;
+
+	const std::string cfg_fpth{ "config.json" };
 
 #ifdef RUN_TESTER
 	TESTER_SomHunter::run_all_tests(cfg_fpth);
@@ -83,7 +90,7 @@ int main() {
 	 * ******************************** */
 
 	// *** SHA file checksum ***
-	std::cout << "SHA256: " << SHA256_sum("../config.json") << std::endl;
+	std::cout << "SHA256: " << SHA256_sum("config.json") << std::endl;
 
 	/* !!!!!!!!!!!!!!!!!!!!!!!!!!
 	 * Test collage queries

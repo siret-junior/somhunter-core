@@ -45,10 +45,13 @@
   	"model_W2VV_img_weigths": "data/nn_models/w2vv-img_weight-2048x4096floats.bin",
 	
 	"model_ResNet_file": "data/nn_models/traced_Resnet152.pt",
-	"model_ResNext_file": "data/nn_models/traced_Resnext101.pt",
-
 	"model_ResNet_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnet152.pt",
+	"model_ResNet_SHA256": "9c90dd6ac9dd9792ff1bd7da36749ccba713d15b3bb03c890b3bc6fa891ff75e",
+
+	"model_ResNext_file": "data/nn_models/traced_Resnext101.pt",
 	"model_ResNext_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnext101.pt",
+	"model_ResNext_SHA256": "d5c990df4ec76d2a0671e8d61717fa0cf27e90cc627750d41c1be443ea36b9f9",
+
 	"models_dir": "data/nn_models/",
 
 	"ui_dir": "ui/",

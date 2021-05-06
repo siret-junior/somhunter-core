@@ -2,6 +2,7 @@
 # ####################################
 # General project setup
 # ####################################
+
 cmake_minimum_required(VERSION 3.13)
 
 project(somhunter)
@@ -16,12 +17,13 @@ set(SOMHUNTER_TARGET somhunter)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
+set(THIRD_PARTY_DIR "${CMAKE_HOME_DIRECTORY}/3rdparty")
 
 if (MSVC)
     # Set warning level 0 to everything included with angle brackets
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP /experimental:external /external:anglebrackets /external:W0" )
 else (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp" )
 endif (MSVC)
 
 # -march=native option
@@ -31,83 +33,86 @@ if(COMPILER_SUPPORTS_MARCH_NATIVE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 endif()
 
+if (CMAKE_BUILD_TYPE)
+else ()
+    message("Setting default CMAKE_BUILD_TYPE")
+    set(CMAKE_BUILD_TYPE Debug)
+endif ()
 
-#
+if (WIN32)
+    set(PLATFORM "win")
+else ()
+    set(PLATFORM "UNIX")
+endif()
+message("Platform is '${PLATFORM}'...")
+
+if (WITH_CUDA)
+    set(CUDA_SCRIPT_OPT "--cuda")
+else ()
+endif ()
+
+
+
+
+# ####################################
 # Global preprocessor defines
-#
+# ####################################
 add_compile_definitions("NOMINMAX")
 # Disable "unsafe" warnings in the MSVC toolchain
 add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
 
 # ####################################
+# Preparation scripts
+# ####################################
+
+#
+# Configure python script
+#
+message("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+message("Running 'config.py' script, this may take a while (it's downloading large files)...")
+message("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+execute_process (
+    COMMAND python3 ${CMAKE_HOME_DIRECTORY}/scripts/configure.py 
+            ${PLATFORM}                                 # What platform \in {win, UNIX}
+            ${CMAKE_HOME_DIRECTORY}/config.json         # Config file
+            ${CMAKE_HOME_DIRECTORY}/install-config.json # Install config file
+            ${CMAKE_BINARY_DIR}                         # Build dir
+            ${THIRD_PARTY_DIR}                          # Third-party dir
+            "${CMAKE_BUILD_TYPE}"                       # Build type \in { Release, Debug }
+            ${CUDA_SCRIPT_OPT}
+        WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
+        RESULTS_VARIABLE conf_res
+)
+if (conf_res)
+    message(FATAL_ERROR "Configure script failed!")
+else ()
+    message("Configure completed.")
+endif ()
+
+# ####################################
 # Dependencies
 # ####################################
 
-# ####################################
-# Download & extract libTorch
-set(LIBTORCH_INSTALL_DIR "${CMAKE_HOME_DIRECTORY}/3rdparty/")
-
-# Prebuilt binaries URLs:
-#   More here: https://pytorch.org/get-started/locally/
-if (WITH_CUDA)
-    message("Building WITH CUDA...")
-    if (CMAKE_BUILD_TYPE MATCHES Release)
-        message("Building with RELEASE libtorch...")
-        set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cu102/libtorch-win-shared-with-deps-1.7.1.zip")
-    else ()
-        message("Building with DEBUG libtorch...")
-        set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cu102/libtorch-win-shared-with-deps-debug-1.7.1.zip")
-    endif ()
-    
-    set(LIBTORCH_URL_PREBUILT_UNIX "https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip")
-else (WITH_CUDA)
-    message("Building WITHOUT CUDA...")
-    if (CMAKE_BUILD_TYPE MATCHES Release)
-        message("Building with RELEASE libtorch...")
-        set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.7.1%2Bcpu.zip")
-    else ()
-        message("Building with DEBUG libtorch...")
-        set(LIBTORCH_URL_PREBUILT_WIN "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-debug-1.7.1%2Bcpu.zip")
-    endif ()
-
-    set(LIBTORCH_URL_PREBUILT_UNIX "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcpu.zip")
-endif (WITH_CUDA)
-
-
-#
-# Run install script
-# 
-if (UNIX)
-    execute_process (
-        COMMAND sh "${CMAKE_HOME_DIRECTORY}/scripts/install_libtorch.sh" "${LIBTORCH_URL_PREBUILT_UNIX}" "${LIBTORCH_INSTALL_DIR}"
-        ECHO_OUTPUT_VARIABLE
-        ECHO_ERROR_VARIABLE
-        RESULTS_VARIABLE INSTALL_LIBTORCH_RES
-    )
-endif (UNIX)
-
+# libTorch
+set(Torch_DIR "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch/share/cmake/Torch/")
+message(${Torch_DIR})
+find_package(Torch REQUIRED) 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}") 
 if (WIN32)
-
-    message(WARNING "On Windows, libtorch Debug and Release binaries are not ABI compatible. If you're switching Rel/Deb settings make sure you delete the libtorch directory so the appropriate new type is downloaded.")
-
-    execute_process (
-        COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_HOME_DIRECTORY}/scripts/install_libtorch.ps1" "${LIBTORCH_URL_PREBUILT_WIN}" "${LIBTORCH_INSTALL_DIR}"
-        ECHO_OUTPUT_VARIABLE
-        ECHO_ERROR_VARIABLE
-        RESULTS_VARIABLE INSTALL_LIBTORCH_RES
+    # Don't know why!
+    set_target_properties(torch PROPERTIES
+        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/torch.lib"
+        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/torch.dll"
+    )
+    set_target_properties(torch_cpu PROPERTIES
+        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/torch_cpu.lib"
+        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/torch_cpu.dll"
+    )
+    set_target_properties(c10 PROPERTIES
+        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/c10.lib"
+        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/c10.dll"
     )
 endif (WIN32)
-
-# If the installation failed
-if (INSTALL_LIBTORCH_RES)
-    
-    message(FATAL_ERROR "Unable to install `libTorch`!")
-
-endif (INSTALL_LIBTORCH_RES)
-
-set(CMAKE_PREFIX_PATH "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch/")
-
-####################################
 
 # pthreads
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -119,18 +124,7 @@ find_package(CURL REQUIRED)
 # OpenCV - preparations
 find_package(OpenCV REQUIRED)
 
-# libTorch
-set(TORCH_DIR "3rdparty/libtorch")
-find_package(Torch REQUIRED) 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}") 
 
-if (WIN32)
-    # Don't know why!
-    set_target_properties(torch PROPERTIES
-    IMPORTED_IMPLIB "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.lib"
-    IMPORTED_LOCATION "${CMAKE_HOME_DIRECTORY}/3rdparty/libtorch//lib/torch.dll"
-    )
-endif (WIN32)
 
 #
 # Add structure to the project (as the FS structure)

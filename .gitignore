@@ -3,3 +3,10 @@ build
 3rdparty/cuda_libtorch.zip
 3rdparty/libtorch.zip
 tests/test*
+3rdparty/libtorch-Debug/
+3rdparty/libtorch-Release/libtorch-Release.zip
+3rdparty/libtorch-Release/
+data/nn_models/traced_Resnet152.pt
+data/nn_models/traced_Resnext101.pt
+logs/
+scripts/__pycache__/
