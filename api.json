@@ -77,10 +77,122 @@
                     }
                 }
             }
+        },
+        "/get_top_screen": {
+            "post": {
+                "tags": [
+                    "Client"
+                ],
+                "summary": "Gets the top scored display data.",
+                "operationId": "NetworkApi::handle__get_top_screen__POST",
+                "requestBody": {
+                    "description": "...",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Request__GetTopScreen__Post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response__GetTopScreen__Post"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/get_som_screen": {
+            "post": {
+                "tags": [
+                    "Client"
+                ],
+                "summary": "Gets the SOM display data.",
+                "operationId": "NetworkApi::handle__get_SOM_screen__POST",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response__GetTopScreen__Post"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
+            "Request__GetTopScreen__Post": {
+                "required": [
+                    "frameId",
+                    "pageId",
+                    "type"
+                ],
+                "type": "object",
+                "properties": {
+                    "frameId": {
+                        "type": "integer"
+                    },
+                    "pageId": {
+                        "type": "integer"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Response__GetTopScreen__Post": {
+                "type": "object",
+                "properties": {
+                    "viewData": {
+                        "$ref": "#/components/schemas/ViewData"
+                    }
+                }
+            },
+            "DisplayData": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "$ref": "#/components/schemas/DisplayType"
+                    },
+                    "page": {
+                        "type": "integer"
+                    },
+                    "frames": {
+                        "$ref": "#/components/schemas/ArrayOfFrameReferences"
+                    }
+                }
+            },
+            "ArrayOfFrameReferences": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/FrameReference"
+                }
+            },
             "Response__Settings__Get": {
                 "required": [
                     "api",
@@ -211,6 +323,52 @@
                     },
                     "hourTo": {
                         "type": "integer"
+                    }
+                }
+            },
+            "DisplayType": {
+                "type": "string"
+            },
+            "TextQueriesState": {
+                "type": "object",
+                "properties": {
+                    "q0": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "q1": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "SomhunterViewData": {
+                "type": "object",
+                "properties": {
+                    "textQueries": {
+                        "$ref": "#/components/schemas/TextQueriesState"
+                    },
+                    "frameContext": {
+                        "type": "object"
+                    },
+                    "screen": {
+                        "$ref": "#/components/schemas/DisplayData"
+                    }
+                }
+            },
+            "ViewData": {
+                "type": "object",
+                "properties": {
+                    "somhunter": {
+                        "$ref": "#/components/schemas/SomhunterViewData"
                     }
                 }
             }

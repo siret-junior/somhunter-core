@@ -78,8 +78,11 @@ private:
 	// *** Handlers ***
 
 	/** /settings */
-	void handle__settings__GET(http_request& message);
-	void handle__user__context__GET(http_request& message);
+	void handle__settings__GET(http_request& req);
+	void handle__user__context__GET(http_request& req);
+
+	void handle__get_top_screen__POST(http_request& req);
+	void handle__get_SOM_screen__POST(http_request& req);
 
 private:
 	ApiConfig _API_config;

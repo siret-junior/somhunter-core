@@ -242,6 +242,58 @@ json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext
 	return result_obj;
 }
 
+/**
+ *
+ * OpenAPI: Response__GetTopScreen__Post
+ */
+json::value to_Response__GetTopScreen__Post(SomHunter* p_core, const GetDisplayResult& res,
+                                       size_t page_num,
+										const std::string& type,
+                                       const std::string& path_prefix) {
+	const auto& frames{ res.frames };
+	const auto& likes{ res.likes };
+	const auto& bookmarks{ res.bookmarks };
+
+	// Return structure
+	json::value result = json::value::object();
+
+	{ /* *** page *** */
+		result[U("page")] = json::value::number(uint32_t(page_num));
+	}
+
+	{ /* *** type *** */
+		result[U("type")] = json::value::string(to_string_t(type));
+	}
+
+	{ /* *** frames *** */
+		auto s{ frames.end() - frames.begin()};
+		json::value arr{ json::value::array(s) };
+
+		size_t i{ 0 };
+		for (auto it{ frames.begin() }; it != frames.end(); ++it) {
+			auto fr{ to_FrameReference(p_core, *it, likes, bookmarks, path_prefix) };
+
+			arr[i] = fr;
+			++i;
+		}
+
+		result[U("frames")] = arr;
+	}
+	json::value result4 = json::value::object();
+	result4[U("screen")] = result;
+
+	json::value result3 = json::value::object();
+	result3[U("somhunter")] = result4;
+
+	json::value result2 = json::value::object();
+	result2[U("viewData")] = result3;
+
+
+	return result2;
+}
+
+
+
 void NetworkApi::add_CORS_headers(http_response& res) {
 	// Let the client know we approve of this
 	res.headers().add(U("Access-Control-Allow-Origin"), U("*"));
@@ -256,6 +308,9 @@ void NetworkApi::initialize() {
 	// Add all desired endpoints
 	push_endpoint("settings", &NetworkApi::handle__settings__GET);
 	push_endpoint("user/context", &NetworkApi::handle__user__context__GET);
+
+	push_endpoint("get_top_screen", {}, &NetworkApi::handle__get_top_screen__POST);
+	push_endpoint("get_som_screen", {}, &NetworkApi::handle__get_SOM_screen__POST);
 
 	info_d("Listening for requests at: " << _base_addr);
 }
@@ -333,7 +388,7 @@ void NetworkApi::handle__settings__GET(http_request& req) {
 void NetworkApi::handle__user__context__GET(http_request& req) {
 	auto remote_addr{ to_utf8string(req.get_remote_address()) };
 	LOG_REQUEST(remote_addr, "handle__settings__GET");
-
+	
 	auto body = req.extract_json().get();
 	// \ytbi
 	// size_t user_ID{ body[U("user_ID")].as_integer() };
@@ -350,4 +405,54 @@ void NetworkApi::handle__user__context__GET(http_request& req) {
 	// Send the response
 	NetworkApi::add_CORS_headers(response);
 	req.reply(response);
+}
+
+void NetworkApi::handle__get_top_screen__POST(http_request& req) {
+	auto remote_addr{ to_utf8string(req.get_remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__settings__GET");
+
+	auto body = req.extract_json().get();
+	
+	ImageId frame_ID{ static_cast<ImageId>(body[U("frameId")].as_integer()) };
+	size_t page_idx{ static_cast<size_t>(body[U("pageId")].as_integer()) };
+	std::string type{ to_utf8string(body[U("type")].as_string()) };
+
+	auto dtype{ str_to_disp_type(type) };
+
+	// Fetch the data
+	auto display_frames{ _p_core->get_display(dtype, frame_ID, page_idx) };
+	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, page_idx, type, "") };
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(res_data);
+
+	// Send the response
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
+
+void NetworkApi::handle__get_SOM_screen__POST(http_request& req) {
+	auto remote_addr{ to_utf8string(req.get_remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__settings__GET");
+
+	auto body = req.extract_json().get();
+	
+	/*ImageId frame_ID{ body[U("frameId")].as_integer() };
+	size_t page_idx{ body[U("pageId")].as_integer() };*/
+	//std::string type{ to_utf8string(body[U("type")].as_string()) };
+
+	auto dtype{ str_to_disp_type("SOM_display") };
+
+	// Fetch the data
+	auto display_frames{ _p_core->get_display(dtype) };
+	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, 0, "SOM_display", "") };
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(res_data);
+
+	// Send the response
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
 }
