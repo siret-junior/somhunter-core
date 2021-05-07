@@ -68,3 +68,14 @@
 	} while (false);
 
 #endif  // log_h
+
+#ifdef LOG_API_CALLS
+
+#define _write_API_log_d(id, x)                          \
+	do {                                                 \
+		std::cout << "[ " << id << " ] " << x std::endl; \
+	} while (0)
+
+#define LOG_REQUEST(id, x) _write_log_d(id, x)
+
+#endif  // LOGAPI

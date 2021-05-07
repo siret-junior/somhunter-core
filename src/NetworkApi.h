@@ -65,14 +65,15 @@ public:
 	void initialize();
 	void terminate();
 
-	
-
 private:
-	void push_endpoint(const std::string& path,
-	                   std::function<void(NetworkApi*, http_request&)> GET_handler = std::function<void(NetworkApi*, http_request&)>{},
-	                   std::function<void(NetworkApi*, http_request&)> POST_handler = std::function<void(NetworkApi*, http_request&)>{},
-	                   std::function<void(NetworkApi*, http_request&)> PUT_handler = std::function<void(NetworkApi*, http_request&)>{},
-	                   std::function<void(NetworkApi*, http_request&)> DEL_handler = std::function<void(NetworkApi*, http_request&)>{});
+	void push_endpoint(
+	    const std::string& path,
+	    std::function<void(NetworkApi*, http_request&)> GET_handler = std::function<void(NetworkApi*, http_request&)>{},
+	    std::function<void(NetworkApi*, http_request&)> POST_handler =
+	        std::function<void(NetworkApi*, http_request&)>{},
+	    std::function<void(NetworkApi*, http_request&)> PUT_handler = std::function<void(NetworkApi*, http_request&)>{},
+	    std::function<void(NetworkApi*, http_request&)> DEL_handler =
+	        std::function<void(NetworkApi*, http_request&)>{});
 
 	// *** Handlers ***
 

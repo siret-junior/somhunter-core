@@ -71,8 +71,8 @@ public:
 	SomHunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
 	inline SomHunter(const Config& cfg, const std::string& config_filepath)
-	    : _config_filepath{config_filepath},
-		config(cfg),
+	    : _config_filepath{ config_filepath },
+	      config(cfg),
 	      frames(cfg),
 	      features(frames, cfg),
 	      keywords(cfg, frames),
@@ -226,9 +226,7 @@ public:
 	// ********************************
 	// Other
 	// ********************************
-	const std::string& get_config_filepath() {
-		return _config_filepath;
-	}
+	const std::string& get_config_filepath() { return _config_filepath; }
 
 private:
 	/**

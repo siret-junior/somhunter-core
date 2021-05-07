@@ -24,6 +24,11 @@
 
 #include "common.h"
 
+#define LOG_API_CALLS
+
+// ----------------------------------------
+// Old
+
 /** For the LSC submits */
 #define SUBMIT_FILENAME_ID
 

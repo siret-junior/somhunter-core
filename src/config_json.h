@@ -153,8 +153,6 @@ private:
 	static ServerConfigDres parse_dres_config(const json11::Json& json);
 };
 
-
-
 /** Parsees the JSON config file that holds initial config.
  *
  * That means basically what we have in config.h now (paths etc.)
@@ -177,7 +175,7 @@ inline Config Config::parse_json_config_string(const std::string& cfg_file_conte
 	}
 
 	auto cfg = Config{ Config::parse_API_config(json_all["api"]),
-					   json["user_token"].string_value(),
+		               json["user_token"].string_value(),
 		               parse_submitter_config(json["submitter_config"]),
 
 		               size_t(json["max_frame_filename_len"].int_value()),

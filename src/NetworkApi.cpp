@@ -22,9 +22,225 @@
 #include "NetworkApi.h"
 
 using namespace std;
+using namespace utility::conversions;
 
 #include "SomHunter.h"
 using namespace sh;
+
+/**
+ *
+ * OpenAPI: QueryFilters
+ */
+json::value to_QueryFilters(SomHunter* /*p_core*/, const SearchContext& search_ctx) {
+	json::value result_obj = json::value::object();
+
+	{ /* *** weekdays *** */
+		json::value weekdaysArr = json::value::array(7);
+		for (size_t i{ 0 }; i < 7; ++i) {
+			weekdaysArr[i] = search_ctx.filters.days[i];
+		}
+		result_obj[U("weekdays")] = weekdaysArr;
+	}
+
+	{ /* *** hourFrom *** */
+		result_obj[U("hourFrom")] = json::value::number(uint32_t(search_ctx.filters.time.from));
+	}
+
+	{ /* *** hourTo *** */
+		result_obj[U("hourTo")] = json::value::number(uint32_t(search_ctx.filters.time.to));
+	}
+
+	return result_obj;
+}
+
+/**
+ *
+ * OpenAPI: FrameReference
+ */
+json::value to_FrameReference(SomHunter* /*p_core*/, const VideoFrame* p_frame, const LikesCont& likes,
+                              const BookmarksCont& bookmarks, const std::string& path_prefix) {
+	json::value result_obj = json::value::object();
+	{
+		ImageId ID{ IMAGE_ID_ERR_VAL };
+		ImageId v_ID{ IMAGE_ID_ERR_VAL };
+		ImageId s_ID{ IMAGE_ID_ERR_VAL };
+
+		Hour hour{ ERR_VAL<Hour>() };
+		Weekday weekday{ ERR_VAL<Weekday>() };
+		std::string LSC_ID{ "" };
+
+		bool is_liked{ false };
+		bool is_bookmarked{ false };
+		std::string filename{};
+
+		if (p_frame != nullptr) {
+			ID = p_frame->frame_ID;
+			v_ID = p_frame->video_ID;
+			s_ID = p_frame->shot_ID;
+
+			hour = p_frame->hour;
+			weekday = p_frame->weekday;
+
+			LSC_ID = p_frame->LSC_id;
+
+			is_liked = (likes.count(ID) > 0 ? true : false);
+			filename = path_prefix + p_frame->filename;
+
+			is_bookmarked = (bookmarks.count(ID) > 0 ? true : false);
+		}
+
+		{ /* *** id *** */
+			if (ID == IMAGE_ID_ERR_VAL) {
+				result_obj[U("id")] = json::value::null();
+			} else {
+				result_obj[U("id")] = json::value::number(uint32_t(ID));
+			}
+		}
+
+		{ /* *** vId *** */
+			if (ID == IMAGE_ID_ERR_VAL) {
+				result_obj[U("vId")] = json::value::null();
+			} else {
+				result_obj[U("vId")] = json::value::number(uint32_t(v_ID));
+			}
+		}
+
+		{ /* *** sId *** */
+			if (ID == IMAGE_ID_ERR_VAL) {
+				result_obj[U("sId")] = json::value::null();
+			} else {
+				result_obj[U("sId")] = json::value::number(uint32_t(s_ID));
+			}
+		}
+
+		{ /* *** hour *** */
+			if (hour == ERR_VAL<Hour>()) {
+				result_obj[U("hour")] = json::value::null();
+			} else {
+				result_obj[U("hour")] = json::value::number(uint32_t(hour));
+			}
+		}
+
+		{ /* *** weekday *** */
+			if (weekday == ERR_VAL<Weekday>()) {
+				result_obj[U("weekday")] = json::value::null();
+			} else {
+				result_obj[U("weekday")] = json::value::number(uint32_t(weekday));
+			}
+		}
+
+		{ /* *** lscId *** */
+			if (LSC_ID.empty()) {
+				result_obj[U("lscId")] = json::value::null();
+			} else {
+				result_obj[U("lscId")] = json::value::string(to_string_t(LSC_ID));
+			}
+		}
+
+		{ /* *** liked *** */
+			result_obj[U("liked")] = json::value::boolean(is_liked);
+		}
+
+		{  // *** bookmarked ***
+			result_obj[U("bookmarked")] = json::value::boolean(is_bookmarked);
+		}
+
+		{ /* *** src *** */
+			result_obj[U("src")] = json::value::string(to_string_t(filename));
+		}
+	}
+	return result_obj;
+}
+
+/**
+ *
+ * OpenAPI: Response__User__Context__Get
+ */
+json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext& ctx) {
+	auto search_ctx{ ctx.ctx };
+	auto bookmarks{ ctx.bookmarks };
+
+	// Return structure
+	json::value result_obj = json::value::object();
+
+	{ /* *** textQueries *** */
+
+		json::value value_arr{ json::value::array(2) };
+		{
+			// \todo This should be generalized in the
+			// future
+
+			std::string q0{};
+			std::string q1{};
+
+			// Scan the query string
+			const auto& query{ search_ctx.last_text_query };
+			auto idx{ query.find(">>") };
+
+			// If temporal
+			if (idx != std::string::npos) {
+				q0 = query.substr(0, idx);
+				q1 = query.substr(idx + 2);
+			}
+			// Else simple
+			else {
+				q0 = query;
+			}
+
+			json::value q0_napi = json::value::string(to_string_t(q0));
+			json::value q1_napi = json::value::string(to_string_t(q1));
+			value_arr[0] = q0_napi;
+			value_arr[1] = q1_napi;
+		}
+
+		result_obj[U("textQueries")] = value_arr;
+	}
+
+	{ /* *** displayType *** */
+		auto curr_disp_type{ search_ctx.curr_disp_type };
+		auto disp_string{ disp_type_to_str(curr_disp_type) };
+
+		json::value disp_string_napi = json::value::string(to_string_t(disp_string));
+		result_obj[U("displayType")] = disp_string_napi;
+	}
+
+	{ /* *** screenshotFilepath *** */
+		auto str{ search_ctx.screenshot_fpth };
+
+		json::value disp_string_napi = json::value::string(to_string_t(str));
+		result_obj[U("screenshotFilepath")] = disp_string_napi;
+	}
+
+	{ /* *** ID *** */
+		size_t ID{ search_ctx.ID };
+
+		json::value disp_string_napi = json::value::number(ID);
+		result_obj[U("id")] = disp_string_napi;
+	}
+
+	{ /* *** likedFrames *** */
+
+		json::value likes_arr{ json::value::array(search_ctx.likes.size()) };
+
+		size_t i{ 0 };
+		for (auto&& f_ID : search_ctx.likes) {
+			const VideoFrame& f{ p_core->get_frame(f_ID) };
+			auto fr{ to_FrameReference(p_core, &f, search_ctx.likes, bookmarks, "") };
+
+			likes_arr[i] = fr;
+			++i;
+		}
+
+		result_obj[U("likedFrames")] = likes_arr;
+	}
+
+	{ /* *** filters *** */
+		auto fiters{ to_QueryFilters(p_core, search_ctx) };
+		result_obj[U("filters")] = fiters;
+	}
+
+	return result_obj;
+}
 
 void NetworkApi::add_CORS_headers(http_response& res) {
 	// Let the client know we approve of this
@@ -94,10 +310,11 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 	}
 }
 
-void NetworkApi::handle__settings__GET(http_request& message) {
-	ucout << message.to_string() << endl;
+void NetworkApi::handle__settings__GET(http_request& req) {
+	auto remote_addr{ to_utf8string(req.get_remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__settings__GET");
 
-	auto b = message.extract_json().get();
+	// auto b = message.extract_json().get();
 
 	std::error_code ec;
 	auto j{ json::value::parse(read_whole_file(_p_core->get_config_filepath()), ec) };
@@ -110,24 +327,27 @@ void NetworkApi::handle__settings__GET(http_request& message) {
 	http_response response(status_codes::OK);
 	response.set_body(j);
 	NetworkApi::add_CORS_headers(response);
-	message.reply(response);
+	req.reply(response);
 }
 
-void NetworkApi::handle__user__context__GET(http_request& message) {
-	ucout << message.to_string() << endl;
+void NetworkApi::handle__user__context__GET(http_request& req) {
+	auto remote_addr{ to_utf8string(req.get_remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__settings__GET");
 
-	auto b = message.extract_json().get();
+	auto body = req.extract_json().get();
+	// \ytbi
+	// size_t user_ID{ body[U("user_ID")].as_integer() };
+	// std::string user_token{ to_utf8string(body[U("auth_token")].as_string()) };
 
-	std::error_code ec;
-	auto j{ json::value::parse(read_whole_file(_p_core->get_config_filepath()), ec) };
-	if (ec) {
-		std::string msg{ ec.message() };
-		warn_d(msg);
-		throw runtime_error(msg);
-	}
+	// Fetch the data
+	const UserContext& user_ctx{ _p_core->get_user_context() };
+	json::value res_data{ to_Response__User__Context__Get(_p_core, user_ctx) };
 
+	// Construct the response
 	http_response response(status_codes::OK);
-	response.set_body(j);
+	response.set_body(res_data);
+
+	// Send the response
 	NetworkApi::add_CORS_headers(response);
-	message.reply(response);
+	req.reply(response);
 }
