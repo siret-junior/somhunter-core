@@ -424,4 +424,24 @@ inline std::string SHA256_sum(const std::string& filepath) {
 	return hash.getHash();
 }
 
+inline std::string read_whole_file(const std::string& filepath) {
+	std::ifstream ifs{ filepath };
+	if (!ifs.is_open()) {
+		std::string msg{ "Error opening file: " + filepath };
+		warn_d(msg);
+		throw std::runtime_error(msg);
+	}
+
+	// Rad the whole file
+	ifs.seekg(0, std::ios::end);
+	size_t size = ifs.tellg();
+
+	std::string file_content(size, ' ');
+
+	ifs.seekg(0);
+	ifs.read(&file_content[0], size);
+
+	return file_content;
+}
+
 #endif  // UTILS_H_

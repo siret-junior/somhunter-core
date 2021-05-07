@@ -42,6 +42,8 @@ def install_models(args):
         print("Could not open/read file: {}".format(args.install_config_file))
         sys.exit(1)
 
+    config = config["core"]
+    
     #
     # 1) Download the model files
     #

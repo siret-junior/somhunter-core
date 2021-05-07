@@ -41,6 +41,10 @@ struct VideoFilenameOffsets {
 	size_t frame_num_len;
 };
 
+struct ApiConfig {
+	size_t port;
+};
+
 /** Config for submitting to the older server.
  *
  * https://github.com/klschoef/vbsserver/
@@ -101,6 +105,7 @@ struct SubmitterConfig {
  * \see ParseJsonConfig
  */
 struct Config {
+	ApiConfig API_config;
 	std::string user_token;
 	SubmitterConfig submitter_config;
 
@@ -143,37 +148,27 @@ struct Config {
 
 private:
 	static SubmitterConfig parse_submitter_config(const json11::Json& json);
+	static ApiConfig parse_API_config(const json11::Json& json);
 	static ServerConfigVbs parse_vbs_config(const json11::Json& json);
 	static ServerConfigDres parse_dres_config(const json11::Json& json);
 };
+
+
 
 /** Parsees the JSON config file that holds initial config.
  *
  * That means basically what we have in config.h now (paths etc.)
  */
 inline Config Config::parse_json_config(const std::string& filepath) {
-	std::ifstream ifs{ filepath };
-	if (!ifs.is_open()) {
-		std::string msg{ "Error opening file: " + filepath };
-		warn_d(msg);
-		throw std::runtime_error(msg);
-	}
-
-	// Rad the whole file
-	ifs.seekg(0, std::ios::end);
-	size_t size = ifs.tellg();
-
-	std::string cfg_file_contents(size, ' ');
-
-	ifs.seekg(0);
-	ifs.read(&cfg_file_contents[0], size);
-
+	std::string cfg_file_contents(read_whole_file(filepath));
 	return parse_json_config_string(cfg_file_contents);
 }
 
 inline Config Config::parse_json_config_string(const std::string& cfg_file_contents) {
 	std::string err;
-	auto json{ json11::Json::parse(cfg_file_contents, err) };
+	auto json_all{ json11::Json::parse(cfg_file_contents, err) };
+
+	auto json{ json_all["core"] };
 
 	if (!err.empty()) {
 		std::string msg{ "Error parsing JSON config string." };
@@ -181,7 +176,8 @@ inline Config Config::parse_json_config_string(const std::string& cfg_file_conte
 		throw std::runtime_error(msg);
 	}
 
-	auto cfg = Config{ json["user_token"].string_value(),
+	auto cfg = Config{ Config::parse_API_config(json_all["api"]),
+					   json["user_token"].string_value(),
 		               parse_submitter_config(json["submitter_config"]),
 
 		               size_t(json["max_frame_filename_len"].int_value()),
@@ -268,6 +264,10 @@ inline SubmitterConfig Config::parse_submitter_config(const json11::Json& json) 
 	}
 
 	return res;
+}
+
+inline ApiConfig Config::parse_API_config(const json11::Json& json) {
+	return ApiConfig{ static_cast<size_t>(json["port"].int_value()) };
 }
 
 inline ServerConfigVbs Config::parse_vbs_config(const json11::Json& json) {

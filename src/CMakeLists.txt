@@ -22,6 +22,7 @@ set(HEADERS
 	CollageRanker.h
 
 	Extractor.h
+	NetworkApi.h
 )
 
 set(SOURCES
@@ -42,6 +43,7 @@ set(SOURCES
 	CollageRanker.cpp
 
 	Extractor.cpp
+	NetworkApi.cpp
 )
 
 target_sources(${SOMHUNTER_TARGET} PRIVATE ${SOURCES} ${HEADERS})

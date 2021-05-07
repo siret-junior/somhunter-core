@@ -24,14 +24,17 @@
 #include <filesystem>
 #include <thread>
 
+#include <cpprest/json.h>
+
 #include "utils.h"
 
 #include "Extractor.h"
+#include "NetworkApi.h"
 #include "SomHunter.h"
 using namespace sh;
 
 // If the `TESTER_SomHunter` should do its job.
-#define RUN_TESTER
+//#define RUN_TESTER
 //#define TEST_COLLAGE_QUERIES
 
 #define TEST_DATA_DIR "../../tests/data"
@@ -69,7 +72,7 @@ int main() {
 	 *	Change this accordingly. 	*/
 	auto path = std::filesystem::current_path();
 	std::filesystem::current_path(path.parent_path());
-	std::cout << "Running at " << std::filesystem::current_path() << "..." << std::endl;
+	std::cout << "Running from the directory " << std::filesystem::current_path() << "..." << std::endl;
 
 	const std::string cfg_fpth{ "config.json" };
 
@@ -82,8 +85,16 @@ int main() {
 	// Parse config file
 	auto config = Config::parse_json_config(cfg_fpth);
 
+	// Example of JSON lib from network lib
+	/*std::ifstream ifs{ cfg_fpth };
+	auto d{ web::json::value::parse(ifs) };
+	std::cout << d.as_object()[U("api")].as_object()[U("port")].as_integer() << std::endl;*/
+
 	// Instantiate the SOMHunter
-	SomHunter core{ config };
+	SomHunter core{ config, cfg_fpth };
+
+	NetworkApi api{ config.API_config, &core };
+	api.run();
 
 	/* ********************************
 	 * Test features here...

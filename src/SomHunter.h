@@ -54,6 +54,7 @@ class SomHunter {
 	// Loaded dataset
 	//		(shared for all the users)
 	// ********************************
+	const std::string _config_filepath;
 	const Config config;
 	const DatasetFrames frames;
 	const DatasetFeatures features;
@@ -69,8 +70,9 @@ class SomHunter {
 public:
 	SomHunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
-	inline SomHunter(const Config& cfg)
-	    : config(cfg),
+	inline SomHunter(const Config& cfg, const std::string& config_filepath)
+	    : _config_filepath{config_filepath},
+		config(cfg),
 	      frames(cfg),
 	      features(frames, cfg),
 	      keywords(cfg, frames),
@@ -219,6 +221,13 @@ public:
 	std::vector<float> resize_image(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
 	                                size_t new_h, size_t num_channels = 3) const {
 		return ImageManipulator::resize(in, orig_w, orig_h, new_w, new_h, num_channels);
+	}
+
+	// ********************************
+	// Other
+	// ********************************
+	const std::string& get_config_filepath() {
+		return _config_filepath;
 	}
 
 private:

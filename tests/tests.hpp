@@ -383,7 +383,7 @@ private:
 };
 
 const char *json_contents = R"(
-{
+{ "core": {
   "user_token": "admin",
   "submitter_config":{
 		"submit_to_VBS": true,
@@ -461,7 +461,7 @@ const char *json_contents = R"(
 	"model_ResNet_file": "data/LSC2020_5days/nn_models/traced_Resnet152.pt",
 	"model_ResNext_file": "data/LSC2020_5days/nn_models/traced_Resnext101.pt"
   
-}
+}}
 )";
 
 class TESTER_Config

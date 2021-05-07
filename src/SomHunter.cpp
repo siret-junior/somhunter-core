@@ -491,8 +491,7 @@ FramePointerRange SomHunter::get_topKNN_display(ImageId selected_image, PageId p
 }
 
 FramePointerRange SomHunter::get_page_from_last(PageId page) {
-	debug_d("Getting page " << page << ", page size " << config.display_page_size << ", current display size "
-	                        << current_display.size());
+	debug_d("Getting page " << page << ", page size " << config.display_page_size);
 
 	size_t begin_off{ std::min(user.ctx.current_display.size(), page * config.display_page_size) };
 	size_t end_off{ std::min(user.ctx.current_display.size(),

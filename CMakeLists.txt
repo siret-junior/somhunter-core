@@ -93,6 +93,8 @@ endif ()
 # Dependencies
 # ####################################
 
+find_package(cpprestsdk REQUIRED)
+
 # libTorch
 set(Torch_DIR "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch/share/cmake/Torch/")
 message(${Torch_DIR})
@@ -148,10 +150,12 @@ set_target_properties(${SOMHUNTER_TARGET} PROPERTIES CXX_STANDARD 17)
 # ####################################
 # Linking
 # ####################################
+
 target_include_directories(${SOMHUNTER_TARGET} 
 	PRIVATE
 		${CURL_INCLUDE_DIR}
         ${OpenCV_INCLUDE_DIRS}
+        ${cpprestsdk_INCLUDE_DIRS}
 )
 
 target_link_libraries(${SOMHUNTER_TARGET} 
@@ -159,6 +163,7 @@ target_link_libraries(${SOMHUNTER_TARGET}
         ${OpenCV_LIBS}
         ${CURL_LIBRARIES}
 		${TORCH_LIBRARIES}
+        ${cpprestsdk_LIBRARIES}
 		Threads::Threads
 )
 

@@ -1,0 +1,219 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SOMHunter Core",
+        "description": "SOMHunter Core",
+        "version": "0.1"
+    },
+    "paths": {
+        "/settings": {
+            "get": {
+                "tags": [
+                    "Client"
+                ],
+                "summary": "Gets the config JSON from the core.",
+                "operationId": "NetworkApi::handle__settings__GET",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response__Settings__Get"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
+        "/user/context": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Gets the current state of the user.",
+                "operationId": "NetworkApi::handle__user__context__GET",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "user_ID",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "(YTBI) ID of the user who is asking."
+                    },
+                    {
+                        "in": "query",
+                        "name": "auth_token",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "(YTBI) The last access token recieved from the core."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response__User__Context__Get"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Response__Settings__Get": {
+                "required": [
+                    "api",
+                    "core"
+                ],
+                "type": "object",
+                "properties": {
+                    "api": {
+                        "type": "object"
+                    },
+                    "core": {
+                        "type": "object"
+                    }
+                }
+            },
+            "Response__User__Context__Get": {
+                "required": [
+                    "search",
+                    "history",
+                    "bookmarkedFrames"
+                ],
+                "type": "object",
+                "properties": {
+                    "search": {
+                        "$ref": "#/components/schemas/SearchContext"
+                    },
+                    "history": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/HistoryState"
+                        }
+                    },
+                    "bookmarkedFrames": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FrameReference"
+                        }
+                    }
+                }
+            },
+            "SearchContext": {
+                "type": "object",
+                "properties": {
+                    "textQueries": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "displayType": {
+                        "type": "string"
+                    },
+                    "screenshotFilepath": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "likedFrames": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FrameReference"
+                        }
+                    },
+                    "filters": {
+                        "$ref": "#/components/schemas/QueryFilters"
+                    }
+                }
+            },
+            "FrameReference": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "vId": {
+                        "type": "integer"
+                    },
+                    "sId": {
+                        "type": "integer"
+                    },
+                    "hour": {
+                        "type": "integer"
+                    },
+                    "weekday": {
+                        "type": "integer"
+                    },
+                    "lscId": {
+                        "type": "integer"
+                    },
+                    "liked": {
+                        "type": "boolean"
+                    },
+                    "bookmarked": {
+                        "type": "boolean"
+                    },
+                    "src": {
+                        "type": "string"
+                    }
+                }
+            },
+            "HistoryState": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "screenshotFilepath": {
+                        "type": "string"
+                    },
+                    "time": {
+                        "type": "string"
+                    }
+                }
+            },
+            "QueryFilters": {
+                "type": "object",
+                "properties": {
+                    "weekdays": {
+                        "type": "array",
+                        "items": {
+                            "type": "boolean"
+                        }
+                    },
+                    "hourFrom": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "hourTo": {
+                        "type": "integer"
+                    }
+                }
+            }
+        }
+    }
+}
