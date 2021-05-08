@@ -300,7 +300,7 @@ json::value to_Response__GetTopScreen__Post(SomHunter* p_core, const GetDisplayR
 }
 
 json::value to_Response__GetDetailScreen__Post(SomHunter* p_core, const GetDisplayResult& res, size_t page_num,
-                                               const std::string& type, const std::string& path_prefix) {
+                                               const std::string& /*type*/, const std::string& path_prefix) {
 	const auto& frames{ res.frames };
 	const auto& likes{ res.likes };
 	const auto& bookmarks{ res.bookmarks };
@@ -367,6 +367,48 @@ json::value to_Response__GetAutocompleteResults__Get(SomHunter* /*p_core*/, cons
 	}
 
 	return result_arr;
+}
+
+json::value to_HistoryArray(SomHunter* /*p_core*/, const std::vector<SearchContext>& history) {
+	json::value history_arr{ json::value::array(history.size()) };
+
+	size_t i{ 0 };
+	for (auto&& ctx : history) {
+		json::value hist_point{ json::value::object() };
+
+		{  // *** id ***
+			hist_point[U("id")] = json::value::number(uint32_t(ctx.ID));
+		}
+
+		{  // *** screenshotFilepath ***
+			hist_point[U("screenshotFilepath")] = json::value::string(to_string_t(ctx.screenshot_fpth));
+		}
+
+		{  // *** time ***
+			hist_point[U("time")] = json::value::string(to_string_t(ctx.label));
+		}
+		history_arr[i] = hist_point;
+		++i;
+	}
+
+	return history_arr;
+}
+
+json::value to_Response__Rescore__Post(SomHunter* p_core, const RescoreResult& rescore_res) {
+	size_t curr_ctx_ID{ rescore_res.curr_ctx_ID };
+	const auto& history{ rescore_res.history };
+
+	json::value result_obj = json::value::object();
+
+	{ /* *** id *** */
+		result_obj[U("currId")] = json::value::number(uint32_t(curr_ctx_ID));
+	}
+
+	{ /* *** history *** */
+		result_obj[U("history")] = to_HistoryArray(p_core, history);
+	}
+
+	return result_obj;
 }
 
 void NetworkApi::add_CORS_headers(http_response& res) {
@@ -668,7 +710,93 @@ void NetworkApi::handle__reset_search_session__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__rescore__POST(http_request req) {}
+void NetworkApi::handle__rescore__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__rescore__POST");
+
+	auto body = req.extract_json().get();
+
+	size_t srcSearchCtxId{ ERR_VAL<size_t>() };
+	std::string screenshotData{};
+
+	std::string q0{};
+	std::string q1{};
+
+	json::value weekdays_JSON;
+	Hour hourFrom{};
+	Hour hourTo{};
+
+	try {
+		srcSearchCtxId = static_cast<size_t>(body[U("srcSearchCtxId")].as_integer());
+		screenshotData = to_utf8string(body[U("screenshotData")].as_string());
+
+		q0 = to_utf8string(body[U("q0")].as_string());
+		q1 = to_utf8string(body[U("q1")].as_string());
+
+		weekdays_JSON = body[U("filters")][U("weekdays")];
+		hourFrom = static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer());
+		hourTo = static_cast<Hour>(body[U("filters")][U("hoursTo")].as_integer());
+	} catch (...) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+	// Empty queries
+	if (q0.empty() && q1.empty()) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Empty queries.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
+	try {
+		// \ytbi
+		std::string user_token{};
+		std::string time_label{"22:30"};
+
+		/*
+		 * Text queries
+		 */
+		auto& textQuery{ q0.append(" >> ").append(q1) };
+
+		/*
+		 * Filters
+		 */
+		uint8_t weekdays_mask{ 0 };
+		for (size_t i{ 0 }; i < 7; ++i) {
+			bool flag{ weekdays_JSON.as_array().at(i).as_bool() };
+			if (flag) {
+				// LSb is day 0, MSb is day 6
+				weekdays_mask = weekdays_mask | (1 << i);
+			}
+		}
+		Filters filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask } };
+
+		/*
+		 * Collage
+		 */
+		// \todo
+
+
+		// Rescore
+		auto rescore_result{ _p_core->rescore(textQuery, DEFAULT_COLLAGE, &filters, srcSearchCtxId, "", time_label) };
+
+		json::value history{ to_Response__Rescore__Post(_p_core, rescore_result) };
+
+		// Construct the response
+		http_response res(status_codes::OK);
+		res.set_body(history);
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+
+	} catch (...) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+}
 
 void NetworkApi::handle__like_frame__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
