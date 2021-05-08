@@ -24,9 +24,6 @@
 using namespace utility::conversions;
 using namespace sh;
 
-
-
-
 /**
  *
  * OpenAPI: QueryFilters
@@ -246,10 +243,8 @@ json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext
  *
  * OpenAPI: Response__GetTopScreen__Post
  */
-json::value to_Response__GetTopScreen__Post(SomHunter* p_core, const GetDisplayResult& res,
-                                       size_t page_num,
-										const std::string& type,
-                                       const std::string& path_prefix) {
+json::value to_Response__GetTopScreen__Post(SomHunter* p_core, const GetDisplayResult& res, size_t page_num,
+                                            const std::string& type, const std::string& path_prefix) {
 	const auto& frames{ res.frames };
 	const auto& likes{ res.likes };
 	const auto& bookmarks{ res.bookmarks };
@@ -266,7 +261,7 @@ json::value to_Response__GetTopScreen__Post(SomHunter* p_core, const GetDisplayR
 	}
 
 	{ /* *** frames *** */
-		auto s{ frames.end() - frames.begin()};
+		auto s{ frames.end() - frames.begin() };
 		json::value arr{ json::value::array(s) };
 
 		size_t i{ 0 };
@@ -288,11 +283,39 @@ json::value to_Response__GetTopScreen__Post(SomHunter* p_core, const GetDisplayR
 	json::value result2 = json::value::object();
 	result2[U("viewData")] = result3;
 
-
 	return result2;
 }
 
+json::value to_Response__GetDetailScreen__Post(SomHunter* p_core, const GetDisplayResult& res, size_t page_num,
+                                               const std::string& type, const std::string& path_prefix) {
+	const auto& frames{ res.frames };
+	const auto& likes{ res.likes };
+	const auto& bookmarks{ res.bookmarks };
 
+	// Return structure
+	json::value result = json::value::object();
+
+	{ /* *** page *** */
+		result[U("page")] = json::value::number(uint32_t(page_num));
+	}
+
+	{ /* *** frames *** */
+		auto s{ frames.end() - frames.begin() };
+		json::value arr{ json::value::array(s) };
+
+		size_t i{ 0 };
+		for (auto it{ frames.begin() }; it != frames.end(); ++it) {
+			auto fr{ to_FrameReference(p_core, *it, likes, bookmarks, path_prefix) };
+
+			arr[i] = fr;
+			++i;
+		}
+
+		result[U("frames")] = arr;
+	}
+
+	return result;
+}
 
 void NetworkApi::add_CORS_headers(http_response& res) {
 	// Let the client know we approve of this
@@ -311,8 +334,25 @@ void NetworkApi::initialize() {
 
 	push_endpoint("get_top_screen", {}, &NetworkApi::handle__get_top_screen__POST);
 	push_endpoint("get_som_screen", {}, &NetworkApi::handle__get_SOM_screen__POST);
+	push_endpoint("get_frame_detail_data", &NetworkApi::handle__get_frame_detail_data__GET);
 
-	LOG_I("Listening for requests at: " << _base_addr);
+	push_endpoint("get_autocomplete_results", &NetworkApi::handle__get_autocomplete_results__GET);
+
+	push_endpoint("log_scroll", &NetworkApi::handle__log_scroll__GET);
+	push_endpoint("log_test_query_change", &NetworkApi::handle__log_test_query_change__GET);
+	push_endpoint("submit_frame", {}, &NetworkApi::handle__submit_frame__POST);
+	push_endpoint("login_to_DRES", {}, &NetworkApi::handle__login_to_DRES__POST);
+
+	push_endpoint("reset_search_session", {}, &NetworkApi::handle__reset_search_session__POST);
+	push_endpoint("rescore", {}, &NetworkApi::handle__rescore__POST);
+
+	push_endpoint("like_frame", {}, &NetworkApi::handle__like_frame__POST);
+	push_endpoint("search/bookmark", {}, &NetworkApi::handle__search__bookmark__POST);
+
+	push_endpoint("search/context", &NetworkApi::handle__search__context__GET,
+	              &NetworkApi::handle__search__context__POST);
+
+	LOG_S("Listening for requests at: " << _base_addr);
 }
 
 void NetworkApi::terminate() {
@@ -342,7 +382,7 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 		http_listener ep_listener{ endpoint.to_uri().to_string() };
 
 		if (GET_handler) {
-			ep_listener.support(methods::GET, std::bind(&NetworkApi::handle__settings__GET, this, std::placeholders::_1));
+			ep_listener.support(methods::GET, std::bind(GET_handler, this, std::placeholders::_1));
 		}
 
 		if (POST_handler) {
@@ -387,8 +427,8 @@ void NetworkApi::handle__settings__GET(http_request req) {
 
 void NetworkApi::handle__user__context__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__settings__GET");
-	
+	LOG_REQUEST(remote_addr, "handle__user__context__GET");
+
 	auto body = req.extract_json().get();
 	// \ytbi
 	// size_t user_ID{ body[U("user_ID")].as_integer() };
@@ -409,10 +449,10 @@ void NetworkApi::handle__user__context__GET(http_request req) {
 
 void NetworkApi::handle__get_top_screen__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__settings__GET");
+	LOG_REQUEST(remote_addr, "handle__get_top_screen__POST");
 
 	auto body = req.extract_json().get();
-	
+
 	ImageId frame_ID{ static_cast<ImageId>(body[U("frameId")].as_integer()) };
 	size_t page_idx{ static_cast<size_t>(body[U("pageId")].as_integer()) };
 	std::string type{ to_utf8string(body[U("type")].as_string()) };
@@ -434,13 +474,13 @@ void NetworkApi::handle__get_top_screen__POST(http_request req) {
 
 void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__settings__GET");
+	LOG_REQUEST(remote_addr, "handle__get_SOM_screen__POST");
 
 	auto body = req.extract_json().get();
-	
+
 	/*ImageId frame_ID{ body[U("frameId")].as_integer() };
 	size_t page_idx{ body[U("pageId")].as_integer() };*/
-	//std::string type{ to_utf8string(body[U("type")].as_string()) };
+	// std::string type{ to_utf8string(body[U("type")].as_string()) };
 
 	auto dtype{ str_to_disp_type("SOM_display") };
 
@@ -456,3 +496,73 @@ void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
 }
+
+void NetworkApi::handle__get_frame_detail_data__GET(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__get_frame_detail_data__GET");
+
+	// auto paths = http::uri::split_path(http::uri::decode(req.relative_uri().path()));
+
+	auto query{ req.relative_uri().query() };
+	auto query_map{ web::uri::split_query(query) };
+
+	size_t frame_ID{ ERR_VAL<size_t>() };
+	try {
+		frame_ID = static_cast<size_t>(str_to_int(to_utf8string(query_map[U("frameId")])));
+	} catch (...) {
+	}
+
+	bool log_it{ true };
+	if (query_map.count(U("logIt")) > 0) {
+		log_it = (to_utf8string(query_map[U("logIt")]) == "true" ? true : false);
+	}
+
+	if (frame_ID == ERR_VAL<size_t>()) {
+		json::value res_data = json::value::string(U("Invalid `frameId` parameter."));
+		json::value e = json::value::object();
+		e[U("message")] = res_data;
+		json::value r = json::value::object();
+		r[U("error")] = e;
+
+		http_response res(status_codes::BadRequest);
+		res.set_body(r);
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
+	// Fetch the data
+	auto display_frames{ _p_core->get_display(DisplayType::DVideoDetail, frame_ID, 0, log_it) };
+	json::value res_data{ to_Response__GetDetailScreen__Post(_p_core, display_frames, 0,
+		                                                     disp_type_to_str(DisplayType::DVideoDetail), "") };
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(res_data);
+
+	// Send the response
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
+
+void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {}
+
+void NetworkApi::handle__log_scroll__GET(http_request req) {}
+
+void NetworkApi::handle__log_test_query_change__GET(http_request req) {}
+
+void NetworkApi::handle__submit_frame__POST(http_request req) {}
+
+void NetworkApi::handle__login_to_DRES__POST(http_request req) {}
+
+void NetworkApi::handle__reset_search_session__POST(http_request req) {}
+
+void NetworkApi::handle__rescore__POST(http_request req) {}
+
+void NetworkApi::handle__like_frame__POST(http_request req) {}
+
+void NetworkApi::handle__search__bookmark__POST(http_request req) {}
+
+void NetworkApi::handle__search__context__POST(http_request req) {}
+
+void NetworkApi::handle__search__context__GET(http_request req) {}

@@ -69,11 +69,9 @@ private:
 	void push_endpoint(
 	    const std::string& path,
 	    std::function<void(NetworkApi*, http_request)> GET_handler = std::function<void(NetworkApi*, http_request)>{},
-	    std::function<void(NetworkApi*, http_request)> POST_handler =
-	        std::function<void(NetworkApi*, http_request)>{},
+	    std::function<void(NetworkApi*, http_request)> POST_handler = std::function<void(NetworkApi*, http_request)>{},
 	    std::function<void(NetworkApi*, http_request)> PUT_handler = std::function<void(NetworkApi*, http_request)>{},
-	    std::function<void(NetworkApi*, http_request)> DEL_handler =
-	        std::function<void(NetworkApi*, http_request)>{});
+	    std::function<void(NetworkApi*, http_request)> DEL_handler = std::function<void(NetworkApi*, http_request)>{});
 
 	// *** Handlers ***
 
@@ -83,6 +81,22 @@ private:
 
 	void handle__get_top_screen__POST(http_request req);
 	void handle__get_SOM_screen__POST(http_request req);
+	void handle__get_frame_detail_data__GET(http_request req);
+	void handle__get_autocomplete_results__GET(http_request req);
+
+	void handle__log_scroll__GET(http_request req);
+	void handle__log_test_query_change__GET(http_request req);
+	void handle__submit_frame__POST(http_request req);
+	void handle__login_to_DRES__POST(http_request req);
+
+	void handle__reset_search_session__POST(http_request req);
+	void handle__rescore__POST(http_request req);
+
+	void handle__like_frame__POST(http_request req);
+	void handle__search__bookmark__POST(http_request req);
+
+	void handle__search__context__POST(http_request req);
+	void handle__search__context__GET(http_request req);
 
 private:
 	ApiConfig _API_config;
