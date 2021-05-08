@@ -629,7 +629,29 @@ void NetworkApi::handle__log_scroll__GET(http_request req) {}
 
 void NetworkApi::handle__log_test_query_change__GET(http_request req) {}
 
-void NetworkApi::handle__submit_frame__POST(http_request req) {}
+void NetworkApi::handle__submit_frame__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__submit_frame__POST");
+
+	ImageId frame_ID{ ERR_VAL<ImageId>() };
+	auto body = req.extract_json().get();
+	try {
+		frame_ID = static_cast<ImageId>(body[U("frameId")].as_integer());
+	} catch (...) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `frameId` parameter.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
+	// Submit it!
+	_p_core->submit_to_server(frame_ID);
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
 
 void NetworkApi::handle__login_to_DRES__POST(http_request req) {}
 
