@@ -24,6 +24,19 @@
 using namespace utility::conversions;
 using namespace sh;
 
+static http_response construct_error_res(status_code code, const std::string& msg) {
+	json::value o_msg = json::value::string(to_string_t(msg));
+	json::value e = json::value::object();
+	e[U("message")] = o_msg;
+	json::value r = json::value::object();
+	r[U("error")] = e;
+
+	http_response res;
+	res.set_status_code(code);
+	res.set_body(r);
+	return res;
+}
+
 /**
  *
  * OpenAPI: QueryFilters
@@ -317,6 +330,45 @@ json::value to_Response__GetDetailScreen__Post(SomHunter* p_core, const GetDispl
 	return result;
 }
 
+json::value to_Response__GetAutocompleteResults__Get(SomHunter* /*p_core*/, const std::vector<const Keyword*>& kws,
+                                                     size_t example_count, const std::string& path_prefix) {
+	json::value result_arr{ json::value::array(kws.size()) };
+
+	size_t i = 0ULL;
+	// Iterate through all results
+	for (auto&& p_kw : kws) {
+		json::value result_obj = json::value::object();
+		{ /* *** id *** */
+			result_obj[U("id")] = json::value::number(uint32_t(p_kw->kw_ID));
+		}
+		{ /* *** lscId *** */
+			result_obj[U("wordString")] = json::value::string(to_string_t(p_kw->synset_strs.front()));
+		}
+		{ /* *** description *** */
+			result_obj[U("description")] = json::value::string(to_string_t(p_kw->desc));
+		}
+		{ /* *** exampleFrames *** */
+			json::value examples_arr{ json::value::array(p_kw->top_ex_imgs.size()) };
+
+			size_t ii{ 0 };
+			for (auto&& p_frame : p_kw->top_ex_imgs) {
+				if (ii >= example_count) {
+					break;
+				}
+
+				examples_arr[ii] = json::value::string(to_string_t(path_prefix + p_frame->filename));
+				++ii;
+			}
+			result_obj[U("exampleFrames")] = examples_arr;
+		}
+
+		result_arr[i] = result_obj;
+		++i;
+	}
+
+	return result_arr;
+}
+
 void NetworkApi::add_CORS_headers(http_response& res) {
 	// Let the client know we approve of this
 	res.headers().add(U("Access-Control-Allow-Origin"), U("*"));
@@ -512,23 +564,16 @@ void NetworkApi::handle__get_frame_detail_data__GET(http_request req) {
 	} catch (...) {
 	}
 
-	bool log_it{ true };
-	if (query_map.count(U("logIt")) > 0) {
-		log_it = (to_utf8string(query_map[U("logIt")]) == "true" ? true : false);
-	}
-
 	if (frame_ID == ERR_VAL<size_t>()) {
-		json::value res_data = json::value::string(U("Invalid `frameId` parameter."));
-		json::value e = json::value::object();
-		e[U("message")] = res_data;
-		json::value r = json::value::object();
-		r[U("error")] = e;
-
-		http_response res(status_codes::BadRequest);
-		res.set_body(r);
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `frameId` parameter.") };
 		NetworkApi::add_CORS_headers(res);
 		req.reply(res);
 		return;
+	}
+
+	bool log_it{ true };
+	if (query_map.count(U("logIt")) > 0) {
+		log_it = (to_utf8string(query_map[U("logIt")]) == "true" ? true : false);
 	}
 
 	// Fetch the data
@@ -545,7 +590,40 @@ void NetworkApi::handle__get_frame_detail_data__GET(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {}
+void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__get_autocomplete_results__GET");
+
+	auto query{ req.relative_uri().query() };
+	auto query_map{ web::uri::split_query(query) };
+
+	auto record{ query_map.find(U("queryValue")) };
+	std::string prefix{ (record != query_map.end()) ? to_utf8string(record->second) : "" };
+
+	// Empty body
+	if (prefix.empty()) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `queryValue` parameter.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
+	// \todo
+	size_t count{ 10 };
+	auto record_count{ query_map.find(U("count")) };
+
+	// Fetch the data
+	auto keywords{ _p_core->autocomplete_keywords(prefix, count) };
+	json::value res_data{ to_Response__GetAutocompleteResults__Get(_p_core, keywords, count, "") };
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(res_data);
+
+	// Send the response
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
 
 void NetworkApi::handle__log_scroll__GET(http_request req) {}
 
