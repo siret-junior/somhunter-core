@@ -1,7 +1,7 @@
 {
 	"api": {
-		"port": 9999,
-		"url": "http://localhost:9999",
+		"port": 8888,
+		"url": "http://localhost:8888",
 		"endpoints": {
             "settings": {
                 "get": {

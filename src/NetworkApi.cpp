@@ -416,12 +416,28 @@ void NetworkApi::add_CORS_headers(http_response& res) {
 	res.headers().add(U("Access-Control-Allow-Origin"), U("*"));
 }
 
+void handle_options(http_request request) {
+	auto remote_addr{ to_utf8string(request.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle_options");
+
+	http_response response(status_codes::OK);
+	response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
+	response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
+	response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
+	response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
+	request.reply(response);
+}
+
 NetworkApi::NetworkApi(const ApiConfig& API_config, SomHunter* p_core)
     : _API_config{ API_config },
       _p_core{ p_core },
       _base_addr{ "http://127.0.0.1:" + std::to_string(API_config.port) } {}
 
 void NetworkApi::initialize() {
+	uri_builder endpoint(utility::conversions::to_string_t(_base_addr));
+	http_listener ep_listener{ endpoint.to_uri().to_string() };
+	ep_listener.support(methods::OPTIONS, handle_options);
+
 	// Add all desired endpoints
 	push_endpoint("settings", &NetworkApi::handle__settings__GET);
 	push_endpoint("user/context", &NetworkApi::handle__user__context__GET);
@@ -490,6 +506,9 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 		if (DEL_handler) {
 			ep_listener.support(methods::DEL, std::bind(DEL_handler, this, std::placeholders::_1));
 		}
+
+		// For CORS
+		ep_listener.support(methods::OPTIONS, std::bind(handle_options, std::placeholders::_1));
 
 		ep_listener.open().wait();
 		_endpoints.emplace_back(std::move(ep_listener));
@@ -753,7 +772,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 	try {
 		// \ytbi
 		std::string user_token{};
-		std::string time_label{"22:30"};
+		std::string time_label{ "22:30" };
 
 		/*
 		 * Text queries
@@ -777,7 +796,6 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		 * Collage
 		 */
 		// \todo
-
 
 		// Rescore
 		auto rescore_result{ _p_core->rescore(textQuery, DEFAULT_COLLAGE, &filters, srcSearchCtxId, "", time_label) };
