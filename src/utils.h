@@ -402,7 +402,7 @@ inline std::string to_lowercase(const std::string& old) {
  */
 inline std::string SHA256_sum(const std::string& filepath) {
 	// \todo test with large files
-	SHA256 hash;
+	::SHA256 hash;
 
 	std::ifstream f(filepath, std::ios::binary);
 	if (!f.is_open()) {

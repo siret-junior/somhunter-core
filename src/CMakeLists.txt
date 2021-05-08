@@ -21,7 +21,7 @@ set(HEADERS
 	ImageManipulator.h
 	CollageRanker.h
 
-	Extractor.h
+	#Extractor.h
 	NetworkApi.h
 )
 
@@ -42,7 +42,7 @@ set(SOURCES
 	ImageManipulator.cpp
 	CollageRanker.cpp
 
-	Extractor.cpp
+	#Extractor.cpp
 	NetworkApi.cpp
 )
 

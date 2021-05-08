@@ -32,10 +32,10 @@
 					"prebuild_lib_URL_debug_SHA256": ""
 				},
 				"CPU": {
-					"prebuild_lib_URL": "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcpu.zip",
-					"prebuild_lib_URL_SHA256": "",
-					"prebuild_lib_URL_debug": "https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip",
-					"prebuild_lib_URL_debug_SHA256": ""
+					"prebuild_lib_URL": "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.8.1%2Bcpu.zip",
+					"prebuild_lib_URL_SHA256": "44ecf7f2fc671da7b67694fc9d64b2762039ad83de46407ae3e0868081b7ae2c",
+					"prebuild_lib_URL_debug": "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.8.1%2Bcpu.zip",
+					"prebuild_lib_URL_debug_SHA256": "44ecf7f2fc671da7b67694fc9d64b2762039ad83de46407ae3e0868081b7ae2c"
 				}
 			}
 		}

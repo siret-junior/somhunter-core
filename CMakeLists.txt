@@ -23,7 +23,7 @@ if (MSVC)
     # Set warning level 0 to everything included with angle brackets
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP /experimental:external /external:anglebrackets /external:W0" )
 else (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp" )
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -frtti -D_GLIBCXX_USE_CXX11_ABI=1")
 endif (MSVC)
 
 # -march=native option
@@ -145,6 +145,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOMHUNTER_SOURCE_FILEPATHS
 # Create the target
 # ####################################
 add_executable(${SOMHUNTER_TARGET})
+target_compile_features(${SOMHUNTER_TARGET} PRIVATE cxx_std_17)
 set_target_properties(${SOMHUNTER_TARGET} PROPERTIES CXX_STANDARD 17)
 
 # ####################################
