@@ -655,7 +655,18 @@ void NetworkApi::handle__submit_frame__POST(http_request req) {
 
 void NetworkApi::handle__login_to_DRES__POST(http_request req) {}
 
-void NetworkApi::handle__reset_search_session__POST(http_request req) {}
+void NetworkApi::handle__reset_search_session__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__reset_search_session__POST");
+
+	// Reset
+	_p_core->reset_search_session();
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
 
 void NetworkApi::handle__rescore__POST(http_request req) {}
 
