@@ -191,7 +191,7 @@ void Extractor::run() {
 		cv::cvtColor(src, src, cv::COLOR_BGR2RGB);
 		if (src.data == NULL) {
 			std::string msg{ "Error reading thumbnail at '" + filepath + "'!" };
-			warn_d(msg);
+			LOG_E(msg);
 			throw std::runtime_error(msg);
 		}
 

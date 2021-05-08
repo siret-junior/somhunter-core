@@ -176,7 +176,7 @@ private:
 		};
 #else
 		std::vector<KeywordId> correct{};
-		warn_d("No test values for this dataset.");
+		LOG_E("No test values for this dataset.");
 #endif
 		for (auto &&[key, val] : correct) {
 			auto ac_res{ core.autocomplete_keywords(key, 10) };

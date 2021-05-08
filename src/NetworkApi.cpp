@@ -312,7 +312,7 @@ void NetworkApi::initialize() {
 	push_endpoint("get_top_screen", {}, &NetworkApi::handle__get_top_screen__POST);
 	push_endpoint("get_som_screen", {}, &NetworkApi::handle__get_SOM_screen__POST);
 
-	info_d("Listening for requests at: " << _base_addr);
+	LOG_I("Listening for requests at: " << _base_addr);
 }
 
 void NetworkApi::terminate() {
@@ -359,7 +359,7 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 
 		ep_listener.open().wait();
 		_endpoints.emplace_back(std::move(ep_listener));
-		debug_d("Listener for '" << path << "' set.");
+		LOG_D("Listener for '" << path << "' set.");
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
 	}
@@ -375,7 +375,7 @@ void NetworkApi::handle__settings__GET(http_request& req) {
 	auto j{ json::value::parse(read_whole_file(_p_core->get_config_filepath()), ec) };
 	if (ec) {
 		std::string msg{ ec.message() };
-		warn_d(msg);
+		LOG_E(msg);
 		throw runtime_error(msg);
 	}
 

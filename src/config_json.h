@@ -170,7 +170,7 @@ inline Config Config::parse_json_config_string(const std::string& cfg_file_conte
 
 	if (!err.empty()) {
 		std::string msg{ "Error parsing JSON config string." };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -257,7 +257,7 @@ inline SubmitterConfig Config::parse_submitter_config(const json11::Json& json) 
 	// If error value
 	else {
 		std::string msg{ "Uknown submit server type: " + res.server_type };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 

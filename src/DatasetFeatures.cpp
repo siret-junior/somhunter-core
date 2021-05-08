@@ -33,7 +33,7 @@ DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Config& config)
 	std::ifstream in(config.features_file, std::ios::binary);
 	if (!in.good()) {
 		std::string msg{ "Error opening file with features: " + config.features_file };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -42,9 +42,9 @@ DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Config& config)
 
 	if (!in.read(reinterpret_cast<char*>(data.data()), sizeof(float) * data.size())) {
 		std::string msg{ "Feature matrix reading problems: " + config.features_file };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	} else {
-		info_d("Feature matrix loaded OK");
+		LOG_I("Feature matrix loaded OK");
 	}
 }

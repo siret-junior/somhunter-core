@@ -125,13 +125,13 @@ static void poster_thread(const std::string& submit_url, const std::string& quer
 	if (!std::filesystem::is_directory(cfg.log_submitted_dir))
 		std::filesystem::create_directories(cfg.log_submitted_dir);
 
-	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) warn_d("wtf, directory was not created");
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) LOG_E("wtf, directory was not created");
 
 	{
 		std::string path = cfg.log_submitted_dir + std::string("/") + std::to_string(timestamp()) + cfg.log_file_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
-			warn_d("Could not write a log file!");
+			LOG_E("Could not write a log file!");
 		} else {
 			// Only print this if not empty
 			if (!data.empty()) o << data << std::endl;
@@ -202,9 +202,9 @@ static void poster_thread(const std::string& submit_url, const std::string& quer
 		auto res = curl_easy_perform(curl);
 
 		if (res == CURLE_OK) {
-			info_d("GET request OK: " << url);
+			LOG_I("GET request OK: " << url);
 		} else {
-			warn_d("GET request failed with cURL error: " << curl_easy_strerror(res));
+			LOG_E("GET request failed with cURL error: " << curl_easy_strerror(res));
 		}
 
 		if (cfg.extra_verbose_log) {
@@ -224,7 +224,7 @@ static void getter_thread(const std::string& submit_url, const std::string& quer
                           const SubmitterConfig& cfg) {
 	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) std::filesystem::create_directory(cfg.log_submitted_dir);
 
-	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) warn_d("wtf, directory was not created");
+	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) LOG_E("wtf, directory was not created");
 
 	{
 		auto ts{ timestamp() };
@@ -232,7 +232,7 @@ static void getter_thread(const std::string& submit_url, const std::string& quer
 		                   cfg.log_file_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
-			warn_d("Could not write a log file!");
+			LOG_E("Could not write a log file!");
 		}
 
 		o << "{\n\ttype=\"submit\",\n\ttimestamp=" << ts << ", \n\tquery=\"" << query << "\"\n}";
@@ -288,9 +288,9 @@ static void getter_thread(const std::string& submit_url, const std::string& quer
 		auto res = curl_easy_perform(curl);
 
 		if (res == CURLE_OK) {
-			info_d("GET request OK: " << url);
+			LOG_I("GET request OK: " << url);
 		} else {
-			warn_d("GET request failed with cURL error: " << curl_easy_strerror(res));
+			LOG_E("GET request failed with cURL error: " << curl_easy_strerror(res));
 		}
 
 		if (cfg.extra_verbose_log) {
@@ -365,10 +365,10 @@ bool Submitter::login_to_DRES() const {
 		curl_easy_cleanup(curl);
 
 		if (res != CURLE_OK) {
-			warn_d("DRES server login request returned cURL error: " << curl_easy_strerror(res));
+			LOG_E("DRES server login request returned cURL error: " << curl_easy_strerror(res));
 			return false;
 		} else {
-			info_d("DRES server login request returned: " << http_code);
+			LOG_I("DRES server login request returned: " << http_code);
 		}
 
 		// Parse the response
@@ -376,7 +376,7 @@ bool Submitter::login_to_DRES() const {
 		auto res_json{ json11::Json::parse(res_buffer, err) };
 		if (!err.empty()) {
 			std::string msg{ "Error parsing JSON response: " + res_buffer };
-			warn_d(msg);
+			LOG_E(msg);
 			throw std::runtime_error(msg);
 		}
 
@@ -385,10 +385,10 @@ bool Submitter::login_to_DRES() const {
 
 		// If login failed
 		if (!login_status) {
-			warn_d("DRES server login failed! Message: " << login_status_desc);
+			LOG_E("DRES server login failed! Message: " << login_status_desc);
 			return false;
 		}
-		info_d("DRES server login OK... Message: " << login_status_desc);
+		LOG_I("DRES server login OK... Message: " << login_status_desc);
 		return true;
 	}
 	return false;
@@ -409,7 +409,7 @@ std::string filepath{ cfg.log_actions_dir + "/actions_" + get_formated_timestamp
 act_log.open(filepath, std::ios::out);
 if (!act_log.is_open()) {
 	std::string msg{ "Error openning file: " + filepath };
-	warn_d(msg);
+	LOG_E(msg);
 	throw std::runtime_error(msg);
 }
 
@@ -431,7 +431,7 @@ act_log << std::unitbuf;
 	req_log.open(filepath, std::ios::out);
 	if (!req_log.is_open()) {
 		std::string msg{ "Error openning file: " + filepath };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -664,7 +664,7 @@ void Submitter::log_collage_query(const Collage& collage) {
 	std::ofstream o(path + "query_info.json");
 	if (!o) {
 		std::string msg{ "Could not write a log file: " + path + "query_info.json" };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 

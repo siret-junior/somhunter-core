@@ -35,7 +35,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 	std::random_device rd;
 	std::mt19937 rng(rd());
 
-	info_d("SOM worker starting");
+	LOG_I("SOM worker starting");
 
 	while (!parent->terminate) {
 		std::vector<float> points;
@@ -59,7 +59,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 			n = scores.size();
 			parent->new_data = false;
 			parent->m_ready = false;
-			info_d("SOM worker got new work");
+			LOG_I("SOM worker got new work");
 		}
 
 		if (parent->new_data || parent->terminate) continue;
@@ -90,7 +90,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 		som(n, SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT, cfg.features_dim, SOM_ITERS, points, koho, nhbrdist,
 		    alphasA, radiiA, alphasB, radiiB, scores, present_mask, rng);
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-		debug_d("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
+		LOG_D("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
 
 		if (parent->new_data || parent->terminate) continue;
 
@@ -112,7 +112,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 			for (size_t i = 0; i < n_threads; ++i) threads[i].join();
 		}
 		end = std::chrono::high_resolution_clock::now();
-		debug_d("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+		LOG_D("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
 		                        << " [ms]");
 
 		if (parent->new_data || parent->terminate) continue;
@@ -132,7 +132,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 		 * may break in the middle
 		 */
 	}
-	info_d("SOM worker terminating");
+	LOG_I("SOM worker terminating");
 }
 
 AsyncSom::AsyncSom(const Config& cfg) {
@@ -141,11 +141,11 @@ AsyncSom::AsyncSom(const Config& cfg) {
 }
 
 AsyncSom::~AsyncSom() {
-	info_d("requesting SOM worker termination");
+	LOG_I("requesting SOM worker termination");
 	terminate = true;
 	new_data_wakeup.notify_all();
 	worker.join();
-	info_d("SOM worker terminated");
+	LOG_I("SOM worker terminated");
 }
 
 void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc) {

@@ -103,9 +103,9 @@ void som(size_t /*n*/, size_t k, size_t dim, size_t niter, const std::vector<flo
          const std::vector<float>& nhbrdist, const float alphasA[2], const float radiiA[2], const float alphasB[2],
          const float radiiB[2], const std::vector<float>& scores, const std::vector<bool>& /*present_mask*/,
          std::mt19937& rng) {
-	info_d("build begin");
+	LOG_I("build begin");
 	std::discrete_distribution<size_t> random(scores.begin(), scores.end());
-	info_d("build end");
+	LOG_I("build end");
 
 	float thresholdA0 = radiiA[0];
 	float alphaA0 = alphasA[0];

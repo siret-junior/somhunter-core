@@ -70,7 +70,7 @@ constexpr DisplayType POST_RESCORE_DISPLAY = DisplayType::DTopNContext;
  * Logging
  */
 
-#define LOGLEVEL 3  // 3 = debug, 2 = info, 1 = warnings, 0 = none
+#define LOGLEVEL 4  // 4 = +debug, 3 = +info, 2 = +warnings, 1 = +errors 0 = none
 
 #define LD_LOG_DIR "./logs/"
 #define LD_LOG_FILENAME "ld"

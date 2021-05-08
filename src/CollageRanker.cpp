@@ -67,7 +67,7 @@ CollageRanker::CollageRanker(const Config& config) {
 	try {
 		if (!std::filesystem::exists(config.model_ResNet_file)) {
 			std::string msg{ "Unable to open file '" + config.model_ResNext_file + "'." };
-			warn_d(msg);
+			LOG_E(msg);
 			throw std::runtime_error{ msg };
 		}
 		resnet152 = torch::jit::load(config.model_ResNet_file);
@@ -76,7 +76,7 @@ CollageRanker::CollageRanker(const Config& config) {
 		msg.append(
 		    "\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? "
 		    "Windows libtorch debug/release libs are NOT ABI compatible.");
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -86,13 +86,13 @@ CollageRanker::CollageRanker(const Config& config) {
 			msg.append(
 			    "\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? "
 			    "Windows libtorch debug/release libs are NOT ABI compatible.");
-			warn_d(msg);
+			LOG_E(msg);
 			throw std::runtime_error{ msg };
 		}
 		resnext101 = torch::jit::load(config.model_ResNext_file);
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error openning ResNext model file: " + config.model_ResNext_file + "\n" + e.what() };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -100,7 +100,7 @@ CollageRanker::CollageRanker(const Config& config) {
 		bias = torch::tensor(KeywordRanker::parse_float_vector(config.model_W2VV_img_bias, 2048));
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error loading W2VV FC bias: " + config.model_W2VV_img_bias + "\n" + e.what() };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -110,7 +110,7 @@ CollageRanker::CollageRanker(const Config& config) {
 		              .permute({ 1, 0 });
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error loading W2VV FC weights: " + config.model_W2VV_img_weigths + "\n" + e.what() };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -129,7 +129,7 @@ CollageRanker::CollageRanker(const Config& config) {
 		}
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error loading region data \n" };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 }
@@ -219,7 +219,7 @@ at::Tensor CollageRanker::get_L2norm(at::Tensor data) {
 
 // returns 2048 dim normed vector for each image in collage
 at::Tensor CollageRanker::get_features(Collage& collage) {
-	debug_d("Extracting features\n");
+	LOG_D("Extracting features\n");
 
 	std::vector<torch::Tensor> tensors;
 	std::vector<torch::Tensor> tensors_norm;
@@ -254,7 +254,7 @@ at::Tensor CollageRanker::get_features(Collage& collage) {
 	// norm
 	feature = torch::div(feature, get_L2norm(feature));
 
-	debug_d("normalized\n");
+	LOG_D("normalized\n");
 
 	// PCA
 	feature = feature - kw_pca_mean_vec;

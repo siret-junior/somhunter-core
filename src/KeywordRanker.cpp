@@ -27,11 +27,11 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
                                                                const DatasetFrames& frames) {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
 
-	info_d("loading keyword classes from " << filepath);
+	LOG_I("loading keyword classes from " << filepath);
 
 	if (!inFile) {
 		std::string msg{ "Error opening file: " + filepath };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -82,7 +82,7 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 	// Sort them by their ID
 	std::sort(result_keywords.begin(), result_keywords.end(),
 	          [](const Keyword& l, const Keyword& r) { return l.kw_ID < r.kw_ID; });
-	info_d("keyword classes loaded");
+	LOG_I("keyword classes loaded");
 
 	return result_keywords;
 }
@@ -94,7 +94,7 @@ FeatureVector KeywordRanker::parse_float_vector(const std::string& filepath, siz
 	// If failed to open file
 	if (!ifs) {
 		std::string msg{ "Error opening file: " + filepath };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -110,7 +110,7 @@ FeatureVector KeywordRanker::parse_float_vector(const std::string& filepath, siz
 	// If emtpy file
 	if (size == 0) {
 		std::string msg{ "Empty file opened: " + filepath };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -153,7 +153,7 @@ FeatureMatrix KeywordRanker::parse_float_matrix(const std::string& filepath, siz
 	// If failed to open file
 	if (!ifs) {
 		std::string msg{ "Error opening file: " + filepath };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -169,7 +169,7 @@ FeatureMatrix KeywordRanker::parse_float_matrix(const std::string& filepath, siz
 	// If emtpy file
 	if (size == 0) {
 		std::string msg{ "Empty file opened: " + filepath };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 

@@ -30,10 +30,10 @@
 std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath) {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
 
-	info_d("Loading top image keywords from " << filepath);
+	LOG_I("Loading top image keywords from " << filepath);
 	if (!inFile) {
 		std::string msg{ "Error opening file: " + filepath };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -51,7 +51,7 @@ std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_f
 
 		if (tokens.size() < 2) {
 			std::string msg{ "Error parsing file: " + filepath };
-			warn_d(msg);
+			LOG_E(msg);
 			throw std::runtime_error(msg);
 		}
 
@@ -68,7 +68,7 @@ std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_f
 		++line_idx;
 	}
 
-	info_d("Top keywords loaded OK");
+	LOG_I("Top keywords loaded OK");
 	return result_vec;
 }
 
@@ -79,13 +79,13 @@ DatasetFrames::DatasetFrames(const Config& config) {
 
 	offs = config.filename_offsets;
 
-	info_d("Loading frames...");
+	LOG_I("Loading frames...");
 
 	// Open the "frames list" file
 	std::ifstream in(config.frames_list_file);
 	if (!in.good()) {
 		auto msg{ "Failed to open " + config.frames_list_file };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -99,7 +99,7 @@ DatasetFrames::DatasetFrames(const Config& config) {
 		ifs_meta.open(config.LSC_metadata_file);
 		if (!ifs_meta.good()) {
 			auto msg{ "Failed to open " + config.LSC_metadata_file };
-			warn_d(msg);
+			LOG_E(msg);
 			throw std::runtime_error(msg);
 		}
 	}
@@ -121,7 +121,7 @@ DatasetFrames::DatasetFrames(const Config& config) {
 				// Read one metadata line
 				if (!getline(ifs_meta, md_line)) {
 					auto msg{ "Not enough lines in " + config.LSC_metadata_file };
-					warn_d(msg);
+					LOG_E(msg);
 					throw std::runtime_error(msg);
 				}
 
@@ -168,9 +168,9 @@ DatasetFrames::DatasetFrames(const Config& config) {
 	}
 
 	if (size() == 0_z)
-		warn_d("No frames loaded");
+		LOG_E("No frames loaded");
 	else
-		info_d("Loaded " << size() << " frames.");
+		LOG_I("Loaded " << size() << " frames.");
 }
 
 VideoFrame DatasetFrames::parse_video_filename(std::string&& filename) {

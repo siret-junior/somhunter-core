@@ -24,6 +24,10 @@
 #include <filesystem>
 #include <thread>
 
+#if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
+#	include "Windows.h"
+#endif  // defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
+
 #include <cpprest/json.h>
 
 #include "utils.h"
@@ -66,7 +70,34 @@ void print_display(const FramePointerRange& d) {
 	for (auto iter = d.begin(); iter != d.end(); iter++) std::cout << (*iter)->frame_ID << std::endl;
 }
 
+/**
+ * Does the global application initialization.
+ */
+static void initialize_aplication() {
+	// Enable ANSII colored output if not enabled by default
+#if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
+	// From: https://superuser.com/a/1529908
+
+#	include "Windows.h"
+
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD dwMode = 0;
+	GetConsoleMode(hOut, &dwMode);
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(hOut, dwMode);
+
+	// References:
+	// SetConsoleMode() and ENABLE_VIRTUAL_TERMINAL_PROCESSING?
+	// https://stackoverflow.com/questions/38772468/setconsolemode-and-enable-virtual-terminal-processing
+
+	// Windows console with ANSI colors handling
+	// https://superuser.com/questions/413073/windows-console-with-ansi-colors-handling
+#endif
+}
+
 int main() {
+	initialize_aplication();
+
 	/*	cd to the parent dir (root of the project)
 	 *  `cd ..`
 	 *	Change this accordingly. 	*/
@@ -82,6 +113,14 @@ int main() {
 #endif
 
 #if 1
+
+	LOG_E("this is an error log");
+	LOG_W("this is a warning log");
+	LOG_I("this is an info log");
+	LOG_S("this is a success log");
+	LOG_D("this is a debug log");
+	LOG_REQUEST("123.0.0.1", "this is an API request");
+
 	// Parse config file
 	auto config = Config::parse_json_config(cfg_fpth);
 
@@ -149,10 +188,7 @@ int main() {
 
 #	endif
 
-	debug_d("this is debug log");
-	info_d("this is info log");
-	warn_d("this is warn log");
-	print_d("This is non-decorated plain STDOUT print.");
+	
 
 	// Try autocomplete
 	auto ac_res{ core.autocomplete_keywords("Cat", 30) };

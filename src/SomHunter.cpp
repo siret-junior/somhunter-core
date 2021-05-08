@@ -59,7 +59,7 @@ GetDisplayResult SomHunter::get_display(DisplayType d_type, ImageId selected_ima
 
 		default:
 			std::string msg{ "Unsupported display requested: " + std::to_string(int(d_type)) };
-			warn_d(msg);
+			LOG_E(msg);
 			throw std::runtime_error(msg);
 			break;
 	}
@@ -332,7 +332,7 @@ FramePointerRange SomHunter::get_random_display() {
 FramePointerRange SomHunter::get_topn_display(PageId page) {
 	// Another display or first page -> load
 	if (user.ctx.curr_disp_type != DisplayType::DTopN || page == 0) {
-		debug_d("Loading top n display first page");
+		LOG_D("Loading top n display first page");
 		// Get ids
 		auto ids = user.ctx.scores.top_n(frames, TOPN_LIMIT, config.topn_frames_per_video, config.topn_frames_per_shot);
 
@@ -350,7 +350,7 @@ FramePointerRange SomHunter::get_topn_display(PageId page) {
 FramePointerRange SomHunter::get_topn_context_display(PageId page) {
 	// Another display or first page -> load
 	if (user.ctx.curr_disp_type != DisplayType::DTopNContext || page == 0) {
-		debug_d("Loading top n context display first page");
+		LOG_D("Loading top n context display first page");
 		// Get ids
 		auto ids = user.ctx.scores.top_n_with_context(frames, TOPN_LIMIT, config.topn_frames_per_video,
 		                                              config.topn_frames_per_shot);
@@ -390,7 +390,7 @@ FramePointerRange SomHunter::get_som_display() {
 	for (size_t i = 0; i < SOM_DISPLAY_GRID_WIDTH; ++i) {
 		for (size_t j = 0; j < SOM_DISPLAY_GRID_HEIGHT; ++j) {
 			if (user.async_SOM.map(i + SOM_DISPLAY_GRID_WIDTH * j).empty()) {
-				debug_d("Fixing cluster " << i + SOM_DISPLAY_GRID_WIDTH * j);
+				LOG_D("Fixing cluster " << i + SOM_DISPLAY_GRID_WIDTH * j);
 
 				// Get SOM node of empty cluster
 				auto k = user.async_SOM.get_koho(i + SOM_DISPLAY_GRID_WIDTH * j);
@@ -419,7 +419,7 @@ FramePointerRange SomHunter::get_som_display() {
 		}
 	}
 	auto end = std::chrono::steady_clock::now();
-	debug_d("Fixing clusters took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+	LOG_D("Fixing clusters took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
 	                                << " [ms]");
 
 	// Log
@@ -441,7 +441,7 @@ FramePointerRange SomHunter::get_video_detail_display(ImageId selected_image, bo
 	VideoId v_id = frames.get_video_id(selected_image);
 
 	if (v_id == VIDEO_ID_ERR_VAL) {
-		warn_d("Video for " << selected_image << " not found");
+		LOG_E("Video for " << selected_image << " not found");
 		return std::vector<VideoFramePointer>();
 	}
 
@@ -491,7 +491,7 @@ FramePointerRange SomHunter::get_topKNN_display(ImageId selected_image, PageId p
 }
 
 FramePointerRange SomHunter::get_page_from_last(PageId page) {
-	debug_d("Getting page " << page << ", page size " << config.display_page_size);
+	LOG_D("Getting page " << page << ", page size " << config.display_page_size);
 
 	size_t begin_off{ std::min(user.ctx.current_display.size(), page * config.display_page_size) };
 	size_t end_off{ std::min(user.ctx.current_display.size(),
@@ -525,11 +525,11 @@ const UserContext& SomHunter::switch_search_context(size_t index, size_t src_sea
 	// Range check
 	if (index >= user.history.size()) {
 		std::string msg{ "Index is out of bounds: " + index };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
-	info_d("Switching to context '" << index << "'...");
+	LOG_I("Switching to context '" << index << "'...");
 
 	// SOM must stop first
 	while (!user.async_SOM.map_ready()) {

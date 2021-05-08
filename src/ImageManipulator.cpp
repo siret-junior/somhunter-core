@@ -53,7 +53,7 @@ LoadedImage ImageManipulator::load(const std::string& filepath) {
 
 	if (raw_data == NULL) {
 		std::string msg{ "Loading the '" + filepath + "' image failed!" };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -93,7 +93,7 @@ void ImageManipulator::store_jpg(const std::string& filepath, const std::vector<
 
 	if (res == 0) {
 		std::string msg{ "Writing the '" + filepath + "' image failed!" };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 }
@@ -106,7 +106,7 @@ std::vector<float> ImageManipulator::resize(const std::vector<float>& in, size_t
 
 	if (res == 0) {
 		std::string msg{ "Resizing the image failed!" };
-		warn_d(msg);
+		LOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
