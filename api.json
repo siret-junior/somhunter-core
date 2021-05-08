@@ -1,377 +1,795 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "SOMHunter Core",
-        "description": "SOMHunter Core",
-        "version": "0.1"
+      "title": "SOMHunter Core",
+      "description": "SOMHunter Core",
+      "version": "0.1"
     },
     "paths": {
-        "/settings": {
-            "get": {
-                "tags": [
-                    "Client"
-                ],
-                "summary": "Gets the config JSON from the core.",
-                "operationId": "NetworkApi::handle__settings__GET",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Response__Settings__Get"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
+      "/settings": {
+        "get": {
+          "tags": [
+            "Client"
+          ],
+          "summary": "Gets the config JSON from the core.",
+          "operationId": "NetworkApi::handle__settings__GET",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Response__Settings__Get"
+                  }
                 }
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
             }
-        },
-        "/user/context": {
-            "get": {
-                "tags": [
-                    "User"
-                ],
-                "summary": "Gets the current state of the user.",
-                "operationId": "NetworkApi::handle__user__context__GET",
-                "parameters": [
-                    {
-                        "in": "query",
-                        "name": "user_ID",
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "(YTBI) ID of the user who is asking."
-                    },
-                    {
-                        "in": "query",
-                        "name": "auth_token",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "(YTBI) The last access token recieved from the core."
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Response__User__Context__Get"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/get_top_screen": {
-            "post": {
-                "tags": [
-                    "Client"
-                ],
-                "summary": "Gets the top scored display data.",
-                "operationId": "NetworkApi::handle__get_top_screen__POST",
-                "requestBody": {
-                    "description": "...",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Request__GetTopScreen__Post"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Response__GetTopScreen__Post"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/get_som_screen": {
-            "post": {
-                "tags": [
-                    "Client"
-                ],
-                "summary": "Gets the SOM display data.",
-                "operationId": "NetworkApi::handle__get_SOM_screen__POST",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Response__GetTopScreen__Post"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Error",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
+          }
         }
+      },
+      "/user/context": {
+        "get": {
+          "tags": [
+            "Client"
+          ],
+          "summary": "Gets the current state of the user.",
+          "operationId": "NetworkApi::handle__user__context__GET",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "user_ID",
+              "schema": {
+                "type": "integer"
+              },
+              "description": "(YTBI) ID of the user who is asking."
+            },
+            {
+              "in": "query",
+              "name": "auth_token",
+              "schema": {
+                "type": "string"
+              },
+              "description": "(YTBI) The last access token recieved from the core."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Response__User__Context__Get"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      },
+      "/get_top_screen": {
+        "post": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "Gets the top scored display data.",
+          "operationId": "NetworkApi::handle__get_top_screen__POST",
+          "requestBody": {
+            "description": "...",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Request__GetTopScreen__Post"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Response__GetTopScreen__Post"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      },
+      "/get_som_screen": {
+        "post": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "Gets the SOM display data.",
+          "operationId": "NetworkApi::handle__get_SOM_screen__POST",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Response__GetTopScreen__Post"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      },
+      "/get_frame_detail_data": {
+        "get": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "Gets the data about the frame.",
+          "operationId": "NetworkApi::handle__get_frame_detail_data__GET",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "pageId",
+              "schema": {
+                "type": "integer"
+              },
+              "description": "Page index."
+            },
+            {
+              "in": "query",
+              "name": "type",
+              "schema": {
+                "type": "string"
+              },
+              "description": "Type of display to serve.."
+            },
+            {
+              "in": "query",
+              "name": "frameId",
+              "schema": {
+                "type": "integer"
+              },
+              "description": "ID of frame we're interested in."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Response__FrameDetailData__Get"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      },
+      "/get_autocomplete_results": {
+        "get": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "Returns nearest supported keywords.",
+          "operationId": "NetworkApi::handle__get_autocomplete_results__GET",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "queryValue",
+              "schema": {
+                "type": "string"
+              },
+              "description": "Prefix of a string we're interested in."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Response__GetAutocompleteResults__Get"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      },
+      "/log_scroll": {
+        "get": {
+          "tags": [
+            "Logs"
+          ],
+          "summary": "Returns nearest supported keywords.",
+          "operationId": "NetworkApi::handle__log_scroll__GET",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "queryValue",
+              "schema": {
+                "type": "string"
+              },
+              "description": "Prefix of a string we're interested in."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      },
+      "/log_text_query_change": {
+        "get": {
+          "tags": [
+            "Logs"
+          ],
+          "summary": "Returns nearest supported keywords.",
+          "operationId": "NetworkApi::handle__log_test_query_change__GET",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "queryValue",
+              "schema": {
+                "type": "string"
+              },
+              "description": "Prefix of a string we're interested in."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      },
+      "/submit_frame": {
+        "post": {
+          "tags": [
+            "Evaluation server"
+          ],
+          "summary": "...",
+          "operationId": "NetworkApi::handle__submit_frame__POST",
+          "requestBody": {
+            "description": "...",
+            "required": true,
+            "content": {
+              "application/json": {}
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error"
+            }
+          }
+        }
+      },
+      "/login_to_dres": {
+        "post": {
+          "tags": [
+            "Evaluation server"
+          ],
+          "summary": "...",
+          "operationId": "NetworkApi::handle__login_to_dres__POST",
+          "requestBody": {
+            "description": "...",
+            "required": true,
+            "content": {
+              "application/json": {}
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error"
+            }
+          }
+        }
+      },
+      "/reset_search_session": {
+        "post": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "...",
+          "operationId": "NetworkApi::handle__reset_search_session__POST",
+          "requestBody": {
+            "description": "...",
+            "required": true,
+            "content": {
+              "application/json": {}
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error"
+            }
+          }
+        }
+      },
+      "/rescore": {
+        "post": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "...",
+          "operationId": "NetworkApi::handle__rescore__POST",
+          "requestBody": {
+            "description": "...",
+            "required": true,
+            "content": {
+              "application/json": {}
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error"
+            }
+          }
+        }
+      },
+      "/like_frame": {
+        "post": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "...",
+          "operationId": "NetworkApi::handle__like_frame__POST",
+          "requestBody": {
+            "description": "...",
+            "required": true,
+            "content": {
+              "application/json": {}
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error"
+            }
+          }
+        }
+      },
+      "/search/bookmark": {
+        "post": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "...",
+          "operationId": "NetworkApi::handle__search__bookmark__POST",
+          "requestBody": {
+            "description": "...",
+            "required": true,
+            "content": {
+              "application/json": {}
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error"
+            }
+          }
+        }
+      },
+      "/search/context": {
+        "post": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "...",
+          "operationId": "NetworkApi::handle__search__context__POST",
+          "requestBody": {
+            "description": "...",
+            "required": true,
+            "content": {
+              "application/json": {}
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error"
+            }
+          }
+        },
+        "get": {
+          "tags": [
+            "Search session"
+          ],
+          "summary": "Returns nearest supported keywords.",
+          "operationId": "NetworkApi::handle__search__context__GET",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "queryValue",
+              "schema": {
+                "type": "string"
+              },
+              "description": "Prefix of a string we're interested in."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "content": {
+                "application/json": {}
+              }
+            },
+            "500": {
+              "description": "Error",
+              "content": {
+                "application/json": {}
+              }
+            }
+          }
+        }
+      }
     },
     "components": {
-        "schemas": {
-            "Request__GetTopScreen__Post": {
-                "required": [
-                    "frameId",
-                    "pageId",
-                    "type"
-                ],
-                "type": "object",
-                "properties": {
-                    "frameId": {
-                        "type": "integer"
-                    },
-                    "pageId": {
-                        "type": "integer"
-                    },
-                    "type": {
-                        "type": "string"
-                    }
-                }
+      "schemas": {
+        "Response__FrameDetailData__Get": {
+          "required": [
+            "frameId",
+            "pageId",
+            "type"
+          ],
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "integer"
             },
-            "Response__GetTopScreen__Post": {
-                "type": "object",
-                "properties": {
-                    "viewData": {
-                        "$ref": "#/components/schemas/ViewData"
-                    }
-                }
-            },
-            "DisplayData": {
-                "type": "object",
-                "properties": {
-                    "type": {
-                        "$ref": "#/components/schemas/DisplayType"
-                    },
-                    "page": {
-                        "type": "integer"
-                    },
-                    "frames": {
-                        "$ref": "#/components/schemas/ArrayOfFrameReferences"
-                    }
-                }
-            },
-            "ArrayOfFrameReferences": {
-                "type": "array",
-                "items": {
-                    "$ref": "#/components/schemas/FrameReference"
-                }
-            },
-            "Response__Settings__Get": {
-                "required": [
-                    "api",
-                    "core"
-                ],
-                "type": "object",
-                "properties": {
-                    "api": {
-                        "type": "object"
-                    },
-                    "core": {
-                        "type": "object"
-                    }
-                }
-            },
-            "Response__User__Context__Get": {
-                "required": [
-                    "search",
-                    "history",
-                    "bookmarkedFrames"
-                ],
-                "type": "object",
-                "properties": {
-                    "search": {
-                        "$ref": "#/components/schemas/SearchContext"
-                    },
-                    "history": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/HistoryState"
-                        }
-                    },
-                    "bookmarkedFrames": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/FrameReference"
-                        }
-                    }
-                }
-            },
-            "SearchContext": {
-                "type": "object",
-                "properties": {
-                    "textQueries": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "displayType": {
-                        "type": "string"
-                    },
-                    "screenshotFilepath": {
-                        "type": "string"
-                    },
-                    "id": {
-                        "type": "integer"
-                    },
-                    "likedFrames": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/FrameReference"
-                        }
-                    },
-                    "filters": {
-                        "$ref": "#/components/schemas/QueryFilters"
-                    }
-                }
-            },
-            "FrameReference": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "vId": {
-                        "type": "integer"
-                    },
-                    "sId": {
-                        "type": "integer"
-                    },
-                    "hour": {
-                        "type": "integer"
-                    },
-                    "weekday": {
-                        "type": "integer"
-                    },
-                    "lscId": {
-                        "type": "integer"
-                    },
-                    "liked": {
-                        "type": "boolean"
-                    },
-                    "bookmarked": {
-                        "type": "boolean"
-                    },
-                    "src": {
-                        "type": "string"
-                    }
-                }
-            },
-            "HistoryState": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "integer"
-                    },
-                    "screenshotFilepath": {
-                        "type": "string"
-                    },
-                    "time": {
-                        "type": "string"
-                    }
-                }
-            },
-            "QueryFilters": {
-                "type": "object",
-                "properties": {
-                    "weekdays": {
-                        "type": "array",
-                        "items": {
-                            "type": "boolean"
-                        }
-                    },
-                    "hourFrom": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "hourTo": {
-                        "type": "integer"
-                    }
-                }
-            },
-            "DisplayType": {
-                "type": "string"
-            },
-            "TextQueriesState": {
-                "type": "object",
-                "properties": {
-                    "q0": {
-                        "type": "object",
-                        "properties": {
-                            "value": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "q1": {
-                        "type": "object",
-                        "properties": {
-                            "value": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "SomhunterViewData": {
-                "type": "object",
-                "properties": {
-                    "textQueries": {
-                        "$ref": "#/components/schemas/TextQueriesState"
-                    },
-                    "frameContext": {
-                        "type": "object"
-                    },
-                    "screen": {
-                        "$ref": "#/components/schemas/DisplayData"
-                    }
-                }
-            },
-            "ViewData": {
-                "type": "object",
-                "properties": {
-                    "somhunter": {
-                        "$ref": "#/components/schemas/SomhunterViewData"
-                    }
-                }
+            "frames": {
+              "$ref": "#/components/schemas/ArrayOfFrameReferences"
             }
+          }
+        },
+        "Request__GetTopScreen__Post": {
+          "required": [
+            "frameId",
+            "pageId",
+            "type"
+          ],
+          "type": "object",
+          "properties": {
+            "frameId": {
+              "type": "integer"
+            },
+            "pageId": {
+              "type": "integer"
+            },
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "Response__GetTopScreen__Post": {
+          "type": "object",
+          "properties": {
+            "viewData": {
+              "$ref": "#/components/schemas/ViewData"
+            }
+          }
+        },
+        "Response__GetAutocompleteResults__Get": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/KeywordReference"
+          }
+        },
+        "DisplayData": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "#/components/schemas/DisplayType"
+            },
+            "page": {
+              "type": "integer"
+            },
+            "frames": {
+              "$ref": "#/components/schemas/ArrayOfFrameReferences"
+            }
+          }
+        },
+        "ArrayOfFrameReferences": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/FrameReference"
+          }
+        },
+        "Response__Settings__Get": {
+          "required": [
+            "api",
+            "core"
+          ],
+          "type": "object",
+          "properties": {
+            "api": {
+              "type": "object"
+            },
+            "core": {
+              "type": "object"
+            }
+          }
+        },
+        "Response__User__Context__Get": {
+          "required": [
+            "search",
+            "history",
+            "bookmarkedFrames"
+          ],
+          "type": "object",
+          "properties": {
+            "search": {
+              "$ref": "#/components/schemas/SearchContext"
+            },
+            "history": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/HistoryState"
+              }
+            },
+            "bookmarkedFrames": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/FrameReference"
+              }
+            }
+          }
+        },
+        "SearchContext": {
+          "type": "object",
+          "properties": {
+            "textQueries": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "displayType": {
+              "type": "string"
+            },
+            "screenshotFilepath": {
+              "type": "string"
+            },
+            "id": {
+              "type": "integer"
+            },
+            "likedFrames": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/FrameReference"
+              }
+            },
+            "filters": {
+              "$ref": "#/components/schemas/QueryFilters"
+            }
+          }
+        },
+        "FrameReference": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "vId": {
+              "type": "integer"
+            },
+            "sId": {
+              "type": "integer"
+            },
+            "hour": {
+              "type": "integer"
+            },
+            "weekday": {
+              "type": "integer"
+            },
+            "lscId": {
+              "type": "integer"
+            },
+            "liked": {
+              "type": "boolean"
+            },
+            "bookmarked": {
+              "type": "boolean"
+            },
+            "src": {
+              "type": "string"
+            }
+          }
+        },
+        "KeywordReference": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "wordString": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "exampleFrames": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "HistoryState": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "screenshotFilepath": {
+              "type": "string"
+            },
+            "time": {
+              "type": "string"
+            }
+          }
+        },
+        "QueryFilters": {
+          "type": "object",
+          "properties": {
+            "weekdays": {
+              "type": "array",
+              "items": {
+                "type": "boolean"
+              }
+            },
+            "hourFrom": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "hourTo": {
+              "type": "integer"
+            }
+          }
+        },
+        "DisplayType": {
+          "type": "string"
+        },
+        "TextQueriesState": {
+          "type": "object",
+          "properties": {
+            "q0": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "q1": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "SomhunterViewData": {
+          "type": "object",
+          "properties": {
+            "textQueries": {
+              "$ref": "#/components/schemas/TextQueriesState"
+            },
+            "frameContext": {
+              "type": "object"
+            },
+            "screen": {
+              "$ref": "#/components/schemas/DisplayData"
+            }
+          }
+        },
+        "ViewData": {
+          "type": "object",
+          "properties": {
+            "somhunter": {
+              "$ref": "#/components/schemas/SomhunterViewData"
+            }
+          }
         }
+      }
     }
-}
+  }

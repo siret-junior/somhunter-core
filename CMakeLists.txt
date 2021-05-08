@@ -160,9 +160,9 @@ target_include_directories(${SOMHUNTER_TARGET}
 )
 
 if (MSVC)
-
+set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprestsdk::cpprest)
 else ()
-set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto Threads::Threads cpprest)
+set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprest)
 endif ()
 
 target_link_libraries(${SOMHUNTER_TARGET} 
