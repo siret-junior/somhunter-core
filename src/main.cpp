@@ -28,13 +28,12 @@
 #	include "Windows.h"
 #endif  // defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 
-#include <cpprest/json.h>
 
 #include "utils.h"
 
-#include "Extractor.h"
-#include "NetworkApi.h"
 #include "SomHunter.h"
+#include "NetworkApi.h"
+
 using namespace sh;
 
 // If the `TESTER_SomHunter` should do its job.

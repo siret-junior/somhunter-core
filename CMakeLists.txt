@@ -126,7 +126,7 @@ find_package(CURL REQUIRED)
 # OpenCV - preparations
 find_package(OpenCV REQUIRED)
 
-
+find_package(OpenSSL REQUIRED)
 
 #
 # Add structure to the project (as the FS structure)
@@ -159,13 +159,19 @@ target_include_directories(${SOMHUNTER_TARGET}
         ${cpprestsdk_INCLUDE_DIRS}
 )
 
+if (MSVC)
+
+else ()
+set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto Threads::Threads cpprest)
+endif ()
+
 target_link_libraries(${SOMHUNTER_TARGET} 
     PRIVATE
         ${OpenCV_LIBS}
         ${CURL_LIBRARIES}
 		${TORCH_LIBRARIES}
         ${cpprestsdk_LIBRARIES}
-		Threads::Threads
+        ${ADDITIONAL}
 )
 
 # ####################################

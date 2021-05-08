@@ -8,17 +8,10 @@
 #include <string>
 #include <vector>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/opencv.hpp>
-//#include <torch/linalg.h>
-#include <torch/script.h>
-
-#include "Extractor.h"
-using namespace sh;
 
 namespace fs = std::filesystem;
+#include "Extractor.h"
+using namespace sh;
 
 std::vector<float> parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0) {
 	// Open file for reading as binary from the end side

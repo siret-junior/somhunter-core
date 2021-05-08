@@ -20,7 +20,7 @@ typedef unsigned __int64 uint64_t;
 #include <stdint.h>
 #endif
 
-
+namespace third_party {
 /// compute SHA256 hash
 /** Usage:
     SHA256 sha256;
@@ -76,3 +76,4 @@ private:
   /// hash, stored as integers
   uint32_t m_hash[HashValues];
 };
+}; // namespace third_party

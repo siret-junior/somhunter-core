@@ -18,14 +18,14 @@
  * You should have received a copy of the GNU General Public License along with
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
+#include "SomHunter.h"
 
 #include "NetworkApi.h"
-
-using namespace std;
 using namespace utility::conversions;
-
-#include "SomHunter.h"
 using namespace sh;
+
+
+
 
 /**
  *
@@ -331,10 +331,10 @@ void NetworkApi::run() {
 	terminate();
 }
 
-void NetworkApi::push_endpoint(const std::string& path, std::function<void(NetworkApi*, http_request&)> GET_handler,
-                               std::function<void(NetworkApi*, http_request&)> POST_handler,
-                               std::function<void(NetworkApi*, http_request&)> PUT_handler,
-                               std::function<void(NetworkApi*, http_request&)> DEL_handler) {
+void NetworkApi::push_endpoint(const std::string& path, std::function<void(NetworkApi*, http_request)> GET_handler,
+                               std::function<void(NetworkApi*, http_request)> POST_handler,
+                               std::function<void(NetworkApi*, http_request)> PUT_handler,
+                               std::function<void(NetworkApi*, http_request)> DEL_handler) {
 	uri_builder endpoint(utility::conversions::to_string_t(_base_addr));
 	endpoint.append_path(utility::conversions::to_string_t(path));
 
@@ -342,7 +342,7 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 		http_listener ep_listener{ endpoint.to_uri().to_string() };
 
 		if (GET_handler) {
-			ep_listener.support(methods::GET, std::bind(GET_handler, this, std::placeholders::_1));
+			ep_listener.support(methods::GET, std::bind(&NetworkApi::handle__settings__GET, this, std::placeholders::_1));
 		}
 
 		if (POST_handler) {
@@ -365,8 +365,8 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 	}
 }
 
-void NetworkApi::handle__settings__GET(http_request& req) {
-	auto remote_addr{ to_utf8string(req.get_remote_address()) };
+void NetworkApi::handle__settings__GET(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
 	LOG_REQUEST(remote_addr, "handle__settings__GET");
 
 	// auto b = message.extract_json().get();
@@ -376,7 +376,7 @@ void NetworkApi::handle__settings__GET(http_request& req) {
 	if (ec) {
 		std::string msg{ ec.message() };
 		LOG_E(msg);
-		throw runtime_error(msg);
+		throw std::runtime_error(msg);
 	}
 
 	http_response response(status_codes::OK);
@@ -385,8 +385,8 @@ void NetworkApi::handle__settings__GET(http_request& req) {
 	req.reply(response);
 }
 
-void NetworkApi::handle__user__context__GET(http_request& req) {
-	auto remote_addr{ to_utf8string(req.get_remote_address()) };
+void NetworkApi::handle__user__context__GET(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
 	LOG_REQUEST(remote_addr, "handle__settings__GET");
 	
 	auto body = req.extract_json().get();
@@ -407,8 +407,8 @@ void NetworkApi::handle__user__context__GET(http_request& req) {
 	req.reply(response);
 }
 
-void NetworkApi::handle__get_top_screen__POST(http_request& req) {
-	auto remote_addr{ to_utf8string(req.get_remote_address()) };
+void NetworkApi::handle__get_top_screen__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
 	LOG_REQUEST(remote_addr, "handle__settings__GET");
 
 	auto body = req.extract_json().get();
@@ -432,8 +432,8 @@ void NetworkApi::handle__get_top_screen__POST(http_request& req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__get_SOM_screen__POST(http_request& req) {
-	auto remote_addr{ to_utf8string(req.get_remote_address()) };
+void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
 	LOG_REQUEST(remote_addr, "handle__settings__GET");
 
 	auto body = req.extract_json().get();

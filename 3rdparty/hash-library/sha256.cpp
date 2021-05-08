@@ -11,6 +11,7 @@
 #include <endian.h>
 #endif
 
+using namespace third_party;
 
 /// same as reset()
 SHA256::SHA256()

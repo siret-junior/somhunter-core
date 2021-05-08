@@ -68,21 +68,21 @@ public:
 private:
 	void push_endpoint(
 	    const std::string& path,
-	    std::function<void(NetworkApi*, http_request&)> GET_handler = std::function<void(NetworkApi*, http_request&)>{},
-	    std::function<void(NetworkApi*, http_request&)> POST_handler =
-	        std::function<void(NetworkApi*, http_request&)>{},
-	    std::function<void(NetworkApi*, http_request&)> PUT_handler = std::function<void(NetworkApi*, http_request&)>{},
-	    std::function<void(NetworkApi*, http_request&)> DEL_handler =
-	        std::function<void(NetworkApi*, http_request&)>{});
+	    std::function<void(NetworkApi*, http_request)> GET_handler = std::function<void(NetworkApi*, http_request)>{},
+	    std::function<void(NetworkApi*, http_request)> POST_handler =
+	        std::function<void(NetworkApi*, http_request)>{},
+	    std::function<void(NetworkApi*, http_request)> PUT_handler = std::function<void(NetworkApi*, http_request)>{},
+	    std::function<void(NetworkApi*, http_request)> DEL_handler =
+	        std::function<void(NetworkApi*, http_request)>{});
 
 	// *** Handlers ***
 
 	/** /settings */
-	void handle__settings__GET(http_request& req);
-	void handle__user__context__GET(http_request& req);
+	void handle__settings__GET(http_request req);
+	void handle__user__context__GET(http_request req);
 
-	void handle__get_top_screen__POST(http_request& req);
-	void handle__get_SOM_screen__POST(http_request& req);
+	void handle__get_top_screen__POST(http_request req);
+	void handle__get_SOM_screen__POST(http_request req);
 
 private:
 	ApiConfig _API_config;

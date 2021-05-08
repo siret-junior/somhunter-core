@@ -1,9 +1,10 @@
 #ifndef EXTRACTOR_H_
 #define EXTRACTOR_H_
 
-#include <torch/torch.h>
-
 #include "log.h"
+
+#include <torch/types.h>
+#include <torch/jit.h>
 
 namespace sh {
 
@@ -24,7 +25,7 @@ private:
 	at::Tensor kw_pca_mean_vec;
 
 	std::string out_dir{ "output/" };
-	std::string thumbs{ "data/ITEC_w2vv/thšmbs/" };
+	std::string thumbs{ "data/ITEC_w2vv/thumbs/" };
 	std::string frames{ "data/ITEC_w2vv/ITEC.keyframes.dataset" };
 };
 
