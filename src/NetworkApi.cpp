@@ -670,9 +670,63 @@ void NetworkApi::handle__reset_search_session__POST(http_request req) {
 
 void NetworkApi::handle__rescore__POST(http_request req) {}
 
-void NetworkApi::handle__like_frame__POST(http_request req) {}
+void NetworkApi::handle__like_frame__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__like_frame__POST");
 
-void NetworkApi::handle__search__bookmark__POST(http_request req) {}
+	ImageId frame_ID{ ERR_VAL<ImageId>() };
+	auto body = req.extract_json().get();
+	try {
+		frame_ID = static_cast<ImageId>(body[U("frameId")].as_integer());
+	} catch (...) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `frameId` parameter.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
+	// Like it.
+	auto like_flag{ _p_core->like_frames({ frame_ID }).front() };
+
+	json::value result_obj{ json::value::object() };
+	result_obj[U("frameId")] = json::value::number(uint32_t(frame_ID));
+	result_obj[U("isLiked")] = json::value::boolean(like_flag);
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(result_obj);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
+
+void NetworkApi::handle__search__bookmark__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__search__bookmark__POST");
+
+	ImageId frame_ID{ ERR_VAL<ImageId>() };
+	auto body = req.extract_json().get();
+	try {
+		frame_ID = static_cast<ImageId>(body[U("frameId")].as_integer());
+	} catch (...) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `frameId` parameter.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
+	// Like it.
+	bool like_flag{ _p_core->bookmark_frames({ frame_ID }).front() };
+
+	json::value result_obj{ json::value::object() };
+	result_obj[U("frameId")] = json::value::number(uint32_t(frame_ID));
+	result_obj[U("isBookmarked")] = json::value::boolean(like_flag);
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(result_obj);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
 
 void NetworkApi::handle__search__context__POST(http_request req) {}
 
