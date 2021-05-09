@@ -38,6 +38,15 @@ static http_response construct_error_res(status_code code, const std::string& ms
 }
 
 /**
+ * Writes the provided image as JPEG file placed at `filepath`, returns number of written bytes.
+ */
+static size_t store_JPEG_from_base64(const std::string& filepath, const std::string& /*base64_data*/) {
+	// \todo
+	LOG_D("Simulating the JPEG screenshot write to '" << filepath << "'...");
+	return 128;
+}
+
+/**
  *
  * OpenAPI: QueryFilters
  */
@@ -1053,10 +1062,43 @@ void NetworkApi::handle__search__bookmark__POST(http_request req) {
 }
 
 void NetworkApi::handle__search__context__POST(http_request req) {
-	// Construct the response
-	http_response res(status_codes::OK);
-	NetworkApi::add_CORS_headers(res);
-	req.reply(res);
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__search__context__POST");
+
+	try {
+		auto body = req.extract_json().get();
+
+		size_t src_search_context_idx{ static_cast<size_t>(body[U("srcSearchCtxId")].as_integer()) };
+		size_t dest_search_context_idx{ static_cast<size_t>(body[U("id")].as_integer()) };
+		std::string screenshot_base64{ to_utf8string(body[U("screenshotData")].as_string()) };
+
+		// \todo
+		std::string time_label{ "1:20 PM" };
+		std::string screenshot_fpth{ "assets/img/history_screenshot.jpg" };
+
+		if (store_JPEG_from_base64(screenshot_fpth, screenshot_base64) == 0) {
+			LOG_W("Failed to write screenshot to '" << screenshot_fpth << "'.");
+		}
+
+		// Fetch the data
+		const UserContext& user_ctx{ _p_core->switch_search_context(dest_search_context_idx, src_search_context_idx,
+			                                                        screenshot_fpth, time_label) };
+		json::value res_data{ to_Response__User__Context__Get(_p_core, user_ctx) };
+
+		// Construct the response
+		http_response response(status_codes::OK);
+		response.set_body(res_data);
+
+		// Send the response
+		NetworkApi::add_CORS_headers(response);
+		req.reply(response);
+
+	} catch (...) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `frameId` parameter.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
 }
 
 void NetworkApi::handle__search__context__GET(http_request req) {
