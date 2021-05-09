@@ -777,16 +777,78 @@ void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {
 }
 
 void NetworkApi::handle__log_scroll__GET(http_request req) {
-	// Construct the response
-	http_response res(status_codes::OK);
-	NetworkApi::add_CORS_headers(res);
-	req.reply(res);
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__log_scroll__GET");
+
+	auto query{ req.relative_uri().query() };
+	auto query_map{ web::uri::split_query(query) };
+
+	auto scroll_area_record{ query_map.find(U("scrollArea")) };
+	auto delta_record{ query_map.find(U("delta")) };
+	auto frame_ID_record{ query_map.find(U("frameId")) };
+
+	if (scroll_area_record == query_map.end() || delta_record == query_map.end()) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
+	try {
+		ImageId frame_ID{ ERR_VAL<ImageId>() };
+		if (frame_ID_record != query_map.end()) {
+			frame_ID = static_cast<ImageId>(str_to_int(to_utf8string(frame_ID_record->second)));
+		}
+
+		auto scroll_area{ to_utf8string(scroll_area_record->second) };
+		auto disp{ str_to_disp_type(scroll_area) };
+		float delta{ (str2<float>(to_utf8string(delta_record->second)) > 0 ? 1.0F : -1.0F) };
+
+		// If normal scroll
+		if (frame_ID == ERR_VAL<ImageId>()) {
+			_p_core->log_scroll(disp, delta);
+		}
+		// Else replay scroll over the frrame_ID frame
+		else {
+			_p_core->log_video_replay(frame_ID, delta);
+		}
+
+		// Construct the response
+		http_response res(status_codes::OK);
+		NetworkApi::add_CORS_headers(res);
+		res.set_body(json::value::object());
+		req.reply(res);
+	} catch (...) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
+		NetworkApi::add_CORS_headers(res);
+		res.set_body(json::value::object());
+		req.reply(res);
+		return;
+	}
 }
 
 void NetworkApi::handle__log_text_query_change__GET(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__log_text_query_change__GET");
+
+	auto query{ req.relative_uri().query() };
+	auto query_map{ web::uri::split_query(query) };
+
+	auto record{ query_map.find(U("query")) };
+	if (record == query_map.end()) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+	std::string prefix{ to_utf8string(web::http::uri::decode(record->second)) };
+
+	_p_core->log_text_query_change(prefix);
+
 	// Construct the response
 	http_response res(status_codes::OK);
 	NetworkApi::add_CORS_headers(res);
+	res.set_body(json::value::object());
 	req.reply(res);
 }
 
@@ -811,6 +873,7 @@ void NetworkApi::handle__submit_frame__POST(http_request req) {
 	// Construct the response
 	http_response res(status_codes::OK);
 	NetworkApi::add_CORS_headers(res);
+	res.set_body(json::value::object());
 	req.reply(res);
 }
 
@@ -818,6 +881,7 @@ void NetworkApi::handle__login_to_DRES__POST(http_request req) {
 	// Construct the response
 	http_response res(status_codes::OK);
 	NetworkApi::add_CORS_headers(res);
+	res.set_body(json::value::object());
 	req.reply(res);
 }
 

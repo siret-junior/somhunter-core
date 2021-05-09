@@ -2,7 +2,7 @@
 	"api": {
 		"port": 9999,
         "config_filepath": "config/config-api.json",
-		"docs_dir": "docs/api"
+		"docs_dir": "docs/api/"
 	},
 	
 	"data-server": {},
