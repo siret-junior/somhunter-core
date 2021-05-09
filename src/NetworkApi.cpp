@@ -902,6 +902,7 @@ void NetworkApi::handle__reset_search_session__POST(http_request req) {
 
 	// Construct the response
 	http_response res(status_codes::OK);
+	res.set_body(json::value::object());
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
 }
