@@ -420,7 +420,7 @@ FramePointerRange SomHunter::get_som_display() {
 	}
 	auto end = std::chrono::steady_clock::now();
 	LOG_D("Fixing clusters took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-	                                << " [ms]");
+	                              << " [ms]");
 
 	// Log
 	user.submitter.log_show_som_display(frames, ids);

@@ -73,7 +73,7 @@ public:
 	/** The main ctor with the config from the JSON config file. */
 	inline SomHunter(const Config& cfg, const std::string& config_filepath)
 	    : _config_filepath{ config_filepath },
-			_API_config_filepath{ cfg.API_config.config_filepath },
+	      _API_config_filepath{ cfg.API_config.config_filepath },
 	      config(cfg),
 	      frames(cfg),
 	      features(frames, cfg),

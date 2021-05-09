@@ -3,8 +3,8 @@
 
 #include "log.h"
 
-#include <torch/types.h>
 #include <torch/jit.h>
+#include <torch/types.h>
 
 namespace sh {
 

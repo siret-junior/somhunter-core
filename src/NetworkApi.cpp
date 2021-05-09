@@ -556,7 +556,8 @@ void NetworkApi::handle__api__GET(http_request message) {
 	auto paths = http::uri::split_path(http::uri::decode(message.relative_uri().path()));
 	message.relative_uri().path();
 
-	auto filepath{ (paths.empty() ? _API_config.docs_dir + "index.html" : _API_config.docs_dir + to_utf8string(paths.front())) };
+	auto filepath{ (paths.empty() ? _API_config.docs_dir + "index.html"
+		                          : _API_config.docs_dir + to_utf8string(paths.front())) };
 
 	string_t mime{ U("text/html") };
 	auto sub3{ filepath.substr(filepath.length() - 3) };

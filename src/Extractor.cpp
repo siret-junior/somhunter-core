@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-
 namespace fs = std::filesystem;
 #include "Extractor.h"
 using namespace sh;

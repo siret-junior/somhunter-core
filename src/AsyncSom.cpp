@@ -112,8 +112,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 			for (size_t i = 0; i < n_threads; ++i) threads[i].join();
 		}
 		end = std::chrono::high_resolution_clock::now();
-		LOG_D("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-		                        << " [ms]");
+		LOG_D("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
 
 		if (parent->new_data || parent->terminate) continue;
 
