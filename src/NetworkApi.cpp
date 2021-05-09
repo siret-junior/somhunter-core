@@ -878,10 +878,18 @@ void NetworkApi::handle__submit_frame__POST(http_request req) {
 }
 
 void NetworkApi::handle__login_to_DRES__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__login_to_DRES__POST");
+
+	bool result{ _p_core->login_to_dres() };
+
+	auto res_obj{ json::value::object() };
+	res_obj[U("result")] = json::value::boolean(result);
+
 	// Construct the response
 	http_response res(status_codes::OK);
+	res.set_body(res_obj);
 	NetworkApi::add_CORS_headers(res);
-	res.set_body(json::value::object());
 	req.reply(res);
 }
 

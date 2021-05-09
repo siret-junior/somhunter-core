@@ -9,10 +9,33 @@
     },
     "servers": [
         {
-            "url": "http://localhost:8888/"
+            "url": "http://localhost:8888"
         }
     ],
     "paths": {
+        "/api/config": {
+            "get": {
+                "tags": [
+                    "API"
+                ],
+                "summary": "Gets the config JSON of the HTTP API.",
+                "operationId": "NetworkApi::handle__api__config__GET",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
         "/settings": {
             "get": {
                 "tags": [
@@ -250,11 +273,11 @@
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "queryValue",
+                        "name": "query",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Prefix of a string we're interested in."
+                        "description": "Current text query."
                     }
                 ],
                 "responses": {
@@ -279,15 +302,15 @@
                     "Logs"
                 ],
                 "summary": "Notifies the core about thhis event.",
-                "operationId": "NetworkApi::handle__log_test_query_change__GET",
+                "operationId": "NetworkApi::handle__log_text_query_change__GET",
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "queryValue",
+                        "name": "query",
                         "schema": {
                             "type": "string"
                         },
-                        "description": "Prefix of a string we're interested in."
+                        "description": "Current text of the query."
                     }
                 ],
                 "responses": {
@@ -342,7 +365,16 @@
                     "description": "...",
                     "required": true,
                     "content": {
-                        "application/json": {}
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "result": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "responses": {
