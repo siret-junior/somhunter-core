@@ -1,0 +1,43 @@
+{
+	"data": {
+		"models": {
+
+		}
+	},
+	"dependencies":{
+		"libtorch": {
+			"install_dir": {
+				"release": "3rdparty/libtorch-Release",
+				"debug": "3rdparty/libtorch-Debug"
+			},
+			"win":{
+				"CUDA": {
+					"prebuild_lib_URL": "https://download.pytorch.org/libtorch/cu102/libtorch-win-shared-with-deps-1.7.1.zip",
+					"prebuild_lib_URL_SHA256": "",
+					"prebuild_lib_URL_debug": "https://download.pytorch.org/libtorch/cu102/libtorch-win-shared-with-deps-debug-1.7.1.zip",
+					"prebuild_lib_URL_debug_SHA256": ""
+				},
+				"CPU": {
+					"prebuild_lib_URL": "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.7.1%2Bcpu.zip",
+					"prebuild_lib_URL_SHA256": "8c80d6060b6965a745a3cf16f7d67bcc1aebaeb3d188846ab1e3a60adfb00679",
+					"prebuild_lib_URL_debug": "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-debug-1.7.1%2Bcpu.zip",
+					"prebuild_lib_URL_debug_SHA256": "6ef0eff54a578450aadf04b6d9b533b5cb630385035c31a3c048c48a49634eae"
+				}
+			},
+			"UNIX":{
+				"CUDA": {
+					"prebuild_lib_URL": "https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip",
+					"prebuild_lib_URL_SHA256": "",
+					"prebuild_lib_URL_debug": "https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip",
+					"prebuild_lib_URL_debug_SHA256": ""
+				},
+				"CPU": {
+					"prebuild_lib_URL": "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.8.1%2Bcpu.zip",
+					"prebuild_lib_URL_SHA256": "44ecf7f2fc671da7b67694fc9d64b2762039ad83de46407ae3e0868081b7ae2c",
+					"prebuild_lib_URL_debug": "https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.8.1%2Bcpu.zip",
+					"prebuild_lib_URL_debug_SHA256": "44ecf7f2fc671da7b67694fc9d64b2762039ad83de46407ae3e0868081b7ae2c"
+				}
+			}
+		}
+	}
+}

@@ -26,6 +26,9 @@
 #include "cpprest/http_listener.h"
 #include "cpprest/json.h"
 #include "cpprest/uri.h"
+#include "cpprest/filestream.h"
+#include "cpprest/containerstream.h"
+#include "cpprest/producerconsumerstream.h"
 
 using namespace web;
 using namespace http;
@@ -74,8 +77,9 @@ private:
 	    std::function<void(NetworkApi*, http_request)> DEL_handler = std::function<void(NetworkApi*, http_request)>{});
 
 	// *** Handlers ***
+	void handle__api__GET(http_request req);
+	void handle__api__config__GET(http_request req);
 
-	/** /settings */
 	void handle__settings__GET(http_request req);
 	void handle__user__context__GET(http_request req);
 
@@ -85,7 +89,8 @@ private:
 	void handle__get_autocomplete_results__GET(http_request req);
 
 	void handle__log_scroll__GET(http_request req);
-	void handle__log_test_query_change__GET(http_request req);
+	void handle__log_text_query_change__GET(http_request req);
+
 	void handle__submit_frame__POST(http_request req);
 	void handle__login_to_DRES__POST(http_request req);
 

@@ -28,11 +28,10 @@
 #	include "Windows.h"
 #endif  // defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 
-
 #include "utils.h"
 
-#include "SomHunter.h"
 #include "NetworkApi.h"
+#include "SomHunter.h"
 
 using namespace sh;
 
@@ -104,7 +103,7 @@ int main() {
 	std::filesystem::current_path(path.parent_path());
 	std::cout << "Running from the directory " << std::filesystem::current_path() << "..." << std::endl;
 
-	const std::string cfg_fpth{ "config.json" };
+	const std::string cfg_fpth{ "config/config-core.json" };
 
 #ifdef RUN_TESTER
 	TESTER_SomHunter::run_all_tests(cfg_fpth);
@@ -112,13 +111,6 @@ int main() {
 #endif
 
 #if 1
-
-	LOG_E("this is an error log");
-	LOG_W("this is a warning log");
-	LOG_I("this is an info log");
-	LOG_S("this is a success log");
-	LOG_D("this is a debug log");
-	LOG_REQUEST("123.0.0.1", "this is an API request");
 
 	// Parse config file
 	auto config = Config::parse_json_config(cfg_fpth);
@@ -186,8 +178,6 @@ int main() {
 	}
 
 #	endif
-
-	
 
 	// Try autocomplete
 	auto ac_res{ core.autocomplete_keywords("Cat", 30) };
@@ -263,6 +253,13 @@ int main() {
 
 		auto d_som = core.get_display(DisplayType::DSom);
 	}
+
+	LOG_E("this is an error log");
+	LOG_W("this is a warning log");
+	LOG_I("this is an info log");
+	LOG_S("this is a success log");
+	LOG_D("this is a debug log");
+	LOG_REQUEST("123.0.0.1", "this is an API request");
 #endif
 	return 0;
 }

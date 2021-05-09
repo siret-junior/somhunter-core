@@ -47,7 +47,7 @@ json::value to_QueryFilters(SomHunter* /*p_core*/, const SearchContext& search_c
 	{ /* *** weekdays *** */
 		json::value weekdaysArr = json::value::array(7);
 		for (size_t i{ 0 }; i < 7; ++i) {
-			weekdaysArr[i] = search_ctx.filters.days[i];
+			weekdaysArr[i] = json::value::boolean(search_ctx.filters.days[i]);
 		}
 		result_obj[U("weekdays")] = weekdaysArr;
 	}
@@ -162,11 +162,7 @@ json::value to_FrameReference(SomHunter* /*p_core*/, const VideoFrame* p_frame, 
 	return result_obj;
 }
 
-/**
- *
- * OpenAPI: Response__User__Context__Get
- */
-json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext& ctx) {
+json::value to_SearchContext(SomHunter* p_core, const UserContext& ctx) {
 	auto search_ctx{ ctx.ctx };
 	auto bookmarks{ ctx.bookmarks };
 
@@ -249,6 +245,63 @@ json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext
 		result_obj[U("filters")] = fiters;
 	}
 
+	return result_obj;
+}
+
+json::value to_HistoryArray(SomHunter* /*p_core*/, const std::vector<SearchContext>& history) {
+	json::value history_arr{ json::value::array(history.size()) };
+
+	size_t i{ 0 };
+	for (auto&& ctx : history) {
+		json::value hist_point{ json::value::object() };
+
+		{  // *** id ***
+			hist_point[U("id")] = json::value::number(uint32_t(ctx.ID));
+		}
+
+		{  // *** screenshotFilepath ***
+			hist_point[U("screenshotFilepath")] = json::value::string(to_string_t(ctx.screenshot_fpth));
+		}
+
+		{  // *** time ***
+			hist_point[U("time")] = json::value::string(to_string_t(ctx.label));
+		}
+		history_arr[i] = hist_point;
+		++i;
+	}
+
+	return history_arr;
+}
+
+/**
+ *
+ * OpenAPI: Response__User__Context__Get
+ */
+json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext& ctx) {
+	auto search_ctx{ ctx.ctx };
+	auto bookmarks{ ctx.bookmarks };
+
+	// Return structure
+	json::value result_obj = json::value::object();
+
+	{ /* *** search *** */
+		result_obj[U("search")] = to_SearchContext(p_core, ctx);
+	}
+
+	{ /* *** history *** */
+		result_obj[U("history")] = to_HistoryArray(p_core, ctx.history);
+	}
+
+	{ /* *** bookmarkedFrames *** */
+		auto bookmarked_arr{ json::value::array(ctx.bookmarks.size()) };
+
+		size_t i{ 0 };
+		for (auto&& b : ctx.bookmarks) {
+			bookmarked_arr[i] = json::value::number(uint32_t(b));
+			++i;
+		}
+		result_obj[U("bookmarkedFrames")] = bookmarked_arr;
+	}
 	return result_obj;
 }
 
@@ -369,31 +422,6 @@ json::value to_Response__GetAutocompleteResults__Get(SomHunter* /*p_core*/, cons
 	return result_arr;
 }
 
-json::value to_HistoryArray(SomHunter* /*p_core*/, const std::vector<SearchContext>& history) {
-	json::value history_arr{ json::value::array(history.size()) };
-
-	size_t i{ 0 };
-	for (auto&& ctx : history) {
-		json::value hist_point{ json::value::object() };
-
-		{  // *** id ***
-			hist_point[U("id")] = json::value::number(uint32_t(ctx.ID));
-		}
-
-		{  // *** screenshotFilepath ***
-			hist_point[U("screenshotFilepath")] = json::value::string(to_string_t(ctx.screenshot_fpth));
-		}
-
-		{  // *** time ***
-			hist_point[U("time")] = json::value::string(to_string_t(ctx.label));
-		}
-		history_arr[i] = hist_point;
-		++i;
-	}
-
-	return history_arr;
-}
-
 json::value to_Response__Rescore__Post(SomHunter* p_core, const RescoreResult& rescore_res) {
 	size_t curr_ctx_ID{ rescore_res.curr_ctx_ID };
 	const auto& history{ rescore_res.history };
@@ -439,6 +467,9 @@ void NetworkApi::initialize() {
 	ep_listener.support(methods::OPTIONS, handle_options);
 
 	// Add all desired endpoints
+	push_endpoint("api", &NetworkApi::handle__api__GET);
+	push_endpoint("api/config", &NetworkApi::handle__api__config__GET);
+
 	push_endpoint("settings", &NetworkApi::handle__settings__GET);
 	push_endpoint("user/context", &NetworkApi::handle__user__context__GET);
 
@@ -449,9 +480,9 @@ void NetworkApi::initialize() {
 	push_endpoint("get_autocomplete_results", &NetworkApi::handle__get_autocomplete_results__GET);
 
 	push_endpoint("log_scroll", &NetworkApi::handle__log_scroll__GET);
-	push_endpoint("log_test_query_change", &NetworkApi::handle__log_test_query_change__GET);
+	push_endpoint("log_text_query_change", &NetworkApi::handle__log_text_query_change__GET);
 	push_endpoint("submit_frame", {}, &NetworkApi::handle__submit_frame__POST);
-	push_endpoint("login_to_DRES", {}, &NetworkApi::handle__login_to_DRES__POST);
+	push_endpoint("login_to_dres", {}, &NetworkApi::handle__login_to_DRES__POST);
 
 	push_endpoint("reset_search_session", {}, &NetworkApi::handle__reset_search_session__POST);
 	push_endpoint("rescore", {}, &NetworkApi::handle__rescore__POST);
@@ -516,6 +547,64 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
 	}
+}
+
+/**
+ * This handles request to `/api/` endpoint - it serves OpenAPI HTML docs.
+ */
+void NetworkApi::handle__api__GET(http_request message) {
+	auto paths = http::uri::split_path(http::uri::decode(message.relative_uri().path()));
+	message.relative_uri().path();
+
+	auto filepath{ (paths.empty() ? _API_config.docs_dir + "index.html" : _API_config.docs_dir + to_utf8string(paths.front())) };
+
+	string_t mime{ U("text/html") };
+	auto sub3{ filepath.substr(filepath.length() - 3) };
+	if (sub3 == "css") {
+		mime = U("text/css");
+	} else if (sub3 == ".js") {
+		mime = U("application/javascript");
+	}
+
+	// More examples: https://github.com/Meenapintu/Restweb/blob/master/src/handler.cpp
+	concurrency::streams::fstream::open_istream(to_string_t(filepath), std::ios::in)
+	    .then([=](concurrency::streams::istream is) {
+		    message.reply(status_codes::OK, is, mime).then([](pplx::task<void> t) {
+			    try {
+				    t.get();
+			    } catch (...) {
+				    LOG_W("Error serving `/api/` files...");
+			    }
+		    });
+	    })
+	    .then([=](pplx::task<void> t) {
+		    try {
+			    t.get();
+		    } catch (...) {
+			    message.reply(status_codes::InternalError, U("INTERNAL ERROR "));
+		    }
+	    });
+
+	return;
+}
+void NetworkApi::handle__api__config__GET(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	LOG_REQUEST(remote_addr, "handle__api__config__GET");
+
+	// auto b = message.extract_json().get();
+
+	std::error_code ec;
+	auto j{ json::value::parse(read_whole_file(_p_core->get_API_config_filepath()), ec) };
+	if (ec) {
+		std::string msg{ ec.message() };
+		LOG_E(msg);
+		throw std::runtime_error(msg);
+	}
+
+	http_response response(status_codes::OK);
+	response.set_body(j);
+	NetworkApi::add_CORS_headers(response);
+	req.reply(response);
 }
 
 void NetworkApi::handle__settings__GET(http_request req) {
@@ -686,9 +775,19 @@ void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__log_scroll__GET(http_request req) {}
+void NetworkApi::handle__log_scroll__GET(http_request req) {
+	// Construct the response
+	http_response res(status_codes::OK);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
 
-void NetworkApi::handle__log_test_query_change__GET(http_request req) {}
+void NetworkApi::handle__log_text_query_change__GET(http_request req) {
+	// Construct the response
+	http_response res(status_codes::OK);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
 
 void NetworkApi::handle__submit_frame__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
@@ -714,7 +813,12 @@ void NetworkApi::handle__submit_frame__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__login_to_DRES__POST(http_request req) {}
+void NetworkApi::handle__login_to_DRES__POST(http_request req) {
+	// Construct the response
+	http_response res(status_codes::OK);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
 
 void NetworkApi::handle__reset_search_session__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
@@ -832,7 +936,7 @@ void NetworkApi::handle__like_frame__POST(http_request req) {
 	}
 
 	// Like it.
-	auto like_flag{ _p_core->like_frames({ frame_ID }).front() };
+	bool like_flag{ _p_core->like_frames({ frame_ID }).front() };
 
 	json::value result_obj{ json::value::object() };
 	result_obj[U("frameId")] = json::value::number(uint32_t(frame_ID));
@@ -874,6 +978,16 @@ void NetworkApi::handle__search__bookmark__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__context__POST(http_request req) {}
+void NetworkApi::handle__search__context__POST(http_request req) {
+	// Construct the response
+	http_response res(status_codes::OK);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
 
-void NetworkApi::handle__search__context__GET(http_request req) {}
+void NetworkApi::handle__search__context__GET(http_request req) {
+	// Construct the response
+	http_response res(status_codes::OK);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}

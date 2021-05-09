@@ -3,6 +3,9 @@
 Use cmake for build
 
 
+# API Documentation
+API documentation is available at `<server_address>/api/` (e.g. [http://localhost:8888/api/](http://localhost:8888/api/)). It requires the running core.
+
 # Build
 
 ## Prerequisites

@@ -74,8 +74,8 @@ message("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 execute_process (
     COMMAND python3 ${CMAKE_HOME_DIRECTORY}/scripts/configure.py 
             ${PLATFORM}                                 # What platform \in {win, UNIX}
-            ${CMAKE_HOME_DIRECTORY}/config.json         # Config file
-            ${CMAKE_HOME_DIRECTORY}/install-config.json # Install config file
+            ${CMAKE_HOME_DIRECTORY}/config/config-core.json         # Config file
+            ${CMAKE_HOME_DIRECTORY}/config/config-install.json # Install config file
             ${CMAKE_BINARY_DIR}                         # Build dir
             ${THIRD_PARTY_DIR}                          # Third-party dir
             "${CMAKE_BUILD_TYPE}"                       # Build type \in { Release, Debug }

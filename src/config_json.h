@@ -43,6 +43,8 @@ struct VideoFilenameOffsets {
 
 struct ApiConfig {
 	size_t port;
+	std::string config_filepath;
+	std::string docs_dir;
 };
 
 /** Config for submitting to the older server.
@@ -265,7 +267,14 @@ inline SubmitterConfig Config::parse_submitter_config(const json11::Json& json) 
 }
 
 inline ApiConfig Config::parse_API_config(const json11::Json& json) {
-	return ApiConfig{ static_cast<size_t>(json["port"].int_value()) };
+	auto docs_dir{ json["docs_dir"].string_value() };
+
+	if (docs_dir.back() != '/') {
+		docs_dir.append("/");
+		LOG_W("Appending '/' to the `docs_dir` value - '" << docs_dir << "'.");
+	}
+
+	return ApiConfig{ static_cast<size_t>(json["port"].int_value()), json["config_filepath"].string_value(), docs_dir };
 }
 
 inline ServerConfigVbs Config::parse_vbs_config(const json11::Json& json) {

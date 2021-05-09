@@ -55,6 +55,7 @@ class SomHunter {
 	//		(shared for all the users)
 	// ********************************
 	const std::string _config_filepath;
+	const std::string _API_config_filepath;
 	const Config config;
 	const DatasetFrames frames;
 	const DatasetFeatures features;
@@ -72,6 +73,7 @@ public:
 	/** The main ctor with the config from the JSON config file. */
 	inline SomHunter(const Config& cfg, const std::string& config_filepath)
 	    : _config_filepath{ config_filepath },
+			_API_config_filepath{ cfg.API_config.config_filepath },
 	      config(cfg),
 	      frames(cfg),
 	      features(frames, cfg),
@@ -227,6 +229,7 @@ public:
 	// Other
 	// ********************************
 	const std::string& get_config_filepath() { return _config_filepath; }
+	const std::string& get_API_config_filepath() { return _API_config_filepath; }
 
 private:
 	/**
