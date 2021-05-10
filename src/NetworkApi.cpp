@@ -513,10 +513,15 @@ void NetworkApi::terminate() {
 
 void NetworkApi::run() {
 	initialize();
-	std::cout << "Press ENTER to exit." << std::endl;
+	std::cout << "Type in \"exit\" to exit." << std::endl;
 
-	std::string line;
-	std::getline(std::cin, line);
+	while (true) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		std::string line;
+		std::getline(std::cin, line);
+
+		if (line == "exist") break;
+	}
 
 	terminate();
 }
