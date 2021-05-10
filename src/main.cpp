@@ -28,10 +28,13 @@
 #	include "Windows.h"
 #endif  // defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 
-#include "utils.h"
+// !!!
+#include "SomHunter.h" // Do not move this beloe other includes 
+					   // -> otherwise the libtorch compile error wil bite you
+// !!!
 
+#include "utils.h"
 #include "NetworkApi.h"
-#include "SomHunter.h"
 
 using namespace sh;
 
