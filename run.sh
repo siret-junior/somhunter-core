@@ -5,5 +5,10 @@ cd $ABSOLUTE_PATH # CD to script dir
 cd .. 
 cd ./somhunter-core/build/ # Go to buil dir
 
-./somhunter*
-./somhunter*
+# If windows
+if ! [ -f "./somhunter.exe" ]
+then
+    ./somhunter.exe
+else
+    ./somhunter
+fi
