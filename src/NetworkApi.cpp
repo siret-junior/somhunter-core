@@ -701,6 +701,14 @@ void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
 
 	auto dtype{ str_to_disp_type("SOM_display") };
 
+	if (!_p_core->som_ready()) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "SOM not ready!") };
+		res.set_status_code(222);
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
 	// Fetch the data
 	auto display_frames{ _p_core->get_display(dtype) };
 	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, 0, "SOM_display", "") };
@@ -954,7 +962,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		return;
 	}
 	// Empty queries
-	if (q0.empty() && q1.empty()) {
+	if (q0.empty() && q1.empty() && _p_core->get_search_context().likes.empty()) {
 		http_response res{ construct_error_res(status_codes::BadRequest, "Empty queries.") };
 		NetworkApi::add_CORS_headers(res);
 		req.reply(res);
@@ -969,7 +977,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		/*
 		 * Text queries
 		 */
-		auto& textQuery{ q0.append(" >> ").append(q1) };
+		auto& textQuery{ q0.append(">>").append(q1) };
 
 		/*
 		 * Filters
