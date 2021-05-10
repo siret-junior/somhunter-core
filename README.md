@@ -20,6 +20,7 @@ Because Windows does not have a unified package manager with dev packages, you n
 ./vcpkg install curl:x64-windows
 ./vcpkg install opencv4:x64-windows
 ./vcpkg install cpprestsdk:x64-windows
+./vcpkg install opoenssl:x64-windows
 ```
 3) Get path to the CMake toolchain file
 
