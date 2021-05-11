@@ -42,6 +42,8 @@
 #include "SearchContext.h"
 #include "Submitter.h"
 
+namespace sh {
+
 class TESTER_SomHunter;
 
 /**
@@ -285,4 +287,5 @@ private:
 	friend TESTER_SomHunter;
 };
 
+};  // namespace sh
 #endif

@@ -24,6 +24,8 @@
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 
+using namespace sh;
+
 SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFrames& frames) : ID(ID), scores(frames) {}
 
 bool SearchContext::operator==(const SearchContext& other) const {

@@ -31,6 +31,8 @@
 #include "config_json.h"
 #include "log.h"
 
+using namespace sh;
+
 void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 	std::random_device rd;
 	std::mt19937 rng(rd());

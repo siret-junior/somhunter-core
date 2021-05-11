@@ -28,6 +28,8 @@
 #include "common.h"
 #include "utils.h"
 
+namespace sh {
+
 class WeekDaysFilter {
 public:
 	/** Default state is all dayes */
@@ -37,7 +39,7 @@ public:
 	WeekDaysFilter(uint8_t mask) {
 		// Set the according days, ignore the last 2 bits
 		for (size_t i{ 0 }; i < 7; ++i) {
-			_days[i] = is_set(mask, i);
+			_days[i] = utils::is_set(mask, i);
 		}
 	}
 
@@ -94,7 +96,7 @@ public:
 
 class TextualQuery {
 public:
-	bool empty() const { return trim(query).empty(); }
+	bool empty() const { return utils::trim(query).empty(); }
 
 public:
 	std::string query;
@@ -167,5 +169,7 @@ public:
 	TextualQuery textual_query;
 	CanvasQuery canvas_query;
 };
+
+};  // namespace sh
 
 #endif  // FILTERS_H_

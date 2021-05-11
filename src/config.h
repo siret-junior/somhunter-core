@@ -24,6 +24,7 @@
 
 #include "common.h"
 
+namespace sh {
 #define LOG_API_CALLS
 
 // ----------------------------------------
@@ -92,5 +93,7 @@ constexpr float RANDOM_DISPLAY_WEIGHT = 3.0f;
 
 /** SOM window image grid height */
 #define SOM_DISPLAY_GRID_HEIGHT 8
+
+};  // namespace sh
 
 #endif

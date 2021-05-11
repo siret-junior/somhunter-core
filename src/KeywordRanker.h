@@ -36,6 +36,8 @@
 #include "config_json.h"
 #include "utils.h"
 
+namespace sh {
+
 struct Keyword {
 	KeywordId kw_ID;
 	SynsetId synset_ID;
@@ -130,5 +132,6 @@ private:
 	                                                         const DatasetFeatures& features,
 	                                                         const DatasetFrames& frames, const Config& cfg) const;
 };
+};  // namespace sh
 
 #endif  // IMAGE_KEYWORDS_W2VV_H_

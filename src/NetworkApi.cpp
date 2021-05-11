@@ -18,10 +18,13 @@
  * You should have received a copy of the GNU General Public License along with
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
+
 #include "SomHunter.h"
 
 #include "NetworkApi.h"
+
 using namespace utility::conversions;
+
 using namespace sh;
 
 static http_response construct_error_res(status_code code, const std::string& msg) {
@@ -645,7 +648,7 @@ void NetworkApi::handle__api__config__GET(http_request req) {
 	// auto b = message.extract_json().get();
 
 	std::error_code ec;
-	auto j{ json::value::parse(read_whole_file(_p_core->get_API_config_filepath()), ec) };
+	auto j{ json::value::parse(utils::read_whole_file(_p_core->get_API_config_filepath()), ec) };
 	if (ec) {
 		std::string msg{ ec.message() };
 		LOG_E(msg);
@@ -665,7 +668,7 @@ void NetworkApi::handle__settings__GET(http_request req) {
 	// auto b = message.extract_json().get();
 
 	std::error_code ec;
-	auto j{ json::value::parse(read_whole_file(_p_core->get_config_filepath()), ec) };
+	auto j{ json::value::parse(utils::read_whole_file(_p_core->get_config_filepath()), ec) };
 	if (ec) {
 		std::string msg{ ec.message() };
 		LOG_E(msg);
@@ -769,7 +772,7 @@ void NetworkApi::handle__get_frame_detail_data__GET(http_request req) {
 
 	size_t frame_ID{ ERR_VAL<size_t>() };
 	try {
-		frame_ID = static_cast<size_t>(str_to_int(to_utf8string(query_map[U("frameId")])));
+		frame_ID = static_cast<size_t>(utils::str_to_int(to_utf8string(query_map[U("frameId")])));
 	} catch (...) {
 	}
 
@@ -855,12 +858,12 @@ void NetworkApi::handle__log_scroll__GET(http_request req) {
 	try {
 		ImageId frame_ID{ ERR_VAL<ImageId>() };
 		if (frame_ID_record != query_map.end()) {
-			frame_ID = static_cast<ImageId>(str_to_int(to_utf8string(frame_ID_record->second)));
+			frame_ID = static_cast<ImageId>(utils::str_to_int(to_utf8string(frame_ID_record->second)));
 		}
 
 		auto scroll_area{ to_utf8string(scroll_area_record->second) };
 		auto disp{ str_to_disp_type(scroll_area) };
-		float delta{ (str2<float>(to_utf8string(delta_record->second)) > 0 ? 1.0F : -1.0F) };
+		float delta{ (utils::str2<float>(to_utf8string(delta_record->second)) > 0 ? 1.0F : -1.0F) };
 
 		// If normal scroll
 		if (frame_ID == ERR_VAL<ImageId>()) {
@@ -980,7 +983,7 @@ RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body) {
 	// \todo Validate the user
 	// p_core->auth_user()
 
-	std::string time_label{ get_formated_timestamp("%H:%M:%S") };
+	std::string time_label{ utils::get_formated_timestamp("%H:%M:%S") };
 
 	RescoreMetadata md;
 	md.user_token = user_token;

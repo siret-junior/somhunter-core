@@ -24,6 +24,8 @@
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 
+using namespace sh;
+
 UserContext::UserContext(const std::string& user_token, const Config& cfg, const DatasetFrames& frames,
                          const DatasetFeatures features)
     : ctx(0, cfg, frames), user_token(user_token), submitter(cfg.submitter_config), async_SOM(cfg) {

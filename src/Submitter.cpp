@@ -30,6 +30,8 @@
 #include "Filters.h"
 #include "ImageManipulator.h"
 
+using namespace sh;
+
 #ifdef DEBUG_CURL_REQUESTS
 
 static void curl_dump(const char* text, FILE* stream, unsigned char* ptr, size_t size, char nohex) {
@@ -128,7 +130,8 @@ static void poster_thread(const std::string& submit_url, const std::string& quer
 	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) LOG_E("wtf, directory was not created");
 
 	{
-		std::string path = cfg.log_submitted_dir + std::string("/") + std::to_string(timestamp()) + cfg.log_file_suffix;
+		std::string path =
+		    cfg.log_submitted_dir + std::string("/") + std::to_string(utils::timestamp()) + cfg.log_file_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
 		if (!o) {
 			LOG_E("Could not write a log file!");
@@ -227,7 +230,7 @@ static void getter_thread(const std::string& submit_url, const std::string& quer
 	if (!std::filesystem::is_directory(cfg.log_submitted_dir)) LOG_E("wtf, directory was not created");
 
 	{
-		auto ts{ timestamp() };
+		auto ts{ utils::timestamp() };
 		std::string path = cfg.log_submitted_dir + std::string("/") + std::to_string(ts) + std::string("_submit") +
 		                   cfg.log_file_suffix;
 		std::ofstream o(path.c_str(), std::ios::app);
@@ -395,7 +398,7 @@ bool Submitter::login_to_DRES() const {
 }
 
 Submitter::Submitter(const SubmitterConfig& config)
-    : last_submit_timestamp(timestamp()),
+    : last_submit_timestamp(utils::timestamp()),
       cfg(config){
 
 #ifdef LOG_LOGS
@@ -404,7 +407,7 @@ Submitter::Submitter(const SubmitterConfig& config)
 	            std::filesystem::create_directories(cfg.log_actions_dir);
 }
 
-std::string filepath{ cfg.log_actions_dir + "/actions_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
+std::string filepath{ cfg.log_actions_dir + "/actions_" + utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
 
 act_log.open(filepath, std::ios::out);
 if (!act_log.is_open()) {
@@ -426,7 +429,8 @@ act_log << std::unitbuf;
 		std::filesystem::create_directories(cfg.log_requests_dir);
 	}
 
-	std::string filepath{ cfg.log_requests_dir + "/requests_" + get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
+	std::string filepath{ cfg.log_requests_dir + "/requests_" + utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
+		                  ".log" };
 
 	req_log.open(filepath, std::ios::out);
 	if (!req_log.is_open()) {
@@ -497,7 +501,7 @@ void Submitter::log_rerank(const DatasetFrames& /*frames*/, DisplayType /*from_d
 void Submitter::send_backlog_only() {
 	// Send interaction logs
 	if (!backlog.empty()) {
-		Json a = Json::object{ { "timestamp", double(timestamp()) },
+		Json a = Json::object{ { "timestamp", double(utils::timestamp()) },
 			                   { "events", std::move(backlog) },
 			                   { "type", "interaction" },
 			                   { "teamId", int(cfg.team_ID) },
@@ -507,7 +511,7 @@ void Submitter::send_backlog_only() {
 	}
 
 	// We always reset timer
-	last_submit_timestamp = timestamp();
+	last_submit_timestamp = utils::timestamp();
 }
 
 void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreModel& scores,
@@ -614,7 +618,7 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 
 	Json top = Json::object{ { "teamId", int(cfg.team_ID) },
 		                     { "memberId", int(cfg.member_ID) },
-		                     { "timestamp", double(timestamp()) },
+		                     { "timestamp", double(utils::timestamp()) },
 		                     { "usedCategories", used_cats },
 		                     { "usedTypes", used_types },
 		                     { "sortType", sort_types },
@@ -652,13 +656,13 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 }
 
 void Submitter::log_collage_query(const CanvasQuery& collage) {
-	auto path{ cfg.log_collages_dir + "/"s + std::to_string(timestamp()) + "/"s };
+	auto path{ cfg.log_collages_dir + "/"s + std::to_string(utils::timestamp()) + "/"s };
 
 	// One directory for each query
 	std::filesystem::create_directories(path);
 
 	// Serialize the instance for possible debugging
-	serialize_to_file(collage, path + "Collage_instance_serialized.bin");
+	utils::serialize_to_file(collage, path + "Collage_instance_serialized.bin");
 
 	// Write log info
 	std::ofstream o(path + "query_info.json");
@@ -691,7 +695,7 @@ void Submitter::log_text_query_change(const std::string& text_query) {
 	// If timeout should be handled here
 	if (cfg.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_logged + cfg.log_action_timeout > size_t(timestamp())) return;
+		if (last_logged + cfg.log_action_timeout > size_t(utils::timestamp())) return;
 	}
 
 #ifdef LOG_LOGS
@@ -819,10 +823,11 @@ void Submitter::log_show_video_replay(const DatasetFrames& frames, ImageId frame
 	// If timeout should be handled here
 	if (cfg.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_replay_submit + cfg.log_action_timeout > size_t(timestamp()) && frame_ID == last_frame_ID) return;
+		if (last_replay_submit + cfg.log_action_timeout > size_t(utils::timestamp()) && frame_ID == last_frame_ID)
+			return;
 	}
 
-	last_replay_submit = timestamp();
+	last_replay_submit = utils::timestamp();
 	last_frame_ID = frame_ID;
 
 	auto vf = frames.get_frame(frame_ID);
@@ -878,10 +883,11 @@ void Submitter::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_dis
 	// If timeout should be handled here
 	if (cfg.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_logged + cfg.log_action_timeout > size_t(timestamp()) && from_disp_type == last_disp_type) return;
+		if (last_logged + cfg.log_action_timeout > size_t(utils::timestamp()) && from_disp_type == last_disp_type)
+			return;
 	}
 
-	last_logged = timestamp();
+	last_logged = utils::timestamp();
 	last_disp_type = from_disp_type;
 
 	std::stringstream data_ss;
@@ -921,7 +927,7 @@ void Submitter::start_getter(const std::string& submit_url, const std::string& q
 }
 
 void Submitter::poll() {
-	if (last_submit_timestamp + cfg.send_logs_to_server_period < size_t(timestamp())) send_backlog_only();
+	if (last_submit_timestamp + cfg.send_logs_to_server_period < size_t(utils::timestamp())) send_backlog_only();
 
 	for (size_t i = 0; i < submit_threads.size();)
 		if (*finish_flags[i]) {
@@ -945,7 +951,7 @@ void Submitter::push_event(const std::string& cat, const std::string& type, cons
 	Json types_arr = Json::array(types);
 
 	Json a = Json::object{
-		{ "timestamp", double(timestamp()) }, { "category", cat }, { "type", types_arr }, { "value", value }
+		{ "timestamp", double(utils::timestamp()) }, { "category", cat }, { "type", types_arr }, { "value", value }
 	};
 
 	backlog.emplace_back(std::move(a));

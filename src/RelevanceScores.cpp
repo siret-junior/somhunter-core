@@ -32,6 +32,8 @@
 
 #include "log.h"
 
+using namespace sh;
+
 #define MINIMAL_SCORE 1e-12f
 
 struct FrameScoreIdPair {

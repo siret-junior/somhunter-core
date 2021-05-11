@@ -30,6 +30,8 @@
 
 #include "distfs.h"
 
+namespace sh {
+
 class DatasetFeatures {
 	size_t n, features_dim;
 	std::vector<float> data;
@@ -112,12 +114,14 @@ public:
 		const float *iv = fv(i), *jv = fv(j);
 		for (size_t d = 0; d < features_dim; ++d) {
 			s += iv[d] * jv[d];
-			w1 += square(iv[d]);
-			w2 += square(jv[d]);
+			w1 += utils::square(iv[d]);
+			w2 += utils::square(jv[d]);
 		}
 		if (w1 == 0 && w2 == 0) return 0;
 		return 1 - s / sqrtf(w1 * w2);
 	}
 };
+
+};  // namespace sh
 
 #endif

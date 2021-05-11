@@ -27,6 +27,8 @@
 #include "log.h"
 #include "utils.h"
 
+using namespace sh;
+
 GetDisplayResult SomHunter::get_display(DisplayType d_type, ImageId selected_image, PageId page, bool log_it) {
 	user.submitter.poll();
 
@@ -133,7 +135,7 @@ std::vector<const Keyword*> SomHunter::autocomplete_keywords(const std::string& 
 	// Trivial case
 	if (prefix.empty()) return std::vector<const Keyword*>{};
 
-	auto lowercase_prefix{ to_lowercase(prefix) };
+	auto lowercase_prefix{ utils::to_lowercase(prefix) };
 
 	// Get the keywrods IDs
 	auto kw_IDs{ keywords.find(lowercase_prefix, count) };

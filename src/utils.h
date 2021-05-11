@@ -40,6 +40,9 @@
 
 #include "log.h"
 
+namespace sh {
+namespace utils {
+
 template <typename DataType>
 void serialize_to_file(DataType data, const std::string filepath) {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
@@ -459,4 +462,6 @@ inline std::string trim_right(std::string s) {
 /** Bi-trim. */
 inline std::string trim(std::string s) { return trim_right(trim_left(s)); }
 
+}  // namespace utils
+}  // namespace sh
 #endif  // UTILS_H_

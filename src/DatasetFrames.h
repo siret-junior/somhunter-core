@@ -20,8 +20,8 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef image_path_h
-#define image_path_h
+#ifndef DATASET_FRAMES_H_
+#define DATASET_FRAMES_H_
 
 #include <cassert>
 #include <cstring>
@@ -31,6 +31,8 @@
 #include "common.h"
 #include "config_json.h"
 #include "utils.h"
+
+namespace sh {
 
 struct VideoFrame;
 
@@ -232,4 +234,6 @@ private:
 	std::tuple<Weekday, Hour, LscId> parse_metadata_line(const std::string& line);
 };
 
-#endif
+};  // namespace sh
+
+#endif  // DATASET_FRAMES_H_

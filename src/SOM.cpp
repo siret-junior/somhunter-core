@@ -26,6 +26,8 @@
 #include "distfs.h"
 #include "log.h"
 
+namespace sh {
+
 // uncomment to get euclidean distances
 #define EUCL
 
@@ -173,3 +175,5 @@ void mapPointsToKohos(size_t start, size_t end, size_t k, size_t dim, const std:
 		}
 	}
 }
+
+};  // namespace sh

@@ -27,6 +27,8 @@
 #include "config.h"
 #include "log.h"
 
+namespace sh {
+
 struct LoadedImage {
 	size_t w;
 	size_t h;
@@ -60,5 +62,7 @@ public:
 	static std::vector<float> resize(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
 	                                 size_t new_h, size_t num_channels = 3);
 };
+
+};  // namespace sh
 
 #endif  // IMAGE_MANIPULATOR_

@@ -28,6 +28,8 @@
 #include <string>
 #include <vector>
 
+namespace sh {
+
 // some types
 using KeywordId = size_t;
 using KeywordIds = std::vector<KeywordId>;
@@ -188,5 +190,7 @@ using PageId = unsigned;
 using Weekday = uint8_t;
 using Hour = uint8_t;
 using LscId = std::string;
+
+};  // namespace sh
 
 #endif  // COMMON_H_

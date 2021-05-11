@@ -29,6 +29,8 @@
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 
+namespace sh {
+
 class ScoreModel {
 	/** Current score distribution for the frames. */
 	std::vector<float> _scores;
@@ -120,4 +122,5 @@ public:
 	size_t frame_rank(ImageId i) const;
 };
 
+};  // namespace sh
 #endif

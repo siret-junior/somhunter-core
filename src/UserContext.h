@@ -32,6 +32,8 @@
 #include "SearchContext.h"
 #include "Submitter.h"
 
+namespace sh {
+
 class DatasetFrames;
 class DatasetFeatures;
 
@@ -84,5 +86,7 @@ struct RescoreResult {
 	size_t curr_ctx_ID;
 	const std::vector<SearchContext>& history;
 };
+
+};  // namespace sh
 
 #endif  // USER_CONTEXT_H_

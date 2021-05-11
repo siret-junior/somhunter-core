@@ -35,6 +35,8 @@
 
 #include "log.h"
 
+using namespace sh;
+
 LoadedImage ImageManipulator::load(const std::string& filepath) {
 	//#define WITH_HDR
 

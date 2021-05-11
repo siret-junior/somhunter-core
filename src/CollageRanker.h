@@ -22,6 +22,8 @@
 #include "KeywordRanker.h"
 #include "common.h"
 
+namespace sh {
+
 template <typename DType>
 std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features) {
 	if (tensor_features.sizes().size() != 2) {
@@ -88,5 +90,7 @@ private:
 
 // This serves for default parameters of type Collage&
 static CanvasQuery DEFAULT_COLLAGE{};
+
+};  // namespace sh
 
 #endif  // COLLAGE_RANKER_H_

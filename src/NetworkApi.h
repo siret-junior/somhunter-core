@@ -38,8 +38,9 @@ using namespace http::experimental::listener;
 #include "config_json.h"
 #include "log.h"
 
-class SomHunter;
 namespace sh {
+
+class SomHunter;
 
 struct Card {
 	int suit;

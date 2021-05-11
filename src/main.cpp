@@ -134,7 +134,7 @@ int main() {
 	 * ******************************** */
 
 	// *** SHA file checksum ***
-	std::cout << "SHA256: " << SHA256_sum("config/config-core.json") << std::endl;
+	std::cout << "SHA256: " << utils::SHA256_sum("config/config-core.json") << std::endl;
 
 	/* !!!!!!!!!!!!!!!!!!!!!!!!!!
 	 * Test collage queries

@@ -31,6 +31,8 @@
 #include "DatasetFrames.h"
 #include "RelevanceScores.h"
 
+namespace sh {
+
 class AsyncSom {
 	std::thread worker;
 
@@ -98,5 +100,7 @@ public:
 		return res;
 	}
 };
+
+};  // namespace sh
 
 #endif

@@ -31,6 +31,8 @@
 #include "log.h"
 #include "utils.h"
 
+namespace sh {
+
 inline std::string require_string_value(const json11::Json& json, const std::string& key) {
 	std::string msg{ "Missing cnfig key: " + key };
 
@@ -191,7 +193,7 @@ private:
  * That means basically what we have in config.h now (paths etc.)
  */
 inline Config Config::parse_json_config(const std::string& filepath) {
-	std::string cfg_file_contents(read_whole_file(filepath));
+	std::string cfg_file_contents(utils::read_whole_file(filepath));
 	return parse_json_config_string(cfg_file_contents);
 }
 
@@ -366,5 +368,7 @@ inline ServerConfigDres Config::parse_dres_config(const json11::Json& json) {
 		                     json["username"].string_value(),
 		                     json["password"].string_value() };
 }
+
+};  // namespace sh
 
 #endif  // CONFIG_JSON_H_

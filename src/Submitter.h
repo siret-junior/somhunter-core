@@ -46,8 +46,11 @@ using namespace std::literals;
 #include "CollageRanker.h"
 #include "KeywordRanker.h"
 
-using ImageKeywords = KeywordRanker;
 using namespace json11;
+
+namespace sh {
+
+using ImageKeywords = KeywordRanker;
 
 class Submitter {
 	std::vector<std::thread> submit_threads;
@@ -62,7 +65,7 @@ class Submitter {
 
 	std::ofstream act_log;
 	/** Just a shortcut so we have the unified log prefix. */
-	auto& alog() { return act_log << get_formated_timestamp("%H:%M:%S") << "\t" << timestamp() << "\t"; }
+	auto& alog() { return act_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
 
 #endif  // LOG_LOGS
 
@@ -70,7 +73,7 @@ class Submitter {
 
 	std::ofstream req_log;
 	/** Just a shortcut so we have the unified log prefix. */
-	auto& rlog() { return req_log << get_formated_timestamp("%H:%M:%S") << "\t" << timestamp() << "\t"; }
+	auto& rlog() { return req_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
 
 #endif  // LOG_CURL_REQUESTS
 
@@ -150,4 +153,5 @@ private:
 	const std::string& get_interaction_URL() const;
 };
 
+};  // namespace sh
 #endif

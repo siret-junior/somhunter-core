@@ -20,12 +20,15 @@
  */
 
 #include "DatasetFeatures.h"
+
+#include <fstream>
+
 #include "SomHunter.h"
 
 #include "config_json.h"
 #include "log.h"
 
-#include <fstream>
+using namespace sh;
 
 std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath) {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
@@ -60,7 +63,7 @@ std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_f
 		// Keywrod IDs
 		std::vector<KeywordId> kw_IDs;
 		for (std::stringstream kw_IDs_ss(tokens[1]); std::getline(kw_IDs_ss, token, '#');)
-			kw_IDs.emplace_back(str2<KeywordId>(token));
+			kw_IDs.emplace_back(utils::str2<KeywordId>(token));
 
 		// Insert this image's top keywords
 		result_vec.emplace_back(std::move(kw_IDs));
@@ -183,19 +186,19 @@ VideoFrame DatasetFrames::parse_video_filename(std::string&& filename) {
 	// Extract string representing frame number
 	std::string frameNumberString(filename.data() + offs.frame_num_off, offs.frame_num_len);
 
-	return VideoFrame(std::move(filename), str_to_int(videoIdString), str_to_int(shotIdString),
-	                  str_to_int(frameNumberString), 0);
+	return VideoFrame(std::move(filename), utils::str_to_int(videoIdString), utils::str_to_int(shotIdString),
+	                  utils::str_to_int(frameNumberString), 0);
 }
 
 std::tuple<Weekday, Hour, LscId> DatasetFrames::parse_metadata_line(const std::string& line) {
 	// !!! Beware that the data MUST NOT contain the separator char
 	// TODO: Use propper CSV parser
-	auto tokens{ split(line, ';') };
+	auto tokens{ utils::split(line, ';') };
 
 	auto datetime_str{ tokens[2].substr(11, 2) };
-	Hour h{ static_cast<Hour>(str2<size_t>(datetime_str)) };
+	Hour h{ static_cast<Hour>(utils::str2<size_t>(datetime_str)) };
 
-	Weekday wd{ static_cast<Weekday>(str2<size_t>(tokens[5])) };
+	Weekday wd{ static_cast<Weekday>(utils::str2<size_t>(tokens[5])) };
 
 	std::string LSC_id{ tokens[7] };
 

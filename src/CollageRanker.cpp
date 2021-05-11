@@ -1,9 +1,11 @@
 
-#include "CollageRanker.h"
-
 #include <filesystem>
 
+#include "CollageRanker.h"
+
 #include "utils.h"
+
+using namespace sh;
 
 void CanvasQuery::print() const {
 	std::cout << "COLLAGE BEGIN\n";
@@ -297,7 +299,7 @@ std::size_t CollageRanker::get_RoI(CanvasQuery::image image) {
 std::vector<float> CollageRanker::score_image(std::vector<float> feature, std::size_t region) {
 	std::vector<float> score;
 	for (size_t i = 0; i < region_data[region].size(); i++)
-		score.push_back(d_cos_normalized(feature, region_data[region][i]));
+		score.push_back(utils::d_cos_normalized(feature, region_data[region][i]));
 	return score;
 }
 

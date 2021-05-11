@@ -35,6 +35,8 @@
 #include "Filters.h"
 #include "RelevanceScores.h"
 
+namespace sh {
+
 class DatasetFrames;
 class DatasetFeatures;
 
@@ -85,4 +87,7 @@ public:
 	/** Filters based on metadata (hour, weekday). */
 	Filters filters;
 };
+
+};  // namespace sh
+
 #endif  // SEARCH_CONTEXT_H_

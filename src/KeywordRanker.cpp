@@ -23,6 +23,8 @@
 
 #include <cmath>
 
+using namespace sh;
+
 std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string& filepath,
                                                                const DatasetFrames& frames) {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
@@ -49,7 +51,7 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 		}
 
 		// Parse wordnet synset ID
-		SynsetId synset_ID{ str2<SynsetId>(tokens[1]) };
+		SynsetId synset_ID{ utils::str2<SynsetId>(tokens[1]) };
 		ImageId vec_idx{ ImageId(synset_ID) };
 
 		// String representations
@@ -61,7 +63,7 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 			{
 				std::string token;
 				for (std::stringstream top_ex_imgs_ss(tokens[2]); std::getline(top_ex_imgs_ss, token, '#');) {
-					ImageId img_ID{ str2<ImageId>(token) };
+					ImageId img_ID{ utils::str2<ImageId>(token) };
 
 					top_ex_imgs.push_back(&frames.get_frame(img_ID));
 				}
@@ -341,7 +343,8 @@ void KeywordRanker::apply_temp_queries(std::vector<std::vector<float>>& dist_cac
 		// If not yet cached
 		if (std::isnan(dist_i_succ)) {
 			dist_i_succ =
-			    d_cos_normalized(queries[query_idx], features.fv(img_it->frame_ID), queries[query_idx].size()) / 2.0f;
+			    utils::d_cos_normalized(queries[query_idx], features.fv(img_it->frame_ID), queries[query_idx].size()) /
+			    2.0f;
 			dist_cache[query_idx][img_it->frame_ID] = dist_i_succ;
 		}
 
@@ -380,19 +383,20 @@ StdMatrix<float> KeywordRanker::embedd_text_queries(const StdMatrix<KeywordId>& 
 
 		// Accumuate scores for given keywords
 		for (auto&& ID : kw_IDs) {
-			score_vec = VecAdd(score_vec, kw_features[ID]);
+			score_vec = utils::VecAdd(score_vec, kw_features[ID]);
 		}
 
 		// Add bias
-		score_vec = VecAdd(score_vec, kw_features_bias_vec);
+		score_vec = utils::VecAdd(score_vec, kw_features_bias_vec);
 
 		// Apply hyperbolic tangent function
 		std::transform(score_vec.begin(), score_vec.end(), score_vec.begin(),
 		               [](const float& score) { return std::tanh(score); });
 
-		std::vector<float> sentence_vec = MatVecProd(kw_pca_mat, VecSub(VecNorm(score_vec), kw_pca_mean_vec));
+		std::vector<float> sentence_vec =
+		    utils::MatVecProd(kw_pca_mat, utils::VecSub(utils::VecNorm(score_vec), kw_pca_mean_vec));
 
-		sentence_vec = VecNorm(sentence_vec);
+		sentence_vec = utils::VecNorm(sentence_vec);
 
 		query_vecs.emplace_back(std::move(sentence_vec));
 	}
@@ -421,7 +425,7 @@ StdVector<float> KeywordRanker::score_vectors(StdMatrix<float> query_vecs, const
 
 		// If not yet cached, compute it
 		if (std::isnan(dist)) {
-			dist = d_cos_normalized(query_vecs.front(), raw_frame_features, target_dim) / 2.0f;
+			dist = utils::d_cos_normalized(query_vecs.front(), raw_frame_features, target_dim) / 2.0f;
 			distance_cache[0][frame_ID] = dist;
 		}
 
