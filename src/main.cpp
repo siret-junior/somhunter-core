@@ -29,12 +29,12 @@
 #endif  // defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 
 // !!!
-#include "SomHunter.h" // Do not move this beloe other includes 
-					   // -> otherwise the libtorch compile error wil bite you
+#include "SomHunter.h"  // Do not move this beloe other includes
+                        // -> otherwise the libtorch compile error wil bite you
 // !!!
 
-#include "utils.h"
 #include "NetworkApi.h"
+#include "utils.h"
 
 using namespace sh;
 

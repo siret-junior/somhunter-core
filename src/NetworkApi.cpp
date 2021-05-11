@@ -965,6 +965,64 @@ void NetworkApi::handle__reset_search_session__POST(http_request req) {
 	req.reply(res);
 }
 
+CanvasQuery NetworkApi::extract_canvas_query(web::json::value& collage_data_JSON) {
+	CanvasQuery canvas_query;
+	constexpr size_t num_channels{ 4 };
+
+	if (!collage_data_JSON.is_null()) {
+		std::vector<uint8_t> raw_data_buffer = from_JSON_array<uint8_t>(collage_data_JSON[U("pictures")]);
+
+		std::vector<float> js_lefts = from_double_array<float>(collage_data_JSON[U("left")]);
+		std::vector<float> js_tops = from_double_array<float>(collage_data_JSON[U("top")]);
+		std::vector<float> js_heights = from_double_array<float>(collage_data_JSON[U("width")]);
+		std::vector<float> js_widths = from_double_array<float>(collage_data_JSON[U("height")]);
+
+		std::vector<unsigned int> js_p_widths = from_JSON_array<unsigned int>(collage_data_JSON[U("pixel_width")]);
+		std::vector<unsigned int> js_p_heights = from_JSON_array<unsigned int>(collage_data_JSON[U("pixel_height")]);
+		std::vector<unsigned int> js_break_point = from_JSON_array<unsigned int>(collage_data_JSON[U("break")]);
+
+		for (std::size_t i = 0; i < js_lefts.size(); i++) {
+			canvas_query.lefts.push_back(js_lefts[i]);
+			canvas_query.tops.push_back(js_tops[i]);
+			canvas_query.relative_heights.push_back(js_heights[i]);
+			canvas_query.relative_widths.push_back(js_widths[i]);
+			canvas_query.pixel_heights.push_back(js_p_heights[i]);
+			canvas_query.pixel_widths.push_back(js_p_widths[i]);
+		}
+		canvas_query.break_point = js_break_point[0];
+		canvas_query.channels = num_channels;
+		canvas_query.len = js_lefts.size();
+
+		std::size_t index = 0;
+		std::size_t end_i = 0;
+		for (std::size_t i = 0; i < canvas_query.pixel_heights.size(); i++) {
+			auto w{ canvas_query.pixel_widths[i] };
+			auto h{ canvas_query.pixel_heights[i] };
+
+			// We now can copy [index, end_i) `uint8_t`s as effective data
+
+			// If text
+			if (h == 0) {
+			}
+			// If bitmap
+			else {
+				std::vector<float> bitmap_data;
+				end_i = index + (w * h * num_channels);
+
+				// Copy the data to the image bitmap buffer
+				for (; index < end_i; index++) {
+					bitmap_data.push_back(static_cast<float>(raw_data_buffer[index]));
+				}
+				canvas_query.images.push_back(bitmap_data);
+			}
+		}
+	} else {
+		canvas_query = DEFAULT_COLLAGE;
+	}
+
+	return canvas_query;
+}
+
 void NetworkApi::handle__rescore__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	LOG_REQUEST(remote_addr, "handle__rescore__POST");
@@ -1032,51 +1090,12 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		Filters filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask } };
 
 		/*
-		 * Collage
+		 * CanvasQuery
 		 */
-		Collage collage;
-		if (!collage_data_JSON.is_null()) {
-			std::vector<uint8_t> js_concat_pics = from_JSON_array<uint8_t>(collage_data_JSON[U("pictures")]);
+		CanvasQuery collage{ extract_canvas_query(collage_data_JSON) };
 
-			std::vector<float> js_lefts = from_double_array<float>(collage_data_JSON[U("left")]);
-			std::vector<float> js_tops = from_double_array<float>(collage_data_JSON[U("top")]);
-			std::vector<float> js_heights = from_double_array<float>(collage_data_JSON[U("width")]);
-			std::vector<float> js_widths = from_double_array<float>(collage_data_JSON[U("height")]);
-
-			std::vector<unsigned int> js_p_widths = from_JSON_array<unsigned int>(collage_data_JSON[U("pixel_width")]);
-			std::vector<unsigned int> js_p_heights =
-			    from_JSON_array<unsigned int>(collage_data_JSON[U("pixel_height")]);
-			std::vector<unsigned int> js_break_point = from_JSON_array<unsigned int>(collage_data_JSON[U("break")]);
-
-			for (std::size_t i = 0; i < js_lefts.size(); i++) {
-				collage.lefts.push_back(js_lefts[i]);
-				collage.tops.push_back(js_tops[i]);
-				collage.relative_heights.push_back(js_heights[i]);
-				collage.relative_widths.push_back(js_widths[i]);
-				collage.pixel_heights.push_back(js_p_heights[i]);
-				collage.pixel_widths.push_back(js_p_widths[i]);
-			}
-			collage.break_point = js_break_point[0];
-			collage.channels = 4;
-			collage.len = js_lefts.size();
-
-			std::size_t index = 0;
-			std::size_t end = 0;
-			for (std::size_t i = 0; i < collage.pixel_heights.size(); i++) {
-				std::vector<float> img;
-				end = index + (collage.pixel_heights[i] * collage.pixel_widths[i] * 4);
-
-				for (index; index < end; index++) {
-					img.push_back(js_concat_pics[index]);
-				}
-				collage.images.push_back(img);
-			}
-		} else {
-			collage = DEFAULT_COLLAGE;
-		}
 		// Rescore
 		auto rescore_result{ _p_core->rescore(textQuery, collage, &filters, srcSearchCtxId, "", time_label) };
-
 		json::value history{ to_Response__Rescore__Post(_p_core, rescore_result) };
 
 		// Construct the response

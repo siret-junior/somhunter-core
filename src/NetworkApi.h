@@ -103,6 +103,9 @@ private:
 	void handle__search__context__POST(http_request req);
 	void handle__search__context__GET(http_request req);
 
+	// *** Helpers ***
+	CanvasQuery extract_canvas_query(web::json::value& collage_data_JSON);
+
 private:
 	ApiConfig _API_config;
 	SomHunter* _p_core;

@@ -5,7 +5,7 @@
 
 #include "utils.h"
 
-void Collage::print() const {
+void CanvasQuery::print() const {
 	std::cout << "COLLAGE BEGIN\n";
 	std::cout << "Images: " << images.size() << "\n";
 	std::cout << "Break: " << break_point << "\n\n";
@@ -23,7 +23,7 @@ void Collage::print() const {
 	std::cout << "COLLAGE END\n";
 }
 
-void Collage::RGBA_to_RGB() {
+void CanvasQuery::RGBA_to_RGB() {
 	if (channels == 3) return;
 
 	std::vector<std::vector<float>> rgb_images;
@@ -41,7 +41,7 @@ void Collage::RGBA_to_RGB() {
 	channels = 3;
 }
 
-void Collage::resize_all(int W, int H) {
+void CanvasQuery::resize_all(int W, int H) {
 	std::vector<std::vector<float>> resized_images;
 	for (size_t i = 0; i < images.size(); i++) {
 		std::vector<float> image =
@@ -53,7 +53,7 @@ void Collage::resize_all(int W, int H) {
 	images = resized_images;
 }
 
-void Collage::save_all(const std::string& prefix) {
+void CanvasQuery::save_all(const std::string& prefix) {
 	// expects RGB [0,1]
 	for (size_t i = 0; i < images.size(); i++) {
 		ImageManipulator::store_jpg(prefix + "im" + std::to_string(i) + ".jpg", images[i], pixel_widths[i],
@@ -134,7 +134,7 @@ CollageRanker::CollageRanker(const Config& config) {
 	}
 }
 
-void CollageRanker::score(Collage& collage, ScoreModel& model, const DatasetFeatures& /*features*/,
+void CollageRanker::score(CanvasQuery& collage, ScoreModel& model, const DatasetFeatures& /*features*/,
                           const DatasetFrames& frames) {
 	if (collage.images.size() > 0) {
 		collage.RGBA_to_RGB();
@@ -218,7 +218,7 @@ at::Tensor CollageRanker::get_L2norm(at::Tensor data) {
 }
 
 // returns 2048 dim normed vector for each image in collage
-at::Tensor CollageRanker::get_features(Collage& collage) {
+at::Tensor CollageRanker::get_features(CanvasQuery& collage) {
 	LOG_D("Extracting features\n");
 
 	std::vector<torch::Tensor> tensors;
@@ -269,13 +269,13 @@ at::Tensor CollageRanker::get_features(Collage& collage) {
 	return feature;
 }
 
-std::vector<std::size_t> CollageRanker::get_RoIs(Collage& collage) {
+std::vector<std::size_t> CollageRanker::get_RoIs(CanvasQuery& collage) {
 	std::vector<std::size_t> regions;
 	for (std::size_t i = 0; i < collage.size(); i++) regions.push_back(get_RoI(collage[i]));
 	return regions;
 }
 
-std::size_t CollageRanker::get_RoI(Collage::image image) {
+std::size_t CollageRanker::get_RoI(CanvasQuery::image image) {
 	std::vector<float> iou;
 	for (std::size_t i = 0; i < RoIs.size(); i++) {
 		auto& roi = RoIs[i];

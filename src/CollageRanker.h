@@ -52,7 +52,7 @@ std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features)
 	return mat;
 }
 
-class Collage {
+class CanvasQuery {
 public:
 	std::vector<float> lefts;
 	std::vector<float> tops;
@@ -110,7 +110,7 @@ public:
 class CollageRanker {
 public:
 	CollageRanker(const Config& config);
-	void score(Collage&, ScoreModel& model, const DatasetFeatures& features, const DatasetFrames& frames);
+	void score(CanvasQuery&, ScoreModel& model, const DatasetFeatures& features, const DatasetFrames& frames);
 
 private:
 	torch::jit::script::Module resnet152;
@@ -122,11 +122,11 @@ private:
 
 	std::vector<FeatureMatrix> region_data;
 
-	at::Tensor get_features(Collage&);
+	at::Tensor get_features(CanvasQuery&);
 	at::Tensor get_L2norm(at::Tensor data);
 
-	std::vector<std::size_t> get_RoIs(Collage& collage);
-	std::size_t get_RoI(Collage::image);
+	std::vector<std::size_t> get_RoIs(CanvasQuery& collage);
+	std::size_t get_RoI(CanvasQuery::image);
 
 	std::vector<float> score_image(std::vector<float> feature, std::size_t region);
 	std::vector<float> average_scores(std::vector<std::vector<float>> scores);
@@ -141,6 +141,6 @@ private:
 };
 
 // This serves for default parameters of type Collage&
-static Collage DEFAULT_COLLAGE{};
+static CanvasQuery DEFAULT_COLLAGE{};
 
 #endif  // COLLAGE_RANKER_H_

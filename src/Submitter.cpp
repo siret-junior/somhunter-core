@@ -651,7 +651,7 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 #endif  // LOG_LOGS
 }
 
-void Submitter::log_collage_query(const Collage& collage) {
+void Submitter::log_collage_query(const CanvasQuery& collage) {
 	auto path{ cfg.log_collages_dir + "/"s + std::to_string(timestamp()) + "/"s };
 
 	// One directory for each query

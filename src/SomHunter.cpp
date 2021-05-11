@@ -187,7 +187,7 @@ void SomHunter::apply_filters() {
 	}
 }
 
-RescoreResult SomHunter::rescore(const std::string& text_query, Collage& collage, const Filters* p_filters,
+RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& collage, const Filters* p_filters,
                                  size_t src_search_ctx_ID, const std::string& screenshot_fpth,
                                  const std::string& label) {
 	/* ***

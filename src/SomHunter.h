@@ -110,7 +110,7 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
-	RescoreResult rescore(const std::string& text_query, Collage& collage, const Filters* p_filters = nullptr,
+	RescoreResult rescore(const std::string& text_query, CanvasQuery& collage, const Filters* p_filters = nullptr,
 	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
 	                      const std::string& label = ""s);
 
@@ -120,7 +120,7 @@ public:
 		return rescore(text_query, DEFAULT_COLLAGE, p_filters, src_search_ctx_ID, screenshot_fpth, label);
 	}
 
-	RescoreResult rescore(Collage& collage, const Filters* p_filters = nullptr,
+	RescoreResult rescore(CanvasQuery& collage, const Filters* p_filters = nullptr,
 	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
 	                      const std::string& label = ""s) {
 		return rescore(""s, collage, p_filters, src_search_ctx_ID, screenshot_fpth, label);

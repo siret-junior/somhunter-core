@@ -99,7 +99,7 @@ public:
 
 	void log_text_query_change(const std::string& query_sentence);
 
-	void log_collage_query(const Collage& collage);
+	void log_collage_query(const CanvasQuery& collage);
 
 	void log_like(const DatasetFrames& frames, const std::set<ImageId>& likes, DisplayType disp_type, ImageId frame_ID);
 
