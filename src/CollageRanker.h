@@ -17,6 +17,7 @@
 
 #include "log.h"
 
+#include "Filters.h"
 #include "ImageManipulator.h"
 #include "KeywordRanker.h"
 #include "common.h"
@@ -51,61 +52,6 @@ std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features)
 
 	return mat;
 }
-
-class CanvasQuery {
-public:
-	std::vector<float> lefts;
-	std::vector<float> tops;
-	std::vector<float> relative_heights;
-	std::vector<float> relative_widths;
-	std::vector<unsigned int> pixel_heights;
-	std::vector<unsigned int> pixel_widths;
-
-	// format from js: [RGBARGBA.....]
-	std::vector<std::vector<float>> images;
-
-	// temporal query delimiter
-	int break_point = 0;
-
-	int channels = 0;
-	std::size_t len = 0;
-	inline std::size_t size() { return len; }
-
-	void print() const;
-
-	// Images are expected to be in RGB format
-	void RGBA_to_RGB();
-	void resize_all(int W = 224, int H = 224);
-	void save_all(const std::string& prefix = "");
-
-	/**
-	 * This allows portable binary serialization of Collage instances to files.
-	 *
-	 * by Cereal header-only lib
-	 * https://uscilab.github.io/cereal/quickstart.html
-	 * https://uscilab.github.io/cereal/stl_support.html
-	 */
-	template <class Archive>
-	void serialize(Archive& archive) {
-		archive(lefts, tops, relative_heights, relative_widths, pixel_heights, pixel_widths, images, break_point,
-		        channels);
-	}
-
-	struct image {
-		float left;
-		float top;
-		float relative_height;
-		float relative_width;
-		unsigned int pixel_height;
-		unsigned int pixel_width;
-		std::vector<float>& img;
-	};
-
-	image operator[](std::size_t idx) {
-		return image{ lefts[idx],        tops[idx],  relative_heights[idx], relative_widths[idx], pixel_heights[idx],
-			          pixel_widths[idx], images[idx] };
-	}
-};
 
 class CollageRanker {
 public:

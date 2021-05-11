@@ -965,7 +965,62 @@ void NetworkApi::handle__reset_search_session__POST(http_request req) {
 	req.reply(res);
 }
 
-CanvasQuery NetworkApi::extract_canvas_query(web::json::value& collage_data_JSON) {
+RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	size_t src_ctx_ID{ static_cast<size_t>(body[U("srcSearchCtxId")].as_integer()) };
+	std::string screenshot_data{ to_utf8string(body[U("screenshotData")].as_string()) };
+	std::string user_token{ "matfyz" };
+
+	/*
+	 * Process it
+	 */
+
+	// \todo Validate the user
+	// p_core->auth_user()
+
+	std::string time_label{ get_formated_timestamp("%H:%M:%S") };
+
+	RescoreMetadata md;
+	md.user_token = user_token;
+	md.screenshot_filepath = _p_core->store_rescore_screenshot(screenshot_data);
+	md.srd_search_ctx_ID = src_ctx_ID;
+	md.time_label = time_label;
+	return md;
+}
+
+RelevanceFeedbackQuery NetworkApi::extract_relevance_feedback(web::json::value& /*body*/) {
+	RelevanceFeedbackQuery rfq;
+	rfq.likes = _p_core->get_search_context().likes;
+	return rfq;
+}
+
+TextualQuery NetworkApi::extract_textual_query(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	std::string q0{ to_utf8string(body[U("q0")].as_string()) };
+	std::string q1{ to_utf8string(body[U("q1")].as_string()) };
+
+	/*
+	 * Process it
+	 */
+	TextualQuery textual_query;
+	textual_query.query.append(q0).append(" >> ").append(q1);
+
+	return textual_query;
+}
+
+CanvasQuery NetworkApi::extract_canvas_query(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	json::value collage_data_JSON{ body[U("collages")] };
+
+	/*
+	 * Process it
+	 */
 	CanvasQuery canvas_query;
 	constexpr size_t num_channels{ 4 };
 
@@ -1023,79 +1078,68 @@ CanvasQuery NetworkApi::extract_canvas_query(web::json::value& collage_data_JSON
 	return canvas_query;
 }
 
+Filters NetworkApi::extract_filters(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	json::value weekdays_JSON{ body[U("filters")][U("weekdays")] };
+	Hour hourFrom{ static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer()) };
+	Hour hourTo{ static_cast<Hour>(body[U("filters")][U("hoursTo")].as_integer()) };
+
+	/*
+	 * Process it
+	 */
+	uint8_t weekdays_mask{ 0 };
+	for (size_t i{ 0 }; i < 7; ++i) {
+		bool flag{ weekdays_JSON.as_array().at(i).as_bool() };
+		if (flag) {
+			// LSb is day 0, MSb is day 6
+			weekdays_mask = weekdays_mask | (1 << i);
+		}
+	}
+
+	return Filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask } };
+}
+
 void NetworkApi::handle__rescore__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	LOG_REQUEST(remote_addr, "handle__rescore__POST");
 
 	auto body = req.extract_json().get();
 
-	size_t srcSearchCtxId{ ERR_VAL<size_t>() };
-	std::string screenshotData{};
-
-	std::string q0{};
-	std::string q1{};
-
-	json::value weekdays_JSON;
-	json::value collage_data_JSON;
-	Hour hourFrom{};
-	Hour hourTo{};
-
 	try {
-		srcSearchCtxId = static_cast<size_t>(body[U("srcSearchCtxId")].as_integer());
-		screenshotData = to_utf8string(body[U("screenshotData")].as_string());
+		// Metadata
+		RescoreMetadata rescore_metadata{ extract_rescore_metadata(body) };
 
-		q0 = to_utf8string(body[U("q0")].as_string());
-		q1 = to_utf8string(body[U("q1")].as_string());
+		// Relevance feedbask query
+		RelevanceFeedbackQuery relevance_query{ extract_relevance_feedback(body) };
 
-		collage_data_JSON = body[U("collages")];
+		// Text queries
+		TextualQuery textual_query{ extract_textual_query(body) };
 
-		weekdays_JSON = body[U("filters")][U("weekdays")];
-		hourFrom = static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer());
-		hourTo = static_cast<Hour>(body[U("filters")][U("hoursTo")].as_integer());
-	} catch (...) {
-		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
-		NetworkApi::add_CORS_headers(res);
-		req.reply(res);
-		return;
-	}
-	// Empty queries
-	if (q0.empty() && q1.empty() && _p_core->get_search_context().likes.empty() && collage_data_JSON.is_null()) {
-		http_response res{ construct_error_res(status_codes::BadRequest, "Empty queries.") };
-		NetworkApi::add_CORS_headers(res);
-		req.reply(res);
-		return;
-	}
+		// Filters
+		Filters filters{ extract_filters(body) };
 
-	try {
-		// \ytbi
-		std::string user_token{};
-		std::string time_label{ "22:30" };
+		// Canvas queries
+		CanvasQuery canvas_query{ extract_canvas_query(body) };
 
-		/*
-		 * Text queries
-		 */
-		auto& textQuery{ q0.append(" >> ").append(q1) };
-
-		/*
-		 * Filters
-		 */
-		uint8_t weekdays_mask{ 0 };
-		for (size_t i{ 0 }; i < 7; ++i) {
-			bool flag{ weekdays_JSON.as_array().at(i).as_bool() };
-			if (flag) {
-				// LSb is day 0, MSb is day 6
-				weekdays_mask = weekdays_mask | (1 << i);
-			}
+		// Is the query non-empty?
+		if (textual_query.empty() && relevance_query.empty() && canvas_query.empty()) {
+			http_response res{ construct_error_res(status_codes::BadRequest, "Empty queries.") };
+			NetworkApi::add_CORS_headers(res);
+			req.reply(res);
+			return;
 		}
-		Filters filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask } };
 
-		/*
-		 * CanvasQuery
-		 */
-		CanvasQuery collage{ extract_canvas_query(collage_data_JSON) };
+		Query query;
+		query.metadata = std::move(rescore_metadata);
+		query.filters = std::move(filters);
+		query.relevance_feeedback = std::move(relevance_query);
+		query.textual_query = std::move(textual_query);
+		query.canvas_query = std::move(canvas_query);
 
 		// Rescore
-		auto rescore_result{ _p_core->rescore(textQuery, collage, &filters, srcSearchCtxId, "", time_label) };
+		auto rescore_result{ _p_core->rescore(query) };
 		json::value history{ to_Response__Rescore__Post(_p_core, rescore_result) };
 
 		// Construct the response

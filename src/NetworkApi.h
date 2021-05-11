@@ -104,7 +104,11 @@ private:
 	void handle__search__context__GET(http_request req);
 
 	// *** Helpers ***
-	CanvasQuery extract_canvas_query(web::json::value& collage_data_JSON);
+	RescoreMetadata extract_rescore_metadata(web::json::value& body);
+	RelevanceFeedbackQuery extract_relevance_feedback(web::json::value& body);
+	TextualQuery extract_textual_query(web::json::value& body);
+	CanvasQuery extract_canvas_query(web::json::value& body);
+	Filters extract_filters(web::json::value& body);
 
 private:
 	ApiConfig _API_config;

@@ -187,6 +187,11 @@ void SomHunter::apply_filters() {
 	}
 }
 
+RescoreResult SomHunter::rescore(Query& query) {
+	return rescore(query.textual_query.query, query.canvas_query, &query.filters, query.metadata.srd_search_ctx_ID,
+	               query.metadata.screenshot_filepath, query.metadata.time_label);
+}
+
 RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& collage, const Filters* p_filters,
                                  size_t src_search_ctx_ID, const std::string& screenshot_fpth,
                                  const std::string& label) {
@@ -290,6 +295,15 @@ void SomHunter::log_scroll(DisplayType t, float dir_Y) { user.submitter.log_scro
 
 void SomHunter::log_text_query_change(const std::string& text_query) {
 	user.submitter.log_text_query_change(text_query);
+}
+
+std::string SomHunter::store_rescore_screenshot(const std::string& /*filepath*/) {
+	LOG_W("Simulating the screenshot saving...");
+
+	std::string UI_filepath{ "/assets/img/history_screenshot.jpg" };
+
+	// Return the filepath the UI can use to render it
+	return UI_filepath;
 }
 
 void SomHunter::rescore_keywords(const std::string& query) {

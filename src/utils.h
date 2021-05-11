@@ -444,4 +444,19 @@ inline std::string read_whole_file(const std::string& filepath) {
 	return file_content;
 }
 
+/** Left trim. */
+inline std::string trim_left(std::string s) {
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+	return s;
+}
+
+/** Right trim. */
+inline std::string trim_right(std::string s) {
+	s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+	return s;
+}
+
+/** Bi-trim. */
+inline std::string trim(std::string s) { return trim_right(trim_left(s)); }
+
 #endif  // UTILS_H_

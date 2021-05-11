@@ -110,6 +110,8 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
+	RescoreResult rescore(Query& query);
+
 	RescoreResult rescore(const std::string& text_query, CanvasQuery& collage, const Filters* p_filters = nullptr,
 	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
 	                      const std::string& label = ""s);
@@ -205,6 +207,8 @@ public:
 	                     size_t num_channels, bool are_ints = false) const {
 		return ImageManipulator::store_jpg(filepath, in, w, h, quality, num_channels, are_ints);
 	}
+
+	std::string store_rescore_screenshot(const std::string& filepath);
 
 	/**
 	 * Creates a new resized copy of the provided image matrix.
