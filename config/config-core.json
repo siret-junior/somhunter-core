@@ -215,8 +215,8 @@
 
 		"max_frame_filename_len": 64,
 		"display_page_size": 128,
-		"topn_frames_per_video": 3,
-		"topn_frames_per_shot": 1,
+		"topn_frames_per_video": 0,
+		"topn_frames_per_shot": 0,
 		
 		"model_W2VV_img_bias": "data/nn_models/w2vv-img_bias-2048floats.bin",
 		"model_W2VV_img_weigths": "data/nn_models/w2vv-img_weight-2048x4096floats.bin",
@@ -229,6 +229,8 @@
 		"model_ResNext_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnext101.pt",
 		"model_ResNext_SHA256": "d5c990df4ec76d2a0671e8d61717fa0cf27e90cc627750d41c1be443ea36b9f9",
 
+        "collage_regions": 12,
+        "collage_region_file_prefix": "data/ITEC_w2vv/collage/region_",
 		"models_dir": "data/nn_models/",
 
 		"ui_dir": "ui/",

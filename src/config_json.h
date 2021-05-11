@@ -31,6 +31,37 @@
 #include "log.h"
 #include "utils.h"
 
+inline std::string require_string_value(const json11::Json& json, const std::string& key) {
+	std::string msg{ "Missing cnfig key: " + key };
+
+	if (json[key].is_null()) {
+		LOG_E(msg);
+		throw std::runtime_error(msg);
+	}
+	return json[key].string_value();
+}
+
+template <typename T_>
+inline T_ require_int_value(const json11::Json& json, const std::string& key) {
+	std::string msg{ "Missing cnfig key: " + key };
+
+	if (json[key].is_null()) {
+		LOG_E(msg);
+		throw std::runtime_error(msg);
+	}
+	return static_cast<T_>(json[key].int_value());
+}
+
+inline bool require_bool_value(const json11::Json& json, const std::string& key) {
+	std::string msg{ "Missing cnfig key: " + key };
+
+	if (json[key].is_null()) {
+		LOG_E(msg);
+		throw std::runtime_error(msg);
+	}
+	return json[key].bool_value();
+}
+
 struct VideoFilenameOffsets {
 	size_t filename_off;
 	size_t vid_ID_off;
@@ -143,7 +174,7 @@ struct Config {
 	std::string model_ResNext_file;
 
 	std::string collage_region_file_prefix;
-	int collage_regions;
+	size_t collage_regions;
 
 	static Config parse_json_config(const std::string& filepath);
 	static Config parse_json_config_string(const std::string& cfg_file_contents);
@@ -176,53 +207,95 @@ inline Config Config::parse_json_config_string(const std::string& cfg_file_conte
 		throw std::runtime_error(msg);
 	}
 
-	auto cfg = Config{ Config::parse_API_config(json_all["api"]),
-		               json["user_token"].string_value(),
-		               parse_submitter_config(json["submitter_config"]),
+	std::string msg_missing_value{ "Missing config value" };
 
-		               size_t(json["max_frame_filename_len"].int_value()),
+	// clang-format off
+	auto cfg = Config{ 
+		// .API_config
+		Config::parse_API_config(json_all["api"]),
+		// .user_token
+		require_string_value(json, "user_token"),
+		// .submitter_config
+		parse_submitter_config(json["submitter_config"]),
+		// .max_frame_filename_len
+		require_int_value<size_t>(json, "max_frame_filename_len"),
+		
+		// .filename_offsets
+		VideoFilenameOffsets{
+			
+			// .filename_off
+			require_int_value<size_t>(json["filename_offsets"], "fr_filename_off"),
+			// .vid_ID_off
+			require_int_value<size_t>(json["filename_offsets"], "fr_filename_vid_ID_off"),
+			// .vid_ID_len
+			require_int_value<size_t>(json["filename_offsets"], "fr_filename_vid_ID_len"),
+			// .shot_ID_off
+			require_int_value<size_t>(json["filename_offsets"], "fr_filename_shot_ID_off"),
+			// .shot_ID_len
+			require_int_value<size_t>(json["filename_offsets"], "fr_filename_shot_ID_len"),
+			// .frame_num_off
+			require_int_value<size_t>(json["filename_offsets"], "fr_filename_frame_num_off"),
+			// .frame_num_len
+			require_int_value<size_t>(json["filename_offsets"], "fr_filename_frame_num_len"),
 
-		               VideoFilenameOffsets{
-		                   size_t(json["filename_offsets"]["fr_filename_off"].int_value()),
-		                   size_t(json["filename_offsets"]["fr_filename_vid_ID_off"].int_value()),
-		                   size_t(json["filename_offsets"]["fr_filename_vid_ID_len"].int_value()),
-		                   size_t(json["filename_offsets"]["fr_filename_shot_ID_off"].int_value()),
-		                   size_t(json["filename_offsets"]["fr_filename_shot_ID_len"].int_value()),
-		                   size_t(json["filename_offsets"]["fr_filename_frame_num_off"].int_value()),
-		                   size_t(json["filename_offsets"]["fr_filename_frame_num_len"].int_value()),
-		               },
+		},
 
-		               json["frames_list_file"].string_value(),
+		// .frames_list_file
+		require_string_value(json, "frames_list_file"),
+		// .frames_dir
+		require_string_value(json, "frames_dir"),
+		// .thumbs_dir
+		require_string_value(json, "thumbs_dir"),
 
-		               json["frames_dir"].string_value(),
-		               json["thumbs_dir"].string_value(),
+		// .features_file_data_off
+		require_int_value<size_t>(json, "features_file_data_off"),
+		// .features_file
+		require_string_value(json, "features_file"),
+		// .features_dim
+		require_int_value<size_t>(json, "features_dim"),
 
-		               size_t(json["features_file_data_off"].int_value()),
-		               json["features_file"].string_value(),
-		               size_t(json["features_dim"].int_value()),
+		// .pre_PCA_features_dim
+		require_int_value<size_t>(json, "pre_PCA_features_dim"),
+		// .kw_bias_vec_file
+		require_string_value(json, "kw_bias_vec_file"),
+		// .kw_scores_mat_file
+		require_string_value(json, "kw_scores_mat_file"),
+		// .kw_PCA_mean_vec_file
+		require_string_value(json, "kw_PCA_mean_vec_file"),
+		// .kw_PCA_mat_file
+		require_string_value(json, "kw_PCA_mat_file"),
+		// .kw_PCA_mat_dim
+		require_int_value<size_t>(json, "kw_PCA_mat_dim"),
 
-		               size_t(json["pre_PCA_features_dim"].int_value()),
-		               json["kw_bias_vec_file"].string_value(),
-		               json["kw_scores_mat_file"].string_value(),
-		               json["kw_PCA_mean_vec_file"].string_value(),
-		               json["kw_PCA_mat_file"].string_value(),
-		               size_t(json["kw_PCA_mat_dim"].int_value()),
+		// .kws_file
+		require_string_value(json, "kws_file"),
 
-		               json["kws_file"].string_value(),
+		// .display_page_size
+		require_int_value<size_t>(json, "display_page_size"),
+		// .topn_frames_per_video
+		require_int_value<size_t>(json, "topn_frames_per_video"),
+		// .topn_frames_per_shot
+		require_int_value<size_t>(json, "topn_frames_per_shot"),
 
-		               size_t(json["display_page_size"].int_value()),
-		               size_t(json["topn_frames_per_video"].int_value()),
-		               size_t(json["topn_frames_per_shot"].int_value()),
+		// .LSC_metadata_file
+		json["LSC_metadata_file"].string_value(),
+		
+		// .model_W2VV_img_bias
+		require_string_value(json, "model_W2VV_img_bias"),
+		// .model_W2VV_img_weigths
+		require_string_value(json, "model_W2VV_img_weigths"),
+		// .model_ResNet_file
+		require_string_value(json, "model_ResNet_file"),
+		// .model_ResNext_file
+		require_string_value(json, "model_ResNext_file"),
 
-		               json["LSC_metadata_file"].string_value(),
+		// .collage_region_file_prefix
+		require_string_value(json, "collage_region_file_prefix"),
+		// .collage_regions
+		require_int_value<size_t>(json, "collage_regions")
 
-		               json["model_W2VV_img_bias"].string_value(),
-		               json["model_W2VV_img_weigths"].string_value(),
-		               json["model_ResNet_file"].string_value(),
-		               json["model_ResNext_file"].string_value(),
-
-		               json["collage_region_file_prefix"].string_value(),
-		               json["collage_regions"].int_value() };
+	};
+	// clang-format on
 
 	return cfg;
 }

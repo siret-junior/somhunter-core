@@ -46,6 +46,42 @@ static size_t store_JPEG_from_base64(const std::string& filepath, const std::str
 	return 128;
 }
 
+template <typename _ElemType>
+std::vector<_ElemType> from_JSON_array(json::value x) {
+	auto arr{ x.as_array() };
+
+	std::vector<_ElemType> res;
+	res.reserve(arr.size());
+	try {
+		for (size_t i{ 0 }; i < arr.size(); ++i) {
+			res.emplace_back(static_cast<_ElemType>(arr.at(i).as_integer()));
+		}
+
+	} catch (std::exception& e) {
+		LOG_D(e.what());
+	}
+
+	return res;
+}
+
+template <typename _ElemType>
+std::vector<_ElemType> from_double_array(json::value x) {
+	auto arr{ x.as_array() };
+
+	std::vector<_ElemType> res;
+	res.reserve(arr.size());
+	try {
+		for (size_t i{ 0 }; i < arr.size(); ++i) {
+			res.emplace_back(static_cast<_ElemType>(arr.at(i).as_double()));
+		}
+
+	} catch (std::exception& e) {
+		LOG_D(e.what());
+	}
+
+	return res;
+}
+
 /**
  *
  * OpenAPI: QueryFilters
@@ -942,6 +978,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 	std::string q1{};
 
 	json::value weekdays_JSON;
+	json::value collage_data_JSON;
 	Hour hourFrom{};
 	Hour hourTo{};
 
@@ -951,6 +988,8 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 
 		q0 = to_utf8string(body[U("q0")].as_string());
 		q1 = to_utf8string(body[U("q1")].as_string());
+
+		collage_data_JSON = body[U("collages")];
 
 		weekdays_JSON = body[U("filters")][U("weekdays")];
 		hourFrom = static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer());
@@ -962,7 +1001,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		return;
 	}
 	// Empty queries
-	if (q0.empty() && q1.empty() && _p_core->get_search_context().likes.empty()) {
+	if (q0.empty() && q1.empty() && _p_core->get_search_context().likes.empty() && collage_data_JSON.is_null()) {
 		http_response res{ construct_error_res(status_codes::BadRequest, "Empty queries.") };
 		NetworkApi::add_CORS_headers(res);
 		req.reply(res);
@@ -977,7 +1016,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		/*
 		 * Text queries
 		 */
-		auto& textQuery{ q0.append(">>").append(q1) };
+		auto& textQuery{ q0.append(" >> ").append(q1) };
 
 		/*
 		 * Filters
@@ -995,10 +1034,48 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		/*
 		 * Collage
 		 */
-		// \todo
+		Collage collage;
+		if (!collage_data_JSON.is_null()) {
+			std::vector<uint8_t> js_concat_pics = from_JSON_array<uint8_t>(collage_data_JSON[U("pictures")]);
 
+			std::vector<float> js_lefts = from_double_array<float>(collage_data_JSON[U("left")]);
+			std::vector<float> js_tops = from_double_array<float>(collage_data_JSON[U("top")]);
+			std::vector<float> js_heights = from_double_array<float>(collage_data_JSON[U("width")]);
+			std::vector<float> js_widths = from_double_array<float>(collage_data_JSON[U("height")]);
+
+			std::vector<unsigned int> js_p_widths = from_JSON_array<unsigned int>(collage_data_JSON[U("pixel_width")]);
+			std::vector<unsigned int> js_p_heights =
+			    from_JSON_array<unsigned int>(collage_data_JSON[U("pixel_height")]);
+			std::vector<unsigned int> js_break_point = from_JSON_array<unsigned int>(collage_data_JSON[U("break")]);
+
+			for (std::size_t i = 0; i < js_lefts.size(); i++) {
+				collage.lefts.push_back(js_lefts[i]);
+				collage.tops.push_back(js_tops[i]);
+				collage.relative_heights.push_back(js_heights[i]);
+				collage.relative_widths.push_back(js_widths[i]);
+				collage.pixel_heights.push_back(js_p_heights[i]);
+				collage.pixel_widths.push_back(js_p_widths[i]);
+			}
+			collage.break_point = js_break_point[0];
+			collage.channels = 4;
+			collage.len = js_lefts.size();
+
+			std::size_t index = 0;
+			std::size_t end = 0;
+			for (std::size_t i = 0; i < collage.pixel_heights.size(); i++) {
+				std::vector<float> img;
+				end = index + (collage.pixel_heights[i] * collage.pixel_widths[i] * 4);
+
+				for (index; index < end; index++) {
+					img.push_back(js_concat_pics[index]);
+				}
+				collage.images.push_back(img);
+			}
+		} else {
+			collage = DEFAULT_COLLAGE;
+		}
 		// Rescore
-		auto rescore_result{ _p_core->rescore(textQuery, DEFAULT_COLLAGE, &filters, srcSearchCtxId, "", time_label) };
+		auto rescore_result{ _p_core->rescore(textQuery, collage, &filters, srcSearchCtxId, "", time_label) };
 
 		json::value history{ to_Response__Rescore__Post(_p_core, rescore_result) };
 

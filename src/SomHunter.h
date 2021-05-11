@@ -117,8 +117,7 @@ public:
 	RescoreResult rescore(const std::string& text_query, const Filters* p_filters = nullptr,
 	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
 	                      const std::string& label = ""s) {
-		Collage c;  // NULL instance
-		return rescore(text_query, c, p_filters, src_search_ctx_ID, screenshot_fpth, label);
+		return rescore(text_query, DEFAULT_COLLAGE, p_filters, src_search_ctx_ID, screenshot_fpth, label);
 	}
 
 	RescoreResult rescore(Collage& collage, const Filters* p_filters = nullptr,
