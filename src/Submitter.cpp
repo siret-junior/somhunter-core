@@ -672,20 +672,27 @@ void Submitter::log_collage_query(const CanvasQuery& collage) {
 		throw std::runtime_error(msg);
 	}
 
-	Json json = Json::object{
-		{ "lefts", Json(collage.lefts) },
-		{ "tops", Json(collage.tops) },
-		{ "relative_heights", Json(collage.relative_heights) },
-		{ "relative_widths", Json(collage.relative_widths) },
-	};
+	Json json{ collage.to_JSON() };
 	o << json.dump();
 
-	// Write images
-	for (size_t i{ 0 }; i < collage.images.size(); ++i) {
-		std::string idx{ std::to_string(collage.break_point) };
+	// Write bitmaps as JPEGs
+	// For each temporal part
+	;
+	for (size_t qidx{ 0 }; qidx < collage.num_temp_queries(); ++qidx) {
+		size_t qbegin{ collage.query_begins(qidx) };
+		size_t qend{ collage.query_begins(qidx + 1) };
 
-		ImageManipulator::store_jpg(path + idx + "_img_"s + std::to_string(i) + ".jpg", collage.images[i],
-		                            collage.pixel_widths[i], collage.pixel_heights[i], 60, collage.channels, true);
+		for (size_t i{ qbegin }; i < qend; ++i) {
+			const CanvasSubquery& subquery{ collage[i] };
+
+			if (std::holds_alternative<CanvasSubqueryBitmap>(subquery)) {
+				const CanvasSubqueryBitmap& q{ std::get<CanvasSubqueryBitmap>(subquery) };
+
+				ImageManipulator::store_jpg(path + std::to_string(qidx) + "_img_"s + std::to_string(i) + ".jpg",
+				                            q.data_std(), q.width_pixels(), q.height_pixels(), 100, q.num_channels(),
+				                            true);
+			}
+		}
 	}
 }
 

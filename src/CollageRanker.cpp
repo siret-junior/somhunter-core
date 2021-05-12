@@ -1,71 +1,42 @@
 
-#include <filesystem>
-
 #include "CollageRanker.h"
 
+#include <filesystem>
+
+#include "KeywordRanker.h"
 #include "utils.h"
 
 using namespace sh;
 
-void CanvasQuery::print() const {
-	std::cout << "COLLAGE BEGIN\n";
-	std::cout << "Images: " << images.size() << "\n";
-	std::cout << "Break: " << break_point << "\n\n";
-	for (size_t i = 0; i < images.size(); i++) {
-		std::cout << "\t#" << i << ":\n";
-		std::cout << "\t\tLeft: " << lefts[i] << ":\n";
-		std::cout << "\t\tTop: " << tops[i] << ":\n";
-		std::cout << "\t\tHeight: " << relative_heights[i] << ":\n";
-		std::cout << "\t\tWidth: " << relative_widths[i] << ":\n";
-		std::cout << "\t\tP_Height: " << pixel_heights[i] << ":\n";
-		std::cout << "\t\tP_Width: " << pixel_widths[i] << ":\n";
-		std::cout << "\t\tSize: " << images[i].size() << ":\n";
-		std::cout << "\n";
-	}
-	std::cout << "COLLAGE END\n";
+void CanvasQuery::emplace_back(const RelativeRect& rect, const std::string& text_query) {
+	_subqueries.emplace_back(CanvasSubqueryText{ rect, text_query });
 }
 
-void CanvasQuery::RGBA_to_RGB() {
-	if (channels == 3) return;
+void CanvasQuery::emplace_back(const RelativeRect& rect, size_t bitmap_w, size_t bitmap_h, size_t num_channels,
+                               uint8_t* bitmap_RGBA_data) {
+	std::vector<float> image;
 
-	std::vector<std::vector<float>> rgb_images;
-
-	for (size_t i = 0; i < images.size(); i++) {
-		std::vector<float> image;
-		for (size_t j = 0; j < images[i].size(); j += 4) {
-			image.push_back(images[i][j + 0]);
-			image.push_back(images[i][j + 1]);
-			image.push_back(images[i][j + 2]);
-		}
-		rgb_images.push_back(image);
+	// DO: RGBA_to_RGB
+	size_t total_size{ bitmap_w * bitmap_h * num_channels };
+	for (size_t j = 0; j < total_size; j += num_channels) {
+		image.push_back(bitmap_RGBA_data[j + 0]);
+		image.push_back(bitmap_RGBA_data[j + 1]);
+		image.push_back(bitmap_RGBA_data[j + 2]);
 	}
-	images = rgb_images;
-	channels = 3;
+
+	// DO: resize_all(int 224, int 224)
+	image = ImageManipulator::resize(image, bitmap_w, bitmap_h, CollageRanker::models_input_width,
+	                                 CollageRanker::models_input_height, CollageRanker::models_num_channels);
+
+	_subqueries.emplace_back(CanvasSubqueryBitmap{ rect, CollageRanker::models_input_width,
+	                                               CollageRanker::models_input_height,
+	                                               CollageRanker::models_num_channels, std::move(image) });
 }
 
-void CanvasQuery::resize_all(int W, int H) {
-	std::vector<std::vector<float>> resized_images;
-	for (size_t i = 0; i < images.size(); i++) {
-		std::vector<float> image =
-		    ImageManipulator::resize(images[i], pixel_widths[i], pixel_heights[i], W, H, channels);
-		pixel_widths[i] = W;
-		pixel_heights[i] = H;
-		resized_images.push_back(image);
-	}
-	images = resized_images;
-}
+bool CanvasQuery::empty() const { return (size() == 0); }
+size_t CanvasQuery::size() const { return _subqueries.size(); }
 
-void CanvasQuery::save_all(const std::string& prefix) {
-	// expects RGB [0,1]
-	for (size_t i = 0; i < images.size(); i++) {
-		ImageManipulator::store_jpg(prefix + "im" + std::to_string(i) + ".jpg", images[i], pixel_widths[i],
-		                            pixel_heights[i], 100, channels);
-	}
-}
-
-// --------------------------------
-
-CollageRanker::CollageRanker(const Config& config) {
+CollageRanker::CollageRanker(const Config& config, KeywordRanker* p_core) : _p_core{ p_core } {
 	try {
 		if (!std::filesystem::exists(config.model_ResNet_file)) {
 			std::string msg{ "Unable to open file '" + config.model_ResNext_file + "'." };
@@ -138,9 +109,9 @@ CollageRanker::CollageRanker(const Config& config) {
 
 void CollageRanker::score(CanvasQuery& collage, ScoreModel& model, const DatasetFeatures& /*features*/,
                           const DatasetFrames& frames) {
-	if (collage.images.size() > 0) {
-		collage.RGBA_to_RGB();
-		collage.resize_all(224, 224);
+	if (collage.size() > 0) {
+		/*collage.RGBA_to_RGB();
+		collage.resize_all(224, 224);*/
 
 		at::Tensor tensor_features = get_features(collage);
 
@@ -156,17 +127,20 @@ void CollageRanker::score(CanvasQuery& collage, ScoreModel& model, const Dataset
 		for (std::size_t i = 0; i < collage_vectors.size(); i++)
 			scores.push_back(score_image(collage_vectors[i], regions[i]));
 
+		// size_t q0_beg{ collage.query_begins(0) };
+		size_t q1_beg{ collage.query_begins(1) };
+
 		// first query
-		StdMatrix<float> s0(scores.begin(), scores.begin() + collage.break_point);
+		StdMatrix<float> s0(scores.begin(), scores.begin() + q1_beg);
 		auto mean0 = average_scores(s0);
 
 		std::vector<float> final_score;
 
-		if (scores.begin() + collage.break_point == scores.end())
+		if (scores.begin() + q1_beg == scores.end())
 			final_score = mean0;
 		else  // second query
 		{
-			StdMatrix<float> s1(scores.begin() + collage.break_point, scores.end());
+			StdMatrix<float> s1(scores.begin() + q1_beg, scores.end());
 			auto mean1 = average_scores(s1);
 
 			// applied temporal query
@@ -224,51 +198,91 @@ at::Tensor CollageRanker::get_features(CanvasQuery& collage) {
 	LOG_D("Extracting features\n");
 
 	std::vector<torch::Tensor> tensors;
-	std::vector<torch::Tensor> tensors_norm;
+	std::vector<torch::Tensor> tensors_bitmap_norm;
+
+	std::vector<torch::Tensor> features_text;
 
 	float means[] = { 123.68, 116.779, 103.939 };
 	torch::Tensor t_means = torch::from_blob(means, { 3 }).unsqueeze_(0).unsqueeze_(0);
 
 	// get data, no adjustements for resnet, normed for resnext
-	for (std::size_t i = 0; i < collage.images.size(); i++) {
-		at::Tensor tensor_image = torch::from_blob(collage.images[i].data(), { 224, 224, 3 }, at::kFloat);
-		at::Tensor tensor_image_norm = tensor_image - t_means;
+	for (std::size_t i = 0; i < collage.size(); i++) {
+		auto subquery{ collage[i] };
 
-		tensor_image = tensor_image.permute({ 2, 0, 1 });
-		tensor_image_norm = tensor_image_norm.permute({ 2, 0, 1 });
+		// If bitmap
+		if (std::holds_alternative<CanvasSubqueryBitmap>(subquery)) {
+			CanvasSubqueryBitmap& subquery_bitmap{ std::get<CanvasSubqueryBitmap>(subquery) };
 
-		tensors.push_back(tensor_image.unsqueeze_(0));
-		tensors_norm.push_back(tensor_image_norm.unsqueeze_(0));
+			at::Tensor tensor_imagex = torch::from_blob(subquery_bitmap.data(), { 224, 224, 3 }, at::kFloat);
+
+			at::Tensor tensor_image = tensor_imagex - 0.0F;
+			at::Tensor tensor_image_norm = tensor_imagex - t_means;
+
+			tensor_image = tensor_image.permute({ 2, 0, 1 });
+
+			tensor_image_norm = tensor_image_norm.permute({ 2, 0, 1 });
+
+			tensors.push_back(tensor_image.unsqueeze_(0));
+
+			tensors_bitmap_norm.push_back(tensor_image_norm.unsqueeze_(0));
+		}
+		// Else text
+		else {
+			CanvasSubqueryText subquery_text{ std::get<CanvasSubqueryText>(subquery) };
+			// \todo Undummy
+			// xoxo
+			auto fea{ _p_core->get_text_query_feature(subquery_text.query()) };
+			features_text.emplace_back(to_tensor<at::kFloat, float>(fea));
+		}
 	}
-
 	at::Tensor batch = torch::cat(tensors, 0);
-	at::Tensor batch_norm = torch::cat(tensors_norm, 0);
+	at::Tensor batch_norm = torch::cat(tensors_bitmap_norm, 0);
 
 	at::Tensor resnext101_feature = resnext101.forward({ batch_norm }).toTensor();
 	at::Tensor resnet152_feature = resnet152.forward({ batch }).toTensor();
-
-	at::Tensor feature = torch::cat({ resnext101_feature, resnet152_feature }, 1).to(torch::kFloat32).detach();
+	at::Tensor features_bitmap = torch::cat({ resnext101_feature, resnet152_feature }, 1).to(torch::kFloat32).detach();
 
 	// squeeze 4096 to 2048
-	feature = feature.unsqueeze(0).permute({ 1, 0, 2 });
-	feature = torch::tanh(torch::matmul(feature, weights).squeeze(1) + bias);
+	features_bitmap = features_bitmap.unsqueeze(0).permute({ 1, 0, 2 });
+	features_bitmap = torch::tanh(torch::matmul(features_bitmap, weights).squeeze(1) + bias);
 
 	// norm
-	feature = torch::div(feature, get_L2norm(feature));
-
-	LOG_D("normalized\n");
+	features_bitmap = torch::div(features_bitmap, get_L2norm(features_bitmap));
 
 	// PCA
-	feature = feature - kw_pca_mean_vec;
-	feature = feature.unsqueeze(0).permute({ 1, 0, 2 });
-	feature = torch::matmul(feature, kw_pca_mat).squeeze(1);
+	features_bitmap = features_bitmap - kw_pca_mean_vec;
+	features_bitmap = features_bitmap.unsqueeze(0).permute({ 1, 0, 2 });
+	features_bitmap = torch::matmul(features_bitmap, kw_pca_mat).squeeze(1);
 
 	// norm
-	feature = torch::div(feature, get_L2norm(feature));
+	features_bitmap = torch::div(features_bitmap, get_L2norm(features_bitmap));
 
-	std::cout << feature << "\n";
+	// --------------------------------------------
+	// Merge text & bitmap features into one matrix
+	std::vector<torch::Tensor> mixed_tensor;
+	{
+		size_t bitmap_i{ 0 };
+		size_t text_i{ 0 };
+		for (std::size_t i = 0; i < collage.size(); i++) {
+			auto subquery{ collage[i] };
 
-	return feature;
+			// If bitmap
+			if (std::holds_alternative<CanvasSubqueryBitmap>(subquery)) {
+				mixed_tensor.emplace_back(features_bitmap[bitmap_i]);
+				++bitmap_i;
+			}
+			// Else text
+			else {
+				mixed_tensor.emplace_back(features_bitmap[bitmap_i]);
+				++text_i;
+			}
+		}
+	}
+
+	at::Tensor result_features = torch::stack(mixed_tensor, 0);
+	std::cout << "result_features.shape: " << result_features.sizes() << std::endl;
+
+	return result_features;
 }
 
 std::vector<std::size_t> CollageRanker::get_RoIs(CanvasQuery& collage) {
@@ -277,19 +291,25 @@ std::vector<std::size_t> CollageRanker::get_RoIs(CanvasQuery& collage) {
 	return regions;
 }
 
-std::size_t CollageRanker::get_RoI(CanvasQuery::image image) {
+std::size_t CollageRanker::get_RoI(CanvasSubquery image) {
+	RelativeRect rect{ std::visit(
+		overloaded{
+		    [](auto sq) { return sq.rect(); },
+		},
+		image) };
+
 	std::vector<float> iou;
 	for (std::size_t i = 0; i < RoIs.size(); i++) {
 		auto& roi = RoIs[i];
-		auto int_l = std::max(image.left, roi[0]);
-		auto int_t = std::max(image.top, roi[1]);
-		auto int_r = std::min(image.left + image.relative_width, roi[0] + roi[2]);
-		auto int_b = std::min(image.top + image.relative_height, roi[1] + roi[3]);
+		auto int_l = std::max(rect.left, roi[0]);
+		auto int_t = std::max(rect.top, roi[1]);
+		auto int_r = std::min(rect.left + rect.width_norm(), roi[0] + roi[2]);
+		auto int_b = std::min(rect.top + rect.height_norm(), roi[1] + roi[3]);
 		if (int_r < int_l || int_b < int_t)
 			iou.push_back(0);
 		else {
 			auto intersection = (int_r - int_l) * (int_b - int_t);
-			auto uni = ((image.relative_width * image.relative_height) + (roi[2] * roi[3])) - intersection;
+			auto uni = ((rect.width_norm() * rect.height_norm()) + (roi[2] * roi[3])) - intersection;
 			iou.push_back(intersection / uni);
 		}
 	}

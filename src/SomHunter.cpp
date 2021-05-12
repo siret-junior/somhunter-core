@@ -228,7 +228,7 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& col
 	auto old_likes{ user.ctx.likes };
 
 	// If NOT COLLAGE
-	if (collage.images.empty()) {
+	if (collage.empty()) {
 		rescore_keywords(text_query);
 	} else {
 		reset_scores();

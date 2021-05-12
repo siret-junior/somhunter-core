@@ -61,7 +61,7 @@ class SomHunter {
 	const Config config;
 	const DatasetFrames frames;
 	const DatasetFeatures features;
-	const KeywordRanker keywords;
+	KeywordRanker keywords;
 	CollageRanker collageRanker;
 
 	// ********************************
@@ -80,7 +80,7 @@ public:
 	      frames(cfg),
 	      features(frames, cfg),
 	      keywords(cfg, frames),
-	      collageRanker(cfg),
+	      collageRanker(cfg, &keywords),
 	      user(cfg.user_token, cfg, frames, features) {}
 
 	// ********************************
@@ -235,6 +235,7 @@ public:
 	// ********************************
 	const std::string& get_config_filepath() { return _config_filepath; }
 	const std::string& get_API_config_filepath() { return _API_config_filepath; }
+	const KeywordRanker* textual_model() { return &keywords; };
 
 private:
 	/**

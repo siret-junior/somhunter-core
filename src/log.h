@@ -25,12 +25,17 @@
 #include "config.h"
 
 #include <cmath>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #define FILE_NAME_TAIL_LEN 50
+
+/** If `true` the assertions will be executed */
+constexpr bool RUN_ASSERTS = true;
 
 namespace TermColor {
 enum Code {
@@ -82,49 +87,47 @@ static std::string_view view_tail(const std::string& str, size_t len) {
 	return std::string_view{ str.data() + std::max<size_t>(0, str.length() - len) };
 }
 
-#define ASSERT(cond, msg)                  \
-	do {                                   \
-		if (!(cond)) {                     \
-			std::cerr << msg << std::endl; \
-			throw std::logic_error(msg);   \
-		}                                  \
-	} while (false);
-
 #if LOGLEVEL > 0
 
-#	define _dont_write_log_d \
-		do {                  \
+#	define _dont_write_log_err \
+		do {                    \
 		} while (0)
-#	define _write_log_d(level, x)                                                                               \
+#	define _write_log_err(level, x)                                                                             \
 		do {                                                                                                     \
 			std::cerr << level << x << "\n\t" << __func__ << "() in " << view_tail(__FILE__, FILE_NAME_TAIL_LEN) \
 			          << " :" << __LINE__ << "" << std::endl;                                                    \
 		} while (0)
 
-#	define LOG_E(x) _write_log_d(TermColor::red << "E:", x << TermColor::def)
+#	define _write_log_out(level, x)                                                                             \
+		do {                                                                                                     \
+			std::cout << level << x << "\n\t" << __func__ << "() in " << view_tail(__FILE__, FILE_NAME_TAIL_LEN) \
+			          << " :" << __LINE__ << "" << std::endl;                                                    \
+		} while (0)
+
+#	define LOG_E(x) _write_log_err(TermColor::red << "E:", x << TermColor::def)
 #else
 #	define LOG_E(x)
-#	define _write_log_d(level, x)
+#	define _write_log_err(level, x)
 #endif
 
 #if LOGLEVEL > 1
-#	define LOG_W(x) _write_log_d(TermColor::yellow << "W: ", x << TermColor::def)
+#	define LOG_W(x) _write_log_out(TermColor::yellow << "W: ", x << TermColor::def)
 #else
-#	define LOG_W(x) _dont_write_log_d
+#	define LOG_W(x) _dont_write_log_err
 #endif
 
 #if LOGLEVEL > 2
-#	define LOG_I(x) _write_log_d(TermColor::white << "I: ", x << TermColor::def)
-#	define LOG_S(x) _write_log_d(TermColor::green << "S: ", x << TermColor::def)
+#	define LOG_I(x) _write_log_out(TermColor::white << "I: ", x << TermColor::def)
+#	define LOG_S(x) _write_log_out(TermColor::green << "S: ", x << TermColor::def)
 #else
-#	define LOG_I(x) _dont_write_log_d
-#	define LOG_S(x) _dont_write_log_d
+#	define LOG_I(x) _dont_write_log_err
+#	define LOG_S(x) _dont_write_log_err
 #endif
 
 #if LOGLEVEL > 3
-#	define LOG_D(x) _write_log_d(TermColor::def << "D: ", x << TermColor::def)
+#	define LOG_D(x) _write_log_out(TermColor::def << "D: ", x << TermColor::def)
 #else
-#	define LOG_D(x) _dont_write_log_d
+#	define LOG_D(x) _dont_write_log_err
 #endif
 
 #ifdef LOG_API_CALLS
@@ -138,5 +141,25 @@ static std::string_view view_tail(const std::string& str, size_t len) {
 #	define LOG_REQUEST(id, x) _write_API_log_d(id, x)
 
 #endif  // LOGAPI
+
+/** Assert execuded at all times. */
+template <typename T>
+inline void do_assert(T&& assertion, const std::string_view msg = {}, const char* file = __FILE__,
+                      const int line = __LINE__) {
+	if (!assertion) {
+		std::cerr << "ASSERTION FAILED: " << msg << "\n\t"
+		          << "."
+		          << "() in " << view_tail(file, FILE_NAME_TAIL_LEN) << " :" << line << "" << std::endl;
+	}
+}
+
+/** Assert execuded only if `RUN_ASSERTS` is true. */
+template <typename T>
+inline void do_assert_debug(T&& assertion, const std::string_view msg = {}, const char* file = __FILE__,
+                            const int line = __LINE__) {
+	if constexpr (RUN_ASSERTS) {
+		do_assert(assertion, msg, file, line);
+	}
+}
 
 #endif  // log_h

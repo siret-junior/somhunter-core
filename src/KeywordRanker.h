@@ -114,6 +114,8 @@ public:
 	                const std::vector<std::vector<KeywordId>>& negative, ScoreModel& model,
 	                const DatasetFeatures& features, const DatasetFrames& frames, const Config& cfg) const;
 
+	StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query);
+
 	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model, const DatasetFeatures& features,
 	                         const DatasetFrames& frames, const Config& cfg) const;
 

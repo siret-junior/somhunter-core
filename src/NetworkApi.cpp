@@ -1019,64 +1019,73 @@ CanvasQuery NetworkApi::extract_canvas_query(web::json::value& body) {
 	/*
 	 * Extract from the body
 	 */
-	json::value collage_data_JSON{ body[U("collages")] };
+	json::value outer_array{ body[U("canvas_query")] };
 
 	/*
 	 * Process it
 	 */
 	CanvasQuery canvas_query;
-	constexpr size_t num_channels{ 4 };
 
-	if (!collage_data_JSON.is_null()) {
-		std::vector<uint8_t> raw_data_buffer = from_JSON_array<uint8_t>(collage_data_JSON[U("pictures")]);
-
-		std::vector<float> js_lefts = from_double_array<float>(collage_data_JSON[U("left")]);
-		std::vector<float> js_tops = from_double_array<float>(collage_data_JSON[U("top")]);
-		std::vector<float> js_heights = from_double_array<float>(collage_data_JSON[U("width")]);
-		std::vector<float> js_widths = from_double_array<float>(collage_data_JSON[U("height")]);
-
-		std::vector<unsigned int> js_p_widths = from_JSON_array<unsigned int>(collage_data_JSON[U("pixel_width")]);
-		std::vector<unsigned int> js_p_heights = from_JSON_array<unsigned int>(collage_data_JSON[U("pixel_height")]);
-		std::vector<unsigned int> js_break_point = from_JSON_array<unsigned int>(collage_data_JSON[U("break")]);
-
-		for (std::size_t i = 0; i < js_lefts.size(); i++) {
-			canvas_query.lefts.push_back(js_lefts[i]);
-			canvas_query.tops.push_back(js_tops[i]);
-			canvas_query.relative_heights.push_back(js_heights[i]);
-			canvas_query.relative_widths.push_back(js_widths[i]);
-			canvas_query.pixel_heights.push_back(js_p_heights[i]);
-			canvas_query.pixel_widths.push_back(js_p_widths[i]);
-		}
-		canvas_query.break_point = js_break_point[0];
-		canvas_query.channels = num_channels;
-		canvas_query.len = js_lefts.size();
-
-		std::size_t index = 0;
-		std::size_t end_i = 0;
-		for (std::size_t i = 0; i < canvas_query.pixel_heights.size(); i++) {
-			auto w{ canvas_query.pixel_widths[i] };
-			auto h{ canvas_query.pixel_heights[i] };
-
-			// We now can copy [index, end_i) `uint8_t`s as effective data
-
-			// If text
-			if (h == 0) {
-			}
-			// If bitmap
-			else {
-				std::vector<float> bitmap_data;
-				end_i = index + (w * h * num_channels);
-
-				// Copy the data to the image bitmap buffer
-				for (; index < end_i; index++) {
-					bitmap_data.push_back(static_cast<float>(raw_data_buffer[index]));
-				}
-				canvas_query.images.push_back(bitmap_data);
-			}
-		}
-	} else {
-		canvas_query = DEFAULT_COLLAGE;
+	if (outer_array.is_null()) {
+		return DEFAULT_COLLAGE;
 	}
+
+	/* outer_array:
+	[
+	    [inner_arr #0], < The first scene described
+	    [inner_arr #1], < The following scene
+	    [inner_arr #2], < The third scene
+	    ...
+	] */
+
+	// For each temporal query provided by the user
+	for (size_t temp_i{ 0 }; temp_i < outer_array.size(); ++temp_i) {
+		canvas_query.push_query_begin();  // Mark the query begin
+
+		auto inner_arr{ outer_array[temp_i] };
+		if (inner_arr.is_null()) {
+			return DEFAULT_COLLAGE;
+		}
+
+		/* inner_arr:
+		[
+		    { "bitmap" OR "text" subquery #0 },
+		    { "bitmap" OR "text" subquery #1 },
+		    { "bitmap" OR "text" subquery #2 },
+		    { "bitmap" OR "text" subquery #3 },
+		    ...
+		] */
+		// For each query placed on this temporal canvas
+		for (size_t canvas_query_i{ 0 }; canvas_query_i < inner_arr.size(); ++canvas_query_i) {
+			auto subquery_JSON{ inner_arr[canvas_query_i].as_object() };
+
+			// Determine the type
+			std::string subquery_type{ to_utf8string(subquery_JSON[U("type")].as_string()) };
+
+			// Parse the rect
+			std::vector<float> rect_vals = from_double_array<float>(subquery_JSON[U("rect")]);
+			if (rect_vals.size() != 4) {
+				throw std::runtime_error("Invalid `rect` property.");
+			}
+			RelativeRect rect{ rect_vals[0], rect_vals[1], rect_vals[2], rect_vals[3] };
+
+			// If textual query on the canvas
+			if (subquery_type == "text") {
+				std::vector<uint8_t> bitmap_data{ from_JSON_array<uint8_t>(subquery_JSON[U("bitmap_data")]) };
+				std::string text_query{ to_utf8string(subquery_JSON[U("text_query")].as_string()) };
+				canvas_query.emplace_back(rect, text_query);
+			}
+			// Else bitmap
+			else {
+				std::vector<uint8_t> bitmap_data{ from_JSON_array<uint8_t>(subquery_JSON[U("bitmap_data")]) };
+				size_t width{ static_cast<size_t>(subquery_JSON[U("width_pixels")].as_integer()) };
+				size_t height{ static_cast<size_t>(subquery_JSON[U("height_pixels")].as_integer()) };
+				size_t num_channels{ static_cast<size_t>(subquery_JSON[U("num_channels")].as_integer()) };
+				canvas_query.emplace_back(rect, width, height, num_channels, bitmap_data.data());
+			}
+		}
+	}
+	canvas_query.push_query_begin();
 
 	return canvas_query;
 }
@@ -1110,6 +1119,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 
 	auto body = req.extract_json().get();
 
+	Query query;
 	try {
 		// Metadata
 		RescoreMetadata rescore_metadata{ extract_rescore_metadata(body) };
@@ -1134,29 +1144,26 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 			return;
 		}
 
-		Query query;
 		query.metadata = std::move(rescore_metadata);
 		query.filters = std::move(filters);
 		query.relevance_feeedback = std::move(relevance_query);
 		query.textual_query = std::move(textual_query);
 		query.canvas_query = std::move(canvas_query);
-
-		// Rescore
-		auto rescore_result{ _p_core->rescore(query) };
-		json::value history{ to_Response__Rescore__Post(_p_core, rescore_result) };
-
-		// Construct the response
-		http_response res(status_codes::OK);
-		res.set_body(history);
-		NetworkApi::add_CORS_headers(res);
-		req.reply(res);
-
 	} catch (...) {
 		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
 		NetworkApi::add_CORS_headers(res);
 		req.reply(res);
 		return;
 	}
+	// Rescore
+	auto rescore_result{ _p_core->rescore(query) };
+	json::value history{ to_Response__Rescore__Post(_p_core, rescore_result) };
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(history);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
 }
 
 void NetworkApi::handle__like_frame__POST(http_request req) {

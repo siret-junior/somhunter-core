@@ -37,6 +37,8 @@
 
 #include <sha256.h>
 #include <cereal/archives/binary.hpp>
+#include <cereal/types/variant.hpp>
+#include <cereal/types/vector.hpp>
 
 #include "log.h"
 

@@ -20,3 +20,5 @@
  */
 
 #include "Filters.h"
+
+using namespace sh;

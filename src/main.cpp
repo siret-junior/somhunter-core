@@ -126,6 +126,14 @@ int main() {
 	// Instantiate the SOMHunter
 	SomHunter core{ config, cfg_fpth };
 
+	CanvasQuery q;
+	q.emplace_back(RelativeRect{ 0.2F, 0.1F, 0.5F, 0.5F }, "Lojza");
+	// std::cout << q.to_JSON().dump() << std::endl;
+	utils::serialize_to_file(q, "test.bin");
+
+	CanvasQuery qs{ utils::deserialize_from_file<CanvasQuery>("test.bin") };
+	// std::cout << qs.to_JSON().dump() << std::endl;
+
 	NetworkApi api{ config.API_config, &core };
 	api.run();
 

@@ -245,6 +245,10 @@ KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) con
 	return res;
 }
 
+StdVector<float> KeywordRanker::get_text_query_feature(const std::string& /*query*/) {
+	return StdVector<float>{ 128, 0.3F };
+}
+
 void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
                                         const DatasetFeatures& features, const DatasetFrames& frames,
                                         const Config& cfg) const {

@@ -23,8 +23,16 @@
 #ifndef FILTERS_H_
 #define FILTERS_H_
 
-#include <array>
+/*
+ * !!! \todo rename Filters.h/cpp -> query_types.h/cpp
+ */
 
+#include <array>
+#include <variant>
+
+#include <json11.hpp>
+
+#include <cereal/types/variant.hpp>
 #include "common.h"
 #include "utils.h"
 
@@ -102,34 +110,151 @@ public:
 	std::string query;
 };
 
+struct RelativeRect {
+	float left, top, right, bottom;
+
+	float width_norm() const {
+		do_assert_debug(right >= right);
+		return right - left;
+	};
+	float height_norm() const {
+		do_assert_debug(bottom >= top);
+		return bottom - top;
+	};
+
+	template <class Archive>
+	void serialize(Archive& archive) {
+		archive(left, top, right, bottom);
+	}
+};
+
+class CanvasSubqueryBase {
+public:
+	CanvasSubqueryBase() = default;
+	CanvasSubqueryBase(const RelativeRect& rect) : _rect{ rect } {};
+	const RelativeRect& rect() const { return _rect; };
+
+protected:
+	RelativeRect _rect;
+};
+
+class CanvasSubqueryBitmap : public CanvasSubqueryBase {
+public:
+	CanvasSubqueryBitmap() = default;
+	CanvasSubqueryBitmap(const RelativeRect& rect, size_t bitmap_w, size_t bitmap_h, size_t num_channels,
+	                     std::vector<float>&& data)
+	    : CanvasSubqueryBase{ rect },
+	      _num_channels{ num_channels },
+	      _width{ bitmap_w },
+	      _height{ bitmap_h },
+	      _data{ std::move(data) } {};
+
+	size_t num_channels() const { return _num_channels; };
+	size_t width_pixels() const { return _width; };
+	size_t height_pixels() const { return _height; };
+	float* data() { return _data.data(); };
+	const float* data() const { return _data.data(); };
+	std::vector<float>& data_std() { return _data; };
+	const std::vector<float>& data_std() const { return _data; };
+
+	json11::Json to_JSON() const {
+		json11::Json::object res{
+			{ "rect", json11::Json::array{ _rect.left, _rect.top, _rect.right, _rect.bottom } },
+			/*{ "num_channels", _num_channels },
+			{ "width_pixels", _width },
+			{ "height_pixels", _height },*/
+		};
+
+		return res;
+	}
+	template <class Archive>
+	void serialize(Archive& archive) {
+		archive(_rect, _num_channels, _width, _height, _data);
+	}
+
+private:
+	size_t _num_channels;
+	size_t _width;
+	size_t _height;
+	std::vector<float> _data;
+
+	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x);
+};
+inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x) {
+	os << "---------------------------------" << std::endl;
+	os << "CanvasSubqueryBitmap: " << std::endl;
+	os << "---" << std::endl;
+
+	os << "\t"
+	   << "._rect = (" << x._rect.left << ", " << x._rect.top << ", " << x._rect.right << ", " << x._rect.bottom << ")"
+	   << std::endl;
+	os << "\t"
+	   << "._height = (" << x._height << std::endl;
+	os << "\t"
+	   << "._width = (" << x._width << std::endl;
+
+	return os;
+}
+
+class CanvasSubqueryText : public CanvasSubqueryBase {
+public:
+	CanvasSubqueryText() = default;
+	CanvasSubqueryText(const RelativeRect& rect, const std::string query)
+	    : CanvasSubqueryBase{ rect }, _text_query{ query } {}
+	const std::string& query() const { return _text_query; };
+
+	json11::Json to_JSON() const {
+		json11::Json::object res{ { "rect", json11::Json::array{ _rect.left, _rect.top, _rect.right, _rect.bottom } },
+			                      { "text_query", _text_query } };
+
+		return res;
+	}
+	template <class Archive>
+	void serialize(Archive& archive) {
+		std::cout << "......" << std::endl;
+		archive(_rect, _text_query);
+	}
+
+private:
+	std::string _text_query;
+
+	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x);
+};
+inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x) {
+	os << "---------------------------------" << std::endl;
+	os << "CanvasSubqueryText: " << std::endl;
+	os << "---" << std::endl;
+
+	os << "\t"
+	   << "._rect = (" << x._rect.left << ", " << x._rect.top << ", " << x._rect.right << ", " << x._rect.bottom << ")"
+	   << std::endl;
+	os << "\t"
+	   << "._text_query = (" << x._text_query << std::endl;
+
+	return os;
+}
+
+using CanvasSubquery = std::variant<CanvasSubqueryBitmap, CanvasSubqueryText>;
+
+/**
+ * Type representing query related to the canvas (atm text & bitmap) rectangles.
+ */
 class CanvasQuery {
 public:
-	bool empty() { return (size() == 0); }
+	/** Emplace new subregion TEXT query. */
+	void emplace_back(const RelativeRect& rect, const std::string& text_query);
 
-public:
-	std::vector<float> lefts;
-	std::vector<float> tops;
-	std::vector<float> relative_heights;
-	std::vector<float> relative_widths;
-	std::vector<unsigned int> pixel_heights;
-	std::vector<unsigned int> pixel_widths;
+	/** Emplace new subregion BITMAP query.
+	 *	During this function the input integral RGBA data are converted to RGB float data. */
+	void emplace_back(const RelativeRect& rect, size_t bitmap_w, size_t bitmap_h, size_t num_channels,
+	                  uint8_t* bitmap_RGBA_data);
 
-	// format from js: [RGBARGBA.....]
-	std::vector<std::vector<float>> images;
+	void push_query_begin() { _begins.emplace_back(size()); }
 
-	// temporal query delimiter
-	int break_point = 0;
-
-	int channels = 0;
-	std::size_t len = 0;
-	inline std::size_t size() { return len; }
-
-	void print() const;
-
-	// Images are expected to be in RGB format
-	void RGBA_to_RGB();
-	void resize_all(int W = 224, int H = 224);
-	void save_all(const std::string& prefix = "");
+	bool empty() const;
+	size_t size() const;
+	size_t num_temp_queries() const { return _begins.size() - 1; }
+	size_t query_begins(size_t idx) const { return _begins[idx]; }
 
 	/**
 	 * This allows portable binary serialization of Collage instances to files.
@@ -140,24 +265,43 @@ public:
 	 */
 	template <class Archive>
 	void serialize(Archive& archive) {
-		archive(lefts, tops, relative_heights, relative_widths, pixel_heights, pixel_widths, images, break_point,
-		        channels);
+		archive(_subqueries, _begins);
 	}
 
-	struct image {
-		float left;
-		float top;
-		float relative_height;
-		float relative_width;
-		unsigned int pixel_height;
-		unsigned int pixel_width;
-		std::vector<float>& img;
-	};
+	json11::Json to_JSON() const {
+		std::vector<json11::Json> arr;
 
-	image operator[](std::size_t idx) {
-		return image{ lefts[idx],        tops[idx],  relative_heights[idx], relative_widths[idx], pixel_heights[idx],
-			          pixel_widths[idx], images[idx] };
+		// For each temporal part
+		for (size_t qidx{ 0 }; qidx < _begins.size() - 1; ++qidx) {
+			size_t qbegin{ _begins[qidx] };
+			size_t qend{ _begins[qidx + 1] };
+
+			std::vector<json11::Json> arr_temp;
+			for (size_t i{ qbegin }; i < qend; ++i) {
+				arr_temp.emplace_back(std::visit(
+				    overloaded{
+				        [](auto sq) { return sq.to_JSON(); },
+				    },
+				    _subqueries[i]));
+			}
+			arr.emplace_back(json11::Json{ arr_temp });
+		}
+		return json11::Json(arr);
 	}
+
+	CanvasSubquery& operator[](size_t idx) { return _subqueries[idx]; }
+	const CanvasSubquery& operator[](size_t idx) const { return _subqueries[idx]; }
+
+private:
+	/** Subregion queries */
+	std::vector<CanvasSubquery> _subqueries;
+	/** Holds indices of queries for sequence of temporals */
+	std::vector<size_t> _begins;
+
+	//// Images are expected to be in RGB format
+	// void RGBA_to_RGB();
+	// void resize_all(int W = 224, int H = 224);
+	// void save_all(const std::string& prefix = "");
 };
 
 /** The type representing the whole query. */
