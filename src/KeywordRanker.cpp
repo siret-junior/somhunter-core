@@ -245,13 +245,20 @@ KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) con
 	return res;
 }
 
-StdVector<float> KeywordRanker::get_text_query_feature(const std::string& /*query*/) {
-	return StdVector<float>( 128, 0.3F );
+StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query_raw) {
+	auto tokens{ tokenize_textual_query(query_raw) };
+
+	if (tokens.empty()) {
+		// We return uniformly distributed valid vector
+		return StdVector<float>(128, 0.3F);
+	}
+	std::vector<std::vector<KeywordId>> temporal_queries_keyword_IDs{ split_tokens_to_temporal_queries(tokens) };
+
+	auto textual_query_vectors{ embedd_text_queries(temporal_queries_keyword_IDs) };
+	return textual_query_vectors.front();
 }
 
-void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
-                                        const DatasetFeatures& features, const DatasetFrames& frames,
-                                        const Config& cfg) const {
+std::vector<std::string> KeywordRanker::tokenize_textual_query(const std::string& sentence_query_raw) const {
 	// Copy this sentence
 	std::string sentence_query(sentence_query_raw);
 
@@ -271,14 +278,12 @@ void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, S
 	while (query_ss >> token_str) {
 		query.emplace_back(token_str);
 	}
+	return query;
+}
 
-	//
-	// Rank it
-	//
-	if (query.empty()) return;
-
+std::vector<std::vector<KeywordId>> KeywordRanker::split_tokens_to_temporal_queries(
+    const std::vector<std::string>& query) const {
 	std::vector<std::vector<KeywordId>> pos;
-	std::vector<std::vector<KeywordId>> neg;
 
 	std::vector<KeywordId> pos_one_query;
 	// Split tokens into temporal queries
@@ -301,18 +306,29 @@ void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, S
 	// Deploy this last query
 	if (!pos_one_query.empty()) pos.emplace_back(std::move(pos_one_query));
 
-	rank_query(pos, neg, model, features, frames, cfg);
+	return pos;
 }
 
-void KeywordRanker::rank_query(const std::vector<std::vector<KeywordId>>& positive,
-                               const std::vector<std::vector<KeywordId>>& negative, ScoreModel& model,
+void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
+                                        const DatasetFeatures& features, const DatasetFrames& frames,
+                                        const Config& cfg) const {
+	auto tokens{ tokenize_textual_query(sentence_query_raw) };
+
+	if (tokens.empty()) return;
+
+	std::vector<std::vector<KeywordId>> temporal_queries_keyword_IDs{ split_tokens_to_temporal_queries(tokens) };
+
+	rank_query(temporal_queries_keyword_IDs, model, features, frames, cfg);
+}
+
+void KeywordRanker::rank_query(const std::vector<std::vector<KeywordId>>& positive, ScoreModel& model,
                                const DatasetFeatures& features, const DatasetFrames& frames, const Config& cfg) const {
 	// Don't waste time
 	if (positive.empty()) return;
 
 	// Get the most relevant images for this query
 	//  Distance is from [0, 1]
-	std::vector<std::pair<ImageId, float>> sorted_frames = get_sorted_frames(positive, negative, features, frames, cfg);
+	std::vector<std::pair<ImageId, float>> sorted_frames = get_sorted_frames(positive, features, frames, cfg);
 
 	// Update the model
 	for (auto&& [frame_ID, dist] : sorted_frames) {
@@ -360,13 +376,13 @@ void KeywordRanker::apply_temp_queries(std::vector<std::vector<float>>& dist_cac
 	}
 
 	// Write new dist to the parameter value
-	// @todo what operation do we do here???
 	result_dist = result_dist * local_min_dist;
 }
 
-std::vector<std::pair<ImageId, float>> KeywordRanker::get_sorted_frames(
-    const std::vector<std::vector<KeywordId>>& kws, const std::vector<std::vector<KeywordId>>& /*negative*/,
-    const DatasetFeatures& features, const DatasetFrames& frames, const Config& /*cfg*/) const {
+std::vector<std::pair<ImageId, float>> KeywordRanker::get_sorted_frames(const std::vector<std::vector<KeywordId>>& kws,
+                                                                        const DatasetFeatures& features,
+                                                                        const DatasetFrames& frames,
+                                                                        const Config& /*cfg*/) const {
 	auto query_vecs{ embedd_text_queries(kws) };
 
 	// Compute the scores for each frame for this query

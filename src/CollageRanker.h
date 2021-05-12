@@ -60,21 +60,21 @@ std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features)
 template <c10::ScalarType TensorDType_ = at::kFloat, typename OrigDType_ = float>
 at::Tensor to_tensor(std::vector<OrigDType_>& orig_vec) {
 	do_assert_debug(orig_vec.size() > 0, "Vector cannot be empty.");
+	// LOG_D("shape = (" << orig_vec.size() << ")");
 
-	LOG_D("shape = (" << orig_vec.size() << ")");
-	return torch::from_blob(orig_vec.data(), { int(orig_vec.size()) }, TensorDType_);
+	return torch::tensor(orig_vec, TensorDType_);
 }
 
 template <c10::ScalarType TensorDType_ = at::kFloat, typename OrigDType_ = float>
 at::Tensor to_tensor(std::vector<std::vector<OrigDType_>>& orig_mat) {
 	do_assert_cond(orig_mat.size() > 0, "Matrix cannot be empty.");
-	LOG_D("shape = (" << orig_vec.size() << ", " << orig_vec.front(0).size() << ")");
+	// LOG_D("shape = (" << orig_vec.size() << ", " << orig_vec.front(0).size() << ")");
 
 	std::vector<at::Tensor> meta;
 	meta.reserve(orig_mat.size());
 
 	for (auto&& vec : orig_mat) {
-		meta.emplace_back(torch::from_blob(orig_vec.data(), { orig_vec.size() }, TensorDType_));
+		meta.emplace_back(torch::tensor(orig_vec.data(), TensorDType_));
 	}
 
 	return torch::cat(tensors_bitmap, 0);

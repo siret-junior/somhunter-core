@@ -231,8 +231,6 @@ at::Tensor CollageRanker::get_features(CanvasQuery& collage) {
 		// Else text
 		else {
 			CanvasSubqueryText subquery_text{ std::get<CanvasSubqueryText>(subquery) };
-			// \todo Undummy
-			// xoxo
 			auto fea{ _p_core->get_text_query_feature(subquery_text.query()) };
 			tensors_text.emplace_back(to_tensor<at::kFloat, float>(fea));
 		}
