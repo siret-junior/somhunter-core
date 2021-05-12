@@ -248,14 +248,14 @@ KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) con
 StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query_raw) {
 	auto tokens{ tokenize_textual_query(query_raw) };
 
-	if (tokens.empty()) {
-		// We return uniformly distributed valid vector
-		return StdVector<float>(128, 0.3F);
-	}
 	std::vector<std::vector<KeywordId>> temporal_queries_keyword_IDs{ split_tokens_to_temporal_queries(tokens) };
+	if (temporal_queries_keyword_IDs.empty()) {
+		// We return uniformly distributed valid vector
+		return utils::VecNorm(StdVector<float>(128, 0.3F));
+	}
 
 	auto textual_query_vectors{ embedd_text_queries(temporal_queries_keyword_IDs) };
-	return textual_query_vectors.front();
+		return textual_query_vectors.front();
 }
 
 std::vector<std::string> KeywordRanker::tokenize_textual_query(const std::string& sentence_query_raw) const {
