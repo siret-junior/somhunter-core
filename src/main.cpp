@@ -126,13 +126,22 @@ int main() {
 	// Instantiate the SOMHunter
 	SomHunter core{ config, cfg_fpth };
 
-	CanvasQuery q;
-	q.emplace_back(RelativeRect{ 0.2F, 0.1F, 0.5F, 0.5F }, "Lojza");
-	// std::cout << q.to_JSON().dump() << std::endl;
-	utils::serialize_to_file(q, "test.bin");
+	// #####################################
+	// Run the serialized Canvas query
+	Query q;
+	CanvasQuery qs{ utils::deserialize_from_file<CanvasQuery>("Collage_instance_serialized.bin") };
+	q.canvas_query = qs;
+	q.filters = Filters{};
+	q.metadata = RescoreMetadata{};
+	q.relevance_feeedback = RelevanceFeedbackQuery{};
+	q.textual_query =  TextualQuery{};
 
-	CanvasQuery qs{ utils::deserialize_from_file<CanvasQuery>("test.bin") };
-	// std::cout << qs.to_JSON().dump() << std::endl;
+	core.rescore(q);
+	auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
+	std::cout << "TOP N\n";
+	print_display(disp);
+	// #####################################
+
 
 	NetworkApi api{ config.API_config, &core };
 	api.run();

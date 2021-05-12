@@ -39,6 +39,7 @@ struct VideoFrame;
 using VideoFramePointer = const VideoFrame*;
 
 struct VideoFrame {
+	VideoFrame() = default;
 	VideoFrame(std::string&& filename, VideoId video_ID, ShotId shot_ID, ImageId frame_number, ImageId image_ID,
 	           uint8_t weekday = ERR_VAL<uint8_t>(), uint8_t hour = ERR_VAL<uint8_t>())
 	    : filename{ std::move(filename) },

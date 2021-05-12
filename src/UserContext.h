@@ -85,6 +85,7 @@ struct GetDisplayResult {
 struct RescoreResult {
 	size_t curr_ctx_ID;
 	const std::vector<SearchContext>& history;
+	const std::vector<VideoFrame> targets;
 };
 
 };  // namespace sh

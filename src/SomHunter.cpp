@@ -194,7 +194,7 @@ RescoreResult SomHunter::rescore(Query& query) {
 	               query.metadata.screenshot_filepath, query.metadata.time_label);
 }
 
-RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& collage, const Filters* p_filters,
+RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& canvas_query, const Filters* p_filters,
                                  size_t src_search_ctx_ID, const std::string& screenshot_fpth,
                                  const std::string& label) {
 	/* ***
@@ -228,12 +228,13 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& col
 	auto old_likes{ user.ctx.likes };
 
 	// If NOT COLLAGE
-	if (collage.empty()) {
+	if (canvas_query.empty()) {
 		rescore_keywords(text_query);
 	} else {
 		reset_scores();
-		user.submitter.log_collage_query(collage);  // < This triggers log into the /logs/collage/
-		collageRanker.score(collage, user.ctx.scores, features, frames);
+		user.submitter.log_collage_query(canvas_query,
+		                                 &user.ctx.get_curr_targets());  // < This triggers log into the /logs/collage/
+		collageRanker.score(canvas_query, user.ctx.scores, features, frames);
 	}
 	apply_filters();
 	rescore_feedback();
@@ -262,7 +263,31 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& col
 	                                      user.ctx.curr_disp_type, top_n, user.ctx.last_text_query,
 	                                      config.topn_frames_per_video, config.topn_frames_per_shot);
 
-	return RescoreResult{ user.ctx.ID, user.history };
+	// !!!!
+	// Generate new targets
+	// !!!!
+	{
+		size_t num_frames{ frames.size() };
+		ImageId target_ID{ utils::irand<ImageId>(1, num_frames - 2) };
+
+		// Get next or prev frame to create pair from the same video
+		const auto& prevf{ frames.get_frame(target_ID - 1) };
+		const auto& f{ frames.get_frame(target_ID) };
+		const auto& nextf{ frames.get_frame(target_ID + 1) };
+
+		std::vector<VideoFrame> targets;
+		targets.reserve(2);
+		if (prevf.video_ID == f.video_ID) {
+			targets.emplace_back(prevf);
+			targets.emplace_back(f);
+		} else {
+			targets.emplace_back(f);
+			targets.emplace_back(nextf);
+		}
+		user.ctx.set_curr_targets(targets);
+	}
+
+	return RescoreResult{ user.ctx.ID, user.history, user.ctx.get_curr_targets() };
 }
 
 bool SomHunter::som_ready() const { return user.async_SOM.map_ready(); }

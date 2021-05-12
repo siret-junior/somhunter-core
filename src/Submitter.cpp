@@ -655,7 +655,7 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 #endif  // LOG_LOGS
 }
 
-void Submitter::log_collage_query(const CanvasQuery& collage) {
+void Submitter::log_collage_query(const CanvasQuery& collage, const std::vector<VideoFrame>* p_targets) {
 	auto path{ cfg.log_collages_dir + "/"s + std::to_string(utils::timestamp()) + "/"s };
 
 	// One directory for each query
@@ -672,12 +672,24 @@ void Submitter::log_collage_query(const CanvasQuery& collage) {
 		throw std::runtime_error(msg);
 	}
 
+	Json::array tars;
+	if (p_targets != nullptr) {
+		for (auto&& t : *p_targets) {
+			tars.push_back((int)t.frame_ID);
+		}
+	}
+
 	Json json{ collage.to_JSON() };
-	o << json.dump();
+
+	Json obj{ Json::object{ { "targets", tars },
+		                    { "timestamp", utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") },
+		                    { "canvas_query", json } } };
+
+	o << obj.dump();
 
 	// Write bitmaps as JPEGs
 	// For each temporal part
-	;
+
 	for (size_t qidx{ 0 }; qidx < collage.num_temp_queries(); ++qidx) {
 		size_t qbegin{ collage.query_begins(qidx) };
 		size_t qend{ collage.query_begins(qidx + 1) };

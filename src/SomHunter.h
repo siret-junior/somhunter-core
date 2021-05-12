@@ -81,7 +81,31 @@ public:
 	      features(frames, cfg),
 	      keywords(cfg, frames),
 	      collageRanker(cfg, &keywords),
-	      user(cfg.user_token, cfg, frames, features) {}
+	      user(cfg.user_token, cfg, frames, features) {
+		// !!!!
+		// Generate new targets
+		// !!!!
+		{
+			size_t num_frames{ frames.size() };
+			ImageId target_ID{ utils::irand<ImageId>(1, num_frames - 2) };
+
+			// Get next or prev frame to create pair from the same video
+			const auto& prevf{ frames.get_frame(target_ID - 1) };
+			const auto& f{ frames.get_frame(target_ID) };
+			const auto& nextf{ frames.get_frame(target_ID + 1) };
+
+			std::vector<VideoFrame> targets;
+			targets.reserve(2);
+			if (prevf.video_ID == f.video_ID) {
+				targets.emplace_back(prevf);
+				targets.emplace_back(f);
+			} else {
+				targets.emplace_back(f);
+				targets.emplace_back(nextf);
+			}
+			user.ctx.set_curr_targets(targets);
+		}
+	}
 
 	// ********************************
 	// Interactive search calls

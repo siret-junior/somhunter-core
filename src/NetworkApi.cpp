@@ -350,6 +350,19 @@ json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext
 		}
 		result_obj[U("bookmarkedFrames")] = bookmarked_arr;
 	}
+
+	{ /* *** targets *** */
+		json::value arr{ json::value::array(2) };
+		size_t i{ 0 };
+		for (auto&& f : ctx.ctx.curr_targets) {
+			auto fr{ to_FrameReference(p_core, &f, {}, {}, "") };
+
+			arr[i] = fr;
+			++i;
+		}
+		result_obj[U("targets")] = arr;
+	}
+
 	return result_obj;
 }
 
@@ -482,6 +495,18 @@ json::value to_Response__Rescore__Post(SomHunter* p_core, const RescoreResult& r
 
 	{ /* *** history *** */
 		result_obj[U("history")] = to_HistoryArray(p_core, history);
+	}
+
+	{ /* *** targets *** */
+		json::value arr{ json::value::array(2) };
+		size_t i{ 0 };
+		for (auto&& f : rescore_res.targets) {
+			auto fr{ to_FrameReference(p_core, &f, {}, {}, "") };
+
+			arr[i] = fr;
+			++i;
+		}
+		result_obj[U("targets")] = arr;
 	}
 
 	return result_obj;
