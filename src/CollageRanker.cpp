@@ -200,7 +200,9 @@ at::Tensor CollageRanker::get_features(CanvasQuery& collage) {
 	std::vector<torch::Tensor> tensors;
 	std::vector<torch::Tensor> tensors_bitmap_norm;
 
-	std::vector<torch::Tensor> features_text;
+	std::vector<torch::Tensor> tensors_text;
+	at::Tensor features_text;
+	at::Tensor features_bitmap;
 
 	float means[] = { 123.68, 116.779, 103.939 };
 	torch::Tensor t_means = torch::from_blob(means, { 3 }).unsqueeze_(0).unsqueeze_(0);
@@ -232,31 +234,39 @@ at::Tensor CollageRanker::get_features(CanvasQuery& collage) {
 			// \todo Undummy
 			// xoxo
 			auto fea{ _p_core->get_text_query_feature(subquery_text.query()) };
-			features_text.emplace_back(to_tensor<at::kFloat, float>(fea));
+			tensors_text.emplace_back(to_tensor<at::kFloat, float>(fea));
 		}
 	}
-	at::Tensor batch = torch::cat(tensors, 0);
-	at::Tensor batch_norm = torch::cat(tensors_bitmap_norm, 0);
 
-	at::Tensor resnext101_feature = resnext101.forward({ batch_norm }).toTensor();
-	at::Tensor resnet152_feature = resnet152.forward({ batch }).toTensor();
-	at::Tensor features_bitmap = torch::cat({ resnext101_feature, resnet152_feature }, 1).to(torch::kFloat32).detach();
+	// Stack the TEXT features into one tensor
+	if (tensors_text.size() > 0) {
+		features_text = torch::stack(tensors_text, 0);
+	}
 
-	// squeeze 4096 to 2048
-	features_bitmap = features_bitmap.unsqueeze(0).permute({ 1, 0, 2 });
-	features_bitmap = torch::tanh(torch::matmul(features_bitmap, weights).squeeze(1) + bias);
+	// Stack the BITMAP features into one tensor
+	if (tensors.size() > 0) {
+		at::Tensor batch = torch::cat(tensors, 0);
+		at::Tensor batch_norm = torch::cat(tensors_bitmap_norm, 0);
 
-	// norm
-	features_bitmap = torch::div(features_bitmap, get_L2norm(features_bitmap));
+		at::Tensor resnext101_feature = resnext101.forward({ batch_norm }).toTensor();
+		at::Tensor resnet152_feature = resnet152.forward({ batch }).toTensor();
+		features_bitmap = torch::cat({ resnext101_feature, resnet152_feature }, 1).to(torch::kFloat32).detach();
 
-	// PCA
-	features_bitmap = features_bitmap - kw_pca_mean_vec;
-	features_bitmap = features_bitmap.unsqueeze(0).permute({ 1, 0, 2 });
-	features_bitmap = torch::matmul(features_bitmap, kw_pca_mat).squeeze(1);
+		// squeeze 4096 to 2048
+		features_bitmap = features_bitmap.unsqueeze(0).permute({ 1, 0, 2 });
+		features_bitmap = torch::tanh(torch::matmul(features_bitmap, weights).squeeze(1) + bias);
 
-	// norm
-	features_bitmap = torch::div(features_bitmap, get_L2norm(features_bitmap));
+		// norm
+		features_bitmap = torch::div(features_bitmap, get_L2norm(features_bitmap));
 
+		// PCA
+		features_bitmap = features_bitmap - kw_pca_mean_vec;
+		features_bitmap = features_bitmap.unsqueeze(0).permute({ 1, 0, 2 });
+		features_bitmap = torch::matmul(features_bitmap, kw_pca_mat).squeeze(1);
+
+		// norm
+		features_bitmap = torch::div(features_bitmap, get_L2norm(features_bitmap));
+	}
 	// --------------------------------------------
 	// Merge text & bitmap features into one matrix
 	std::vector<torch::Tensor> mixed_tensor;
@@ -273,14 +283,16 @@ at::Tensor CollageRanker::get_features(CanvasQuery& collage) {
 			}
 			// Else text
 			else {
-				mixed_tensor.emplace_back(features_bitmap[bitmap_i]);
+				mixed_tensor.emplace_back(features_text[text_i]);
 				++text_i;
 			}
 		}
 	}
 
+	// Final stack
 	at::Tensor result_features = torch::stack(mixed_tensor, 0);
 	std::cout << "result_features.shape: " << result_features.sizes() << std::endl;
+	std::cout << result_features << std::endl;
 
 	return result_features;
 }

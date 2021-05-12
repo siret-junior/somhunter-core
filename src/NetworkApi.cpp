@@ -1071,7 +1071,6 @@ CanvasQuery NetworkApi::extract_canvas_query(web::json::value& body) {
 
 			// If textual query on the canvas
 			if (subquery_type == "text") {
-				std::vector<uint8_t> bitmap_data{ from_JSON_array<uint8_t>(subquery_JSON[U("bitmap_data")]) };
 				std::string text_query{ to_utf8string(subquery_JSON[U("text_query")].as_string()) };
 				canvas_query.emplace_back(rect, text_query);
 			}
