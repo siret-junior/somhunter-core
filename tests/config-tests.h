@@ -44,12 +44,15 @@
  * Testing data
  */
 // clang-format off
-std::vector<std::string> TEST_PNGS{ 
-    TESTS_PNGS_DIR "bitmap-100x100-4C.png" 
+std::vector<std::string> TEST_PNGS { 
+    TESTS_PNGS_DIR "bitmap-200x100-RGB.png",
+    TESTS_PNGS_DIR "bitmap-200x100-RGBA.png",
+    TESTS_PNGS_DIR "bitmap-200x100-GRAY.png",
+    TESTS_PNGS_DIR "bitmap-200x100-GRAYA.png"
 };
 
 std::vector<std::string> TEST_JPEGS{ 
-    TESTS_JPEGS_DIR "photo-320x180-3C.jpg" 
+    TESTS_JPEGS_DIR "photo-320x180-RGB.jpg"
 };
 // clang-format on
 
