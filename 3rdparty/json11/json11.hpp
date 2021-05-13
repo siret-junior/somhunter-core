@@ -54,6 +54,18 @@
 
 #pragma once
 
+// Options structure for pretty_print
+struct PrettyPrintOptions {
+    // Stores current indentation level
+    int current_indentation;
+    // How much is indentation level increased each time?
+    int indent_increment;
+
+    PrettyPrintOptions() : current_indentation(0), indent_increment(2) {}
+};
+
+
+
 #include <initializer_list>
 #include <map>
 #include <memory>
@@ -229,6 +241,24 @@ public:
 	typedef std::initializer_list<std::pair<std::string, Type>> shape;
 	bool has_shape(const shape& types, std::string& err) const;
 
+	   // Pretty serialization
+    void pretty_print(std::string &out, PrettyPrintOptions &options) const;
+    void pretty_print(std::string &out) const {
+        PrettyPrintOptions options;
+        pretty_print(out, options);
+    }
+    std::string pretty_print(PrettyPrintOptions &options) const {
+        std::string out;
+        pretty_print(out, options);
+        return out;
+    }
+    std::string pretty_print() const {
+        PrettyPrintOptions options;
+        std::string out;
+        pretty_print(out, options);
+        return out;
+    }
+
 private:
 	std::shared_ptr<JsonValue> m_ptr;
 };
@@ -253,7 +283,8 @@ protected:
 	virtual const Json& operator[](size_t i) const;
 	virtual const Json::object& object_items() const;
 	virtual const Json& operator[](const std::string& key) const;
-	virtual ~JsonValue() {}
+	virtual ~JsonValue() {}   // Pretty serialization
+   virtual void pretty_print(std::string &out, PrettyPrintOptions &options) const = 0;
 };
 
 } // namespace json11
