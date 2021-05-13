@@ -149,7 +149,6 @@ public:
 	      _width{ bitmap_w },
 	      _height{ bitmap_h },
 	      _data{ std::move(data) } {
-	
 		for (auto&& d : _data) {
 			_data_int.emplace_back(uint8_t(d));
 		}
@@ -304,6 +303,8 @@ public:
 	CanvasSubquery& operator[](size_t idx) { return _subqueries[idx]; }
 	const CanvasSubquery& operator[](size_t idx) const { return _subqueries[idx]; }
 
+	bool is_save{false};
+
 private:
 	/** Subregion queries */
 	std::vector<CanvasSubquery> _subqueries;
@@ -319,6 +320,9 @@ private:
 /** The type representing the whole query. */
 class Query {
 public:
+	Query() = default;
+	Query(CanvasQuery&& cq) : metadata{}, filters{}, relevance_feeedback{}, textual_query{} , canvas_query{ cq }{}
+
 	RescoreMetadata metadata;
 	Filters filters;
 	RelevanceFeedbackQuery relevance_feeedback;

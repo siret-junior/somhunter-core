@@ -119,30 +119,41 @@ int main() {
 	// Parse config file
 	auto config = Config::parse_json_config(cfg_fpth);
 
-	// Example of JSON lib from network lib
-	/*std::ifstream ifs{ cfg_fpth };
-	auto d{ web::json::value::parse(ifs) };
-	std::cout << d.as_object()[U("api")].as_object()[U("port")].as_integer() << std::endl;*/
-
 	// Instantiate the SOMHunter
 	SomHunter core{ config, cfg_fpth };
 
+#	if 0  // Serialized CanvasQueries
+	using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+
+	std::vector<std::string> serialized_queries;
+	for (const auto& dirEntry : recursive_directory_iterator("logs/queries/")) {
+		std::cout << dirEntry << std::endl;
+
+		for (auto&& file : std::filesystem::directory_iterator(dirEntry)) {
+			std::string filepath{ file.path().string() };
+
+			std::string suffix{ filepath.substr(filepath.length() - 3) };
+			if (suffix == "bin") {
+				serialized_queries.emplace_back(filepath);
+			}
+			std::cout << "\t" << file << std::endl;
+		}
+	}
+
 	// #####################################
 	// Run the serialized Canvas query
-	/*Query q;
-	CanvasQuery qs{ utils::deserialize_from_file<CanvasQuery>("Collage_instance_serialized.bin") };
-	q.canvas_query = qs;
-	q.filters = Filters{};
-	q.metadata = RescoreMetadata{};
-	q.relevance_feeedback = RelevanceFeedbackQuery{};
-	q.textual_query =  TextualQuery{};
+	for (auto&& f : filepath) {
+		std::cout "Running query from '" << f << "' file..." << std::endl;
 
-	core.rescore(q);
-	auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-	std::cout << "TOP N\n";
-	print_display(disp);*/
+		Query q{ utils::deserialize_from_file<CanvasQuery>(f) };
+
+		core.rescore(q);
+		auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
+		
+		// Find the target 
+	}
 	// #####################################
-
+#	endif  // Serialized CanvasQueries
 	NetworkApi api{ config.API_config, &core };
 	api.run();
 
@@ -170,6 +181,14 @@ int main() {
 
 	/* -------------------------------- */
 #	endif  // TEST_COLLAGE_QUERIES
+
+#	if 1  // Network JSON lib usage (as ooposed to json11)
+	// Example of JSON lib from network lib
+	std::ifstream ifs{ cfg_fpth };
+	auto d{ web::json::value::parse(ifs) };
+	std::cout << d.as_object()[U("api")].as_object()[U("port")].as_integer() << std::endl;
+
+#	endif  // Network JSON lib usage (as ooposed to json11)
 
 	/*
 	 * Test ImageManipulator

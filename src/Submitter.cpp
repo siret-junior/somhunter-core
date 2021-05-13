@@ -656,7 +656,13 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 }
 
 void Submitter::log_canvas_query(const CanvasQuery& canvas_query, const std::vector<VideoFrame>* p_targets) {
+
 	auto path{ cfg.log_queries_dir + "/"s + std::to_string(utils::timestamp()) + "/"s };
+
+	if (canvas_query.is_save) {
+		path = "saved-queries/"s + std::to_string(utils::timestamp()) + "/"s;
+	}
+
 
 	// One directory for each query
 	std::filesystem::create_directories(path);

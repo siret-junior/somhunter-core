@@ -12,3 +12,4 @@ logs/
 scripts/__pycache__/
 __pycache__
 cookie.txt
+saved-queries

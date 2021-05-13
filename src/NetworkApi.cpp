@@ -1046,10 +1046,15 @@ CanvasQuery NetworkApi::extract_canvas_query(web::json::value& body) {
 	 */
 	json::value outer_array{ body[U("canvas_query")] };
 
+
+	bool is_save{ body[U("is_save")].as_bool() };
+
+
 	/*
 	 * Process it
 	 */
 	CanvasQuery canvas_query;
+	canvas_query.is_save = is_save;
 
 	if (outer_array.is_null()) {
 		return DEFAULT_COLLAGE;

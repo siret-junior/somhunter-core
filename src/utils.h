@@ -120,6 +120,7 @@ static inline T str2(const S& s) {
 	return r;
 }
 
+
 template <typename T>
 inline float d_manhattan(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
