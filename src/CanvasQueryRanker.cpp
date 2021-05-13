@@ -223,11 +223,12 @@ at::Tensor CanvasQueryRanker::get_features(CanvasQuery& collage) {
 		// If bitmap
 		if (std::holds_alternative<CanvasSubqueryBitmap>(subquery)) {
 			CanvasSubqueryBitmap& subquery_bitmap{ std::get<CanvasSubqueryBitmap>(subquery) };
-			
-			auto bitmap_std{subquery_bitmap.data_std()};
-			ImageManipulator::store_PNG("pre-test.png", bitmap_std, subquery_bitmap.width_pixels(), subquery_bitmap.height_pixels(), 3);
 
-			auto scaled_bitmap{subquery_bitmap.get_scaled_bitmap(224, 224, 3)};
+			auto bitmap_std{ subquery_bitmap.data_std() };
+			ImageManipulator::store_PNG("pre-test.png", bitmap_std, subquery_bitmap.width_pixels(),
+			                            subquery_bitmap.height_pixels(), 3);
+
+			auto scaled_bitmap{ subquery_bitmap.get_scaled_bitmap(224, 224, 3) };
 
 			ImageManipulator::store_jpg("test.png", scaled_bitmap, 224, 224, 100, 3, false);
 

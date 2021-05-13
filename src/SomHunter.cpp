@@ -238,7 +238,7 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 		SHLOG_W("Running the canvas query model...");
 		reset_scores();
 		user.submitter.log_canvas_query(canvas_query,
-		                                 &user.ctx.get_curr_targets());  // < This triggers log into the /logs/collage/
+		                                &user.ctx.get_curr_targets());  // < This triggers log into the /logs/collage/
 		collageRanker.score(canvas_query, user.ctx.scores, features, frames);
 	}
 	apply_filters();

@@ -26,6 +26,7 @@
 #include <charconv>
 #include <chrono>
 #include <cmath>
+#include <filesystem>
 #include <functional>
 #include <iomanip>
 #include <numeric>
@@ -119,7 +120,6 @@ static inline T str2(const S& s) {
 	ss >> r;
 	return r;
 }
-
 
 template <typename T>
 inline float d_manhattan(const std::vector<T>& left, const std::vector<T>& right) {
@@ -464,6 +464,18 @@ inline std::string trim_right(std::string s) {
 
 /** Bi-trim. */
 inline std::string trim(std::string s) { return trim_right(trim_left(s)); }
+
+inline bool file_exists(const std::string& filepath) { return std::filesystem::exists(filepath); }
+
+inline bool dir_exists(const std::string& path) { return std::filesystem::is_directory(path); }
+
+inline bool dir_create(const std::string& path) {
+	if (!std::filesystem::is_directory(path)) {
+		std::filesystem::create_directories(path);
+		return true;
+	}
+	return false;
+}
 
 }  // namespace utils
 }  // namespace sh

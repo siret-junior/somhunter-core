@@ -37,8 +37,8 @@
 #define TEST_DATA_DIR "tests/data/"
 #define TEST_COLLAGE_DATA_DIR TEST_DATA_DIR "/collages/"
 
-#define TESTS_PNGS_DIR TEST_DATA_DIR "/png/"
-#define TESTS_JPEGS_DIR TEST_DATA_DIR "/jpg/"
+#define TESTS_PNGS_DIR TEST_DATA_DIR "images/png/"
+#define TESTS_JPEGS_DIR TEST_DATA_DIR "images/jpg/"
 
 /* ***
  * Testing data

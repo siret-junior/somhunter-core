@@ -301,7 +301,7 @@ public:
 	CanvasSubquery& operator[](size_t idx) { return _subqueries[idx]; }
 	const CanvasSubquery& operator[](size_t idx) const { return _subqueries[idx]; }
 
-	bool is_save{false};
+	bool is_save{ false };
 
 private:
 	/** Subregion queries */
@@ -319,7 +319,7 @@ private:
 class Query {
 public:
 	Query() = default;
-	Query(CanvasQuery&& cq) : metadata{}, filters{}, relevance_feeedback{}, textual_query{} , canvas_query{ cq }{}
+	Query(CanvasQuery&& cq) : metadata{}, filters{}, relevance_feeedback{}, textual_query{}, canvas_query{ cq } {}
 
 	RescoreMetadata metadata;
 	Filters filters;

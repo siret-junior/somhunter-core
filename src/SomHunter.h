@@ -42,7 +42,6 @@
 #include "SearchContext.h"
 #include "Submitter.h"
 
-
 namespace sh {
 
 namespace tests {

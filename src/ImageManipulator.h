@@ -34,6 +34,7 @@
 #include "common.h"
 #include "config.h"
 #include "log.h"
+#include "utils.h"
 
 namespace sh {
 
@@ -51,17 +52,29 @@ public:
 class ImageManipulator {
 public:
 	template <typename OutType_>
-	static OutType_ load_PNG(const std::string& filepath);
+	static OutType_ load_image(const std::string& filepath);
 
 	static void show_image(const std::string& filepath, size_t delay = 0) {
+		if (!utils::file_exists(filepath)) {
+			std::string msg{ "Unable to open file '" + filepath + "'." };
+			SHLOG_E(msg);
+			throw std::runtime_error{ msg };
+		}
+
 		cv::Mat image = cv::imread(filepath, cv::IMREAD_UNCHANGED);
 		cv::imshow(filepath, image);
+		cv::waitKey(delay);
+	}
+
+	static void show_image(const cv::Mat image, size_t delay = 0) {
+		cv::imshow("IMAGE", image);
 		cv::waitKey(delay);
 	}
 
 	// NEW
 	// -------------------------------------------------
 	// OLD
+
 	/**
 	 * Loads the image from the provided filepath.
 	 *

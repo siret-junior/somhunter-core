@@ -51,26 +51,8 @@ static void initialize_aplication();
 int main() {
 	initialize_aplication();
 
-	/*	cd to the parent dir (root of the project)
-	 *  `cd ..`
-	 *	Change this accordingly. 	*/
-	auto path = std::filesystem::current_path();
-	std::filesystem::current_path(path.parent_path());
-	SHLOG_I("The binary is running from the directory " << std::filesystem::current_path() << "...");
-
-	const std::string cfg_fpth{ "config/config-core.json" };
-
-	// Parse config file
-	auto config = Config::parse_json_config(cfg_fpth);
-
-	// Instantiate the SOMHunter
-	SomHunter core{ config, cfg_fpth };
-
-	NetworkApi api{ config.API_config, &core };
-	api.run();
-
 	Query q{ utils::deserialize_from_file<CanvasQuery>("cq.bin") };
-	CanvasSubqueryBitmap& cq{ std::get<CanvasSubqueryBitmap>(q.canvas_query[0]) };
+	CanvasSubqueryBitmap& cq{ std::get<CanvasSubqueryBitmap>(q.canvas_query[1]) };
 
 	auto img = cq.data();
 	auto img2 = cq.data_std();
@@ -78,13 +60,33 @@ int main() {
 	auto img_new{ ImageManipulator::resize(img, cq.width_pixels(), cq.height_pixels(), 224, 224, 3) };
 	// auto img2_new {ImageManipulator::resize(img2, cq.width_pixels(), cq.height_pixels(), 224, 224, 3)};
 
-	cv::Mat cv_img{ ImageManipulator::load_PNG<cv::Mat>("tests/data/images/bitmap-100x100-4C.png") };
-	BitmapImage<uint8_t> std_img_u8{ ImageManipulator::load_PNG<BitmapImage<uint8_t>>(
-		"tests/data/images/bitmap-100x100-4C.png") };
-	BitmapImage<float> std_img_f32{ ImageManipulator::load_PNG<BitmapImage<float>>(
-		"tests/data/images/bitmap-100x100-4C.png") };
+	{  // *** PNGs ***
+		cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(TEST_PNGS[0]) };
+		BitmapImage<uint8_t> std_img_u8{ ImageManipulator::load_image<BitmapImage<uint8_t>>(TEST_PNGS[0]) };
+		BitmapImage<float> std_img_f32{ ImageManipulator::load_image<BitmapImage<float>>(TEST_PNGS[0]) };
 
-	ImageManipulator::show_image(TEST_PNGS[0]);
+		ImageManipulator::show_image(TEST_PNGS[0]);
+		ImageManipulator::show_image(cv_img);
+	}
+
+	{  // *** JPEGs ***
+		cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(TEST_JPEGS[0]) };
+		BitmapImage<uint8_t> std_img_u8{ ImageManipulator::load_image<BitmapImage<uint8_t>>(TEST_JPEGS[0]) };
+		BitmapImage<float> std_img_f32{ ImageManipulator::load_image<BitmapImage<float>>(TEST_JPEGS[0]) };
+
+		ImageManipulator::show_image(TEST_JPEGS[0]);
+		ImageManipulator::show_image(cv_img);
+	}
+
+	const std::string cfg_fpth{ "config/config-core.json" };
+
+	// Parse config file
+	auto config = Config::parse_json_config(cfg_fpth);
+	// Instantiate the SOMHunter
+	SomHunter core{ config, cfg_fpth };
+
+	NetworkApi api{ config.API_config, &core };
+	api.run();
 
 #ifdef DO_TESTS
 #	if 0  // Serialized CanvasQueries
@@ -254,4 +256,11 @@ static void initialize_aplication() {
 	// Windows console with ANSI colors handling
 	// https://superuser.com/questions/413073/windows-console-with-ansi-colors-handling
 #endif
+
+	/*	cd to the parent dir (root of the project)
+	 *  `cd ..`
+	 *	Change this accordingly. 	*/
+	auto path = std::filesystem::current_path();
+	std::filesystem::current_path(path.parent_path());
+	SHLOG_I("The binary is running from the directory " << std::filesystem::current_path() << "...");
 }

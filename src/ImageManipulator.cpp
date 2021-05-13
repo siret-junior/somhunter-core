@@ -62,20 +62,20 @@ std::vector<float> ImageManipulator::resize(const std::vector<float>& in, size_t
 }
 
 template <>
-cv::Mat ImageManipulator::load_PNG<cv::Mat>(const std::string& filepath) {
+cv::Mat ImageManipulator::load_image<cv::Mat>(const std::string& filepath) {
 	using namespace cv;
 	Mat image = imread(filepath, IMREAD_UNCHANGED);
 	return image;
 }
 
 template <>
-BitmapImage<float> ImageManipulator::load_PNG<BitmapImage<float>>(const std::string& filepath) {
-	cv::Mat cv_img{ ImageManipulator::load_PNG<cv::Mat>(filepath) };
+BitmapImage<float> ImageManipulator::load_image<BitmapImage<float>>(const std::string& filepath) {
+	cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(filepath) };
 
 	// Convert to float32 matrix
 	cv::Mat cv_fimg;
 	cv_img.convertTo(cv_fimg, CV_32F);
-	int total_size{cv_fimg.rows * cv_fimg.cols * cv_fimg.channels()};
+	int total_size{ cv_fimg.rows * cv_fimg.cols * cv_fimg.channels() };
 
 	BitmapImage<float> b_img;
 	b_img.w = cv_fimg.cols;
@@ -89,13 +89,13 @@ BitmapImage<float> ImageManipulator::load_PNG<BitmapImage<float>>(const std::str
 }
 
 template <>
-BitmapImage<uint8_t> ImageManipulator::load_PNG<BitmapImage<uint8_t>>(const std::string& filepath) {
-	cv::Mat cv_img{ ImageManipulator::load_PNG<cv::Mat>(filepath) };
+BitmapImage<uint8_t> ImageManipulator::load_image<BitmapImage<uint8_t>>(const std::string& filepath) {
+	cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(filepath) };
 
 	// Convert to uint8_t matrix
 	cv::Mat cv_fimg;
-	cv_img.convertTo(cv_fimg, CV_8U );
-	int total_size{cv_fimg.rows * cv_fimg.cols * cv_fimg.channels()};
+	cv_img.convertTo(cv_fimg, CV_8U);
+	int total_size{ cv_fimg.rows * cv_fimg.cols * cv_fimg.channels() };
 
 	BitmapImage<uint8_t> b_img;
 	b_img.w = cv_fimg.cols;

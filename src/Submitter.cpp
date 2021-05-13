@@ -656,13 +656,11 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 }
 
 void Submitter::log_canvas_query(const CanvasQuery& canvas_query, const std::vector<VideoFrame>* p_targets) {
-
 	auto path{ cfg.log_queries_dir + "/"s + std::to_string(utils::timestamp()) + "/"s };
 
 	if (canvas_query.is_save) {
 		path = "saved-queries/"s + std::to_string(utils::timestamp()) + "/"s;
 	}
-
 
 	// One directory for each query
 	std::filesystem::create_directories(path);
@@ -705,16 +703,16 @@ void Submitter::log_canvas_query(const CanvasQuery& canvas_query, const std::vec
 				const CanvasSubqueryBitmap& q{ std::get<CanvasSubqueryBitmap>(subquery) };
 				auto& jpeg_filename{ sqo.at("bitmap_filename").string_value() };
 
-				ImageManipulator::store_jpg(path + jpeg_filename, q._data, q.width_pixels(), q.height_pixels(),
-				                            100, q.num_channels(), true);
+				ImageManipulator::store_jpg(path + jpeg_filename, q._data, q.width_pixels(), q.height_pixels(), 100,
+				                            q.num_channels(), true);
 			}
 		}
 	}
 	Json obj{ Json::object{ { "targets", tars }, { "timestamp", readable_timestamp }, { "canvas_query", json } } };
 
 	PrettyPrintOptions pretty_print_opts;
-    pretty_print_opts.indent_increment = 4;
-	//o << obj.dump();
+	pretty_print_opts.indent_increment = 4;
+	// o << obj.dump();
 	o << obj.pretty_print(pretty_print_opts);
 }
 
