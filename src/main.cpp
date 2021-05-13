@@ -34,6 +34,7 @@
 // !!!
 
 #include "NetworkApi.h"
+#include "log.h"
 #include "utils.h"
 
 using namespace sh;
@@ -104,7 +105,7 @@ int main() {
 	 *	Change this accordingly. 	*/
 	auto path = std::filesystem::current_path();
 	std::filesystem::current_path(path.parent_path());
-	std::cout << "Running from the directory " << std::filesystem::current_path() << "..." << std::endl;
+	SHLOG_I("The binary is running from the directory " << std::filesystem::current_path() << "...");
 
 	const std::string cfg_fpth{ "config/config-core.json" };
 
@@ -128,7 +129,7 @@ int main() {
 
 	// #####################################
 	// Run the serialized Canvas query
-	Query q;
+	/*Query q;
 	CanvasQuery qs{ utils::deserialize_from_file<CanvasQuery>("Collage_instance_serialized.bin") };
 	q.canvas_query = qs;
 	q.filters = Filters{};
@@ -139,9 +140,8 @@ int main() {
 	core.rescore(q);
 	auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
 	std::cout << "TOP N\n";
-	print_display(disp);
+	print_display(disp);*/
 	// #####################################
-
 
 	NetworkApi api{ config.API_config, &core };
 	api.run();
@@ -274,12 +274,12 @@ int main() {
 		auto d_som = core.get_display(DisplayType::DSom);
 	}
 
-	LOG_E("this is an error log");
-	LOG_W("this is a warning log");
-	LOG_I("this is an info log");
-	LOG_S("this is a success log");
-	LOG_D("this is a debug log");
-	LOG_REQUEST("123.0.0.1", "this is an API request");
+	SHLOG_E("this is an error log");
+	SHLOG_W("this is a warning log");
+	SHLOG_I("this is an info log");
+	SHLOG_S("this is a success log");
+	SHLOG_D("this is a debug log");
+	SHLOG_REQ("123.0.0.1", "this is an API request");
 #endif
 	return 0;
 }

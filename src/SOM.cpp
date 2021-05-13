@@ -101,13 +101,12 @@ heap_down(dist_id *heap, size_t start, size_t lim)
 }
 #endif
 
-void som(size_t /*n*/, size_t k, size_t dim, size_t niter, const std::vector<float>& points, std::vector<float>& koho,
-         const std::vector<float>& nhbrdist, const float alphasA[2], const float radiiA[2], const float alphasB[2],
-         const float radiiB[2], const std::vector<float>& scores, const std::vector<bool>& /*present_mask*/,
-         std::mt19937& rng) {
-	LOG_I("build begin");
+void fit_SOM(size_t /*n*/, size_t k, size_t dim, size_t niter, const std::vector<float>& points,
+             std::vector<float>& koho, const std::vector<float>& nhbrdist, const float alphasA[2],
+             const float radiiA[2], const float alphasB[2], const float radiiB[2], const std::vector<float>& scores,
+             const std::vector<bool>& /*present_mask*/, std::mt19937& rng) {
+	SHLOG_D("SOM fitting...");
 	std::discrete_distribution<size_t> random(scores.begin(), scores.end());
-	LOG_I("build end");
 
 	float thresholdA0 = radiiA[0];
 	float alphaA0 = alphasA[0];
@@ -153,12 +152,13 @@ void som(size_t /*n*/, size_t k, size_t dim, size_t niter, const std::vector<flo
 			for (size_t j = 0; j < dim; ++j) koho[j + i * dim] += alpha * (points[j + point * dim] - koho[j + i * dim]);
 		}
 	}
+	SHLOG_D("SOM fitted.");
 }
 
 /* this serves for classification into small clusters */
-void mapPointsToKohos(size_t start, size_t end, size_t k, size_t dim, const std::vector<float>& points,
-                      const std::vector<float>& koho, std::vector<size_t>& mapping,
-                      const std::vector<bool>& present_mask) {
+void map_points_to_kohos(size_t start, size_t end, size_t k, size_t dim, const std::vector<float>& points,
+                         const std::vector<float>& koho, std::vector<size_t>& mapping,
+                         const std::vector<bool>& present_mask) {
 	for (size_t point = start; point < end; ++point) {
 		if (present_mask[point]) {
 			size_t nearest = 0;

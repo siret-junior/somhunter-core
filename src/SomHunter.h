@@ -29,7 +29,7 @@
 
 #include "utils.h"
 
-#include "CollageRanker.h"
+#include "CanvasQueryRanker.h"
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 #include "Filters.h"
@@ -62,7 +62,7 @@ class SomHunter {
 	const DatasetFrames frames;
 	const DatasetFeatures features;
 	KeywordRanker keywords;
-	CollageRanker collageRanker;
+	CanvasQueryRanker collageRanker;
 
 	// ********************************
 	// User contexts

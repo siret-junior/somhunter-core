@@ -50,7 +50,7 @@ void serialize_to_file(DataType data, const std::string filepath) {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
 	if (!ofs) {
 		std::string msg{ "Error openning file: " + filepath };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 		return;
 	}
@@ -64,7 +64,7 @@ DataType deserialize_from_file(const std::string filepath) {
 	std::ifstream ifs(filepath, std::ios::in | std::ios::binary);
 	if (!ifs) {
 		std::string msg{ "Error openning file: " + filepath };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -105,7 +105,7 @@ inline int str_to_int(const std::string& str) {
 
 	if (conv_res.ptr != (str.data() + str.size())) {
 		std::string msg{ "Incorrect string to covnert: " + str };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -123,7 +123,7 @@ static inline T str2(const S& s) {
 template <typename T>
 inline float d_manhattan(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
-		LOG_E("Vectors have different sizes.");
+		SHLOG_E("Vectors have different sizes.");
 #ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
 #endif
@@ -140,7 +140,7 @@ inline float d_manhattan(const std::vector<T>& left, const std::vector<T>& right
 template <typename T>
 inline float d_sqeucl(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
-		LOG_E("Vectors have different sizes.");
+		SHLOG_E("Vectors have different sizes.");
 #ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
 #endif
@@ -178,7 +178,7 @@ inline float d_cos(const std::vector<float>& left, const std::vector<float>& rig
 template <typename T>
 inline std::vector<T> VecSub(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
-		LOG_E("Vectors have different sizes.");
+		SHLOG_E("Vectors have different sizes.");
 #ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
 #endif
@@ -199,7 +199,7 @@ inline std::vector<T> VecSub(const std::vector<T>& left, const std::vector<T>& r
 template <typename T>
 inline std::vector<T> VecAdd(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
-		LOG_E("Vectors have different sizes.");
+		SHLOG_E("Vectors have different sizes.");
 #ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
 #endif
@@ -229,7 +229,7 @@ inline std::vector<T> VecMult(const std::vector<T>& left, S right) {
 template <typename T>
 inline std::vector<T> VecMult(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
-		LOG_E("Vectors have different sizes.");
+		SHLOG_E("Vectors have different sizes.");
 #ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
 #endif
@@ -246,7 +246,7 @@ inline std::vector<T> VecMult(const std::vector<T>& left, const std::vector<T>& 
 template <typename T>
 inline T VecDot(const std::vector<T>& left, const std::vector<T>& right) {
 	if (left.size() != right.size()) {
-		LOG_E("Vectors have different sizes.");
+		SHLOG_E("Vectors have different sizes.");
 #ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
 #endif
@@ -260,7 +260,7 @@ inline T VecDot(const std::vector<T>& left, const std::vector<T>& right) {
 template <typename T>
 inline std::vector<T> MatVecProd(const std::vector<std::vector<T>>& mat, const std::vector<T>& vec) {
 	if (mat.empty() || mat[0].size() != vec.size()) {
-		LOG_E("Vectors have different sizes.");
+		SHLOG_E("Vectors have different sizes.");
 #ifndef NDEBUG
 		throw std::runtime_error("Vectors have different sizes.");
 #endif
@@ -287,7 +287,7 @@ inline std::vector<T> VecNorm(const std::vector<T>& left) {
 	if (vec_size > 0.0f)
 		return VecMult(left, (1.0f / vec_size));
 	else {
-		LOG_E("Zero vector!");
+		SHLOG_E("Zero vector!");
 #ifndef NDEBUG
 		throw std::runtime_error("Zero vector!");
 #else
@@ -412,7 +412,7 @@ inline std::string SHA256_sum(const std::string& filepath) {
 	std::ifstream f(filepath, std::ios::binary);
 	if (!f.is_open()) {
 		std::string msg{ "Unable to open file '" + filepath + "'." };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error{ msg };
 	}
 
@@ -433,7 +433,7 @@ inline std::string read_whole_file(const std::string& filepath) {
 	std::ifstream ifs{ filepath };
 	if (!ifs.is_open()) {
 		std::string msg{ "Error opening file: " + filepath };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 

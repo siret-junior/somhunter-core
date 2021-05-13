@@ -37,7 +37,7 @@ inline std::string require_string_value(const json11::Json& json, const std::str
 	std::string msg{ "Missing cnfig key: " + key };
 
 	if (json[key].is_null()) {
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 	return json[key].string_value();
@@ -48,7 +48,7 @@ inline T_ require_int_value(const json11::Json& json, const std::string& key) {
 	std::string msg{ "Missing cnfig key: " + key };
 
 	if (json[key].is_null()) {
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 	return static_cast<T_>(json[key].int_value());
@@ -58,7 +58,7 @@ inline bool require_bool_value(const json11::Json& json, const std::string& key)
 	std::string msg{ "Missing cnfig key: " + key };
 
 	if (json[key].is_null()) {
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 	return json[key].bool_value();
@@ -125,7 +125,7 @@ struct SubmitterConfig {
 
 	std::string log_submitted_dir;
 	std::string log_actions_dir;
-	std::string log_collages_dir;
+	std::string log_queries_dir;
 	std::string log_requests_dir;
 	std::string log_file_suffix;
 	bool extra_verbose_log;
@@ -205,7 +205,7 @@ inline Config Config::parse_json_config_string(const std::string& cfg_file_conte
 
 	if (!err.empty()) {
 		std::string msg{ "Error parsing JSON config string." };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -312,7 +312,7 @@ inline SubmitterConfig Config::parse_submitter_config(const json11::Json& json) 
 
 	res.log_submitted_dir = json["log_submitted_dir"].string_value();
 	res.log_actions_dir = json["log_actions_dir"].string_value();
-	res.log_collages_dir = json["log_collages_dir"].string_value();
+	res.log_queries_dir = json["log_queries_dir"].string_value();
 	res.log_requests_dir = json["log_requests_dir"].string_value();
 	res.log_file_suffix = json["log_file_suffix"].string_value();
 	res.extra_verbose_log = json["extra_verbose_log"].bool_value();
@@ -334,7 +334,7 @@ inline SubmitterConfig Config::parse_submitter_config(const json11::Json& json) 
 	// If error value
 	else {
 		std::string msg{ "Uknown submit server type: " + res.server_type };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -346,7 +346,7 @@ inline ApiConfig Config::parse_API_config(const json11::Json& json) {
 
 	if (docs_dir.back() != '/') {
 		docs_dir.append("/");
-		LOG_W("Appending '/' to the `docs_dir` value - '" << docs_dir << "'.");
+		SHLOG_W("Appending '/' to the `docs_dir` value - '" << docs_dir << "'.");
 	}
 
 	return ApiConfig{ static_cast<size_t>(json["port"].int_value()), json["config_filepath"].string_value(), docs_dir };

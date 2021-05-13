@@ -176,7 +176,7 @@ private:
 		};
 #else
 		std::vector<KeywordId> correct{};
-		LOG_E("No test values for this dataset.");
+		SHLOG_E("No test values for this dataset.");
 #endif
 		for (auto &&[key, val] : correct) {
 			auto ac_res{ core.autocomplete_keywords(key, 10) };
@@ -411,7 +411,7 @@ const char *json_contents = R"(
 	  
 		"log_submitted_dir": "logs/submitted_logs/",
 		"log_actions_dir": "logs/actions/",
-		"log_collages_dir": "logs/collages/",
+		"log_queries_dir": "logs/collages/",
 		"log_requests_dir": "logs/requests/",
 		"log_file_suffix": ".json",
 		"extra_verbose_log": false,
@@ -497,7 +497,7 @@ private:
 		ASSERT(sbc.member_ID == 1_z, "Incorrect parse.");
 		ASSERT(sbc.log_submitted_dir == "logs/submitted_logs/", "Incorrect parse.");
 		ASSERT(sbc.log_actions_dir == "logs/actions/", "Incorrect parse.");
-		ASSERT(sbc.log_collages_dir == "logs/collages/", "Incorrect parse.");
+		ASSERT(sbc.log_queries_dir == "logs/collages/", "Incorrect parse.");
 		ASSERT(sbc.log_requests_dir == "logs/requests/", "Incorrect parse.");
 		ASSERT(sbc.log_file_suffix == ".json", "Incorrect parse.");
 		ASSERT(sbc.extra_verbose_log == false, "Incorrect parse.");

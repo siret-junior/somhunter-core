@@ -43,7 +43,7 @@ using namespace std::literals;
 #include "DatasetFrames.h"
 #include "RelevanceScores.h"
 
-#include "CollageRanker.h"
+#include "CanvasQueryRanker.h"
 #include "KeywordRanker.h"
 
 using namespace json11;

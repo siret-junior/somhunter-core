@@ -19,6 +19,18 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/* ***************************************
+      SNIPPETS
+   ---------------
+
+// Turn of the logging locally
+//#if LOGLEVEL > 3
+//#	undef SHLOG_D
+//#	define SHLOG_D(x) _dont_write_log_err
+//#endif
+
+  ***************************************** */
+
 #ifndef log_h
 #define log_h
 
@@ -45,6 +57,7 @@ enum Code {
 	FG_BLUE = 34,
 	FG_CYAN = 36,
 	FG_WHITE = 37,
+	FG_GREY = 90,
 	FG_DEFAULT = 39,
 
 	BG_RED = 41,
@@ -53,6 +66,7 @@ enum Code {
 	BG_BLUE = 44,
 	BG_CYAN = 46,
 	BG_WHITE = 47,
+	BG_GREY = 100,
 	BG_DEFAULT = 49
 };
 class Modifier {
@@ -69,6 +83,7 @@ static Modifier yellow{ TermColor::FG_YELLOW };
 static Modifier blue{ TermColor::FG_BLUE };
 static Modifier cyan{ TermColor::FG_CYAN };
 static Modifier white{ TermColor::FG_WHITE };
+static Modifier grey{ TermColor::FG_GREY };
 static Modifier def{ TermColor::FG_DEFAULT };
 
 static Modifier redbg{ TermColor::BG_RED };
@@ -77,6 +92,7 @@ static Modifier yellowbg{ TermColor::BG_YELLOW };
 static Modifier bluebg{ TermColor::BG_BLUE };
 static Modifier cyanbg{ TermColor::BG_CYAN };
 static Modifier whitebg{ TermColor::BG_WHITE };
+static Modifier greybg{ TermColor::BG_GREY };
 static Modifier defbg{ TermColor::BG_DEFAULT };
 }  // namespace TermColor
 
@@ -87,47 +103,55 @@ static std::string_view view_tail(const std::string& str, size_t len) {
 	return std::string_view{ str.data() + std::max<size_t>(0, str.length() - len) };
 }
 
+/** Undecorated log to the current log stream */
+#define SHLOG(x)                     \
+	do {                             \
+		std::cout << x << std::endl; \
+	} while (0)
+
 #if LOGLEVEL > 0
 
 #	define _dont_write_log_err \
 		do {                    \
 		} while (0)
-#	define _write_log_err(level, x)                                                                             \
-		do {                                                                                                     \
-			std::cerr << level << x << "\n\t" << __func__ << "() in " << view_tail(__FILE__, FILE_NAME_TAIL_LEN) \
-			          << " :" << __LINE__ << "" << std::endl;                                                    \
+#	define _write_log_err(level, x)                                                                         \
+		do {                                                                                                 \
+			std::cerr << level << x << TermColor::grey << "\n\t" << __func__ << "() in "                     \
+			          << view_tail(__FILE__, FILE_NAME_TAIL_LEN) << " :" << __LINE__ << "" << TermColor::def \
+			          << std::endl;                                                                          \
 		} while (0)
 
-#	define _write_log_out(level, x)                                                                             \
-		do {                                                                                                     \
-			std::cout << level << x << "\n\t" << __func__ << "() in " << view_tail(__FILE__, FILE_NAME_TAIL_LEN) \
-			          << " :" << __LINE__ << "" << std::endl;                                                    \
+#	define _write_log_out(level, x)                                                                         \
+		do {                                                                                                 \
+			std::cout << level << x << TermColor::grey << "\n\t" << __func__ << "() in "                     \
+			          << view_tail(__FILE__, FILE_NAME_TAIL_LEN) << " :" << __LINE__ << "" << TermColor::def \
+			          << std::endl;                                                                          \
 		} while (0)
 
-#	define LOG_E(x) _write_log_err(TermColor::red << "E:", x << TermColor::def)
+#	define SHLOG_E(x) _write_log_err(TermColor::red << "E:", x << TermColor::def)
 #else
-#	define LOG_E(x)
+#	define SHLOG_E(x)
 #	define _write_log_err(level, x)
 #endif
 
 #if LOGLEVEL > 1
-#	define LOG_W(x) _write_log_out(TermColor::yellow << "W: ", x << TermColor::def)
+#	define SHLOG_W(x) _write_log_out(TermColor::yellow << "W: ", x << TermColor::def)
 #else
-#	define LOG_W(x) _dont_write_log_err
+#	define SHLOG_W(x) _dont_write_log_err
 #endif
 
 #if LOGLEVEL > 2
-#	define LOG_I(x) _write_log_out(TermColor::white << "I: ", x << TermColor::def)
-#	define LOG_S(x) _write_log_out(TermColor::green << "S: ", x << TermColor::def)
+#	define SHLOG_I(x) _write_log_out(TermColor::white << "I: ", x << TermColor::def)
+#	define SHLOG_S(x) _write_log_out(TermColor::green << "S: ", x << TermColor::def)
 #else
-#	define LOG_I(x) _dont_write_log_err
-#	define LOG_S(x) _dont_write_log_err
+#	define SHLOG_I(x) _dont_write_log_err
+#	define SHLOG_S(x) _dont_write_log_err
 #endif
 
 #if LOGLEVEL > 3
-#	define LOG_D(x) _write_log_out(TermColor::def << "D: ", x << TermColor::def)
+#	define SHLOG_D(x) _write_log_out(TermColor::grey << "D: ", x << TermColor::def)
 #else
-#	define LOG_D(x) _dont_write_log_err
+#	define SHLOG_D(x) _dont_write_log_err
 #endif
 
 #ifdef LOG_API_CALLS
@@ -138,9 +162,11 @@ static std::string_view view_tail(const std::string& str, size_t len) {
 			          << TermColor::def;                                                                 \
 		} while (0)
 
-#	define LOG_REQUEST(id, x) _write_API_log_d(id, x)
+#	define SHLOG_REQ(id, x) _write_API_log_d(id, x)
 
 #endif  // LOGAPI
+
+namespace sh {
 
 /** Assert execuded at all times. */
 template <typename T>
@@ -161,5 +187,7 @@ inline void do_assert_debug(T&& assertion, const std::string_view msg = {}, cons
 		do_assert(assertion, msg, file, line);
 	}
 }
+
+};  // namespace sh
 
 #endif  // log_h

@@ -203,7 +203,7 @@
 		
 			"log_submitted_dir": "logs/submitted_logs/",
 			"log_actions_dir": "logs/actions/",
-			"log_collages_dir": "logs/collages/",
+			"log_queries_dir": "logs/queries/",
 			"log_requests_dir": "logs/requests/",
 			"log_file_suffix": ".json",
 			"extra_verbose_log": false,

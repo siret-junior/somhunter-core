@@ -78,10 +78,22 @@ public:
 
 	inline KeywordRanker(const Config& config, const DatasetFrames& frames)
 	    : keywords(parse_kw_classes_text_file(config.kws_file, frames)),
+
 	      kw_features(parse_float_matrix(config.kw_scores_mat_file, config.pre_PCA_features_dim)),
 	      kw_features_bias_vec(parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim)),
+
 	      kw_pca_mat(parse_float_matrix(config.kw_PCA_mat_file, config.pre_PCA_features_dim)),
-	      kw_pca_mean_vec(parse_float_vector(config.kw_PCA_mean_vec_file, config.pre_PCA_features_dim)) {}
+	      kw_pca_mean_vec(parse_float_vector(config.kw_PCA_mean_vec_file, config.pre_PCA_features_dim)) {
+		SHLOG_S("Keyword features loaded from '" << config.kw_scores_mat_file << "' with dimension ("
+		                                         << config.pre_PCA_features_dim << ").");
+		SHLOG_S("Keyword bias loaded from '" << config.kw_bias_vec_file << "' with dimension ("
+		                                     << config.pre_PCA_features_dim << ").");
+
+		SHLOG_S("Loaded PCA matrix from '" << config.kw_PCA_mat_file << "' with dimension ("
+		                                   << config.pre_PCA_features_dim << " ," << config.kw_PCA_mat_dim << ").");
+		SHLOG_S("Loaded PCA mean vector from '" << config.kw_bias_vec_file << "' with dimension ("
+		                                        << config.pre_PCA_features_dim << ").");
+	}
 
 	KeywordRanker(const KeywordRanker&) = delete;
 	KeywordRanker& operator=(const KeywordRanker&) = delete;

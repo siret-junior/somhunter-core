@@ -48,19 +48,13 @@ std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features)
 		mat.emplace_back(std::move(row));
 	}
 
-	//// iterate through all elements
-	// for (int i = 0; i < tensor_features.numel(); ++i)
-	//{
-	//	printf("%dth Element: %f\n", i, *data_ptr++);
-	//}
-
 	return mat;
 }
 
 template <c10::ScalarType TensorDType_ = at::kFloat, typename OrigDType_ = float>
 at::Tensor to_tensor(std::vector<OrigDType_>& orig_vec) {
 	do_assert_debug(orig_vec.size() > 0, "Vector cannot be empty.");
-	// LOG_D("shape = (" << orig_vec.size() << ")");
+	// SHLOG_D("shape = (" << orig_vec.size() << ")");
 
 	return torch::tensor(orig_vec, TensorDType_);
 }
@@ -68,7 +62,7 @@ at::Tensor to_tensor(std::vector<OrigDType_>& orig_vec) {
 template <c10::ScalarType TensorDType_ = at::kFloat, typename OrigDType_ = float>
 at::Tensor to_tensor(std::vector<std::vector<OrigDType_>>& orig_mat) {
 	do_assert_cond(orig_mat.size() > 0, "Matrix cannot be empty.");
-	// LOG_D("shape = (" << orig_vec.size() << ", " << orig_vec.front(0).size() << ")");
+	// SHLOG_D("shape = (" << orig_vec.size() << ", " << orig_vec.front(0).size() << ")");
 
 	std::vector<at::Tensor> meta;
 	meta.reserve(orig_mat.size());
@@ -80,9 +74,9 @@ at::Tensor to_tensor(std::vector<std::vector<OrigDType_>>& orig_mat) {
 	return torch::cat(tensors_bitmap, 0);
 }
 
-class CollageRanker {
+class CanvasQueryRanker {
 public:
-	CollageRanker(const Config& config, KeywordRanker* p_core);
+	CanvasQueryRanker(const Config& config, KeywordRanker* p_core);
 	void score(CanvasQuery&, ScoreModel& model, const DatasetFeatures& features, const DatasetFrames& frames);
 
 public:

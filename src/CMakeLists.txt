@@ -19,7 +19,7 @@ set(HEADERS
 	UserContext.h
 	SearchContext.h
 	ImageManipulator.h
-	CollageRanker.h
+	CanvasQueryRanker.h
 
 	#Extractor.h
 	NetworkApi.h
@@ -40,7 +40,7 @@ set(SOURCES
 	UserContext.cpp
 	SearchContext.cpp
 	ImageManipulator.cpp
-	CollageRanker.cpp
+	CanvasQueryRanker.cpp
 
 	#Extractor.cpp
 	NetworkApi.cpp

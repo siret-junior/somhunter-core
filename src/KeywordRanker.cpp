@@ -29,11 +29,11 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
                                                                const DatasetFrames& frames) {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
 
-	LOG_I("loading keyword classes from " << filepath);
+	SHLOG_D("Loading supported textual model keywords from '" << filepath << "'...");
 
 	if (!inFile) {
 		std::string msg{ "Error opening file: " + filepath };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -84,7 +84,8 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 	// Sort them by their ID
 	std::sort(result_keywords.begin(), result_keywords.end(),
 	          [](const Keyword& l, const Keyword& r) { return l.kw_ID < r.kw_ID; });
-	LOG_I("keyword classes loaded");
+
+	SHLOG_S("Successfully loaded " << result_keywords.size() << " supported keywords.");
 
 	return result_keywords;
 }
@@ -96,7 +97,7 @@ FeatureVector KeywordRanker::parse_float_vector(const std::string& filepath, siz
 	// If failed to open file
 	if (!ifs) {
 		std::string msg{ "Error opening file: " + filepath };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -112,7 +113,7 @@ FeatureVector KeywordRanker::parse_float_vector(const std::string& filepath, siz
 	// If emtpy file
 	if (size == 0) {
 		std::string msg{ "Empty file opened: " + filepath };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -155,7 +156,7 @@ FeatureMatrix KeywordRanker::parse_float_matrix(const std::string& filepath, siz
 	// If failed to open file
 	if (!ifs) {
 		std::string msg{ "Error opening file: " + filepath };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -171,7 +172,7 @@ FeatureMatrix KeywordRanker::parse_float_matrix(const std::string& filepath, siz
 	// If emtpy file
 	if (size == 0) {
 		std::string msg{ "Empty file opened: " + filepath };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -255,7 +256,7 @@ StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query_
 	}
 
 	auto textual_query_vectors{ embedd_text_queries(temporal_queries_keyword_IDs) };
-		return textual_query_vectors.front();
+	return textual_query_vectors.front();
 }
 
 std::vector<std::string> KeywordRanker::tokenize_textual_query(const std::string& sentence_query_raw) const {

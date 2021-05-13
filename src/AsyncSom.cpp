@@ -37,7 +37,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 	std::random_device rd;
 	std::mt19937 rng(rd());
 
-	LOG_I("SOM worker starting");
+	SHLOG_D("SOM worker is starting...");
 
 	while (!parent->terminate) {
 		std::vector<float> points;
@@ -61,7 +61,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 			n = scores.size();
 			parent->new_data = false;
 			parent->m_ready = false;
-			LOG_I("SOM worker got new work");
+			SHLOG_D("SOM worker just got new work...");
 		}
 
 		if (parent->new_data || parent->terminate) continue;
@@ -89,10 +89,10 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 		float radiiB[2] = { negRadius * radiiA[0], negRadius * radiiA[1] };
 
 		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
-		som(n, SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT, cfg.features_dim, SOM_ITERS, points, koho, nhbrdist,
-		    alphasA, radiiA, alphasB, radiiB, scores, present_mask, rng);
+		fit_SOM(n, SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT, cfg.features_dim, SOM_ITERS, points, koho,
+		        nhbrdist, alphasA, radiiA, alphasB, radiiB, scores, present_mask, rng);
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-		LOG_D("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
+		SHLOG_D("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
 
 		if (parent->new_data || parent->terminate) continue;
 
@@ -105,8 +105,8 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 			auto worker = [&](size_t id) {
 				size_t start = id * n / n_threads;
 				size_t end = (id + 1) * n / n_threads;
-				mapPointsToKohos(start, end, SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT, cfg.features_dim, points,
-				                 koho, point_to_koho, present_mask);
+				map_points_to_kohos(start, end, SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT, cfg.features_dim,
+				                    points, koho, point_to_koho, present_mask);
 			};
 
 			for (size_t i = 0; i < n_threads; ++i) threads[i] = std::thread(worker, i);
@@ -114,7 +114,8 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 			for (size_t i = 0; i < n_threads; ++i) threads[i].join();
 		}
 		end = std::chrono::high_resolution_clock::now();
-		LOG_D("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
+		SHLOG_D("Mapping took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+		                        << " [ms]");
 
 		if (parent->new_data || parent->terminate) continue;
 
@@ -133,7 +134,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 		 * may break in the middle
 		 */
 	}
-	LOG_I("SOM worker terminating");
+	SHLOG_D("SOM worker finished.");
 }
 
 AsyncSom::AsyncSom(const Config& cfg) {
@@ -142,11 +143,11 @@ AsyncSom::AsyncSom(const Config& cfg) {
 }
 
 AsyncSom::~AsyncSom() {
-	LOG_I("requesting SOM worker termination");
+	SHLOG_D("Requesting SOM worker termination...");
 	terminate = true;
 	new_data_wakeup.notify_all();
 	worker.join();
-	LOG_I("SOM worker terminated");
+	SHLOG_D("SOM worker terminated.");
 }
 
 void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc) {

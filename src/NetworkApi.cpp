@@ -45,7 +45,7 @@ static http_response construct_error_res(status_code code, const std::string& ms
  */
 static size_t store_JPEG_from_base64(const std::string& filepath, const std::string& /*base64_data*/) {
 	// \todo
-	LOG_D("Simulating the JPEG screenshot write to '" << filepath << "'...");
+	SHLOG_D("Simulating the JPEG screenshot write to '" << filepath << "'...");
 	return 128;
 }
 
@@ -61,7 +61,7 @@ std::vector<_ElemType> from_JSON_array(json::value x) {
 		}
 
 	} catch (std::exception& e) {
-		LOG_D(e.what());
+		SHLOG_D(e.what());
 	}
 
 	return res;
@@ -79,7 +79,7 @@ std::vector<_ElemType> from_double_array(json::value x) {
 		}
 
 	} catch (std::exception& e) {
-		LOG_D(e.what());
+		SHLOG_D(e.what());
 	}
 
 	return res;
@@ -519,7 +519,7 @@ void NetworkApi::add_CORS_headers(http_response& res) {
 
 void handle_options(http_request request) {
 	auto remote_addr{ to_utf8string(request.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle_options");
+	SHLOG_REQ(remote_addr, "handle_options");
 
 	http_response response(status_codes::OK);
 	response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
@@ -566,7 +566,7 @@ void NetworkApi::initialize() {
 	push_endpoint("search/context", &NetworkApi::handle__search__context__GET,
 	              &NetworkApi::handle__search__context__POST);
 
-	LOG_S("Listening for requests at: " << _base_addr);
+	SHLOG_S("Listening for requests at '" << _base_addr << "' at the API endpoints.");
 }
 
 void NetworkApi::terminate() {
@@ -577,14 +577,15 @@ void NetworkApi::terminate() {
 
 void NetworkApi::run() {
 	initialize();
-	std::cout << "Type in \"exit\" to exit." << std::endl;
+
+	SHLOG("Type in \"exit\" to exit.");
 
 	while (true) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 		std::string line;
 		std::getline(std::cin, line);
 
-		if (line == "exist") break;
+		if (line == "exit") break;
 	}
 
 	terminate();
@@ -621,7 +622,6 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 
 		ep_listener.open().wait();
 		_endpoints.emplace_back(std::move(ep_listener));
-		LOG_D("Listener for '" << path << "' set.");
 	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
 	}
@@ -652,7 +652,7 @@ void NetworkApi::handle__api__GET(http_request message) {
 			    try {
 				    t.get();
 			    } catch (...) {
-				    LOG_W("Error serving `/api/` files...");
+				    SHLOG_W("Error serving `/api/` files...");
 			    }
 		    });
 	    })
@@ -668,7 +668,7 @@ void NetworkApi::handle__api__GET(http_request message) {
 }
 void NetworkApi::handle__api__config__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__api__config__GET");
+	SHLOG_REQ(remote_addr, "handle__api__config__GET");
 
 	// auto b = message.extract_json().get();
 
@@ -676,7 +676,7 @@ void NetworkApi::handle__api__config__GET(http_request req) {
 	auto j{ json::value::parse(utils::read_whole_file(_p_core->get_API_config_filepath()), ec) };
 	if (ec) {
 		std::string msg{ ec.message() };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -688,7 +688,7 @@ void NetworkApi::handle__api__config__GET(http_request req) {
 
 void NetworkApi::handle__settings__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__settings__GET");
+	SHLOG_REQ(remote_addr, "handle__settings__GET");
 
 	// auto b = message.extract_json().get();
 
@@ -696,7 +696,7 @@ void NetworkApi::handle__settings__GET(http_request req) {
 	auto j{ json::value::parse(utils::read_whole_file(_p_core->get_config_filepath()), ec) };
 	if (ec) {
 		std::string msg{ ec.message() };
-		LOG_E(msg);
+		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
@@ -708,7 +708,7 @@ void NetworkApi::handle__settings__GET(http_request req) {
 
 void NetworkApi::handle__user__context__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__user__context__GET");
+	SHLOG_REQ(remote_addr, "handle__user__context__GET");
 
 	auto body = req.extract_json().get();
 	// \ytbi
@@ -730,7 +730,7 @@ void NetworkApi::handle__user__context__GET(http_request req) {
 
 void NetworkApi::handle__get_top_screen__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__get_top_screen__POST");
+	SHLOG_REQ(remote_addr, "handle__get_top_screen__POST");
 
 	auto body = req.extract_json().get();
 
@@ -755,7 +755,7 @@ void NetworkApi::handle__get_top_screen__POST(http_request req) {
 
 void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__get_SOM_screen__POST");
+	SHLOG_REQ(remote_addr, "handle__get_SOM_screen__POST");
 
 	auto body = req.extract_json().get();
 
@@ -788,7 +788,7 @@ void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
 
 void NetworkApi::handle__get_frame_detail_data__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__get_frame_detail_data__GET");
+	SHLOG_REQ(remote_addr, "handle__get_frame_detail_data__GET");
 
 	// auto paths = http::uri::split_path(http::uri::decode(req.relative_uri().path()));
 
@@ -829,7 +829,7 @@ void NetworkApi::handle__get_frame_detail_data__GET(http_request req) {
 
 void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__get_autocomplete_results__GET");
+	SHLOG_REQ(remote_addr, "handle__get_autocomplete_results__GET");
 
 	auto query{ req.relative_uri().query() };
 	auto query_map{ web::uri::split_query(query) };
@@ -864,7 +864,7 @@ void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {
 
 void NetworkApi::handle__log_scroll__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__log_scroll__GET");
+	SHLOG_REQ(remote_addr, "handle__log_scroll__GET");
 
 	auto query{ req.relative_uri().query() };
 	auto query_map{ web::uri::split_query(query) };
@@ -915,7 +915,7 @@ void NetworkApi::handle__log_scroll__GET(http_request req) {
 
 void NetworkApi::handle__log_text_query_change__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__log_text_query_change__GET");
+	SHLOG_REQ(remote_addr, "handle__log_text_query_change__GET");
 
 	auto query{ req.relative_uri().query() };
 	auto query_map{ web::uri::split_query(query) };
@@ -940,7 +940,7 @@ void NetworkApi::handle__log_text_query_change__GET(http_request req) {
 
 void NetworkApi::handle__submit_frame__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__submit_frame__POST");
+	SHLOG_REQ(remote_addr, "handle__submit_frame__POST");
 
 	ImageId frame_ID{ ERR_VAL<ImageId>() };
 	auto body = req.extract_json().get();
@@ -965,7 +965,7 @@ void NetworkApi::handle__submit_frame__POST(http_request req) {
 
 void NetworkApi::handle__login_to_DRES__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__login_to_DRES__POST");
+	SHLOG_REQ(remote_addr, "handle__login_to_DRES__POST");
 
 	bool result{ _p_core->login_to_dres() };
 
@@ -981,7 +981,7 @@ void NetworkApi::handle__login_to_DRES__POST(http_request req) {
 
 void NetworkApi::handle__reset_search_session__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__reset_search_session__POST");
+	SHLOG_REQ(remote_addr, "handle__reset_search_session__POST");
 
 	// Reset
 	_p_core->reset_search_session();
@@ -1139,7 +1139,7 @@ Filters NetworkApi::extract_filters(web::json::value& body) {
 
 void NetworkApi::handle__rescore__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__rescore__POST");
+	SHLOG_REQ(remote_addr, "handle__rescore__POST");
 
 	auto body = req.extract_json().get();
 
@@ -1192,7 +1192,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 
 void NetworkApi::handle__like_frame__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__like_frame__POST");
+	SHLOG_REQ(remote_addr, "handle__like_frame__POST");
 
 	ImageId frame_ID{ ERR_VAL<ImageId>() };
 	auto body = req.extract_json().get();
@@ -1221,7 +1221,7 @@ void NetworkApi::handle__like_frame__POST(http_request req) {
 
 void NetworkApi::handle__search__bookmark__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__search__bookmark__POST");
+	SHLOG_REQ(remote_addr, "handle__search__bookmark__POST");
 
 	ImageId frame_ID{ ERR_VAL<ImageId>() };
 	auto body = req.extract_json().get();
@@ -1250,7 +1250,7 @@ void NetworkApi::handle__search__bookmark__POST(http_request req) {
 
 void NetworkApi::handle__search__context__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	LOG_REQUEST(remote_addr, "handle__search__context__POST");
+	SHLOG_REQ(remote_addr, "handle__search__context__POST");
 
 	try {
 		auto body = req.extract_json().get();
@@ -1264,7 +1264,7 @@ void NetworkApi::handle__search__context__POST(http_request req) {
 		std::string screenshot_fpth{ "assets/img/history_screenshot.jpg" };
 
 		if (store_JPEG_from_base64(screenshot_fpth, screenshot_base64) == 0) {
-			LOG_W("Failed to write screenshot to '" << screenshot_fpth << "'.");
+			SHLOG_W("Failed to write screenshot to '" << screenshot_fpth << "'.");
 		}
 
 		// Fetch the data
