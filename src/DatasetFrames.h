@@ -114,6 +114,10 @@ public:
 	    : _begin(b), _end(e), _valid(true) {}
 	FramePointerRange(const std::vector<VideoFramePointer>& v) : _begin(v.cbegin()), _end(v.cend()), _valid(true) {}
 
+	void print_display() {
+		for (auto iter = begin(); iter != end(); iter++) std::cout << (*iter)->frame_ID << std::endl;
+	}
+
 	/**
 	 * Returns true iff FramePointerRange contains valid range
 	 * at the time. Otherwise iterators behaviour is undefined.

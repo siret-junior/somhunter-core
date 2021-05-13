@@ -27,39 +27,65 @@
 #include <stb_image_resize.h>
 #include <stb_image_write.h>
 
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
+
 #include "common.h"
 #include "config.h"
 #include "log.h"
 
 namespace sh {
 
-struct LoadedImage {
+/** Basic abstraction for images. */
+template <typename DType_>
+class BitmapImage {
+public:
 	size_t w;
 	size_t h;
 	size_t num_channels;
-	std::vector<float> data;
+	std::vector<DType_> data;
 };
 
 /** Provides utilities for image manipulation and processing. */
 class ImageManipulator {
 public:
+	template <typename OutType_>
+	static OutType_ load_PNG(const std::string& filepath);
+
+	static void show_image(const std::string& filepath, size_t delay = 0) {
+		cv::Mat image = cv::imread(filepath, cv::IMREAD_UNCHANGED);
+		cv::imshow(filepath, image);
+		cv::waitKey(delay);
+	}
+
+	// NEW
+	// -------------------------------------------------
+	// OLD
 	/**
 	 * Loads the image from the provided filepath.
 	 *
 	 * \exception std::runtime_error If the loading fails.
 	 */
-	static LoadedImage load(const std::string& file);
 
 	/**
 	 * Writes the provided image into the JPG file.
 	 *
 	 * \exception std::runtime_error If the writing fails.
 	 */
-	template <typename DType_>
-	static void store_PNG(const std::string& filepath, const std::vector<DType_>& in, size_t w, size_t h,
+	static void store_PNG(const std::string& filepath, const std::vector<uint8_t>& in, size_t w, size_t h,
 	                      size_t num_channels) {
-
 		auto res{ stbi_write_png(filepath.c_str(), w, h, num_channels, (uint8_t*)in.data(), w * num_channels) };
+
+		if (res == 0) {
+			std::string msg{ "Writing the '" + filepath + "' image failed!" };
+			SHLOG_E(msg);
+			throw std::runtime_error(msg);
+		}
+	}
+	static void store_PNG(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
+	                      size_t num_channels) {
+		auto res{ stbi_write_png(filepath.c_str(), w, h, num_channels, (float*)in.data(), w * num_channels) };
 
 		if (res == 0) {
 			std::string msg{ "Writing the '" + filepath + "' image failed!" };

@@ -23,6 +23,7 @@
 #include <chrono>
 #include <filesystem>
 #include <thread>
+#include <vector>
 
 #if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 #	include "Windows.h"
@@ -33,69 +34,19 @@
                         // -> otherwise the libtorch compile error wil bite you
 // !!!
 
-#include "NetworkApi.h"
+#include "config-tests.h"  //< Comment this to disable testing behaviour
+
 #include "log.h"
 #include "utils.h"
 
+#include "NetworkApi.h"
+
 using namespace sh;
-
-// If the `TESTER_SomHunter` should do its job.
-//#define RUN_TESTER
-//#define TEST_COLLAGE_QUERIES
-
-#define TEST_DATA_DIR "../../tests/data"
-#define TEST_COLLAGE_DATA_DIR TEST_DATA_DIR "/collages/"
-
-#ifdef RUN_TESTER
-
-/*
- * What dataset are we testing?
- */
-#	define TESTING_ITEC_DATASET
-//#	define TESTING_LSC5DAYS_DATASET
-
-/** Run filter tests on on datasets supporting it */
-#	ifdef TESTING_LSC5DAYS_DATASET
-#		define TEST_FILTERS
-#	endif
-
-/*
- * What keywords are we testing?
- */
-#	define TESTING_BOW_W2VV
-
-#	include "tests.hpp"
-
-#endif
-
-void print_display(const FramePointerRange& d) {
-	for (auto iter = d.begin(); iter != d.end(); iter++) std::cout << (*iter)->frame_ID << std::endl;
-}
 
 /**
  * Does the global application initialization.
  */
-static void initialize_aplication() {
-	// Enable ANSII colored output if not enabled by default
-#if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
-	// From: https://superuser.com/a/1529908
-
-#	include "Windows.h"
-
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	DWORD dwMode = 0;
-	GetConsoleMode(hOut, &dwMode);
-	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-	SetConsoleMode(hOut, dwMode);
-
-	// References:
-	// SetConsoleMode() and ENABLE_VIRTUAL_TERMINAL_PROCESSING?
-	// https://stackoverflow.com/questions/38772468/setconsolemode-and-enable-virtual-terminal-processing
-
-	// Windows console with ANSI colors handling
-	// https://superuser.com/questions/413073/windows-console-with-ansi-colors-handling
-#endif
-}
+static void initialize_aplication();
 
 int main() {
 	initialize_aplication();
@@ -109,19 +60,33 @@ int main() {
 
 	const std::string cfg_fpth{ "config/config-core.json" };
 
-#ifdef RUN_TESTER
-	TESTER_SomHunter::run_all_tests(cfg_fpth);
-	TESTER_Config::run_all_tests(cfg_fpth);
-#endif
-
-#if 1
-
 	// Parse config file
 	auto config = Config::parse_json_config(cfg_fpth);
 
 	// Instantiate the SOMHunter
 	SomHunter core{ config, cfg_fpth };
 
+	NetworkApi api{ config.API_config, &core };
+	api.run();
+
+	Query q{ utils::deserialize_from_file<CanvasQuery>("cq.bin") };
+	CanvasSubqueryBitmap& cq{ std::get<CanvasSubqueryBitmap>(q.canvas_query[0]) };
+
+	auto img = cq.data();
+	auto img2 = cq.data_std();
+
+	auto img_new{ ImageManipulator::resize(img, cq.width_pixels(), cq.height_pixels(), 224, 224, 3) };
+	// auto img2_new {ImageManipulator::resize(img2, cq.width_pixels(), cq.height_pixels(), 224, 224, 3)};
+
+	cv::Mat cv_img{ ImageManipulator::load_PNG<cv::Mat>("tests/data/images/bitmap-100x100-4C.png") };
+	BitmapImage<uint8_t> std_img_u8{ ImageManipulator::load_PNG<BitmapImage<uint8_t>>(
+		"tests/data/images/bitmap-100x100-4C.png") };
+	BitmapImage<float> std_img_f32{ ImageManipulator::load_PNG<BitmapImage<float>>(
+		"tests/data/images/bitmap-100x100-4C.png") };
+
+	ImageManipulator::show_image(TEST_PNGS[0]);
+
+#ifdef DO_TESTS
 #	if 0  // Serialized CanvasQueries
 	using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
@@ -154,20 +119,15 @@ int main() {
 	}
 	// #####################################
 #	endif  // Serialized CanvasQueries
-	NetworkApi api{ config.API_config, &core };
-	api.run();
 
 	/* ********************************
 	 * Test features here...
 	 * ******************************** */
 
-	// *** SHA file checksum ***
-	std::cout << "SHA256: " << utils::SHA256_sum("config/config-core.json") << std::endl;
-
+#	if 0
 	/* !!!!!!!!!!!!!!!!!!!!!!!!!!
 	 * Test collage queries
 	 * !!!!!!!!!!!!!!!!!!!!!!!!!! */
-#	ifdef TEST_COLLAGE_QUERIES
 	namespace fs = std::filesystem;
 
 	for (auto& p : fs::directory_iterator(TEST_COLLAGE_DATA_DIR)) {
@@ -179,44 +139,10 @@ int main() {
 		core.rescore(c, nullptr);
 	}
 
-	/* -------------------------------- */
 #	endif  // TEST_COLLAGE_QUERIES
 
-#	if 1  // Network JSON lib usage (as ooposed to json11)
-	// Example of JSON lib from network lib
-	std::ifstream ifs{ cfg_fpth };
-	auto d{ web::json::value::parse(ifs) };
-	std::cout << d.as_object()[U("api")].as_object()[U("port")].as_integer() << std::endl;
-
-#	endif  // Network JSON lib usage (as ooposed to json11)
-
-	/*
-	 * Test ImageManipulator
-	 */
-#	if 0
-	std::string orig_img{ "testimg.jpg" };
-	auto img{ core.load_image(orig_img) };
-
-	for (size_t i{ 0 }; i < 10; ++i) {
-	  size_t new_w{ irand(10_z, 2000_z) };
-	  size_t new_h{ irand(10_z, 2000_z) };
-
-	  std::string new_file{ "testimg_edited_" + std::to_string(i) + ".jpg" };
-
-	  auto tmp_data{ core.resize_image(img.data, img.w, img.h, new_w, new_h, img.num_channels) };
-	  core.store_jpg_image(new_file, tmp_data, new_w, new_h, 50, img.num_channels);
-
-	  // Check!
-	  auto tmp_img{ core.load_image(new_file) };
-
-	  if (tmp_img.w != new_w)
-			throw std::logic_error("Width does not match!");
-
-	  if (tmp_img.h != new_h)
-	    throw std::logic_error("Height does not match!");
-	}
-
-#	endif
+	// *** SHA file checksum ***
+	std::cout << "SHA256: " << utils::SHA256_sum("config/config-core.json") << std::endl;
 
 	// Try autocomplete
 	auto ac_res{ core.autocomplete_keywords("Cat", 30) };
@@ -230,15 +156,15 @@ int main() {
 
 		auto d_topn = core.get_display(DisplayType::DTopN, 0, 0).frames;
 		std::cout << "TOP N\n";
-		print_display(d_topn);
+		d_topn.print_display();
 
 		auto d_topknn = core.get_display(DisplayType::DTopKNN, 2, 0).frames;
 		std::cout << "TOP KNN\n";
-		print_display(d_topknn);
+		d_topknn.print_display();
 
 		auto d_rand = core.get_display(DisplayType::DRand).frames;
 		std::cout << "RANDOM\n";
-		print_display(d_rand);
+		d_rand.print_display();
 	}
 
 	// Try keyword rescore
@@ -246,7 +172,7 @@ int main() {
 		core.rescore("dog park");
 		auto d_topn1 = core.get_display(DisplayType::DTopN, 0, 0).frames;
 		std::cout << "TOP N\n";
-		print_display(d_topn1);
+		d_topn1.print_display();
 	}
 
 	// Try reset session
@@ -271,7 +197,7 @@ int main() {
 
 	{
 		auto d_topn2 = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		print_display(d_topn2);
+		d_topn2.print_display();
 		std::cout << "Len of top n page 0 " << d_topn2.size() << std::endl;
 	}
 	{
@@ -299,6 +225,33 @@ int main() {
 	SHLOG_S("this is a success log");
 	SHLOG_D("this is a debug log");
 	SHLOG_REQ("123.0.0.1", "this is an API request");
-#endif
+
+	tests::TESTER_SomHunter::run_all_tests(cfg_fpth);
+	tests::TESTER_Config::run_all_tests(cfg_fpth);
+
+#endif  // DO_TESTS
+
 	return 0;
+}
+
+static void initialize_aplication() {
+	// Enable ANSII colored output if not enabled by default
+#if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
+	// From: https://superuser.com/a/1529908
+
+#	include "Windows.h"
+
+	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	DWORD dwMode = 0;
+	GetConsoleMode(hOut, &dwMode);
+	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+	SetConsoleMode(hOut, dwMode);
+
+	// References:
+	// SetConsoleMode() and ENABLE_VIRTUAL_TERMINAL_PROCESSING?
+	// https://stackoverflow.com/questions/38772468/setconsolemode-and-enable-virtual-terminal-processing
+
+	// Windows console with ANSI colors handling
+	// https://superuser.com/questions/413073/windows-console-with-ansi-colors-handling
+#endif
 }

@@ -37,47 +37,121 @@
 
 using namespace sh;
 
-LoadedImage ImageManipulator::load(const std::string& filepath) {
-	//#define WITH_HDR
+std::vector<float> ImageManipulator::resize(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
+                                            size_t new_h, size_t num_channels) {
+	std::vector<float> out(new_w * new_h * num_channels, 0.0F);
 
-	int w{ 0 };
-	int h{ 0 };
-	int num_channels{ 0 };
+	int original_w{ int(orig_w) };
+	int original_h{ int(orig_h) };
 
-#ifdef WITH_HDR
-	/* This applies `stbi_hdr_to_ldr_gamma` and `stbi_hdr_to_ldr_scale` since it's meant for HDR images	 */
-	float* raw_data = stbi_loadf(filepath.c_str(), &w, &h, &num_channels, 0);
+	cv::Mat bitmap_cv_RGB{ in };
+	bitmap_cv_RGB = bitmap_cv_RGB.reshape(3, original_w);
+	cv::Mat bitmap_cv_BRG{ CV_32FC3 };
+	cvtColor(bitmap_cv_RGB, bitmap_cv_BRG, cv::COLOR_BGR2RGBA);
 
-#else
-	/* Do it manually */
-	unsigned char* raw_data = stbi_load(filepath.c_str(), &w, &h, &num_channels, 0);
-#endif
+	/*cv::imshow("bitmap_cv_RGB", bitmap_cv_RGB);
+	cv::waitKey();
 
-	if (raw_data == NULL) {
-		std::string msg{ "Loading the '" + filepath + "' image failed!" };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
-	}
+	cv::imshow("bitmap_cv_BRG", bitmap_cv_BRG);
+	cv::waitKey();*/
 
-	unsigned char* p_begin{ raw_data };
-	unsigned char* p_end{ raw_data + (w * h * num_channels) };
-#ifdef WITH_HDR
-	// Copy the data into a safer container
-	std::vector<float> data{ p_begin, p_end };
-#else
-	std::vector<float> data;
-	data.reserve(w * h * num_channels);
+	cv::Mat mat(480, 640, CV_8UC4);
 
-	for (unsigned char* it{ p_begin }; it != p_end; ++it) {
-		data.emplace_back(float(*it) / 255);
-	}
-#endif
-
-	stbi_image_free(raw_data);
-
-	return LoadedImage{ size_t(w), size_t(h), size_t(num_channels), std::move(data) };
+	// cv::resize(bitmap_cv, bitmap_cv, cv::Size(224, 224), 0, 0, cv::INTER_AREA);
+	return std::vector<float>{};
 }
 
+template <>
+cv::Mat ImageManipulator::load_PNG<cv::Mat>(const std::string& filepath) {
+	using namespace cv;
+	Mat image = imread(filepath, IMREAD_UNCHANGED);
+	return image;
+}
+
+template <>
+BitmapImage<float> ImageManipulator::load_PNG<BitmapImage<float>>(const std::string& filepath) {
+	cv::Mat cv_img{ ImageManipulator::load_PNG<cv::Mat>(filepath) };
+
+	// Convert to float32 matrix
+	cv::Mat cv_fimg;
+	cv_img.convertTo(cv_fimg, CV_32F);
+	int total_size{cv_fimg.rows * cv_fimg.cols * cv_fimg.channels()};
+
+	BitmapImage<float> b_img;
+	b_img.w = cv_fimg.cols;
+	b_img.h = cv_fimg.rows;
+	b_img.num_channels = cv_fimg.channels();
+
+	cv::Mat flat = cv_fimg.reshape(1, cv_fimg.total() * cv_fimg.channels());
+	flat.copyTo(b_img.data);
+
+	return b_img;
+}
+
+template <>
+BitmapImage<uint8_t> ImageManipulator::load_PNG<BitmapImage<uint8_t>>(const std::string& filepath) {
+	cv::Mat cv_img{ ImageManipulator::load_PNG<cv::Mat>(filepath) };
+
+	// Convert to uint8_t matrix
+	cv::Mat cv_fimg;
+	cv_img.convertTo(cv_fimg, CV_8U );
+	int total_size{cv_fimg.rows * cv_fimg.cols * cv_fimg.channels()};
+
+	BitmapImage<uint8_t> b_img;
+	b_img.w = cv_fimg.cols;
+	b_img.h = cv_fimg.rows;
+	b_img.num_channels = cv_fimg.channels();
+
+	cv::Mat flat = cv_fimg.reshape(1, cv_fimg.total() * cv_fimg.channels());
+	flat.copyTo(b_img.data);
+	return b_img;
+}
+
+// NEW
+// -------------------------------------------------
+// OLD
+
+//
+// LoadedImage ImageManipulator::load(const std::string& filepath) {
+//	//#define WITH_HDR
+//
+//	int w{ 0 };
+//	int h{ 0 };
+//	int num_channels{ 0 };
+//
+//#ifdef WITH_HDR
+//	/* This applies `stbi_hdr_to_ldr_gamma` and `stbi_hdr_to_ldr_scale` since it's meant for HDR images	 */
+//	float* raw_data = stbi_loadf(filepath.c_str(), &w, &h, &num_channels, 0);
+//
+//#else
+//	/* Do it manually */
+//	unsigned char* raw_data = stbi_load(filepath.c_str(), &w, &h, &num_channels, 0);
+//#endif
+//
+//	if (raw_data == NULL) {
+//		std::string msg{ "Loading the '" + filepath + "' image failed!" };
+//		SHLOG_E(msg);
+//		throw std::runtime_error(msg);
+//	}
+//
+//	unsigned char* p_begin{ raw_data };
+//	unsigned char* p_end{ raw_data + (w * h * num_channels) };
+//#ifdef WITH_HDR
+//	// Copy the data into a safer container
+//	std::vector<float> data{ p_begin, p_end };
+//#else
+//	std::vector<float> data;
+//	data.reserve(w * h * num_channels);
+//
+//	for (unsigned char* it{ p_begin }; it != p_end; ++it) {
+//		data.emplace_back(float(*it) / 255);
+//	}
+//#endif
+//
+//	stbi_image_free(raw_data);
+//
+//	return LoadedImage{ size_t(w), size_t(h), size_t(num_channels), std::move(data) };
+//}
 
 void ImageManipulator::store_jpg(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
                                  size_t quality, size_t num_channels, bool are_ints) {
@@ -99,19 +173,4 @@ void ImageManipulator::store_jpg(const std::string& filepath, const std::vector<
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
-}
-
-std::vector<float> ImageManipulator::resize(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
-                                            size_t new_h, size_t num_channels) {
-	std::vector<float> out(new_w * new_h * num_channels, 0.0F);
-
-	auto res{ stbir_resize_float(in.data(), orig_w, orig_h, orig_w * sizeof(float) * 3, out.data(), new_w, new_h, new_w * sizeof(float) * num_channels, num_channels) };
-
-	if (res == 0) {
-		std::string msg{ "Resizing the image failed!" };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
-	}
-
-	return out;
 }

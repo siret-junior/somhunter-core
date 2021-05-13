@@ -157,10 +157,8 @@ public:
 	size_t num_channels() const { return _num_channels; };
 	size_t width_pixels() const { return _width; };
 	size_t height_pixels() const { return _height; };
-	float* data() { return _data.data(); };
-	const float* data() const { return _data.data(); };
+	std::vector<float>& data() { return _data; };
 	std::vector<uint8_t>& data_std() { return _data_int; };
-	const std::vector<uint8_t>& data_std() const { return _data_int; };
 
 	std::vector<float> get_scaled_bitmap(size_t w, size_t h, size_t num_channels) const;
 

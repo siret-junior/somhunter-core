@@ -42,9 +42,12 @@
 #include "SearchContext.h"
 #include "Submitter.h"
 
+
 namespace sh {
 
+namespace tests {
 class TESTER_SomHunter;
+}  // namespace tests
 
 /**
  * The main API of the SOMHunter Core.
@@ -68,9 +71,9 @@ class SomHunter {
 	// User contexts
 	//		(private for each unique user session)
 	// ********************************
+public:
 	UserContext user;  // This will become std::vector<UserContext>
 
-public:
 	SomHunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
 	inline SomHunter(const Config& cfg, const std::string& config_filepath)
@@ -218,13 +221,6 @@ public:
 	// ********************************
 
 	/**
-	 * Loads the image from the provided filepath.
-	 *
-	 * \exception std::runtime_error If the loading fails.
-	 */
-	LoadedImage load_image(const std::string& filepath) const { return ImageManipulator::load(filepath); }
-
-	/**
 	 * Writes the provided image into the JPG file.
 	 *
 	 * \exception std::runtime_error If the writing fails.
@@ -309,7 +305,7 @@ private:
 	bool has_metadata() const;
 
 	/** The tester class */
-	friend TESTER_SomHunter;
+	friend sh::tests::TESTER_SomHunter;
 };
 
 };  // namespace sh
