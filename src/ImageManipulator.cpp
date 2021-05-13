@@ -78,6 +78,7 @@ LoadedImage ImageManipulator::load(const std::string& filepath) {
 	return LoadedImage{ size_t(w), size_t(h), size_t(num_channels), std::move(data) };
 }
 
+
 void ImageManipulator::store_jpg(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
                                  size_t quality, size_t num_channels, bool are_ints) {
 	std::vector<uint8_t> raw_data;
@@ -104,7 +105,7 @@ std::vector<float> ImageManipulator::resize(const std::vector<float>& in, size_t
                                             size_t new_h, size_t num_channels) {
 	std::vector<float> out(new_w * new_h * num_channels, 0.0F);
 
-	auto res{ stbir_resize_float(in.data(), orig_w, orig_h, 0, out.data(), new_w, new_h, 0, num_channels) };
+	auto res{ stbir_resize_float(in.data(), orig_w, orig_h, orig_w * sizeof(float) * 3, out.data(), new_w, new_h, new_w * sizeof(float) * num_channels, num_channels) };
 
 	if (res == 0) {
 		std::string msg{ "Resizing the image failed!" };

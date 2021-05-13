@@ -655,7 +655,7 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 #endif  // LOG_LOGS
 }
 
-void Submitter::log_collage_query(const CanvasQuery& collage, const std::vector<VideoFrame>* p_targets) {
+void Submitter::log_canvas_query(const CanvasQuery& canvas_query, const std::vector<VideoFrame>* p_targets) {
 	auto path{ cfg.log_queries_dir + "/"s + std::to_string(utils::timestamp()) + "/"s };
 
 	// One directory for each query
@@ -664,7 +664,7 @@ void Submitter::log_collage_query(const CanvasQuery& collage, const std::vector<
 	std::string readable_timestamp{ utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") };
 
 	// Serialize the instance for possible debugging
-	utils::serialize_to_file(collage, path + "query-instance-" + readable_timestamp + ".bin");
+	utils::serialize_to_file(canvas_query, path + "query-instance-" + readable_timestamp + ".bin");
 
 	// Write log info
 	std::ofstream o(path + "query-info" + readable_timestamp + ".json");
@@ -681,31 +681,35 @@ void Submitter::log_collage_query(const CanvasQuery& collage, const std::vector<
 		}
 	}
 
-	Json json{ collage.to_JSON() };
-
-	Json obj{ Json::object{ { "targets", tars }, { "timestamp", readable_timestamp }, { "canvas_query", json } } };
-
-	o << obj.dump();
+	Json json{ canvas_query.to_JSON() };
 
 	// Write bitmaps as JPEGs
 	// For each temporal part
 
-	for (size_t qidx{ 0 }; qidx < collage.num_temp_queries(); ++qidx) {
-		size_t qbegin{ collage.query_begins(qidx) };
-		size_t qend{ collage.query_begins(qidx + 1) };
+	for (size_t qidx{ 0 }; qidx < canvas_query.num_temp_queries(); ++qidx) {
+		size_t qbegin{ canvas_query.query_begins(qidx) };
+		size_t qend{ canvas_query.query_begins(qidx + 1) };
 
 		for (size_t i{ qbegin }; i < qend; ++i) {
-			const CanvasSubquery& subquery{ collage[i] };
+			auto& sqo{ json.array_items()[qidx].array_items()[i - qbegin].object_items() };
+
+			const CanvasSubquery& subquery{ canvas_query[i] };
 
 			if (std::holds_alternative<CanvasSubqueryBitmap>(subquery)) {
 				const CanvasSubqueryBitmap& q{ std::get<CanvasSubqueryBitmap>(subquery) };
+				auto& jpeg_filename{ sqo.at("bitmap_filename").string_value() };
 
-				ImageManipulator::store_jpg(path + std::to_string(qidx) + "_img_"s + std::to_string(i) + ".jpg",
-				                            q.data_std(), q.width_pixels(), q.height_pixels(), 100, q.num_channels(),
-				                            true);
+				ImageManipulator::store_jpg(path + jpeg_filename, q._data, q.width_pixels(), q.height_pixels(),
+				                            100, q.num_channels(), true);
 			}
 		}
 	}
+	Json obj{ Json::object{ { "targets", tars }, { "timestamp", readable_timestamp }, { "canvas_query", json } } };
+
+	PrettyPrintOptions pretty_print_opts;
+    pretty_print_opts.indent_increment = 4;
+	//o << obj.dump();
+	o << obj.pretty_print(pretty_print_opts);
 }
 
 void Submitter::log_text_query_change(const std::string& text_query) {

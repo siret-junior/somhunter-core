@@ -216,7 +216,7 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 	/* ***
 	 * Save provided screenshot filepath if needed
 	 */
-	if (user.history.size() >= src_search_ctx_ID) {
+	if (user.history.size() <= src_search_ctx_ID) {
 		return RescoreResult{ user.ctx.ID, user.history, user.ctx.get_curr_targets() };
 	}
 	if (src_search_ctx_ID != SIZE_T_ERR_VAL && user.history[src_search_ctx_ID].screenshot_fpth.empty()) {
@@ -232,10 +232,12 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 
 	// If NOT COLLAGE
 	if (canvas_query.empty()) {
+		SHLOG_W("Running plain texual model...");
 		rescore_keywords(text_query);
 	} else {
+		SHLOG_W("Running the canvas query model...");
 		reset_scores();
-		user.submitter.log_collage_query(canvas_query,
+		user.submitter.log_canvas_query(canvas_query,
 		                                 &user.ctx.get_curr_targets());  // < This triggers log into the /logs/collage/
 		collageRanker.score(canvas_query, user.ctx.scores, features, frames);
 	}

@@ -24,13 +24,7 @@ void CanvasQuery::emplace_back(const RelativeRect& rect, size_t bitmap_w, size_t
 		image.push_back(bitmap_RGBA_data[j + 2]);
 	}
 
-	// DO: resize_all(int 224, int 224)
-	image = ImageManipulator::resize(image, bitmap_w, bitmap_h, CanvasQueryRanker::models_input_width,
-	                                 CanvasQueryRanker::models_input_height, CanvasQueryRanker::models_num_channels);
-
-	_subqueries.emplace_back(CanvasSubqueryBitmap{ rect, CanvasQueryRanker::models_input_width,
-	                                               CanvasQueryRanker::models_input_height,
-	                                               CanvasQueryRanker::models_num_channels, std::move(image) });
+	_subqueries.emplace_back(CanvasSubqueryBitmap{ rect, bitmap_w, bitmap_h, 3, std::move(image) });
 }
 
 bool CanvasQuery::empty() const { return (size() == 0); }
@@ -229,8 +223,15 @@ at::Tensor CanvasQueryRanker::get_features(CanvasQuery& collage) {
 		// If bitmap
 		if (std::holds_alternative<CanvasSubqueryBitmap>(subquery)) {
 			CanvasSubqueryBitmap& subquery_bitmap{ std::get<CanvasSubqueryBitmap>(subquery) };
+			
+			auto bitmap_std{subquery_bitmap.data_std()};
+			ImageManipulator::store_PNG("pre-test.png", bitmap_std, subquery_bitmap.width_pixels(), subquery_bitmap.height_pixels(), 3);
 
-			at::Tensor tensor_imagex = torch::from_blob(subquery_bitmap.data(), { 224, 224, 3 }, at::kFloat);
+			auto scaled_bitmap{subquery_bitmap.get_scaled_bitmap(224, 224, 3)};
+
+			ImageManipulator::store_jpg("test.png", scaled_bitmap, 224, 224, 100, 3, false);
+
+			at::Tensor tensor_imagex = torch::from_blob(scaled_bitmap.data(), { 224, 224, 3 }, at::kFloat);
 
 			at::Tensor tensor_image = tensor_imagex - 0.0F;
 			at::Tensor tensor_image_norm = tensor_imagex - t_means;
@@ -304,8 +305,8 @@ at::Tensor CanvasQueryRanker::get_features(CanvasQuery& collage) {
 
 	// Final stack
 	at::Tensor result_features = torch::stack(mixed_tensor, 0);
-	std::cout << "result_features.shape: " << result_features.sizes() << std::endl;
-	std::cout << result_features << std::endl;
+	// std::cout << "result_features.shape: " << result_features.sizes() << std::endl;
+	// std::cout << result_features << std::endl;
 
 	return result_features;
 }

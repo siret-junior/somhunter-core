@@ -28,6 +28,7 @@
  */
 
 #include <array>
+#include <sstream>
 #include <variant>
 
 #include <json11.hpp>
@@ -147,36 +148,47 @@ public:
 	      _num_channels{ num_channels },
 	      _width{ bitmap_w },
 	      _height{ bitmap_h },
-	      _data{ std::move(data) } {};
+	      _data{ std::move(data) } {
+	
+		for (auto&& d : _data) {
+			_data_int.emplace_back(uint8_t(d));
+		}
+	};
 
 	size_t num_channels() const { return _num_channels; };
 	size_t width_pixels() const { return _width; };
 	size_t height_pixels() const { return _height; };
 	float* data() { return _data.data(); };
 	const float* data() const { return _data.data(); };
-	std::vector<float>& data_std() { return _data; };
-	const std::vector<float>& data_std() const { return _data; };
+	std::vector<uint8_t>& data_std() { return _data_int; };
+	const std::vector<uint8_t>& data_std() const { return _data_int; };
+
+	std::vector<float> get_scaled_bitmap(size_t w, size_t h, size_t num_channels) const;
+
+	// Unique prefix right here!
+	std::string jpeg_filename{ "canvas-query-bitmap_" + std::to_string(utils::irand(0, 1000)) + "_" +
+		                       std::to_string(utils::irand(0, 1000)) + "_" + std::to_string(utils::timestamp()) +
+		                       ".jpg" };
 
 	json11::Json to_JSON() const {
-		json11::Json::object res{
-			{ "rect", json11::Json::array{ _rect.left, _rect.top, _rect.right, _rect.bottom } },
-			/*{ "num_channels", _num_channels },
-			{ "width_pixels", _width },
-			{ "height_pixels", _height },*/
-		};
+		json11::Json::object res{ { "rect", json11::Json::array{ _rect.left, _rect.top, _rect.right, _rect.bottom } },
+			                      { "bitmap_filename", jpeg_filename },
+			                      { "width_pixels", static_cast<int>(_width) },
+			                      { "height_pixels", static_cast<int>(_height) } };
 
 		return res;
 	}
 	template <class Archive>
 	void serialize(Archive& archive) {
-		archive(_rect, _num_channels, _width, _height, _data);
+		archive(_rect, _num_channels, _width, _height, _data, _data_int);
 	}
+	std::vector<float> _data;
 
 private:
 	size_t _num_channels;
 	size_t _width;
 	size_t _height;
-	std::vector<float> _data;
+	std::vector<uint8_t> _data_int;
 
 	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x);
 };

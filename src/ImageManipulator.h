@@ -23,6 +23,10 @@
 #ifndef IMAGE_MANIPULATOR_H_
 #define IMAGE_MANIPULATOR_H_
 
+#include <stb_image.h>
+#include <stb_image_resize.h>
+#include <stb_image_write.h>
+
 #include "common.h"
 #include "config.h"
 #include "log.h"
@@ -51,6 +55,18 @@ public:
 	 *
 	 * \exception std::runtime_error If the writing fails.
 	 */
+	template <typename DType_>
+	static void store_PNG(const std::string& filepath, const std::vector<DType_>& in, size_t w, size_t h,
+	                      size_t num_channels) {
+
+		auto res{ stbi_write_png(filepath.c_str(), w, h, num_channels, (uint8_t*)in.data(), w * num_channels) };
+
+		if (res == 0) {
+			std::string msg{ "Writing the '" + filepath + "' image failed!" };
+			SHLOG_E(msg);
+			throw std::runtime_error(msg);
+		}
+	}
 	static void store_jpg(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
 	                      size_t quality = 100, size_t num_channels = 3, bool are_ints = false);
 
