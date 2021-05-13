@@ -1,5 +1,13 @@
 
-target_include_directories(somhunter 
+target_include_directories(${SOMHUNTER_TARGET}  
+	PUBLIC
+		stb
+		json11
+		cereal/include
+		hash-library
+)
+
+target_include_directories(${SOMHUNTER_TARGET_TESTS}  
 	PUBLIC
 		stb
 		json11
@@ -19,7 +27,12 @@ set(SOURCES
 	hash-library/sha256.cpp
 )
 
-target_sources(somhunter 
+target_sources(${SOMHUNTER_TARGET}  
+	PUBLIC
+		${SOURCES}
+)
+
+target_sources(${SOMHUNTER_TARGET_TESTS}  
 	PUBLIC
 		${SOURCES}
 )

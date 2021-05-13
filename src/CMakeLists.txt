@@ -27,7 +27,6 @@ set(HEADERS
 
 set(SOURCES
 	${HEADERS}
-	main.cpp
 	SOM.cpp
 	AsyncSom.cpp
 	DatasetFeatures.cpp
@@ -46,4 +45,5 @@ set(SOURCES
 	NetworkApi.cpp
 )
 
-target_sources(${SOMHUNTER_TARGET} PRIVATE ${SOURCES} ${HEADERS})
+target_sources(${SOMHUNTER_TARGET} PRIVATE ${SOURCES} ${HEADERS} main.cpp)
+target_sources(${SOMHUNTER_TARGET_TESTS} PRIVATE ${SOURCES} ${HEADERS})

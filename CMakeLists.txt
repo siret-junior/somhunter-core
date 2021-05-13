@@ -14,6 +14,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Specify build targets
 set(SOMHUNTER_TARGET somhunter)
+set(SOMHUNTER_TARGET_TESTS somhunter-tests)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
@@ -154,12 +155,32 @@ file(
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOMHUNTER_SOURCE_FILEPATHS}) 
 
+
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
 # ####################################
 # Create the target
 # ####################################
 add_executable(${SOMHUNTER_TARGET})
 target_compile_features(${SOMHUNTER_TARGET} PRIVATE cxx_std_17)
 set_target_properties(${SOMHUNTER_TARGET} PROPERTIES CXX_STANDARD 17)
+
+
+add_executable(${SOMHUNTER_TARGET_TESTS})
+target_compile_features(${SOMHUNTER_TARGET_TESTS} PRIVATE cxx_std_17)
+set_target_properties(${SOMHUNTER_TARGET_TESTS} PROPERTIES CXX_STANDARD 17)
+target_link_libraries(${SOMHUNTER_TARGET_TESTS} PRIVATE gtest_main)
+
+
 
 # ####################################
 # Linking
@@ -171,14 +192,29 @@ target_include_directories(${SOMHUNTER_TARGET}
         ${OpenCV_INCLUDE_DIRS}
         ${cpprestsdk_INCLUDE_DIRS}
 )
+target_include_directories(${SOMHUNTER_TARGET_TESTS} 
+	PRIVATE
+		${CURL_INCLUDE_DIR}
+        ${OpenCV_INCLUDE_DIRS}
+        ${cpprestsdk_INCLUDE_DIRS}
+)
 
 if (MSVC)
-set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprestsdk::cpprest)
+    set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprestsdk::cpprest)
 else ()
-set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprest)
+    set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprest)
 endif ()
 
 target_link_libraries(${SOMHUNTER_TARGET} 
+    PRIVATE
+        ${OpenCV_LIBS}
+        ${CURL_LIBRARIES}
+		${TORCH_LIBRARIES}
+        ${cpprestsdk_LIBRARIES}
+        ${ADDITIONAL}
+)
+
+target_link_libraries(${SOMHUNTER_TARGET_TESTS} 
     PRIVATE
         ${OpenCV_LIBS}
         ${CURL_LIBRARIES}
@@ -197,6 +233,7 @@ if (MSVC)
                      COMMAND ${CMAKE_COMMAND} -E copy_if_different 
                      ${TORCH_DLLS} 
                      $<TARGET_FILE_DIR:somhunter>) 
+
 endif (MSVC)
 
 # ####################################
@@ -205,3 +242,6 @@ endif (MSVC)
 add_subdirectory(src)
 add_subdirectory(3rdparty)
 add_subdirectory(tests)
+
+include(GoogleTest)
+gtest_discover_tests(${SOMHUNTER_TARGET_TESTS})
