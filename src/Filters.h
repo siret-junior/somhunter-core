@@ -36,6 +36,7 @@
 #include <cereal/types/variant.hpp>
 #include "common.h"
 #include "utils.h"
+#include "DatasetFrames.h"
 
 namespace sh {
 
@@ -274,7 +275,14 @@ public:
 	 */
 	template <class Archive>
 	void serialize(Archive& archive) {
-		archive(_subqueries, _begins);
+		archive(_subqueries, _begins, _targets);
+	}
+
+	void set_targets(const std::vector<VideoFrame>& tars) {
+		_targets.clear();
+		for (auto&& t : tars) {
+			_targets.emplace_back(t.frame_ID);
+		}
 	}
 
 	json11::Json to_JSON() const {
@@ -308,6 +316,7 @@ private:
 	std::vector<CanvasSubquery> _subqueries;
 	/** Holds indices of queries for sequence of temporals */
 	std::vector<size_t> _begins;
+	std::vector<ImageId> _targets;
 
 	//// Images are expected to be in RGB format
 	// void RGBA_to_RGB();

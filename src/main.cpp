@@ -51,9 +51,10 @@ static void initialize_aplication();
 int main() {
 	initialize_aplication();
 
+#if 0
 	Query q{ utils::deserialize_from_file<CanvasQuery>("cq.bin") };
+	core.rescore(q);
 	CanvasSubqueryBitmap& cq{ std::get<CanvasSubqueryBitmap>(q.canvas_query[1]) };
-
 	auto img = cq.data();
 	auto img2 = cq.data_std();
 
@@ -77,7 +78,7 @@ int main() {
 		ImageManipulator::show_image(TEST_JPEGS[0]);
 		ImageManipulator::show_image(cv_img);
 	}
-
+#endif
 	const std::string cfg_fpth{ "config/config-core.json" };
 
 	// Parse config file
