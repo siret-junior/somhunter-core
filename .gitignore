@@ -13,3 +13,6 @@ scripts/__pycache__/
 __pycache__
 cookie.txt
 saved-queries
+data/v3c1-first100/
+config/config-core__asi_v3c1-first100.json
+config/_config-core.json

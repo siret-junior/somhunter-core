@@ -221,11 +221,11 @@ public:
 	}
 	template <class Archive>
 	void serialize(Archive& archive) {
-		std::cout << "......" << std::endl;
+		//std::cout << "......" << std::endl;
 		archive(_rect, _text_query);
 	}
 
-private:
+public:
 	std::string _text_query;
 
 	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x);
@@ -285,6 +285,10 @@ public:
 		}
 	}
 
+	const std::vector<ImageId>& get_targets() {
+		return _targets;
+	}
+
 	json11::Json to_JSON() const {
 		std::vector<json11::Json> arr;
 
@@ -311,7 +315,7 @@ public:
 
 	bool is_save{ false };
 
-private:
+public:
 	/** Subregion queries */
 	std::vector<CanvasSubquery> _subqueries;
 	/** Holds indices of queries for sequence of temporals */
@@ -335,6 +339,40 @@ public:
 	RelevanceFeedbackQuery relevance_feeedback;
 	TextualQuery textual_query;
 	CanvasQuery canvas_query;
+
+	void transform_to_no_pos_queries() {
+
+		std::string t0;
+		std::string t1;
+		TextualQuery new_text;
+		CanvasQuery new_canvas;
+
+		size_t div{ canvas_query._begins[1]};
+
+		
+		for (size_t idx{0}; idx < canvas_query._subqueries.size() ; ++idx) {
+
+			auto&& sq{canvas_query._subqueries[idx]};
+
+			CanvasSubqueryText& s{std::get<CanvasSubqueryText>(sq)};
+			const std::string& text { s.query() };
+			// if first 
+			if (idx < div) {
+				t0.append(text).append(" ");
+			} 
+			// else second
+			else {
+				t1.append(text).append(" ");
+			}
+
+		}
+
+		new_text.query = t0.append(" << ").append(t1);
+
+		// Swap them
+		canvas_query = new_canvas;
+		textual_query = new_text;
+	}
 };
 
 };  // namespace sh

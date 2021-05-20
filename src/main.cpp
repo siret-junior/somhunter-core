@@ -86,6 +86,73 @@ int main() {
 	// Instantiate the SOMHunter
 	SomHunter core{ config, cfg_fpth };
 
+	std::vector<size_t> ranks;
+
+	// #####################################
+	// Run the serialized Canvas query
+
+	using directory_iterator = std::filesystem::directory_iterator;
+
+	std::vector<std::string> serialized_queries;
+	for (const auto& dirEntry : directory_iterator("saved-queries")) {
+		std::cout << dirEntry << std::endl;
+
+		for (const auto& file : std::filesystem::directory_iterator(dirEntry)) {
+			std::string filepath{ file.path().string() };
+
+			std::string suffix{ filepath.substr(filepath.length() - 3) };
+			if (suffix == "bin") {
+				serialized_queries.emplace_back(filepath);
+			}
+			std::cout << "\t" << file << std::endl;
+		}
+	}
+
+	size_t q_idx{0};
+
+	for (auto&& f : serialized_queries) {
+		std::cout << "Running query from '" << f << "' file..." << std::endl;
+
+		Query q{ utils::deserialize_from_file<CanvasQuery>(f) };
+		auto targets = q.canvas_query.get_targets();
+
+		// !!!!!
+		//q.transform_to_no_pos_queries();
+		// !!!!!
+
+		core.rescore(q);
+		auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
+
+		size_t res = 0;
+
+		
+
+		size_t i{ 0 };
+		for (auto it{ disp.begin() }; it != disp.end(); ++it) {
+			if (targets[0] == (*it)->frame_ID || targets[1] == (*it)->frame_ID) {
+
+				ranks.push_back(i);
+				break;
+			}
+			++i;
+		}
+
+		++q_idx;
+	}
+	// #####################################
+
+	// print it
+	std::sort(ranks.begin(), ranks.end());
+
+
+	{
+		size_t i{ 0 };
+		for (auto&& r : ranks) {
+			std::cout << i << "\t" << r + 1 << std::endl;
+			++i;
+		}
+	}
+
 	NetworkApi api{ config.API_config, &core };
 	api.run();
 
@@ -108,19 +175,6 @@ int main() {
 		}
 	}
 
-	// #####################################
-	// Run the serialized Canvas query
-	for (auto&& f : filepath) {
-		std::cout "Running query from '" << f << "' file..." << std::endl;
-
-		Query q{ utils::deserialize_from_file<CanvasQuery>(f) };
-
-		core.rescore(q);
-		auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		
-		// Find the target 
-	}
-	// #####################################
 #	endif  // Serialized CanvasQueries
 
 	/* ********************************

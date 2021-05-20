@@ -48,7 +48,7 @@ namespace sh {
 #define TOPKNN_PER_VIDEO_NUM_FRAMES_LIMIT 3
 #define PER_VIDEO_NUM_FROM_SHOT_LIMIT 1
 */
-#define TOPN_LIMIT 10000
+#define TOPN_LIMIT 20000
 constexpr size_t DISP_TOPN_CTX_RESULT_LIMIT = 10000;
 #define TOPKNN_LIMIT 10000
 #define SOM_ITERS 30000
@@ -67,11 +67,11 @@ constexpr DisplayType POST_RESCORE_DISPLAY = DisplayType::DTopNContext;
 #define DRAW_FRAME_SCORES 0
 
 #define ALLOW_DEBUG_WINDOW 1
-/*
+/* 
  * Logging
  */
 
-#define LOGLEVEL 4  // 4 = +debug, 3 = +info, 2 = +warnings, 1 = +errors 0 = none
+#define LOGLEVEL 2  // 4 = +debug, 3 = +info, 2 = +warnings, 1 = +errors 0 = none
 
 #define LD_SHLOG_DIR "./logs/"
 #define LD_LOG_FILENAME "ld"
