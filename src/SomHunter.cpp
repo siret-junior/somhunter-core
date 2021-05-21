@@ -339,6 +339,40 @@ std::string SomHunter::store_rescore_screenshot(const std::string& /*filepath*/)
 	return UI_filepath;
 }
 
+void SomHunter::benchmark_native_text_queries(const std::string& queries_filepath, const std::string& out_dir) {
+	SHLOG_I("Running benchmark on file '" << queries_filepath << "'...");
+
+	std::ifstream ifs(queries_filepath, std::ios::in);
+	if (!ifs) {
+		std::string msg{ "Error opening file: " + queries_filepath };
+		SHLOG_E(msg);
+		throw std::runtime_error(msg);
+	}
+
+	std::vector<PlainTextBenchmarkQuery> bench_queries;
+
+	std::string line;
+	// Ignore the header line
+	std::getline(ifs, line);
+
+	// Read the file line by line
+	for (std::string line; std::getline(ifs, line);) {
+		std::stringstream line_ss(line);
+
+		// Tokenize this line with ';'
+		std::vector<std::string> tokens;
+		for (std::string token; std::getline(line_ss, token, ';');) {
+			tokens.push_back(token);
+		}
+
+		// Parse wordnet synset ID
+		ImageId target_frame_ID{ utils::str2<ImageId>(tokens[0]) };
+		std::string text_query{ std::move(tokens[1]) };
+
+		bench_queries.emplace_back(PlainTextBenchmarkQuery{ std::vector<ImageId>{ target_frame_ID }, text_query });
+	}
+}
+
 void SomHunter::rescore_keywords(const std::string& query) {
 	// Do not rescore if query did not change
 	if (user.ctx.last_text_query == query) {

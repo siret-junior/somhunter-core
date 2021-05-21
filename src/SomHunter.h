@@ -260,6 +260,8 @@ public:
 	const std::string& get_API_config_filepath() { return _API_config_filepath; }
 	const KeywordRanker* textual_model() { return &keywords; };
 
+	void benchmark_native_text_queries(const std::string& queries_filepath, const std::string& out_dir);
+
 private:
 	/**
 	 *	Applies text query from the user.

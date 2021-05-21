@@ -30,8 +30,16 @@ void CanvasQuery::emplace_back(const RelativeRect& rect, size_t bitmap_w, size_t
 bool CanvasQuery::empty() const { return (size() == 0); }
 size_t CanvasQuery::size() const { return _subqueries.size(); }
 
-CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core) : _p_core{ p_core } {
+CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core) : _p_core{ p_core }, _loaded{false} {
 	SHLOG_D("Initializing CanvasQueryRanker...");
+
+	// Check if we have subregions data
+	if (config.collage_region_file_prefix.empty()) {
+		SHLOG_W("No subregion features! Running without canvas queries.");
+		_loaded = false;
+		return;
+	}
+
 
 	try {
 		if (!std::filesystem::exists(config.model_ResNet_file)) {
@@ -113,11 +121,18 @@ CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core
 		throw std::runtime_error(msg);
 	}
 
+	_loaded = true;
 	SHLOG_S("CanvasQueryRanker initialized.");
 }
 
 void CanvasQueryRanker::score(CanvasQuery& collage, ScoreModel& model, const DatasetFeatures& /*features*/,
                               const DatasetFrames& frames) {
+
+	if (_loaded) {
+		SHLOG_W("Called CanvasQueryRanker::score without available subregion data. Leaving the scores intact.");
+		return;
+	}
+
 	if (collage.size() > 0) {
 		/*collage.RGBA_to_RGB();
 		collage.resize_all(224, 224);*/

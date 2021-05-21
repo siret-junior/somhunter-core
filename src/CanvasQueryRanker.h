@@ -86,6 +86,7 @@ public:
 
 private:
 	KeywordRanker* _p_core;
+	bool _loaded;
 
 private:
 	torch::jit::script::Module resnet152;

@@ -86,8 +86,11 @@ int main() {
 	// Instantiate the SOMHunter
 	SomHunter core{ config, cfg_fpth };
 
+	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
+
 	std::vector<size_t> ranks;
 
+#if 0  // Run CanvasQuery benchmark
 	// #####################################
 	// Run the serialized Canvas query
 
@@ -172,6 +175,8 @@ int main() {
 	for (size_t i = 0; i < hist.size(); i++) {
 		std::cout << i << ","<< hist[i] << std::endl;
 	}
+
+#endif  // Run CanvasQuery benchmark
 
 	NetworkApi api{ config.API_config, &core };
 	api.run();

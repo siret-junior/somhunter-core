@@ -65,7 +65,6 @@ inline bool require_bool_value(const json11::Json& json, const std::string& key)
 }
 
 struct VideoFilenameOffsets {
-	size_t filename_off;
 	size_t vid_ID_off;
 	size_t vid_ID_len;
 	size_t shot_ID_off;
@@ -225,8 +224,6 @@ inline Config Config::parse_json_config_string(const std::string& cfg_file_conte
 		// .filename_offsets
 		VideoFilenameOffsets{
 			
-			// .filename_off
-			require_int_value<size_t>(json["filename_offsets"], "fr_filename_off"),
 			// .vid_ID_off
 			require_int_value<size_t>(json["filename_offsets"], "fr_filename_vid_ID_off"),
 			// .vid_ID_len

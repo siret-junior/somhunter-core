@@ -34,9 +34,9 @@
 #include <json11.hpp>
 
 #include <cereal/types/variant.hpp>
+#include "DatasetFrames.h"
 #include "common.h"
 #include "utils.h"
-#include "DatasetFrames.h"
 
 namespace sh {
 
@@ -221,7 +221,7 @@ public:
 	}
 	template <class Archive>
 	void serialize(Archive& archive) {
-		//std::cout << "......" << std::endl;
+		// std::cout << "......" << std::endl;
 		archive(_rect, _text_query);
 	}
 
@@ -285,9 +285,7 @@ public:
 		}
 	}
 
-	const std::vector<ImageId>& get_targets() {
-		return _targets;
-	}
+	const std::vector<ImageId>& get_targets() { return _targets; }
 
 	json11::Json to_JSON() const {
 		std::vector<json11::Json> arr;
@@ -341,30 +339,26 @@ public:
 	CanvasQuery canvas_query;
 
 	void transform_to_no_pos_queries() {
-
 		std::string t0;
 		std::string t1;
 		TextualQuery new_text;
 		CanvasQuery new_canvas;
 
-		size_t div{ canvas_query._begins[1]};
+		size_t div{ canvas_query._begins[1] };
 
-		
-		for (size_t idx{0}; idx < canvas_query._subqueries.size() ; ++idx) {
+		for (size_t idx{ 0 }; idx < canvas_query._subqueries.size(); ++idx) {
+			auto&& sq{ canvas_query._subqueries[idx] };
 
-			auto&& sq{canvas_query._subqueries[idx]};
-
-			CanvasSubqueryText& s{std::get<CanvasSubqueryText>(sq)};
-			const std::string& text { s.query() };
-			// if first 
+			CanvasSubqueryText& s{ std::get<CanvasSubqueryText>(sq) };
+			const std::string& text{ s.query() };
+			// if first
 			if (idx < div) {
 				t0.append(text).append(" ");
-			} 
+			}
 			// else second
 			else {
 				t1.append(text).append(" ");
 			}
-
 		}
 
 		new_text.query = t0.append(" << ").append(t1);
@@ -375,6 +369,19 @@ public:
 	}
 };
 
+struct BaseBenchmarkQuery {
+	std::vector<ImageId> targets;
+};
+
+struct PlainTextBenchmarkQuery : public BaseBenchmarkQuery {
+	std::string text_query;
+};
+
+struct CanvasBenchmarkQuery : public BaseBenchmarkQuery {
+	CanvasQuery canvas_query;
+};
+
+using BenchmarkQuery = std::variant<PlainTextBenchmarkQuery>;
 };  // namespace sh
 
 #endif  // FILTERS_H_

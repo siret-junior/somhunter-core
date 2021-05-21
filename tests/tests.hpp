@@ -433,7 +433,6 @@ const char *json_contents = R"(
 	"topn_frames_per_shot": 1,
 	
 	"filename_offsets": {
-		"fr_filename_off": 6,
 		"fr_filename_vid_ID_off": 7,
 		"fr_filename_vid_ID_len": 5,
 		"fr_filename_shot_ID_off": 14,
@@ -523,7 +522,6 @@ private:
 
 		do_assert(c.max_frame_filename_len == 64_z, "Incorrect parse.");
 
-		do_assert(c.filename_offsets.filename_off == 6_z, "Incorrect parse.");
 		do_assert(c.filename_offsets.vid_ID_off == 7_z,"Incorrect parse.");
 		do_assert(c.filename_offsets.vid_ID_len == 5_z, "Incorrect parse.");
 		do_assert(c.filename_offsets.shot_ID_off == 14_z, "Incorrect parse.");
