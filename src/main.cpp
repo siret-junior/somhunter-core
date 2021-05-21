@@ -117,7 +117,7 @@ int main() {
 		auto targets = q.canvas_query.get_targets();
 
 		// !!!!!
-		//q.transform_to_no_pos_queries();
+		q.transform_to_no_pos_queries();
 		// !!!!!
 
 		core.rescore(q);
@@ -142,15 +142,35 @@ int main() {
 	// #####################################
 
 	// print it
-	std::sort(ranks.begin(), ranks.end());
+	//std::sort(ranks.begin(), ranks.end());
 
 
+	size_t num_ticks{100};
+	size_t num_frames{core.get_num_frames()};
+
+	float scale{num_ticks / float(num_frames)};
+
+	std::vector<size_t> hist;
+	hist.resize(num_ticks, 0);
 	{
 		size_t i{ 0 };
 		for (auto&& r : ranks) {
-			std::cout << i << "\t" << r + 1 << std::endl;
+			size_t scaled_rank{static_cast<size_t>(r * scale)};
+			++hist[scaled_rank];
+
 			++i;
 		}
+	}
+
+	size_t acc{0};
+	for (auto& i : hist) {
+		auto xx = i;
+		i = acc;
+		acc += xx;
+	}
+
+	for (size_t i = 0; i < hist.size(); i++) {
+		std::cout << i << ","<< hist[i] << std::endl;
 	}
 
 	NetworkApi api{ config.API_config, &core };

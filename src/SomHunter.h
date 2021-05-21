@@ -231,6 +231,10 @@ public:
 
 	std::string store_rescore_screenshot(const std::string& filepath);
 
+	size_t get_num_frames() const {
+		return frames.size();
+	}
+
 	/**
 	 * Creates a new resized copy of the provided image matrix.
 	 *
