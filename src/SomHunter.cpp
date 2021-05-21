@@ -189,14 +189,14 @@ void SomHunter::apply_filters() {
 	}
 }
 
-RescoreResult SomHunter::rescore(Query& query) {
+RescoreResult SomHunter::rescore(Query& query, bool run_SOM) {
 	return rescore(query.textual_query.query, query.canvas_query, &query.filters, query.metadata.srd_search_ctx_ID,
-	               query.metadata.screenshot_filepath, query.metadata.time_label);
+	               query.metadata.screenshot_filepath, query.metadata.time_label, run_SOM);
 }
 
 RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& canvas_query, const Filters* p_filters,
-                                 size_t src_search_ctx_ID, const std::string& screenshot_fpth,
-                                 const std::string& label) {
+                                 size_t src_search_ctx_ID, const std::string& screenshot_fpth, const std::string& label,
+                                 bool run_SOM) {
 	/* ***
 	 * Set the filters to the context
 	 */
@@ -245,8 +245,11 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 	apply_filters();
 	rescore_feedback();
 
-	// Notify the SOM worker thread
-	som_start();
+	// If SOM required
+	if (run_SOM) {
+		// Notify the SOM worker thread
+		som_start();
+	}
 
 	// Reset the "seen frames" constext for the Bayes
 	user.ctx.shown_images.clear();
@@ -339,6 +342,23 @@ std::string SomHunter::store_rescore_screenshot(const std::string& /*filepath*/)
 	return UI_filepath;
 }
 
+std::vector<ImageId> SomHunter::get_top_scored(size_t max_count, size_t from_video, size_t from_shot) const {
+	return user.ctx.scores.top_n(frames, max_count, from_video, from_shot);
+}
+
+std::vector<float> SomHunter::get_top_scored_scores(std::vector<ImageId>& top_scored_frames) const {
+	std::vector<float> res;
+	for (auto&& frame_ID : top_scored_frames) {
+		res.emplace_back(user.ctx.scores[frame_ID]);
+	}
+
+	return res;
+}
+
+size_t sh::SomHunter::find_targets(const std::vector<ImageId>& top_scored, const std::vector<ImageId>& targets) const {
+	return size_t();
+}
+
 void SomHunter::benchmark_native_text_queries(const std::string& queries_filepath, const std::string& out_dir) {
 	SHLOG_I("Running benchmark on file '" << queries_filepath << "'...");
 
@@ -356,7 +376,7 @@ void SomHunter::benchmark_native_text_queries(const std::string& queries_filepat
 	std::getline(ifs, line);
 
 	// Read the file line by line
-	for (std::string line; std::getline(ifs, line);) {
+	for (; std::getline(ifs, line);) {
 		std::stringstream line_ss(line);
 
 		// Tokenize this line with ';'
@@ -370,6 +390,68 @@ void SomHunter::benchmark_native_text_queries(const std::string& queries_filepat
 		std::string text_query{ std::move(tokens[1]) };
 
 		bench_queries.emplace_back(PlainTextBenchmarkQuery{ std::vector<ImageId>{ target_frame_ID }, text_query });
+	}
+
+	std::vector<std::vector<float>> query_results;
+	std::vector<std::vector<ImageId>> query_results_IDs;
+
+	std::vector<size_t> ranks;
+	for (size_t i{ 0 }; i < bench_queries.size(); ++i) {
+		auto& bq{ bench_queries[i] };
+
+		reset_scores();
+		Query q{ bq.text_query };
+		rescore(q, false);
+
+		auto& IDs{ query_results_IDs.emplace_back(get_top_scored()) };
+		query_results.emplace_back(get_top_scored_scores(IDs));
+
+		size_t rank{ find_targets(IDs, bq.targets) };
+
+		ranks.emplace_back(rank);
+	}
+
+	// If print to file required
+	if (!out_dir.empty()) {
+		utils::dir_create(out_dir);
+
+		std::string query_scores_file{ out_dir + "/native-query-scores.bin" };
+		std::string query_IDs_file{ out_dir + "/native-query-scores.bin" };
+
+		utils::to_file(query_results, query_scores_file);
+		utils::to_file(query_results_IDs, query_IDs_file);
+	}
+
+	//
+	// Summarize
+	//
+
+	size_t num_ticks{ 100 };
+	size_t num_frames{ get_num_frames() };
+
+	float scale{ num_ticks / float(num_frames) };
+
+	std::vector<size_t> hist;
+	hist.resize(num_ticks, 0);
+	{
+		size_t i{ 0 };
+		for (auto&& r : ranks) {
+			size_t scaled_rank{ static_cast<size_t>(r * scale) };
+			++hist[scaled_rank];
+
+			++i;
+		}
+	}
+
+	size_t acc{ 0 };
+	for (auto& i : hist) {
+		auto xx = i;
+		i = acc;
+		acc += xx;
+	}
+
+	for (size_t i = 0; i < hist.size(); i++) {
+		std::cout << i << "," << hist[i] << std::endl;
 	}
 }
 

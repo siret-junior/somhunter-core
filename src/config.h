@@ -67,7 +67,7 @@ constexpr DisplayType POST_RESCORE_DISPLAY = DisplayType::DTopNContext;
 #define DRAW_FRAME_SCORES 0
 
 #define ALLOW_DEBUG_WINDOW 1
-/* 
+/*
  * Logging
  */
 

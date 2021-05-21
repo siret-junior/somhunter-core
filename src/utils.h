@@ -477,6 +477,38 @@ inline bool dir_create(const std::string& path) {
 	return false;
 }
 
+template <typename DType_>
+void to_file(const std::vector<DType_>& vec, const std::string filepath) {
+	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
+	if (!ofs) {
+		std::string msg{ "Error openning file: " + filepath };
+		SHLOG_E(msg);
+		throw std::runtime_error(msg);
+	}
+
+	for (auto&& d : vec) {
+		const char* p_d{ reinterpret_cast<const char*>(&d) };
+		ofs.write(p_d, sizeof(DType_));
+	}
+}
+
+template <typename DType_>
+void to_file(const std::vector<std::vector<DType_>>& mat, const std::string filepath) {
+	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
+	if (!ofs) {
+		std::string msg{ "Error openning file: " + filepath };
+		SHLOG_E(msg);
+		throw std::runtime_error(msg);
+	}
+
+	for (auto&& vec : mat) {
+		for (auto&& d : vec) {
+			const char* p_d{ reinterpret_cast<const char*>(&d) };
+			ofs.write(p_d, sizeof(DType_));
+		}
+	}
+}
+
 }  // namespace utils
 }  // namespace sh
 #endif  // UTILS_H_

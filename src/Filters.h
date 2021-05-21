@@ -331,6 +331,8 @@ class Query {
 public:
 	Query() = default;
 	Query(CanvasQuery&& cq) : metadata{}, filters{}, relevance_feeedback{}, textual_query{}, canvas_query{ cq } {}
+	Query(std::string textual_query)
+	    : metadata{}, filters{}, relevance_feeedback{}, textual_query{ textual_query }, canvas_query{} {}
 
 	RescoreMetadata metadata;
 	Filters filters;

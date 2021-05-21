@@ -138,23 +138,11 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
-	RescoreResult rescore(Query& query);
+	RescoreResult rescore(Query& query, bool run_SOM = true);
 
 	RescoreResult rescore(const std::string& text_query, CanvasQuery& collage, const Filters* p_filters = nullptr,
 	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
-	                      const std::string& label = ""s);
-
-	RescoreResult rescore(const std::string& text_query, const Filters* p_filters = nullptr,
-	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
-	                      const std::string& label = ""s) {
-		return rescore(text_query, DEFAULT_COLLAGE, p_filters, src_search_ctx_ID, screenshot_fpth, label);
-	}
-
-	RescoreResult rescore(CanvasQuery& collage, const Filters* p_filters = nullptr,
-	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
-	                      const std::string& label = ""s) {
-		return rescore(""s, collage, p_filters, src_search_ctx_ID, screenshot_fpth, label);
-	}
+	                      const std::string& label = ""s, bool run_SOM = true);
 
 	/** Switches the search context for the user to the provided index in
 	 *  the history and returns reference to it.
@@ -231,9 +219,10 @@ public:
 
 	std::string store_rescore_screenshot(const std::string& filepath);
 
-	size_t get_num_frames() const {
-		return frames.size();
-	}
+	size_t get_num_frames() const { return frames.size(); }
+	std::vector<ImageId> get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
+	std::vector<float> get_top_scored_scores(std::vector<ImageId>& top_scored_frames) const;
+	size_t find_targets(const std::vector<ImageId>& top_scored, const std::vector<ImageId>& targets) const;
 
 	/**
 	 * Creates a new resized copy of the provided image matrix.

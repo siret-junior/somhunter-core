@@ -147,7 +147,7 @@ std::vector<ImageId> ScoreModel::top_n(const DatasetFrames& frames, size_t n, si
 
 	if (from_shot_limit == 0) from_shot_limit = _scores.size();
 
-	if (n > _scores.size()) n = _scores.size();
+	if (n > _scores.size() || n == 0) n = _scores.size();
 
 	std::vector<FrameScoreIdPair> score_ids;
 	for (ImageId i = 0; i < _scores.size(); ++i) {

@@ -221,7 +221,7 @@ private:
 		/*
 		 * #1 Text
 		 */
-		auto h{ core.rescore("cat").history };
+		auto h{ core.rescore(Query{ "cat" }).history };
 		auto state1{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
 
@@ -238,7 +238,7 @@ private:
 		 * #2 Temporal text
 		 */
 		core.like_frames(std::vector<ImageId>{ 80 });
-		h = core.rescore("dog catalog >> habitat ").history;
+		h = core.rescore(Query{"dog catalog >> habitat "}).history;
 		auto state2{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
 
@@ -261,7 +261,7 @@ private:
 		core.like_frames(std::vector<ImageId>{ 187 });
 		core.like_frames(std::vector<ImageId>{ 217 });
 		core.like_frames(std::vector<ImageId>{ 581 });
-		h = core.rescore("chicken").history;
+		h = core.rescore(Query{"chicken"}).history;
 		auto state3{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
 		do_assert(h.back().likes.size() == 0,
@@ -357,7 +357,10 @@ private:
 				WeekDaysFilter{days_mask}
 			};
 
-			core.rescore(tq, &fs);
+			Query q{ tq };
+			q.filters = fs;
+
+			core.rescore(q);
 			auto disp{ core.get_topn_display(0) };
 
 			size_t i{ 0 };

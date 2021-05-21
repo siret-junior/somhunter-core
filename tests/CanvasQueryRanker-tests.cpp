@@ -1,6 +1,6 @@
+#include <cmath>
 #include <string>
 #include <vector>
-#include <cmath>
 
 #include <gtest/gtest.h>
 
@@ -131,7 +131,6 @@ using namespace std;
 
 // #undef SUITE_NAME
 
-
 // // ***
 // // Tests for:
 // /* void add_flag(
@@ -261,7 +260,6 @@ using namespace std;
 //     p.add_opt<string>('s', "string", "...", true);
 
 //     p.add_opt<string>('o', "opotional", "...", false);
-    
 
 //     vector<string> input{ "program", "--bool=true", "-i", "10", "-f3.3", "--double=3.4", "--string=hello" };
 
@@ -311,7 +309,6 @@ using namespace std;
 //     p.add_opt<string>('s', "string", "...", false);
 
 //     p.add_opt<string>('o', "optional", "...", false);
-    
 
 //     vector<string> input{ "program", "--bool=true", "-i", "10", "-f3.3", "--double=3.4", "--string=hello" };
 
@@ -367,7 +364,6 @@ using namespace std;
 
 // #undef SUITE_NAME
 
-
 // // ***
 // // Tests for:
 // /* template <typename T, typename = cmd_parser_supported_t<T>>
@@ -389,7 +385,6 @@ using namespace std;
 //     p.add_opt<string>("string", "...", true);
 
 //     p.add_opt<string>("opotional", "...", false);
-    
 
 //     vector<string> input{ "program", "--bool=true", "--int=10", "--float=3.3", "--double=3.4", "--string=hello" };
 
@@ -428,7 +423,6 @@ using namespace std;
 //     p.add_opt<string>("string", "...", false);
 
 //     p.add_opt<string>("opotional", "...", false);
-    
 
 //     vector<string> input{ "program", "--bool=true", "--int=10", "--float=3.3", "--double=3.4", "--string=hello" };
 
@@ -493,7 +487,6 @@ using namespace std;
 //     p.add_opt<float>('f', "float", "...", { 1.1F, -2.2F }, true);
 //     p.add_opt<double>('d', "double", "...", { 1.1, -2.2 },  true);
 //     p.add_opt<string>('s', "string", "...", { "hello", "world" },  true);
-    
 
 //     vector<string> input{ "program", "-i", "10", "-f-2.2", "--double=1.1", "--string=hello" };
 
@@ -533,7 +526,6 @@ using namespace std;
 //     p.add_opt<float>('f', "float", "...", { 1.1F, -2.2F }, false);
 //     p.add_opt<double>('d', "double", "...", { 1.1, -2.2 },  false);
 //     p.add_opt<string>('s', "string", "...", { "hello", "world" },  false);
-    
 
 //     vector<string> input{ "program", "-i", "10", "-f-2.2", "--double=1.1", "--string=hello" };
 
@@ -589,7 +581,6 @@ using namespace std;
 //         const std::vector<T>& choices,
 //         bool required = false) {} */
 
-
 // #define SUITE_NAME add_opt__enum__long
 
 // TEST(SUITE_NAME, required_option_parsed) {
@@ -600,7 +591,6 @@ using namespace std;
 //     p.add_opt<float>("float", "...", { 1.1F, -2.2F }, true);
 //     p.add_opt<double>("double", "...", { 1.1, -2.2 },  true);
 //     p.add_opt<string>("string", "...", { "hello", "world" },  true);
-    
 
 //     vector<string> input{ "program", "--int=10", "--float=-2.2", "--double=1.1", "--string=hello" };
 
@@ -632,7 +622,6 @@ using namespace std;
 //     p.add_opt<float>("float", "...", { 1.1F, -2.2F }, false);
 //     p.add_opt<double>("double", "...", { 1.1, -2.2 },  false);
 //     p.add_opt<string>("string", "...", { "hello", "world" },  false);
-    
 
 //     vector<string> input{ "program", "--int=10", "--float=-2.2", "--double=1.1", "--string=hello" };
 
@@ -681,7 +670,6 @@ using namespace std;
 //         T lower_bound,
 //         bool required = false) {} */
 
-
 // #define SUITE_NAME add_opt__bounded__long
 
 // TEST(SUITE_NAME, required_option_parsed) {
@@ -691,7 +679,7 @@ using namespace std;
 //     p.add_opt<int>("int", "...", 10, 11, true);
 //     p.add_opt<float>("float", "...", -1.0, 2.0F, true);
 //     p.add_opt<double>("double", "...", -1.0, 2.0,  true);
-   
+
 //     vector<string> input{ "program", "--int=10", "--float=0.2", "--double=-0.1" };
 
 //     // ***
@@ -718,7 +706,7 @@ using namespace std;
 //     p.add_opt<int>("int", "...", 10, 11, false);
 //     p.add_opt<float>("float", "...", -1.0, 2.0F, false);
 //     p.add_opt<double>("double", "...", -1.0, 2.0,  false);
-   
+
 //     vector<string> input{ "program", "--int=10", "--float=0.2", "--double=-0.1" };
 
 //     // ***
@@ -775,7 +763,7 @@ using namespace std;
 //     p.add_opt<int>('i', "int", "...", 10, 11, true);
 //     p.add_opt<float>('f', "float", "...", -1.0, 2.0F, true);
 //     p.add_opt<double>('d', "double", "...", -1.0, 2.0,  true);
-   
+
 //     vector<string> input{ "program", "-i10", "-f", "0.2", "-d", "0.1" };
 
 //     // ***
@@ -808,7 +796,7 @@ using namespace std;
 //     p.add_opt<int>('i', "int", "...", 10, 11, false);
 //     p.add_opt<float>('f', "float", "...", -1.0, 2.0F, false);
 //     p.add_opt<double>('d', "double", "...", -1.0, 2.0,  false);
-   
+
 //     vector<string> input{ "program", "-i10", "-f", "0.2", "-d", "0.1" };
 
 //     // ***
@@ -870,8 +858,9 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
-//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1", "--string=hello,world" };
+
+//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1",
+//     "--string=hello,world" };
 
 //     // ***
 //     // Act
@@ -889,7 +878,6 @@ using namespace std;
 //     EXPECT_EQ(p.get_vector_opt<bool>("bool")[0], true);
 //     EXPECT_EQ(p.get_vector_opt<bool>("bool")[1], false);
 //     EXPECT_EQ(p.get_vector_opt<bool>("bool")[2], true);
-
 
 //     EXPECT_TRUE(p.has('i'));
 //     EXPECT_TRUE(p.has("int"));
@@ -934,8 +922,9 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", false);
 //     p.add_vector_opt<double>('d', "double", "...", false);
 //     p.add_vector_opt<string>('s', "string", "...", false);
-   
-//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1", "--string=hello,world" };
+
+//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1",
+//     "--string=hello,world" };
 
 //     // ***
 //     // Act
@@ -1026,8 +1015,9 @@ using namespace std;
 //     p.add_vector_opt<float>("float", "...", true);
 //     p.add_vector_opt<double>("double", "...", true);
 //     p.add_vector_opt<string>("string", "...", true);
-   
-//     vector<string> input{ "program", "--bool=true,false,true", "--int=10,-8", "--float=0.2,-0.1", "--double=0.2,-0.1", "--string=hello,world" };
+
+//     vector<string> input{ "program", "--bool=true,false,true", "--int=10,-8", "--float=0.2,-0.1",
+//     "--double=0.2,-0.1", "--string=hello,world" };
 
 //     // ***
 //     // Act
@@ -1070,8 +1060,9 @@ using namespace std;
 //     p.add_vector_opt<float>("float", "...", false);
 //     p.add_vector_opt<double>("double", "...", false);
 //     p.add_vector_opt<string>("string", "...", false);
-   
-//     vector<string> input{ "program", "--bool=true,false,true", "--int=10,-8", "--float=0.2,-0.1", "--double=0.2,-0.1", "--string=hello,world" };
+
+//     vector<string> input{ "program", "--bool=true,false,true", "--int=10,-8", "--float=0.2,-0.1",
+//     "--double=0.2,-0.1", "--string=hello,world" };
 
 //     // ***
 //     // Act
@@ -1143,7 +1134,7 @@ using namespace std;
 //     p.add_vector_opt<int>('i', "int", "...", -10, 10, true);
 //     p.add_vector_opt<float>('f', "float", "...", -20.0F, 10.0F, true);
 //     p.add_vector_opt<double>('d', "double", "...", -20.0, 10.0, true);
-   
+
 //     vector<string> input{ "program", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1" };
 
 //     // ***
@@ -1176,7 +1167,6 @@ using namespace std;
 //     EXPECT_LT(static_cast<double>(std::fabs(p.get_vector_opt<double>('d')[0] - 0.2)), 0.0001);
 //     EXPECT_LT(static_cast<double>(std::fabs(p.get_vector_opt<double>("double")[1] - -(0.1) )), 0.0001);
 
-
 // }
 
 // TEST(SUITE_NAME, optional_option_parsed) {
@@ -1186,7 +1176,7 @@ using namespace std;
 //     p.add_vector_opt<int>('i', "int", "...", -10, 10, false);
 //     p.add_vector_opt<float>('f', "float", "...", -20.0F, 10.0F, false);
 //     p.add_vector_opt<double>('d', "double", "...", -20.0, 10.0, false);
-   
+
 //     vector<string> input{ "program", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1" };
 
 //     // ***
@@ -1258,7 +1248,7 @@ using namespace std;
 //     p.add_vector_opt<int>("int", "...", -10, 10, true);
 //     p.add_vector_opt<float>("float", "...", -20.0F, 10.0F, true);
 //     p.add_vector_opt<double>("double", "...", -20.0, 10.0, true);
-   
+
 //     vector<string> input{ "program", "--int=10,-8", "--float=0.2,-0.1", "--double=0.2,-0.1" };
 
 //     // ***
@@ -1281,7 +1271,6 @@ using namespace std;
 //     ASSERT_EQ(p.get_vector_opt<double>("double").size(), 2);
 //     EXPECT_LT(static_cast<double>(std::fabs(p.get_vector_opt<double>("double")[1] - -(0.1) )), 0.0001);
 
-
 // }
 
 // TEST(SUITE_NAME, optional_option_parsed) {
@@ -1291,7 +1280,7 @@ using namespace std;
 //     p.add_vector_opt<int>("int", "...", -10, 10, false);
 //     p.add_vector_opt<float>("float", "...", -20.0F, 10.0F, false);
 //     p.add_vector_opt<double>("double", "...", -20.0, 10.0, false);
-   
+
 //     vector<string> input{ "program", "--int=10,-8", "--float=0.2,-0.1", "--double=0.2,-0.1" };
 
 //     // ***
@@ -1351,7 +1340,6 @@ using namespace std;
 //     p.add_opt<float>('f', "float", "...", true);
 //     p.add_opt<double>('d', "double", "...", true);
 //     p.add_opt<string>('s', "string", "...",  true);
-    
 
 //     vector<string> input{ "program", "-btrue", "-i", "10", "-f-2.2", "--double=1.1", "--string=hello" };
 
@@ -1377,7 +1365,6 @@ using namespace std;
 //     p.add_opt<float>('f', "float", "...", true);
 //     p.add_opt<double>('d', "double", "...", true);
 //     p.add_opt<string>('s', "string", "...",  true);
-    
 
 //     vector<string> input{ "program" };
 
@@ -1414,7 +1401,6 @@ using namespace std;
 //     p.add_opt<float>('f', "float", "...", true);
 //     p.add_opt<double>('d', "double", "...", true);
 //     p.add_opt<string>('s', "string", "...",  true);
-    
 
 //     vector<string> input{ "program", "-btrue", "-i", "10", "-f-2.2", "--double=1.1", "--string=hello" };
 
@@ -1440,7 +1426,6 @@ using namespace std;
 //     p.add_opt<float>('f', "float", "...", true);
 //     p.add_opt<double>('d', "double", "...", true);
 //     p.add_opt<string>('s', "string", "...",  true);
-    
 
 //     vector<string> input{ "program" };
 
@@ -1477,8 +1462,9 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
-//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1", "--string=hello,world" };
+
+//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1",
+//     "--string=hello,world" };
 
 //     // ***
 //     // Act
@@ -1515,7 +1501,7 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
+
 //     vector<string> input{ "program" };
 
 //     // ***
@@ -1524,7 +1510,7 @@ using namespace std;
 
 //     // ***
 //     // Assert
-    
+
 //     EXPECT_ANY_THROW(p.get_vector_opt<bool>("bool"));
 //     EXPECT_ANY_THROW(p.get_vector_opt<int>("int"));
 //     EXPECT_ANY_THROW(p.get_vector_opt<float>("float"));
@@ -1552,8 +1538,9 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
-//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1", "--string=hello,world" };
+
+//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1",
+//     "--string=hello,world" };
 
 //     // ***
 //     // Act
@@ -1595,7 +1582,7 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
+
 //     vector<string> input{ "program" };
 
 //     // ***
@@ -1612,7 +1599,6 @@ using namespace std;
 // }
 
 // #undef SUITE_NAME
-
 
 // // ***
 // // Tests for:
@@ -1631,8 +1617,9 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
-//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1", "--string=hello,world" };
+
+//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1",
+//     "--string=hello,world" };
 
 //     // ***
 //     // Act
@@ -1656,7 +1643,7 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
+
 //     vector<string> input{ "program" };
 
 //     // ***
@@ -1673,7 +1660,6 @@ using namespace std;
 // }
 
 // #undef SUITE_NAME
-
 
 // // ***
 // // Tests for:
@@ -1692,8 +1678,9 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
-//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1", "--string=hello,world" };
+
+//     vector<string> input{ "program", "-btrue,false,true", "-i10,-8", "-f", "0.2,-0.1", "-d", "0.2,-0.1",
+//     "--string=hello,world" };
 
 //     // ***
 //     // Act
@@ -1717,7 +1704,7 @@ using namespace std;
 //     p.add_vector_opt<float>('f', "float", "...", true);
 //     p.add_vector_opt<double>('d', "double", "...", true);
 //     p.add_vector_opt<string>('s', "string", "...", true);
-   
+
 //     vector<string> input{ "program" };
 
 //     // ***
@@ -1769,7 +1756,6 @@ using namespace std;
 
 //     int argc{ 2 };
 
-
 //     // ***
 //     // Act & Assert
 //     // \todo Make this more specific (`EXPECT_THROW(stmt, exception)`).
@@ -1777,7 +1763,6 @@ using namespace std;
 // }
 
 // #undef SUITE_NAME
-
 
 // // ***
 // // Tests for:
@@ -1816,7 +1801,6 @@ using namespace std;
 // }
 
 // #undef SUITE_NAME
-
 
 // // ***
 // // Tests for:
@@ -1869,7 +1853,7 @@ using namespace std;
 //     // Assert
 //     auto args{ p.plain_args() };
 //     EXPECT_EQ(args.size(), 2);
-    
+
 //     EXPECT_EQ(args[0], "ARG1");
 //     EXPECT_EQ(args[1], "ARG2");
 // }
@@ -1930,7 +1914,6 @@ using namespace std;
 // }
 
 // #undef SUITE_NAME
-
 
 // // ***
 // // Tests for:
@@ -2081,5 +2064,5 @@ using namespace std;
 //     EXPECT_EQ(opt_names[0], string{ "float" });
 //     EXPECT_EQ(opt_names[1], string{ "bool" });
 // }
-// 
+//
 // #undef SUITE_NAME

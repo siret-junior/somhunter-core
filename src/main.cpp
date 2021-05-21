@@ -86,13 +86,12 @@ int main() {
 	// Instantiate the SOMHunter
 	SomHunter core{ config, cfg_fpth };
 
-	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
-
-	std::vector<size_t> ranks;
+	core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
 
 #if 0  // Run CanvasQuery benchmark
 	// #####################################
 	// Run the serialized Canvas query
+	std::vector<size_t> ranks;
 
 	using directory_iterator = std::filesystem::directory_iterator;
 
@@ -234,7 +233,7 @@ int main() {
 
 	// Try different displays
 	{
-		core.rescore("dog park");
+		core.rescore(Query{ "dog park" });
 
 		auto d_topn = core.get_display(DisplayType::DTopN, 0, 0).frames;
 		std::cout << "TOP N\n";
@@ -251,7 +250,7 @@ int main() {
 
 	// Try keyword rescore
 	{
-		core.rescore("dog park");
+		core.rescore(Query{ "dog park" });
 		auto d_topn1 = core.get_display(DisplayType::DTopN, 0, 0).frames;
 		std::cout << "TOP N\n";
 		d_topn1.print_display();
@@ -274,7 +273,7 @@ int main() {
 		core.like_frames(likes);
 		std::cout << "Like " << likes[0] << std::endl;
 
-		core.rescore("\\/?!,.'\"");
+		core.rescore(Query{ "\\/?!,.'\"" });
 	}
 
 	{
@@ -342,5 +341,6 @@ static void initialize_aplication() {
 	 *	Change this accordingly. 	*/
 	auto path = std::filesystem::current_path();
 	std::filesystem::current_path(path.parent_path());
+
 	SHLOG_I("The binary is running from the directory " << std::filesystem::current_path() << "...");
 }

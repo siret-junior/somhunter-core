@@ -9,8 +9,6 @@
 
 #include "common.h"
 
-
-
 #define DO_TESTS
 
 /*
@@ -55,7 +53,5 @@ std::vector<std::string> TEST_JPEGS{
     TESTS_JPEGS_DIR "photo-320x180-RGB.jpg"
 };
 // clang-format on
-
-
 
 #endif  // CONFIG_TESTS_H_
