@@ -17,3 +17,4 @@ data/v3c1-first100/
 config/config-core__asi_v3c1-first100.json
 config/_config-core.json
 data/v3c1-20k/
+bench-out/

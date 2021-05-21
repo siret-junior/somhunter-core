@@ -84,6 +84,8 @@ public:
 
 	      kw_pca_mat(parse_float_matrix(config.kw_PCA_mat_file, config.pre_PCA_features_dim)),
 	      kw_pca_mean_vec(parse_float_vector(config.kw_PCA_mean_vec_file, config.pre_PCA_features_dim)) {
+		assert(kw_pca_mat.size() > 1);  // Make sure it's a matrix!
+
 		SHLOG_S("Keyword features loaded from '" << config.kw_scores_mat_file << "' with dimension ("
 		                                         << config.pre_PCA_features_dim << ").");
 		SHLOG_S("Keyword bias loaded from '" << config.kw_bias_vec_file << "' with dimension ("

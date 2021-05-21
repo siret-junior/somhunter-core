@@ -259,8 +259,8 @@
 		"kws_file": "data/v3c1-20k/keyword-to-ID.csv",
 		"kw_PCA_mat_dim": 128,
 		"pre_PCA_features_dim": 2048,
-		"kw_PCA_mean_vec_file": "data/v3c1-20k/PCA-matrix.v3c20k.w2vv.2048x128.float32.bin",
-		"kw_PCA_mat_file": "data/v3c1-20k/PCA-mean.v3c20k.w2vv.2048.float32.bin",
+		"kw_PCA_mean_vec_file": "data/v3c1-20k/PCA-mean.v3c20k.w2vv.2048.float32.bin",
+		"kw_PCA_mat_file": "data/v3c1-20k/PCA-matrix.v3c20k.w2vv.2048x128.float32.bin",
 			
 		"LSC_metadata_file": ""
 	}

@@ -232,10 +232,10 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 
 	// If NOT COLLAGE
 	if (canvas_query.empty()) {
-		SHLOG_W("Running plain texual model...");
+		SHLOG_D("Running plain texual model...");
 		rescore_keywords(text_query);
 	} else {
-		SHLOG_W("Running the canvas query model...");
+		SHLOG_D("Running the canvas query model...");
 		reset_scores();
 		canvas_query.set_targets(user.ctx.get_curr_targets());
 		user.submitter.log_canvas_query(canvas_query,
@@ -356,7 +356,20 @@ std::vector<float> SomHunter::get_top_scored_scores(std::vector<ImageId>& top_sc
 }
 
 size_t sh::SomHunter::find_targets(const std::vector<ImageId>& top_scored, const std::vector<ImageId>& targets) const {
-	return size_t();
+	size_t i{ 0 };
+	for (auto it{ top_scored.begin() }; it != top_scored.end(); ++it) {
+		ImageId curr_ID{ *it };
+
+		for (auto&& t : targets) {
+			if (t == curr_ID) {
+				return i;
+				break;
+			}
+		}
+		++i;
+	}
+
+	return ERR_VAL<size_t>();
 }
 
 void SomHunter::benchmark_native_text_queries(const std::string& queries_filepath, const std::string& out_dir) {
@@ -416,7 +429,7 @@ void SomHunter::benchmark_native_text_queries(const std::string& queries_filepat
 		utils::dir_create(out_dir);
 
 		std::string query_scores_file{ out_dir + "/native-query-scores.bin" };
-		std::string query_IDs_file{ out_dir + "/native-query-scores.bin" };
+		std::string query_IDs_file{ out_dir + "/native-query-frame-IDs.bin" };
 
 		utils::to_file(query_results, query_scores_file);
 		utils::to_file(query_results_IDs, query_IDs_file);
