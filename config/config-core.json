@@ -248,6 +248,7 @@
 		"frames_list_file": "data/ITEC_w2vv/ITEC.keyframes.dataset",
 		"frames_dir": "data/ITEC_w2vv/frames/",
 		"thumbs_dir": "data/ITEC_w2vv/thumbs/",
+        "data_dir": "data/ITEC_w2vv/",
 		
 		"features_file_data_off": 12,
 		"features_dim": 128,
