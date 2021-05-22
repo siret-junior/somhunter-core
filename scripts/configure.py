@@ -155,6 +155,11 @@ def install_models(args):
 if __name__ == '__main__':
     args = parser.parse_args()
 
+    cwd = os.getcwd()
+    print("(!!!)")
+    print("This script is running from the '{}' directory...".format(cwd))
+    print("(!!!)")
+
     install_models(args)
     install_libtorch.main(args)
     sys.exit(0)

@@ -248,6 +248,7 @@
 		"frames_list_file": "data/v3c1-20k/frame-ID-to-filepath.csv",
 		"frames_dir": "data/v3c1-20k/thumbs/",
 		"thumbs_dir": "data/v3c1-20k/thumbs/",
+        "data_dir": "data/v3c1-20k/",
 		
 		"features_file_data_off": 0,
 		"features_dim": 128,

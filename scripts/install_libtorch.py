@@ -15,19 +15,19 @@ import utils
 def main(args):
     config = None
     try:
-        with open(args.config_file, 'r') as ifs:
+        with open(args.config_core_file, 'r') as ifs:
             # Load data into json file
             config = json.load(ifs)
     except OSError:
-        print("Could not open/read file: {}".format(args.config_file))
+        print("Could not open/read file: {}".format(args.config_core_file))
         sys.exit(1)
 
     install_config = None
     try:
-        with open(args.install_config_file, 'r') as ifs:
+        with open(args.config_install_file, 'r') as ifs:
             install_config = json.load(ifs)
     except OSError:
-        print("Could not open/read file: {}".format(args.install_config_file))
+        print("Could not open/read file: {}".format(args.config_install_file))
         sys.exit(1)
 
     installing_libtorch_res = True

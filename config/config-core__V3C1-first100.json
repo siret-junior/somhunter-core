@@ -250,7 +250,8 @@
 		"frames_list_file": "data/v3c1-first100/dataset.keyframes.dataset",
         "frames_dir": "data/v3c1-first100/thumbs/",
         "thumbs_dir": "data/v3c1-first100/thumbs/",
-        
+        "data_dir": "data/v3c1-first100/",
+
         "features_file_data_off": 0,
         "features_file": "data/v3c1-first100/dataset.w2vv",
         "features_dim": 128,
