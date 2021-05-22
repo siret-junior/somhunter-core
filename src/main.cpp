@@ -86,7 +86,7 @@ int main() {
 	// Instantiate the SOMHunter
 	SomHunter core{ config, cfg_fpth };
 
-	core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
+	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
 
 #if 0  // Run CanvasQuery benchmark
 	// #####################################

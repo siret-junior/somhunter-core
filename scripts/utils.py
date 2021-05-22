@@ -7,6 +7,7 @@ import shutil
 import hashlib
 import sys
 
+
 def checksum_file(filepath, SHA256_hex_str):
     BUF_SIZE = 65536
     SHA256 = hashlib.sha256()

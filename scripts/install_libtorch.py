@@ -1,4 +1,3 @@
-
 import json
 import argparse
 import os
@@ -7,9 +6,11 @@ import hashlib
 import sys
 import zipfile
 import urllib3
+
 http = urllib3.PoolManager()
 
 import utils
+
 
 def main(args):
     config = None
@@ -45,7 +46,7 @@ def main(args):
     install_dir_rel = os.path.join(".", cfg["install_dir"]["release"])
     zip_filename_rel = "libtorch-Release.zip"
     zip_filename_rel_filepath = os.path.join(install_dir_rel, zip_filename_rel)
-    
+
     install_dir_deb = os.path.join(".", cfg["install_dir"]["debug"])
     zip_filename_deb = "libtorch-Debug.zip"
     zip_filename_deb_filepath = os.path.join(install_dir_deb, zip_filename_deb)
@@ -78,10 +79,13 @@ def main(args):
         if not (os.path.isfile(m["filepath"])):
             try:
                 print("\tDownloading ZIP from '{}'...".format(m["URL"]))
-                with http.request('GET', m["URL"], preload_content=False) as r, open(m["filepath"], 'wb') as ofs:       
+                with http.request('GET', m["URL"],
+                                  preload_content=False) as r, open(
+                                      m["filepath"], 'wb') as ofs:
                     shutil.copyfileobj(r, ofs)
             except Exception as e:
-                print("\tERROR: Downloading ZIP from '{}' failed: ".format(m["URL"]))
+                print("\tERROR: Downloading ZIP from '{}' failed: ".format(
+                    m["URL"]))
                 print(e)
                 installing_libtorch_res = False
 
@@ -90,7 +94,8 @@ def main(args):
             print("\tZIP already present at '{}'. ".format(m["filepath"]))
 
         if not (utils.checksum_file(m["filepath"], m["SHA_sum"])):
-            print("\tERROR: ZIP checksum does not match at '{}'. ".format(m["filepath"]))
+            print("\tERROR: ZIP checksum does not match at '{}'. ".format(
+                m["filepath"]))
             installing_libtorch_res = False
         else:
             print("\tZIP checksum OK at '{}'. ".format(m["filepath"]))
@@ -102,9 +107,10 @@ def main(args):
         print("Extracting '{}'...".format(m["filename"]))
         try:
             with zipfile.ZipFile(m["filepath"], 'r') as zip_ref:
-                zip_ref.extractall(m["instal_dir"]) 
+                zip_ref.extractall(m["instal_dir"])
         except Exception as e:
-            print("\tERROR: Extracting ZIP '{}' failed: ".format(m["filename"]))
+            print("\tERROR: Extracting ZIP '{}' failed: ".format(
+                m["filename"]))
             print(e)
             installing_libtorch_res = False
 

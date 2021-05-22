@@ -1,0 +1,8 @@
+{
+    "remotes":{
+        "herkules": {
+            "username": "this_is_not_correct",
+            "password": "not_at_all"
+        }
+    }
+}
