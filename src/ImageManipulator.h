@@ -74,7 +74,7 @@ public:
 	static std::vector<uint8_t> resize(const std::vector<uint8_t>& in, size_t orig_w, size_t orig_h, size_t new_w,
 	                                   size_t new_h, size_t num_channels = 3);
 	
-	static void ImageManipulator::store_JPEG(const std::string& filepath, const std::vector<std::uint8_t>& in, size_t w,
+	static void store_JPEG(const std::string& filepath, const std::vector<std::uint8_t>& in, size_t w,
 	                                         size_t h, size_t quality, size_t num_channels);
 
 	/** Returns a copy of uint8 buffer from the float one. */
