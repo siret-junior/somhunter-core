@@ -734,7 +734,10 @@ void NetworkApi::handle__get_top_screen__POST(http_request req) {
 
 	auto body = req.extract_json().get();
 
-	ImageId frame_ID{ static_cast<ImageId>(body[U("frameId")].as_integer()) };
+	ImageId frame_ID{ ERR_VAL<ImageId>() };
+	if (body.has_field(U("frameId")) && !body[U("frameId")].is_null()) {
+		frame_ID = static_cast<ImageId>(body[U("frameId")].as_integer());
+	}
 	size_t page_idx{ static_cast<size_t>(body[U("pageId")].as_integer()) };
 	std::string type{ to_utf8string(body[U("type")].as_string()) };
 
