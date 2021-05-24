@@ -37,28 +37,46 @@
 
 using namespace sh;
 
-std::vector<float> ImageManipulator::resize(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
-                                            size_t new_h, size_t num_channels) {
-	std::vector<float> out(new_w * new_h * num_channels, 0.0F);
+std::vector<uint8_t> ImageManipulator::resize(const std::vector<std::uint8_t>& in, size_t orig_w, size_t orig_h,
+                                              size_t new_w, size_t new_h, size_t num_channels) {
+	std::vector<uint8_t> out(new_w * new_h * num_channels, 0.0F);
 
 	int original_w{ int(orig_w) };
 	int original_h{ int(orig_h) };
 
 	cv::Mat bitmap_cv_RGB{ in };
-	bitmap_cv_RGB = bitmap_cv_RGB.reshape(3, original_w);
-	cv::Mat bitmap_cv_BRG{ CV_32FC3 };
-	cvtColor(bitmap_cv_RGB, bitmap_cv_BRG, cv::COLOR_BGR2RGBA);
+	bitmap_cv_RGB = bitmap_cv_RGB.reshape(3, original_h);
 
-	/*cv::imshow("bitmap_cv_RGB", bitmap_cv_RGB);
-	cv::waitKey();
+	// cvtColor(bitmap_cv_RGB, bitmap_cv_RGB, cv::COLOR_RGB2BGR); //< Do not bother with converting the space
 
-	cv::imshow("bitmap_cv_BRG", bitmap_cv_BRG);
-	cv::waitKey();*/
+	cv::Mat scaled_bitmap;
+	cv::resize(bitmap_cv_RGB, scaled_bitmap, cv::Size(224, 224), 0, 0, cv::INTER_AREA);
 
-	cv::Mat mat(480, 640, CV_8UC4);
+	//ImageManipulator::show_image(scaled_bitmap);
+	// cvtColor(bitmap_cv_RGB, bitmap_cv_RGB, cv::COLOR_RGB2BGR); //< Just skip this, just resize
 
-	// cv::resize(bitmap_cv, bitmap_cv, cv::Size(224, 224), 0, 0, cv::INTER_AREA);
-	return std::vector<float>{};
+	// Copy the resized data out
+	scaled_bitmap = scaled_bitmap.reshape(1, scaled_bitmap.total() * scaled_bitmap.channels());
+	scaled_bitmap.copyTo(out);
+	return out;
+}
+
+std::vector<float> sh::ImageManipulator::to_float32(const std::vector<std::uint8_t>& in) {
+	std::vector<float> out;
+	out.reserve(in.size());
+
+	std::transform(in.begin(), in.end(), std::back_inserter(out), [](std::uint8_t x) { return static_cast<float>(x); });
+
+	return out;
+}
+
+std::vector<std::uint8_t> sh::ImageManipulator::to_uint8(const std::vector<float>& in) {
+	std::vector<std::uint8_t> out;
+	out.reserve(in.size());
+
+	std::transform(in.begin(), in.end(), std::back_inserter(out), [](float x) { return static_cast<std::uint8_t>(x); });
+
+	return out;
 }
 
 template <>
@@ -105,6 +123,22 @@ BitmapImage<uint8_t> ImageManipulator::load_image<BitmapImage<uint8_t>>(const st
 	cv::Mat flat = cv_fimg.reshape(1, cv_fimg.total() * cv_fimg.channels());
 	flat.copyTo(b_img.data);
 	return b_img;
+}
+
+void ImageManipulator::store_JPEG(const std::string& filepath, const std::vector<std::uint8_t>& in, size_t w, size_t h,
+                                  size_t quality, size_t num_channels) {
+	std::vector<uint8_t> raw_data;
+	raw_data.reserve(in.size());
+
+	std::transform(in.begin(), in.end(), std::back_inserter(raw_data), [](const float& x) { return uint8_t(x); });
+
+	auto res{ stbi_write_jpg(filepath.c_str(), w, h, num_channels, raw_data.data(), quality) };
+
+	if (res == 0) {
+		std::string msg{ "Writing the '" + filepath + "' image failed!" };
+		SHLOG_E(msg);
+		throw std::runtime_error(msg);
+	}
 }
 
 // NEW

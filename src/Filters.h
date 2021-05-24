@@ -144,24 +144,22 @@ class CanvasSubqueryBitmap : public CanvasSubqueryBase {
 public:
 	CanvasSubqueryBitmap() = default;
 	CanvasSubqueryBitmap(const RelativeRect& rect, size_t bitmap_w, size_t bitmap_h, size_t num_channels,
-	                     std::vector<float>&& data)
+	                     std::vector<std::uint8_t>&& data)
 	    : CanvasSubqueryBase{ rect },
 	      _num_channels{ num_channels },
 	      _width{ bitmap_w },
 	      _height{ bitmap_h },
-	      _data{ std::move(data) } {
-		for (auto&& d : _data) {
-			_data_int.emplace_back(uint8_t(d));
-		}
+	      _data_int{ std::move(data) } {
+
 	};
 
 	size_t num_channels() const { return _num_channels; };
 	size_t width_pixels() const { return _width; };
 	size_t height_pixels() const { return _height; };
-	std::vector<float>& data() { return _data; };
-	std::vector<uint8_t>& data_std() { return _data_int; };
+	std::vector<uint8_t>& data() { return _data_int; };
+	const std::vector<uint8_t>& data() const { return _data_int; };
 
-	std::vector<float> get_scaled_bitmap(size_t w, size_t h, size_t num_channels) const;
+	std::vector<uint8_t> get_scaled_bitmap(size_t w, size_t h) const;
 
 	// Unique prefix right here!
 	std::string jpeg_filename{ "canvas-query-bitmap_" + std::to_string(utils::irand(0, 1000)) + "_" +
@@ -180,9 +178,9 @@ public:
 	void serialize(Archive& archive) {
 		archive(_rect, _num_channels, _width, _height, _data, _data_int);
 	}
-	std::vector<float> _data;
 
 private:
+	std::vector<float> _data;
 	size_t _num_channels;
 	size_t _width;
 	size_t _height;

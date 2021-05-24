@@ -14,7 +14,7 @@ void CanvasQuery::emplace_back(const RelativeRect& rect, const std::string& text
 
 void CanvasQuery::emplace_back(const RelativeRect& rect, size_t bitmap_w, size_t bitmap_h, size_t num_channels,
                                uint8_t* bitmap_RGBA_data) {
-	std::vector<float> image;
+	std::vector<std::uint8_t> image;
 
 	// DO: RGBA_to_RGB
 	size_t total_size{ bitmap_w * bitmap_h * num_channels };
@@ -237,16 +237,17 @@ at::Tensor CanvasQueryRanker::get_features(CanvasQuery& collage) {
 		// If bitmap
 		if (std::holds_alternative<CanvasSubqueryBitmap>(subquery)) {
 			CanvasSubqueryBitmap& subquery_bitmap{ std::get<CanvasSubqueryBitmap>(subquery) };
+			auto scaled_bitmap{ subquery_bitmap.get_scaled_bitmap(224, 224) };
 
-			auto bitmap_std{ subquery_bitmap.data_std() };
-			ImageManipulator::store_PNG("pre-test.png", bitmap_std, subquery_bitmap.width_pixels(),
-			                            subquery_bitmap.height_pixels(), 3);
+			/*ImageManipulator::store_PNG("pre-scale-bitmap.png", subquery_bitmap.data(),
+			subquery_bitmap.width_pixels(), subquery_bitmap.height_pixels(), 3);
+			ImageManipulator::store_PNG("post-scale-bitmap.png", scaled_bitmap, 224, 224, 3);*/
 
-			auto scaled_bitmap{ subquery_bitmap.get_scaled_bitmap(224, 224, 3) };
-
-			ImageManipulator::store_jpg("test.png", scaled_bitmap, 224, 224, 100, 3, false);
-
-			at::Tensor tensor_imagex = torch::from_blob(scaled_bitmap.data(), { 224, 224, 3 }, at::kFloat);
+			// !!!
+			at::Tensor tensor_imagex = torch::from_blob(scaled_bitmap.data(), { 224, 224, 3 }, at::kByte);
+			// This is not needed, torch seems to accept the above data
+			/*auto ddata{ImageManipulator::to_float32(scaled_bitmap)};
+			at::Tensor tensor_imagex = torch::from_blob(ddata.data(), { 224, 224, 3 }, at::kFloat);*/
 
 			at::Tensor tensor_image = tensor_imagex - 0.0F;
 			at::Tensor tensor_image_norm = tensor_imagex - t_means;

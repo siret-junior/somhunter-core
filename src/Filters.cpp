@@ -24,6 +24,6 @@
 #include "ImageManipulator.h"
 using namespace sh;
 
-std::vector<float> CanvasSubqueryBitmap::get_scaled_bitmap(size_t w, size_t h, size_t num_channels) const {
-	return ImageManipulator::resize(_data, width_pixels(), height_pixels(), w, h, num_channels);
+std::vector<std::uint8_t> CanvasSubqueryBitmap::get_scaled_bitmap(size_t w, size_t h) const {
+	return ImageManipulator::resize(_data_int, width_pixels(), height_pixels(), w, h, _num_channels);
 }

@@ -703,8 +703,8 @@ void Submitter::log_canvas_query(const CanvasQuery& canvas_query, const std::vec
 				const CanvasSubqueryBitmap& q{ std::get<CanvasSubqueryBitmap>(subquery) };
 				auto& jpeg_filename{ sqo.at("bitmap_filename").string_value() };
 
-				ImageManipulator::store_jpg(path + jpeg_filename, q._data, q.width_pixels(), q.height_pixels(), 100,
-				                            q.num_channels(), true);
+				ImageManipulator::store_JPEG(path + jpeg_filename, q.data(), q.width_pixels(), q.height_pixels(), 100,
+				                            q.num_channels());
 			}
 		}
 	}

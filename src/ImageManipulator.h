@@ -71,6 +71,19 @@ public:
 		cv::waitKey(delay);
 	}
 
+	static std::vector<uint8_t> resize(const std::vector<uint8_t>& in, size_t orig_w, size_t orig_h, size_t new_w,
+	                                   size_t new_h, size_t num_channels = 3);
+	
+	static void ImageManipulator::store_JPEG(const std::string& filepath, const std::vector<std::uint8_t>& in, size_t w,
+	                                         size_t h, size_t quality, size_t num_channels);
+
+	/** Returns a copy of uint8 buffer from the float one. */
+	static std::vector<float> to_float32(const std::vector<std::uint8_t>& in);
+
+	/** Returns a copy of float buffer from the uint8 one. */
+	static std::vector<std::uint8_t> to_uint8(const std::vector<float>& in);
+
+
 	// NEW
 	// -------------------------------------------------
 	// OLD
@@ -108,14 +121,6 @@ public:
 	}
 	static void store_jpg(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
 	                      size_t quality = 100, size_t num_channels = 3, bool are_ints = false);
-
-	/**
-	 * Creates a new resized copy of the provided image matrix.
-	 *
-	 * \exception std::runtime_error If the resizing fails.
-	 */
-	static std::vector<float> resize(const std::vector<float>& in, size_t orig_w, size_t orig_h, size_t new_w,
-	                                 size_t new_h, size_t num_channels = 3);
 };
 
 };  // namespace sh
