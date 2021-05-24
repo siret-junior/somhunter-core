@@ -134,13 +134,13 @@ static void dump(const Json::object& values, string& out) {
 void Json::dump(string& out) const { m_ptr->dump(out); }
 static void pretty_print(json11::NullStruct value, string& out, PrettyPrintOptions& options) { dump(value, out); }
 
-static void pretty_print(double value, string& out, PrettyPrintOptions& options) { dump(value, out); }
+static void pretty_print(double value, string& out, PrettyPrintOptions&) { dump(value, out); }
 
-static void pretty_print(int value, string& out, PrettyPrintOptions& options) { dump(value, out); }
+static void pretty_print(int value, string& out, PrettyPrintOptions& ) { dump(value, out); }
 
-static void pretty_print(bool value, string& out, PrettyPrintOptions& options) { dump(value, out); }
+static void pretty_print(bool value, string& out, PrettyPrintOptions&) { dump(value, out); }
 
-static void pretty_print(const string& value, string& out, PrettyPrintOptions& options) { dump(value, out); }
+static void pretty_print(const string& value, string& out, PrettyPrintOptions& ) { dump(value, out); }
 
 static void pretty_print(const Json::array& values, string& out, PrettyPrintOptions& options) {
 	options.current_indentation += options.indent_increment;

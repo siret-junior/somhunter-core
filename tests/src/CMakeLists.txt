@@ -1,7 +1,6 @@
 
 set(HEADERS
-	tests.hpp
-	config-tests.h
+	
 )
 
 set(SOURCES 
@@ -28,7 +27,6 @@ target_include_directories(${SOMHUNTER_TARGET_TESTS}
 target_sources(${SOMHUNTER_TARGET_TESTS}
 	PUBLIC 
 		${SOURCES}
-		main-tests.cpp
+		ImageManipulatorTests.cpp
+		CanvasQueryRankerTests.cpp
 )
-
-add_subdirectory(src)

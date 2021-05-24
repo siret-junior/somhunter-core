@@ -224,7 +224,6 @@ public:
 	std::vector<float> get_top_scored_scores(std::vector<ImageId>& top_scored_frames) const;
 	size_t find_targets(const std::vector<ImageId>& top_scored, const std::vector<ImageId>& targets) const;
 
-
 	// ********************************
 	// Other
 	// ********************************

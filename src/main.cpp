@@ -52,14 +52,7 @@ int main() {
 	initialize_aplication();
 
 #if 0
-	Query q{ utils::deserialize_from_file<CanvasQuery>("cq.bin") };
-	core.rescore(q);
-	CanvasSubqueryBitmap& cq{ std::get<CanvasSubqueryBitmap>(q.canvas_query[1]) };
-	auto img = cq.data();
-	auto img2 = cq.data_std();
 
-	auto img_new{ ImageManipulator::resize(img, cq.width_pixels(), cq.height_pixels(), 224, 224, 3) };
-	// auto img2_new {ImageManipulator::resize(img2, cq.width_pixels(), cq.height_pixels(), 224, 224, 3)};
 
 	{  // *** PNGs ***
 		cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(TEST_PNGS[0]) };

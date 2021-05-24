@@ -52,7 +52,7 @@ std::vector<uint8_t> ImageManipulator::resize(const std::vector<std::uint8_t>& i
 	cv::Mat scaled_bitmap;
 	cv::resize(bitmap_cv_RGB, scaled_bitmap, cv::Size(224, 224), 0, 0, cv::INTER_AREA);
 
-	//ImageManipulator::show_image(scaled_bitmap);
+	// ImageManipulator::show_image(scaled_bitmap);
 	// cvtColor(bitmap_cv_RGB, bitmap_cv_RGB, cv::COLOR_RGB2BGR); //< Just skip this, just resize
 
 	// Copy the resized data out
@@ -82,7 +82,7 @@ std::vector<std::uint8_t> sh::ImageManipulator::to_uint8(const std::vector<float
 template <>
 cv::Mat ImageManipulator::load_image<cv::Mat>(const std::string& filepath) {
 	using namespace cv;
-	Mat image = imread(filepath, IMREAD_UNCHANGED);
+	Mat image = imread(filepath, IMREAD_COLOR);
 	return image;
 }
 

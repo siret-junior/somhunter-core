@@ -151,7 +151,7 @@ public:
 	      _height{ bitmap_h },
 	      _data_int{ std::move(data) } {
 
-	};
+	      };
 
 	size_t num_channels() const { return _num_channels; };
 	size_t width_pixels() const { return _width; };
