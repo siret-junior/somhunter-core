@@ -207,16 +207,6 @@ public:
 	// Image manipulation utilites
 	// ********************************
 
-	/**
-	 * Writes the provided image into the JPG file.
-	 *
-	 * \exception std::runtime_error If the writing fails.
-	 */
-	void store_jpg_image(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h, size_t quality,
-	                     size_t num_channels, bool are_ints = false) const {
-		return ImageManipulator::store_jpg(filepath, in, w, h, quality, num_channels, are_ints);
-	}
-
 	std::string store_rescore_screenshot(const std::string& filepath);
 
 	size_t get_num_frames() const { return frames.size(); }

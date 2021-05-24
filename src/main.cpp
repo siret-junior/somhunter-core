@@ -52,8 +52,6 @@ int main() {
 	initialize_aplication();
 
 #if 0
-
-
 	{  // *** PNGs ***
 		cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(TEST_PNGS[0]) };
 		BitmapImage<uint8_t> std_img_u8{ ImageManipulator::load_image<BitmapImage<uint8_t>>(TEST_PNGS[0]) };

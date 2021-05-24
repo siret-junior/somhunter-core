@@ -105,4 +105,6 @@ struct overloaded : Ts... {
 template <class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
 
+#include "log.h"
+
 #endif

@@ -23,17 +23,17 @@
 #ifndef IMAGE_MANIPULATOR_H_
 #define IMAGE_MANIPULATOR_H_
 
-#include <stb_image.h>
-#include <stb_image_resize.h>
-#include <stb_image_write.h>
+#include <algorithm>
+#include <iterator>
+#include <stdexcept>
 
+#include <stb_image.h>
+#include <stb_image_write.h>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
-#include "common.h"
 #include "config.h"
-#include "log.h"
 #include "utils.h"
 
 namespace sh {
@@ -108,6 +108,7 @@ public:
 			throw std::runtime_error(msg);
 		}
 	}
+
 	static void store_PNG(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
 	                      size_t num_channels) {
 		auto res{ stbi_write_png(filepath.c_str(), w, h, num_channels, (float*)in.data(), w * num_channels) };
@@ -118,8 +119,9 @@ public:
 			throw std::runtime_error(msg);
 		}
 	}
-	static void store_jpg(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
-	                      size_t quality = 100, size_t num_channels = 3, bool are_ints = false);
+
+	static void store_JPEG(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
+	                       size_t quality = 100, size_t num_channels = 3, bool are_ints = false);
 #ifdef TESTING
 private:
 #else

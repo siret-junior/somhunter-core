@@ -20,7 +20,7 @@ TEST(SUITE_NAME, cvMat__correct_PNG_loaded) {
 		EXPECT_EQ(cv_img.cols, 100);
 		EXPECT_EQ(cv_img.channels(), 3);
 
-		auto c{ cv_img.channels() };
+		//auto c{ cv_img.channels() };
 
 		// RED
 		// BGR: (0, 0, 255)
