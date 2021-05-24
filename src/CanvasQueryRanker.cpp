@@ -127,7 +127,7 @@ CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core
 
 void CanvasQueryRanker::score(CanvasQuery& collage, ScoreModel& model, const DatasetFeatures& /*features*/,
                               const DatasetFrames& frames) {
-	if (_loaded) {
+	if (!_loaded) {
 		SHLOG_W("Called CanvasQueryRanker::score without available subregion data. Leaving the scores intact.");
 		return;
 	}
