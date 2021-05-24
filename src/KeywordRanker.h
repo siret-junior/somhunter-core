@@ -131,7 +131,7 @@ public:
 	                         const DatasetFrames& frames, const Config& cfg) const;
 
 	// ----
-	StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query);
+	StdVector<float> get_text_query_feature(const std::string& query);
 	std::vector<std::string> tokenize_textual_query(const std::string& sentence_query_raw) const;
 	std::vector<std::vector<KeywordId>> split_tokens_to_temporal_queries(const std::vector<std::string>& query) const;
 

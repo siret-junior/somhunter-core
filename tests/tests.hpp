@@ -221,7 +221,8 @@ private:
 		/*
 		 * #1 Text
 		 */
-		auto h{ core.rescore(Query{ "cat" }).history };
+		Query q{ "cat" };
+		auto h{ core.rescore(q).history };
 		auto state1{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
 
@@ -238,7 +239,8 @@ private:
 		 * #2 Temporal text
 		 */
 		core.like_frames(std::vector<ImageId>{ 80 });
-		h = core.rescore(Query{"dog catalog >> habitat "}).history;
+		q = Query{"dog catalog >> habitat "};
+		h = core.rescore(q).history;
 		auto state2{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
 
@@ -261,7 +263,8 @@ private:
 		core.like_frames(std::vector<ImageId>{ 187 });
 		core.like_frames(std::vector<ImageId>{ 217 });
 		core.like_frames(std::vector<ImageId>{ 581 });
-		h = core.rescore(Query{"chicken"}).history;
+		q = Query{"chicken"};
+		h = core.rescore(q).history;
 		auto state3{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
 		do_assert(h.back().likes.size() == 0,

@@ -233,7 +233,8 @@ int main() {
 
 	// Try different displays
 	{
-		core.rescore(Query{ "dog park" });
+		Query q{ "dog park" };
+		core.rescore(q);
 
 		auto d_topn = core.get_display(DisplayType::DTopN, 0, 0).frames;
 		std::cout << "TOP N\n";
@@ -250,7 +251,8 @@ int main() {
 
 	// Try keyword rescore
 	{
-		core.rescore(Query{ "dog park" });
+		Query q{ "dog park" };
+		core.rescore(q);
 		auto d_topn1 = core.get_display(DisplayType::DTopN, 0, 0).frames;
 		std::cout << "TOP N\n";
 		d_topn1.print_display();
@@ -273,7 +275,8 @@ int main() {
 		core.like_frames(likes);
 		std::cout << "Like " << likes[0] << std::endl;
 
-		core.rescore(Query{ "\\/?!,.'\"" });
+		Query q{ "\\/?!,.'\"" };
+		core.rescore(q);
 	}
 
 	{

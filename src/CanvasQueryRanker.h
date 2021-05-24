@@ -68,10 +68,10 @@ at::Tensor to_tensor(std::vector<std::vector<OrigDType_>>& orig_mat) {
 	meta.reserve(orig_mat.size());
 
 	for (auto&& vec : orig_mat) {
-		meta.emplace_back(torch::tensor(orig_vec.data(), TensorDType_));
+		meta.emplace_back(torch::tensor(vec.data(), TensorDType_));
 	}
 
-	return torch::cat(tensors_bitmap, 0);
+	return torch::cat(meta, 0);
 }
 
 class CanvasQueryRanker {
