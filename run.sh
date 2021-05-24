@@ -6,7 +6,7 @@ cd ..
 cd ./somhunter-core/build/ # Go to buil dir
 
 # If windows
-if ! [ -f "./somhunter.exe" ]
+if [ -f "./somhunter.exe" ]
 then
     ./somhunter.exe
 else
