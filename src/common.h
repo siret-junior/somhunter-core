@@ -86,7 +86,9 @@ enum class DisplayType {
 };
 
 inline DisplayType str_to_disp_type(const std::string& type_str) {
-	/* !!! THIS MUST MATCH WITH `config/strings.json` FILE !!! */
+	/* !!! THIS MUST MATCH WITH `config/config-core.json` FILE !!! 
+			strings->displayTypes
+	*/
 	if (type_str == "topn_display") return DisplayType::DTopN;
 	if (type_str == "topn_context_display") return DisplayType::DTopNContext;
 	if (type_str == "SOM_display") return DisplayType::DSom;
@@ -98,6 +100,9 @@ inline DisplayType str_to_disp_type(const std::string& type_str) {
 }
 
 inline std::string disp_type_to_str(DisplayType type) {
+	/* !!! THIS MUST MATCH WITH `config/config-core.json` FILE !!! 
+			strings->displayTypes
+	*/
 	std::string disp_type;
 	switch (type) {
 		case DisplayType::DTopN:

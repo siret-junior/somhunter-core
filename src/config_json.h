@@ -213,7 +213,7 @@ inline Config Config::parse_json_config_string(const std::string& cfg_file_conte
 	// clang-format off
 	auto cfg = Config{ 
 		// .API_config
-		Config::parse_API_config(json_all["api"]),
+		Config::parse_API_config(json["API"]),
 		// .user_token
 		require_string_value(json, "user_token"),
 		// .submitter_config

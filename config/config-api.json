@@ -19,7 +19,7 @@
                     "API"
                 ],
                 "summary": "Gets the config JSON of the HTTP API.",
-                "operationId": "NetworkApi::handle__api__config__GET",
+                "operationId": "handle__api__config__GET",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -36,20 +36,20 @@
                 }
             }
         },
-        "/settings": {
+        "/config": {
             "get": {
                 "tags": [
                     "Client"
                 ],
                 "summary": "Gets the config JSON from the core.",
-                "operationId": "NetworkApi::handle__settings__GET",
+                "operationId": "handle__config__GET",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Response__Settings__Get"
+                                    "$ref": "#/components/schemas/Response__Config__Get"
                                 }
                             }
                         }
@@ -69,7 +69,7 @@
                     "Client"
                 ],
                 "summary": "Gets the current state of the user.",
-                "operationId": "NetworkApi::handle__user__context__GET",
+                "operationId": "handle__user__context__GET",
                 "parameters": [
                     {
                         "in": "query",
@@ -114,7 +114,7 @@
                     "Search session"
                 ],
                 "summary": "Gets the top scored display data.",
-                "operationId": "NetworkApi::handle__get_top_screen__POST",
+                "operationId": "handle__get_top_screen__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -152,7 +152,7 @@
                     "Search session"
                 ],
                 "summary": "Gets the SOM display data.",
-                "operationId": "NetworkApi::handle__get_SOM_screen__POST",
+                "operationId": "handle__get_SOM_screen__POST",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -179,7 +179,7 @@
                     "Search session"
                 ],
                 "summary": "Gets the data about the frame.",
-                "operationId": "NetworkApi::handle__get_frame_detail_data__GET",
+                "operationId": "handle__get_frame_detail_data__GET",
                 "parameters": [
                     {
                         "in": "query",
@@ -232,7 +232,7 @@
                     "Search session"
                 ],
                 "summary": "Returns the nearest supported keywords.",
-                "operationId": "NetworkApi::handle__get_autocomplete_results__GET",
+                "operationId": "handle__get_autocomplete_results__GET",
                 "parameters": [
                     {
                         "in": "query",
@@ -269,7 +269,7 @@
                     "Logs"
                 ],
                 "summary": "Notifies the core about thhis event.",
-                "operationId": "NetworkApi::handle__log_scroll__GET",
+                "operationId": "handle__log_scroll__GET",
                 "parameters": [
                     {
                         "in": "query",
@@ -302,7 +302,7 @@
                     "Logs"
                 ],
                 "summary": "Notifies the core about thhis event.",
-                "operationId": "NetworkApi::handle__log_text_query_change__GET",
+                "operationId": "handle__log_text_query_change__GET",
                 "parameters": [
                     {
                         "in": "query",
@@ -335,7 +335,7 @@
                     "Evaluation server"
                 ],
                 "summary": "Submits the specified frame ID to the evaluation server.",
-                "operationId": "NetworkApi::handle__submit_frame__POST",
+                "operationId": "handle__submit_frame__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -360,7 +360,7 @@
                     "Evaluation server"
                 ],
                 "summary": "TODO",
-                "operationId": "NetworkApi::handle__login_to_dres__POST",
+                "operationId": "handle__login_to_dres__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -396,7 +396,7 @@
                     "Search session"
                 ],
                 "summary": "Resets the user's search session.",
-                "operationId": "NetworkApi::handle__reset_search_session__POST",
+                "operationId": "handle__reset_search_session__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -423,7 +423,7 @@
                     "Search session"
                 ],
                 "summary": "Applies the current query on the scores.",
-                "operationId": "NetworkApi::handle__rescore__POST",
+                "operationId": "handle__rescore__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -450,7 +450,7 @@
                     "Search session"
                 ],
                 "summary": "(De)selects the provided frames as a positive example for relevance feedback models.",
-                "operationId": "NetworkApi::handle__like_frame__POST",
+                "operationId": "handle__like_frame__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -477,7 +477,7 @@
                     "Search session"
                 ],
                 "summary": "Bookmarks the selected frame for later use.",
-                "operationId": "NetworkApi::handle__search__bookmark__POST",
+                "operationId": "handle__search__bookmark__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -504,7 +504,7 @@
                     "Search session"
                 ],
                 "summary": "Updates the current user's context to the provided state.",
-                "operationId": "NetworkApi::handle__search__context__POST",
+                "operationId": "handle__search__context__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -529,7 +529,7 @@
                     "Search session"
                 ],
                 "summary": "Returns the current user's search context.",
-                "operationId": "NetworkApi::handle__search__context__GET",
+                "operationId": "handle__search__context__GET",
                 "parameters": [
                     {
                         "in": "query",
@@ -627,7 +627,7 @@
                     "$ref": "#/components/schemas/FrameReference"
                 }
             },
-            "Response__Settings__Get": {
+            "Response__Config__Get": {
                 "required": [
                     "api",
                     "core"

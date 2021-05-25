@@ -81,7 +81,7 @@ private:
 	void handle__api__GET(http_request req);
 	void handle__api__config__GET(http_request req);
 
-	void handle__settings__GET(http_request req);
+	void handle__config__GET(http_request req);
 	void handle__user__context__GET(http_request req);
 
 	void handle__get_top_screen__POST(http_request req);

@@ -1,181 +1,53 @@
 {
-	"api": {
-		"port": 8888,
-        "config_filepath": "config/config-api.json",
-		"docs_dir": "docs/api/",
-		"endpoints": {
-            "settings": {
-                "get": {
-                    "url": "/settings"
-                }
-            },
-            "frameDetail": {
-                "get": {
-                    "url": "/get_frame_detail_data"
-                }
-            },
-            "textSearchSuggestions": {
-                "get": {
-                    "url": "/get_autocomplete_results"
-                }
-            },
-            "screenTop": {
-                "post": {
-                    "url": "/get_top_screen"
-                }
-            },
-            "screenSom": {
-                "post": {
-                    "url": "/get_som_screen"
-                }
-            },
-            "logBrowsingScroll": {
-                "get": {
-                    "url": "/log_scroll"
-                }
-            },
-            "logTextChange": {
-                "get": {
-                    "url": "/log_text_query_change"
-                }
-            },
-            "serverSubmitFrame": {
-                "post": {
-                    "url": "/submit_frame"
-                }
-            },
-            "serverLogin": {
-                "post": {
-                    "url": "/login_to_dres"
-                }
-            },
-            "searchReset": {
-                "post": {
-                    "url": "/reset_search_session"
-                }
-            },
-            "searchRescore": {
-                "post": {
-                    "url": "/rescore"
-                }
-            },
-            "searchLike": {
-                "post": {
-                    "url": "/like_frame"
-                }
-            },
-            "searchBookmark": {
-                "post": {
-                    "url": "/search/bookmark"
-                }
-            },
-            "searchContext": {
-                "get": {
-                    "url": "/search/context"
-                },
-                "post": {
-                    "url": "/search/context"
-                }
-            },
-            "userContext": {
-                "get": {
-                    "url": "/user/context"
-                }
-            }
-        }
-	},
-	
-	"data-server": {},
+	"data_server": {},
 
-	"server": {
-		"this_should_be_eliminated_": "",
-		"appName": "SOMHunter",
-        "appSubname": "The interactive search tool.",
-        "useHttp2": false,
-        "certFilepath": "config/cert/server.pem",
-        "privKeyFilepath": "config/cert/server.key",
-        "coreConfigFilepath": "config.json",
-        "logsDir": "logs/",
-        "uiRoot": "ui/",
-        "uiImgDir": "ui/public/assets/img/",
-        "screenshotDefault": "/assets/img/history_screenshot.jpg",
-        "uiTempImgDirPub": "/assets/img/tmp",
-        "uiTempImgDir": "ui/public/assets/img/tmp",
-        "uiConfigFilepath": "ui/src/__config_generated__.json",
-        "apiPassword": "som",
-        "apiUsername": "hunter"
-	},
-
-	"ui": {
-		"videoReplay": {
-            "slideSpeed": 50,
-            "thumbWidth": 200
+	"UI": {
+		"video_replay": {
+            "slide_speed": 50,
+            "thumb_width": 200
         },
-        "videoDetail": {
-            "thumbWidth": 150,
-            "gridWidth": 8,
-            "gridHeight": 8
+        "video_detail": {
+            "thumb_width": 150,
+            "grid_width": 8,
+            "grid_height": 8
         },
-        "queries": {
-            "text": false,
-            "filters": false,
-            "collage": true
-        },
-        "media": {
-            "thumbsPathPrefix": "/frames/",
-            "framesPathPrefix": "/frames/"
+        "available_queries": {
+            "text": true,
+            "canvas": true,
+            "filters": true
         },
         "history": {
-            "screenshotNumX": 3,
-            "screenshotNumY": 3
+            "screenshot_num_width": 3,
+            "screenshot_num_height": 3
         },
-        "autocomplete": {
-            "numSuggestions": 10,
-            "numExampleFrames": 5
+        "textual_autocomplete": {
+            "num_suggestions": 10,
+            "num_example_frames": 5,
+            "autocomplete_delay": 200
         },
-        "frameGrid": {
-            "infiniteScrollThreshold": 1000,
-            "infiniteScrollTimeout": 1000,
-            "defaultRescoreDisplay": "topn_display",
-            "defaultSecondaryRescoreDisplay": "SOM_display"
-        },
-        "textSearch": {
-            "showMetadataFilters": true,
-            "autocompleteDelay": 200
-        },
-        "htmlElIds": {
-            "queryFilters": "queryFilters",
-            "queryFiltersWeekdays": "queryFiltersWeekdays",
-            "queryFiltersHourFrom": "queryFiltersHourFrom",
-            "queryFiltersHourTo": "queryFiltersHourTo"
+        "main_frame_grid": {
+            "inf_scroll_threshold": 1000,
+            "inf_scroll_timeout": 1000
         }
 	},
 
 	"strings": {
-		"this_should_be_eliminated_": "",
-		"displayTypes": {
-            "som": "SOM_display",
-            "topn": "topn_display",
-            "topnContext": "topn_context_display",
-            "topknn": "topknn_display",
+		"display_types": {
+            "SOM": "SOM_display",
+            "top_scored": "topn_display",
+            "top_scored_context": "topn_context_display",
+            "nearest_neighbours": "topknn_display",
             "detail": "video_detail",
             "replay": "video_replay"
-        },
-        "ui": {
-            "UNABLE_TO_FETCH_CORE_SETTINGS_HEADING": "Unable to fetch core settings!",
-            "UNABLE_TO_FETCH_CORE_SETTINGS_DESC": "Check if the SOMHunter Core API server is running at ",
-            "UNABLE_TO_FETCH_CORE_SETTINGS_ACTION": "Reload",
-            "LOADING_CORE_SETTINGS_HEADING": "Loading Core API settings.",
-            "LOADING_CORE_SETTINGS_DESC": "This may take a while.",
-            "UNABLE_TO_FETCH_SEARCH_STATE_HEADING": "Unable to fetch search state!",
-            "UNABLE_TO_FETCH_SEARCH_STATE_DESC": "Check if the SOMHunter Core API server is resonding at ",
-            "UNABLE_TO_FETCH_SEARCH_STATE_ACTION": "Reload",
-            "LOADING_SEARCH_STATE_HEADING": "Loading the current search session state.",
-            "LOADING_SEARCH_STATE_DESC": "This may take a while."
         }
 	},
 
 	"core": {
+		"API": {
+            "port": 8888,
+            "config_filepath": "config/config-api.json",
+            "docs_dir": "docs/api/"
+        },
 		"user_token": "admin",
 		"submitter_config":{
 			"submit_to_VBS": false,

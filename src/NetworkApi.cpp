@@ -543,7 +543,7 @@ void NetworkApi::initialize() {
 	push_endpoint("api", &NetworkApi::handle__api__GET);
 	push_endpoint("api/config", &NetworkApi::handle__api__config__GET);
 
-	push_endpoint("settings", &NetworkApi::handle__settings__GET);
+	push_endpoint("config", &NetworkApi::handle__config__GET);
 	push_endpoint("user/context", &NetworkApi::handle__user__context__GET);
 
 	push_endpoint("get_top_screen", {}, &NetworkApi::handle__get_top_screen__POST);
@@ -686,19 +686,24 @@ void NetworkApi::handle__api__config__GET(http_request req) {
 	req.reply(response);
 }
 
-void NetworkApi::handle__settings__GET(http_request req) {
+void NetworkApi::handle__config__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__settings__GET");
+	SHLOG_REQ(remote_addr, "handle__config__GET");
 
 	// auto b = message.extract_json().get();
 
 	std::error_code ec;
+	auto j_API{ json::value::parse(utils::read_whole_file(_p_core->get_API_config_filepath()), ec) };
+
 	auto j{ json::value::parse(utils::read_whole_file(_p_core->get_config_filepath()), ec) };
 	if (ec) {
 		std::string msg{ ec.message() };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
+
+	// Append API config to the core one
+	j[U("API")] = j_API;
 
 	http_response response(status_codes::OK);
 	response.set_body(j);
