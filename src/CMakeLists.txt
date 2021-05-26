@@ -4,6 +4,7 @@ set(HEADERS
 	config.h
 	distfs.h
 	utils.h
+	utils_json.h
 	log.h
 	config_json.h
 	use_intrins.h

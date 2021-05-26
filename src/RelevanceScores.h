@@ -35,6 +35,8 @@ class ScoreModel {
 	/** Current score distribution for the frames. */
 	std::vector<float> _scores;
 
+	std::vector<std::vector<float>> _temporal_scores;
+
 	/**
 	 * Frames mask telling what frames should be placed inside the
 	 * results.
@@ -71,6 +73,13 @@ public:
 
 	/** Returns number of scores stored. */
 	size_t size() const { return _scores.size(); }
+
+	/** Returns number of temporal score vectors */
+	size_t temporal_size() const { return _temporal_scores.size(); }
+
+	StdMatrix<float>& temporal() { return _temporal_scores; }
+
+	const StdMatrix<float>& temporal() const { return _temporal_scores; }
 
 	/** Normalizes the score distribution. */
 	void normalize();

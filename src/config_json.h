@@ -30,39 +30,9 @@
 
 #include "log.h"
 #include "utils.h"
+#include "utils_json.h"
 
 namespace sh {
-
-inline std::string require_string_value(const json11::Json& json, const std::string& key) {
-	std::string msg{ "Missing cnfig key: " + key };
-
-	if (json[key].is_null()) {
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
-	}
-	return json[key].string_value();
-}
-
-template <typename T_>
-inline T_ require_int_value(const json11::Json& json, const std::string& key) {
-	std::string msg{ "Missing cnfig key: " + key };
-
-	if (json[key].is_null()) {
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
-	}
-	return static_cast<T_>(json[key].int_value());
-}
-
-inline bool require_bool_value(const json11::Json& json, const std::string& key) {
-	std::string msg{ "Missing cnfig key: " + key };
-
-	if (json[key].is_null()) {
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
-	}
-	return json[key].bool_value();
-}
 
 struct VideoFilenameOffsets {
 	size_t vid_ID_off;
@@ -176,6 +146,8 @@ struct Config {
 
 	std::string collage_region_file_prefix;
 	size_t collage_regions;
+
+	std::string test_data_root;
 
 	static Config parse_json_config(const std::string& filepath);
 	static Config parse_json_config_string(const std::string& cfg_file_contents);
@@ -291,8 +263,9 @@ inline Config Config::parse_json_config_string(const std::string& cfg_file_conte
 		// .collage_region_file_prefix
 		require_string_value(json, "collage_region_file_prefix"),
 		// .collage_regions
-		require_int_value<size_t>(json, "collage_regions")
+		require_int_value<size_t>(json, "collage_regions"),
 
+		require_string_value(json, "test_data_root")
 	};
 	// clang-format on
 

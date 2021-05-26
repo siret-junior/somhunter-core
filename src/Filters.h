@@ -311,6 +311,9 @@ public:
 
 	bool is_save{ false };
 
+	static CanvasQuery parse_json(const std::string& filepath);
+	static CanvasQuery parse_json_contents(const std::string& contents, const std::filesystem::path parentPath) ;
+
 public:
 	/** Subregion queries */
 	std::vector<CanvasSubquery> _subqueries;
