@@ -23,6 +23,7 @@
 
 #include <stack>
 #include <string>
+#include <filesystem>
 
 #include "SomHunter.h"
 #include "config_json.h"
@@ -32,6 +33,7 @@
 namespace sh {
 namespace tests {
 
+namespace fs = std::filesystem;
 
 // clang-format off
 
@@ -60,6 +62,7 @@ public:
 		TEST_bookmark_frames(core);
 		TEST_autocomplete_keywords(core);
 		TEST_rescore(core);
+		TEST_collage_queries(core, config);
 
 #ifdef TEST_FILTERS
 		TEST_rescore_filters(core);
@@ -71,6 +74,27 @@ public:
 	}
 
 private:
+
+	static void TEST_collage_queries(SomHunter& core, Config& cfg) 
+	{
+		SHLOG("\t Testing `SomHunter::rescore` method with collage queries...");
+		core.reset_search_session();
+
+		auto canvQuery = CanvasQuery::parse_json(fs::path(cfg.test_data_root) / "collages/test_collage/query-info25-05-2021_22-06-33.json");
+		Query q(std::move(canvQuery));
+		core.rescore(q);
+
+#ifdef TESTING_ITEC_DATASET
+		auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
+		do_assert(disp[0]->frame_ID == 602,
+		       "Incorrect frame in the display.");
+		do_assert(disp[1]->frame_ID == 433,
+		       "Incorrect frame in the display.");
+
+#endif
+		SHLOG("\t Testing `SomHunter::rescore` method with collage queries finished.");
+	}
+
 	static void TEST_like_frames(SomHunter &core)
 	{
 		SHLOG("\t Testing `SomHunter::like_frames` method...");

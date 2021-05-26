@@ -148,7 +148,6 @@ private:
 	 *
 	 */
 	std::vector<std::pair<ImageId, float>> get_sorted_frames(const std::vector<std::vector<KeywordId>>& positive,
-
 	                                                         const DatasetFeatures& features,
 	                                                         const DatasetFrames& frames, const Config& cfg) const;
 };

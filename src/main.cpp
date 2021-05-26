@@ -168,8 +168,10 @@ int main() {
 
 #endif  // Run CanvasQuery benchmark
 
+#if 0 
 	NetworkApi api{ config.API_config, &core };
 	api.run();
+#endif
 
 #ifdef DO_TESTS
 #	if 0  // Serialized CanvasQueries
@@ -302,7 +304,8 @@ int main() {
 	SHLOG_REQ("123.0.0.1", "this is an API request");
 
 	tests::TESTER_SomHunter::run_all_tests(cfg_fpth);
-	tests::TESTER_Config::run_all_tests(cfg_fpth);
+	// TODO update config tests
+	//tests::TESTER_Config::run_all_tests(cfg_fpth);
 
 #endif  // DO_TESTS
 

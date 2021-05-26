@@ -263,7 +263,9 @@
 		"kw_PCA_mean_vec_file": "data/ITEC_w2vv/ITEC_20200411.w2vv.pca.mean.bin",
 		"kw_PCA_mat_file": "data/ITEC_w2vv/ITEC_20200411.w2vv.pca.matrix.bin",
 			
-		"LSC_metadata_file": ""
+		"LSC_metadata_file": "",
+
+        "test_data_root": "tests/data"
 	}
   	
 }

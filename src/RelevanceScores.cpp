@@ -34,7 +34,7 @@
 
 using namespace sh;
 
-#define MINIMAL_SCORE 1e-12f
+#define MINIMAL_SCORE 1e-18f
 
 struct FrameScoreIdPair {
 	float score;
