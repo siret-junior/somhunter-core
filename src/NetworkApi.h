@@ -106,9 +106,8 @@ private:
 
 	// *** Helpers ***
 	RescoreMetadata extract_rescore_metadata(web::json::value& body);
-	RelevanceFeedbackQuery extract_relevance_feedback(web::json::value& body);
-	TextualQuery extract_textual_query(web::json::value& body);
-	CanvasQuery extract_canvas_query(web::json::value& body);
+	std::vector<TextualQuery> extract_textual_query(web::json::value& body);
+	std::vector<CanvasQuery> extract_canvas_query(web::json::value& body);
 	Filters extract_filters(web::json::value& body);
 
 private:

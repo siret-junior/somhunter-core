@@ -90,12 +90,21 @@ void ScoreModel::reset(float val) {
 	invalidate_cache();
 
 	for (auto& i : _scores) i = val;
+	for (auto&& moment_score : _temporal_scores) {
+		for (auto& ms : moment_score) ms = val;
+	}
 }
 
 float ScoreModel::adjust(ImageId i, float prob) {
 	invalidate_cache();
 
 	return _scores[i] *= prob;
+}
+
+float ScoreModel::adjust(size_t temp, ImageId i, float prob) {
+	invalidate_cache();
+
+	return _temporal_scores[temp][i] *= prob;
 }
 
 float ScoreModel::set(ImageId i, float prob) {
@@ -316,11 +325,59 @@ void ScoreModel::apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& s
 	normalize();
 }
 
-void ScoreModel::normalize() {
+void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& frames) {
+	if (depth == 0) return;
+
+	depth = std::min(depth, _temporal_scores.size());
+
+	// Last level copy to main scores
+	for (size_t j = 0; j < _scores.size(); ++j) {
+		_scores[j] = _temporal_scores[depth - 1][j];
+	}
+
+	// At this point the _temporal_scores contains proportional inverse scores
+	// Other levels multiply with minimal inverse scores from window
+	for (long i = depth - 2; i >= 0; --i) {
+		for (size_t j = 0; j < _scores.size(); ++j) {
+			auto img_it = frames.get_frame_it(j);
+			VideoId vid_ID = img_it->video_ID;
+
+			// Select minimal proportional inverse score
+			float min = 1;
+			for (size_t k = 1; k < KW_TEMPORAL_SPAN && j + k < _scores.size(); ++k) {
+				img_it++;
+				if (img_it->video_ID != vid_ID) break;
+				min = std::min(min, _scores[j + k]);
+			}
+			_scores[j] = _temporal_scores[i][j] * min;
+		}
+	}
+
+	// Apply exponential
+	for (size_t j = 0; j < _scores.size(); ++j) {
+		_scores[j] = std::exp(_scores[j] * -50);
+	}
+
+	for (size_t i = 0; i < depth; ++i) {
+		for (size_t j = 0; j < _scores.size(); ++j) {
+			_temporal_scores[i][j] = std::exp(_temporal_scores[i][j] * -50);
+		}
+	}
+}
+
+void ScoreModel::normalize(size_t depth) {
+	depth = std::min<size_t>(depth, MAX_TEMPORAL_SIZE);
+
+	normalize(_scores.data(), _scores.size());
+	for (size_t i = 0; i < depth; ++i)
+		normalize(_temporal_scores[i].data(), _temporal_scores[i].size());
+}
+
+void ScoreModel::normalize(float* scores, size_t size) {
 	float smax = 0;
 
-	for (ImageId ii = 0; ii < _scores.size(); ++ii)
-		if (_scores[ii] > smax) smax = _scores[ii];
+	for (ImageId ii = 0; ii < size; ++ii)
+		if (scores[ii] > smax) smax = scores[ii];
 
 	if (smax < MINIMAL_SCORE) {
 		SHLOG_E("all images have negligible score!");
@@ -328,10 +385,10 @@ void ScoreModel::normalize() {
 	}
 
 	size_t n = 0;
-	for (ImageId ii = 0; ii < _scores.size(); ++ii) {
+	for (ImageId ii = 0; ii < size; ++ii) {
 		if (_mask[ii]) {
-			_scores[ii] /= smax;
-			if (_scores[ii] < MINIMAL_SCORE) ++n, _scores[ii] = MINIMAL_SCORE;
+			scores[ii] /= smax;
+			if (scores[ii] < MINIMAL_SCORE) ++n, scores[ii] = MINIMAL_SCORE;
 		}
 	}
 }
@@ -343,4 +400,24 @@ size_t ScoreModel::frame_rank(ImageId i) const {
 		if (s > tar_score) ++rank;
 	}
 	return rank;
+}
+
+std::vector<std::pair<ImageId, float>> ScoreModel::sort_by_score(const StdVector<float>& scores) {
+	// Zip scores with frame IDs
+	std::vector<std::pair<ImageId, float>> id_scores;
+	id_scores.reserve(scores.size());
+	{
+		size_t i{ 0 };
+		std::transform(scores.begin(), scores.end(), std::back_inserter(id_scores), [&i](const float& x) {
+			return std::pair{ i++, x };
+		});
+	}
+
+	// Sort results
+	std::sort(id_scores.begin(), id_scores.end(),
+	          [](const std::pair<size_t, float>& left, const std::pair<size_t, float>& right) {
+		          return left.second < right.second;
+	          });
+
+	return id_scores;
 }

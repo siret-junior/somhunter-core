@@ -35,8 +35,8 @@ inline void require_value(const json11::Json& json, std::string msg = "Missing J
 }
 
 inline void require_key(const json11::Json& json, const std::string& key) {
-    std::string msg{ "Missing JSON key: " + key };
-    require_value(json[key], msg);
+	std::string msg{ "Missing JSON key: " + key };
+	require_value(json[key], msg);
 }
 
 inline std::string require_string_value(const json11::Json& json, const std::string& key) {
@@ -72,6 +72,6 @@ inline bool require_bool_value(const json11::Json& json, const std::string& key)
 	return json[key].bool_value();
 }
 
-} // namespace sh
+}  // namespace sh
 
 #endif  // UTILS_JSON_H_

@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License along with
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
+#include <algorithm>
 
 #include "SomHunter.h"
 
@@ -228,18 +229,10 @@ json::value to_SearchContext(SomHunter* p_core, const UserContext& ctx) {
 			std::string q1{};
 
 			// Scan the query string
-			const auto& query{ search_ctx.last_text_query };
-			auto idx{ query.find(">>") };
-
-			// If temporal
-			if (idx != std::string::npos) {
-				q0 = query.substr(0, idx);
-				q1 = query.substr(idx + 2);
-			}
-			// Else simple
-			else {
-				q0 = query;
-			}
+			if (search_ctx.last_temporal_queries.size() > 0)
+				q0 = search_ctx.last_temporal_queries[0].textual;
+			if (search_ctx.last_temporal_queries.size() > 1)
+				q1 = search_ctx.last_temporal_queries[1].textual;
 
 			json::value q0_napi = json::value::string(to_string_t(q0));
 			json::value q1_napi = json::value::string(to_string_t(q1));
@@ -1021,13 +1014,7 @@ RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body) {
 	return md;
 }
 
-RelevanceFeedbackQuery NetworkApi::extract_relevance_feedback(web::json::value& /*body*/) {
-	RelevanceFeedbackQuery rfq;
-	rfq.likes = _p_core->get_search_context().likes;
-	return rfq;
-}
-
-TextualQuery NetworkApi::extract_textual_query(web::json::value& body) {
+std::vector<TextualQuery> NetworkApi::extract_textual_query(web::json::value& body) {
 	/*
 	 * Extract from the body
 	 */
@@ -1037,29 +1024,25 @@ TextualQuery NetworkApi::extract_textual_query(web::json::value& body) {
 	/*
 	 * Process it
 	 */
-	TextualQuery textual_query;
-	textual_query.query.append(q0).append(" >> ").append(q1);
-
-	return textual_query;
+	return {q0, q1};
 }
 
-CanvasQuery NetworkApi::extract_canvas_query(web::json::value& body) {
+std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body) {
 	/*
 	 * Extract from the body
 	 */
 	json::value outer_array{ body[U("canvas_query")] };
+
+	if (outer_array.is_null()) {
+		return { DEFAULT_COLLAGE };
+	}
 
 	bool is_save{ body[U("is_save")].as_bool() };
 
 	/*
 	 * Process it
 	 */
-	CanvasQuery canvas_query;
-	canvas_query.is_save = is_save;
-
-	if (outer_array.is_null()) {
-		return DEFAULT_COLLAGE;
-	}
+	std::vector<CanvasQuery> canvas_query;
 
 	/* outer_array:
 	[
@@ -1071,11 +1054,11 @@ CanvasQuery NetworkApi::extract_canvas_query(web::json::value& body) {
 
 	// For each temporal query provided by the user
 	for (size_t temp_i{ 0 }; temp_i < outer_array.size(); ++temp_i) {
-		canvas_query.push_query_begin();  // Mark the query begin
+		canvas_query.push_back(CanvasQuery());
 
 		auto inner_arr{ outer_array[temp_i] };
 		if (inner_arr.is_null()) {
-			return DEFAULT_COLLAGE;
+			return { DEFAULT_COLLAGE };
 		}
 
 		/* inner_arr:
@@ -1103,7 +1086,7 @@ CanvasQuery NetworkApi::extract_canvas_query(web::json::value& body) {
 			// If textual query on the canvas
 			if (subquery_type == "text") {
 				std::string text_query{ to_utf8string(subquery_JSON[U("text_query")].as_string()) };
-				canvas_query.emplace_back(rect, text_query);
+				canvas_query[temp_i].emplace_back(rect, text_query);
 			}
 			// Else bitmap
 			else {
@@ -1111,11 +1094,13 @@ CanvasQuery NetworkApi::extract_canvas_query(web::json::value& body) {
 				size_t width{ static_cast<size_t>(subquery_JSON[U("width_pixels")].as_integer()) };
 				size_t height{ static_cast<size_t>(subquery_JSON[U("height_pixels")].as_integer()) };
 				size_t num_channels{ static_cast<size_t>(subquery_JSON[U("num_channels")].as_integer()) };
-				canvas_query.emplace_back(rect, width, height, num_channels, bitmap_data.data());
+				canvas_query[temp_i].emplace_back(rect, width, height, num_channels, bitmap_data.data());
 			}
 		}
 	}
-	canvas_query.push_query_begin();
+
+	for (CanvasQuery& q : canvas_query)
+		q.is_save = is_save;
 
 	return canvas_query;
 }
@@ -1155,16 +1140,16 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		RescoreMetadata rescore_metadata{ extract_rescore_metadata(body) };
 
 		// Relevance feedbask query
-		RelevanceFeedbackQuery relevance_query{ extract_relevance_feedback(body) };
+		RelevanceFeedbackQuery relevance_query{ _p_core->get_search_context().likes };
 
 		// Text queries
-		TextualQuery textual_query{ extract_textual_query(body) };
+		std::vector<TextualQuery> textual_query{ extract_textual_query(body) };
 
 		// Filters
 		Filters filters{ extract_filters(body) };
 
 		// Canvas queries
-		CanvasQuery canvas_query{ extract_canvas_query(body) };
+		std::vector<CanvasQuery> canvas_query{ extract_canvas_query(body) };
 
 		// Is the query non-empty?
 		if (textual_query.empty() && relevance_query.empty() && canvas_query.empty()) {
@@ -1177,8 +1162,16 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		query.metadata = std::move(rescore_metadata);
 		query.filters = std::move(filters);
 		query.relevance_feeedback = std::move(relevance_query);
-		query.textual_query = std::move(textual_query);
-		query.canvas_query = std::move(canvas_query);
+		size_t temp_length = std::max(textual_query.size(), canvas_query.size());
+		for (size_t i = 0; i < temp_length; ++i) {
+			TemporalQuery tq;
+			if (i < textual_query.size())
+				tq.textual = textual_query[i];
+			if (i < canvas_query.size())
+				tq.canvas = canvas_query[i];
+			// TODO add relocation
+			query.temporal_queries.push_back(tq);
+		}
 	} catch (...) {
 		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
 		NetworkApi::add_CORS_headers(res);

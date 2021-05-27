@@ -1,4 +1,3 @@
-
 /* This file is part of SOMHunter.
  *
  * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
@@ -19,18 +18,29 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SearchContext.h"
-
-#include "DatasetFeatures.h"
-#include "DatasetFrames.h"
+#include "EmbeddingRanker.h"
 
 using namespace sh;
 
-SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFrames& frames) : ID(ID), scores(frames) {}
+std::vector<float> EmbeddingRanker::inverse_score_vector(const std::vector<float>& query_vec, const DatasetFeatures& features) const {
+	return inverse_score_vector(query_vec.data(), features);
+}
 
-bool SearchContext::operator==(const SearchContext& other) const {
-	return (ID == other.ID && used_tools == other.used_tools && current_display == other.current_display &&
-	        curr_disp_type == other.curr_disp_type && scores == other.scores &&
-	        last_temporal_queries == other.last_temporal_queries && likes == other.likes && shown_images == other.shown_images &&
-	        screenshot_fpth == other.screenshot_fpth && filters == other.filters);
+std::vector<float> EmbeddingRanker::inverse_score_vector(const float* query_vec, const DatasetFeatures& features) const {
+	size_t target_dim{ features.dim() };
+
+	// Result is final score \in [0.0F, 1.0F] of `query_vec` as temporal query
+	std::vector<float> scores;
+	scores.resize(features.size());
+
+	// For all frame_IDs
+	for (ImageId frame_ID = 0; frame_ID < features.size(); ++frame_ID) {
+		const float* raw_frame_features = features.fv(frame_ID);
+
+		auto dist = utils::d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0f;
+
+		scores[frame_ID] = dist;
+	}
+
+	return scores;
 }

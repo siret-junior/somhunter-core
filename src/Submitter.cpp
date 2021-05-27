@@ -27,8 +27,8 @@
 
 #include <curl/curl.h>
 
-#include "Filters.h"
 #include "ImageManipulator.h"
+#include "query_types.h"
 
 using namespace sh;
 
@@ -655,10 +655,13 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 #endif  // LOG_LOGS
 }
 
-void Submitter::log_canvas_query(const CanvasQuery& canvas_query, const std::vector<VideoFrame>* p_targets) {
+void Submitter::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/, const std::vector<VideoFrame>* p_targets) {
+
+	if (temp_queries.empty()) return;
+
 	auto path{ cfg.log_queries_dir + "/"s + std::to_string(utils::timestamp()) + "/"s };
 
-	if (canvas_query.is_save) {
+	if (temp_queries[0].canvas.is_save) {
 		path = "saved-queries/"s + std::to_string(utils::timestamp()) + "/"s;
 	}
 
@@ -668,7 +671,7 @@ void Submitter::log_canvas_query(const CanvasQuery& canvas_query, const std::vec
 	std::string readable_timestamp{ utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") };
 
 	// Serialize the instance for possible debugging
-	utils::serialize_to_file(canvas_query, path + "query-instance-" + readable_timestamp + ".bin");
+	utils::serialize_to_file(temp_queries, path + "query-instance-" + readable_timestamp + ".bin");
 
 	// Write log info
 	std::ofstream o(path + "query-info" + readable_timestamp + ".json");
@@ -685,17 +688,18 @@ void Submitter::log_canvas_query(const CanvasQuery& canvas_query, const std::vec
 		}
 	}
 
-	Json json{ canvas_query.to_JSON() };
+	std::vector<json11::Json> arr;
+	for (auto&& tq : temp_queries)
+		arr.push_back(tq.canvas.to_JSON());
+	Json json{ arr };
 
 	// Write bitmaps as JPEGs
 	// For each temporal part
-
-	for (size_t qidx{ 0 }; qidx < canvas_query.num_temp_queries(); ++qidx) {
-		size_t qbegin{ canvas_query.query_begins(qidx) };
-		size_t qend{ canvas_query.query_begins(qidx + 1) };
-
-		for (size_t i{ qbegin }; i < qend; ++i) {
-			auto& sqo{ json.array_items()[qidx].array_items()[i - qbegin].object_items() };
+	
+	for (size_t qidx{ 0 }; qidx < temp_queries.size(); ++qidx) {
+		auto&& canvas_query{temp_queries[qidx].canvas};
+		for (size_t i{ 0 }; i < canvas_query.size(); ++i) {
+			auto& sqo{ json.array_items()[qidx].array_items()[i].object_items() };
 
 			const CanvasSubquery& subquery{ canvas_query[i] };
 

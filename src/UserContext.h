@@ -25,6 +25,8 @@
 
 #include <optional>
 #include <vector>
+#include <array>
+#include <memory>
 
 #include "common.h"
 
@@ -69,6 +71,7 @@ public:
 
 	Submitter submitter;
 	AsyncSom async_SOM;
+	std::vector<std::unique_ptr<AsyncSom>> temp_async_SOM;
 
 	/** Frames selected as important. */
 	BookmarksCont bookmarks;

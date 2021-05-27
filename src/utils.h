@@ -307,9 +307,10 @@ inline float d_cos_normalized(const std::vector<float>& left, const std::vector<
 /**
  * Vectors must have unit size!
  */
-inline float d_cos_normalized(const std::vector<float>& left, const float* right, size_t dim) {
+
+inline float d_cos_normalized(const float* left, const float* right, size_t dim) {
 	float s = 0.0f;
-	const float* iv = left.data();
+	const float* iv = left;
 	const float* jv = right;
 
 	for (size_t d = 0; d < dim; ++d) {
@@ -317,6 +318,10 @@ inline float d_cos_normalized(const std::vector<float>& left, const float* right
 	}
 
 	return 1.0f - s;
+}
+
+inline float d_cos_normalized(const std::vector<float>& left, const float* right, size_t dim) {
+	return d_cos_normalized(left.data(), right, dim);
 }
 
 /**

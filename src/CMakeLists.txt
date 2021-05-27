@@ -16,11 +16,13 @@ set(HEADERS
 	RelevanceScores.h
   	SomHunter.h
 	Submitter.h
-	Filters.h
+	query_types.h
 	UserContext.h
 	SearchContext.h
 	ImageManipulator.h
 	CanvasQueryRanker.h
+	EmbeddingRanker.h
+	RelocationRanker.h
 
 	#Extractor.h
 	NetworkApi.h
@@ -36,11 +38,13 @@ set(SOURCES
 	RelevanceScores.cpp
   	SomHunter.cpp
 	Submitter.cpp
-	Filters.cpp
+	query_types.cpp
 	UserContext.cpp
 	SearchContext.cpp
 	ImageManipulator.cpp
 	CanvasQueryRanker.cpp
+	EmbeddingRanker.cpp
+	RelocationRanker.cpp
 
 	#Extractor.cpp
 	NetworkApi.cpp

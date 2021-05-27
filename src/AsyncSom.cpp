@@ -150,10 +150,10 @@ AsyncSom::~AsyncSom() {
 	SHLOG_D("SOM worker terminated.");
 }
 
-void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc) {
+void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig) {
 	std::unique_lock lck(worker_lock);
 	points = std::vector<float>(fs.fv(0), fs.fv(0) + fs.dim() * sc.size());
-	scores = std::vector<float>(sc.v(), sc.v() + sc.size());
+	scores = std::vector<float>(scores_orig, scores_orig + sc.size());
 	present_mask = std::vector<bool>(sc.size(), false);
 	for (ImageId ii = 0; ii < sc.size(); ++ii) present_mask[ii] = sc.is_masked(ii);
 

@@ -1,3 +1,23 @@
+/* This file is part of SOMHunter.
+ *
+ * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
+ *                    Mirek Kratochvil <exa.exa@gmail.com>
+ *                    Patrik Veselý <prtrikvesely@gmail.com>
+ *
+ * SOMHunter is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * SOMHunter is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef COLLAGE_RANKER_H_
 #define COLLAGE_RANKER_H_
 
@@ -17,10 +37,10 @@
 
 #include "log.h"
 
-#include "Filters.h"
 #include "ImageManipulator.h"
 #include "KeywordRanker.h"
 #include "common.h"
+#include "query_types.h"
 
 namespace sh {
 
@@ -75,38 +95,16 @@ at::Tensor to_tensor(std::vector<std::vector<OrigDType_>>& orig_mat) {
 }
 
 class CanvasQueryRanker {
-public:
-	CanvasQueryRanker(const Config& config, KeywordRanker* p_core);
-	void score(CanvasQuery&, ScoreModel& model, const DatasetFeatures& features, const DatasetFrames& frames);
-
-public:
-	static const size_t models_input_width{ 224 };
-	static const size_t models_input_height{ 224 };
-	static const size_t models_num_channels{ 3 };
-
-private:
 	KeywordRanker* _p_core;
 	bool _loaded;
 
-private:
 	torch::jit::script::Module resnet152;
 	torch::jit::script::Module resnext101;
 	torch::Tensor bias;
 	torch::Tensor weights;
 	torch::Tensor kw_pca_mat;
 	torch::Tensor kw_pca_mean_vec;
-
-	std::vector<FeatureMatrix> region_data;
-
-	at::Tensor get_features(CanvasQuery&);
-	at::Tensor get_L2norm(at::Tensor data);
-
-	std::vector<std::size_t> get_RoIs(CanvasQuery& collage);
-	std::size_t get_RoI(CanvasSubquery image);
-
-	std::vector<float> score_image(std::vector<float> feature, std::size_t region);
-	std::vector<float> average_scores(std::vector<std::vector<float>> scores);
-
+	
 	const std::vector<std::vector<float>> RoIs = {
 		{ 0.0, 0.0, 1.0, 1.0 }, { 0.1, 0.2, 0.4, 0.6 }, { 0.3, 0.2, 0.4, 0.6 }, { 0.5, 0.2, 0.4, 0.6 },
 
@@ -114,6 +112,28 @@ private:
 
 		{ 0.0, 0.4, 0.4, 0.6 }, { 0.2, 0.4, 0.4, 0.6 }, { 0.4, 0.4, 0.4, 0.6 }, { 0.6, 0.4, 0.4, 0.6 },
 	};
+
+public:
+	static const size_t models_input_width{ 224 };
+	static const size_t models_input_height{ 224 };
+	static const size_t models_num_channels{ 3 };
+
+	CanvasQueryRanker(const Config& config, KeywordRanker* p_core);
+	void score(const CanvasQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& features, const DatasetFrames& frames);
+
+private:
+
+	std::vector<FeatureMatrix> region_data;
+
+	at::Tensor get_features(const CanvasQuery&);
+	at::Tensor get_L2norm(const at::Tensor& data) const;
+
+	std::vector<std::size_t> get_RoIs(const CanvasQuery& collage) const;
+	std::size_t get_RoI(const CanvasSubquery& image) const;
+
+	std::vector<float> score_image(const std::vector<float>&  feature, std::size_t region) const;
+	std::vector<float> average_scores(const std::vector<std::vector<float>>& scores) const;
+
 };
 
 // This serves for default parameters of type Collage&

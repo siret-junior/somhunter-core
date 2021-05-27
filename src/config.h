@@ -107,4 +107,6 @@ overloaded(Ts...) -> overloaded<Ts...>;
 
 #include "log.h"
 
+constexpr int MAX_TEMPORAL_SIZE = 2;
+
 #endif
