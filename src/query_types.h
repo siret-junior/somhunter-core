@@ -328,6 +328,7 @@ struct TemporalQuery {
 	const bool isRelocation() const { return relocation != IMAGE_ID_ERR_VAL; }
 	const bool isCanvas() const { return !canvas.empty(); }
 	const bool isText() const { return !textual.empty(); }
+	const bool isEmpty() const { return !isRelocation() && !isCanvas() && !isText(); }
 
 	template <class Archive>
 	void serialize(Archive& archive) {
