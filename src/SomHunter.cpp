@@ -189,14 +189,15 @@ void SomHunter::apply_filters() {
 	}
 }
 
-RescoreResult SomHunter::rescore(Query& query, bool run_SOM) {
-	return rescore(query.textual_query.query, query.canvas_query, &query.filters, query.metadata.srd_search_ctx_ID,
+RescoreResult SomHunter::rescore(const Query& query, bool run_SOM) {
+	return rescore(query.temporal_queries, query.relevance_feeedback, &query.filters, query.metadata.srd_search_ctx_ID,
 	               query.metadata.screenshot_filepath, query.metadata.time_label, run_SOM);
 }
 
-RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& canvas_query, const Filters* p_filters,
-                                 size_t src_search_ctx_ID, const std::string& screenshot_fpth, const std::string& label,
-                                 bool run_SOM) {
+RescoreResult SomHunter::rescore(const std::vector<TemporalQuery>& temporal_query,
+                                 const RelevanceFeedbackQuery& rfQuery,
+                                 const Filters* p_filters, size_t src_search_ctx_ID, const std::string& screenshot_fpth,
+                                 const std::string& label, bool run_SOM) {
 	/* ***
 	 * Set the filters to the context
 	 */
@@ -217,8 +218,9 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 	 * Save provided screenshot filepath if needed
 	 */
 	if (user.history.size() <= src_search_ctx_ID) {
-		return RescoreResult{ user.ctx.ID, user.history, user.ctx.get_curr_targets() };
+		return RescoreResult{ user.ctx.ID, user.history, user.ctx.curr_targets };
 	}
+
 	if (src_search_ctx_ID != SIZE_T_ERR_VAL && user.history[src_search_ctx_ID].screenshot_fpth.empty()) {
 		user.history[src_search_ctx_ID].label = label;
 		user.history[src_search_ctx_ID].screenshot_fpth = screenshot_fpth;
@@ -228,27 +230,52 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 	 * Do all the needed rescore steps
 	 */
 	// Store likes for the logging purposees
-	auto old_likes{ user.ctx.likes };
+	auto old_likes{ rfQuery };
 
-	// If NOT COLLAGE
-	if (canvas_query.empty()) {
-		SHLOG_D("Running plain texual model...");
-		rescore_keywords(text_query);
-	} else {
-		SHLOG_D("Running the canvas query model...");
+	// Check if temporal queries has changed
+	if (user.ctx.last_temporal_queries != temporal_query) {
 		reset_scores();
-		canvas_query.set_targets(user.ctx.get_curr_targets());
-		user.submitter.log_canvas_query(canvas_query,
-		                                &user.ctx.get_curr_targets());  // < This triggers log into the /logs/collage/
-		collageRanker.score(canvas_query, user.ctx.scores, features, frames);
+		user.ctx.temporal_size = temporal_query.size();
+		size_t moment = 0;
+
+		user.submitter.log_canvas_query(
+			temporal_query,
+			&user.ctx.curr_targets);  // < This triggers log into the /logs/collage/
+
+		for (size_t mi = 0; mi < temporal_query.size(); ++mi) {
+			auto&& moment_query = temporal_query[mi];
+			auto&& last_moment_query = user.ctx.last_temporal_queries[mi];
+
+			if (moment_query.isRelocation()) {
+				SHLOG_D("Running the relocation query model...");
+				relocationRanker.score(moment_query.relocation, user.ctx.scores, moment, features);
+			} else if (moment_query.isCanvas()) {
+				SHLOG_D("Running the canvas query model...");
+				// canvas_query.set_targets(user.ctx.curr_targets);
+				collageRanker.score(moment_query.canvas, user.ctx.scores, moment, features, frames);
+
+			} else if (moment_query.isText()) {
+				SHLOG_D("Running plain texual model...");
+				rescore_keywords(moment_query.textual, moment);
+			}
+			++moment;
+		}
+		// Cache the appliend temporal queries
+		user.ctx.last_temporal_queries = temporal_query;
+		// Apply temporal fusion
+		user.ctx.scores.apply_temporals(user.ctx.temporal_size, frames);
+		// Normalize the scores
+		user.ctx.scores.normalize(user.ctx.temporal_size);
 	}
+
 	apply_filters();
+	// Apply feedback and normalize
 	rescore_feedback();
 
 	// If SOM required
 	if (run_SOM) {
 		// Notify the SOM worker thread
-		som_start();
+		som_start(user.ctx.temporal_size);
 	}
 
 	// Reset the "seen frames" constext for the Bayes
@@ -269,7 +296,7 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 
 	// Log this rescore result
 	user.submitter.submit_and_log_rescore(frames, user.ctx.scores, old_likes, user.ctx.used_tools,
-	                                      user.ctx.curr_disp_type, top_n, user.ctx.last_text_query,
+	                                      user.ctx.curr_disp_type, top_n, "TODO add text query logging",
 	                                      config.topn_frames_per_video, config.topn_frames_per_shot);
 
 	// !!!!
@@ -293,10 +320,10 @@ RescoreResult SomHunter::rescore(const std::string& text_query, CanvasQuery& can
 			targets.emplace_back(f);
 			targets.emplace_back(nextf);
 		}
-		user.ctx.set_curr_targets(targets);
+		user.ctx.curr_targets = std::move(targets);
 	}
 
-	return RescoreResult{ user.ctx.ID, user.history, user.ctx.get_curr_targets() };
+	return RescoreResult{ user.ctx.ID, user.history, user.ctx.curr_targets };
 }
 
 bool SomHunter::som_ready() const { return user.async_SOM.map_ready(); }
@@ -312,12 +339,12 @@ void SomHunter::reset_search_session() {
 
 	user.ctx.shown_images.clear();
 	user.ctx.likes.clear();
-	user.ctx.last_text_query = "";
+	user.ctx.last_temporal_queries.clear();
 
 	reset_scores();
 
 	user.submitter.log_reset_search();
-	som_start();
+	som_start(MAX_NUM_TEMP_QUERIES);
 
 	// Reset UserContext
 	user.reset();
@@ -389,6 +416,7 @@ void SomHunter::benchmark_native_text_queries(const std::string& queries_filepat
 	std::getline(ifs, line);
 
 	// Read the file line by line
+	std::string delimiter(">>");
 	for (; std::getline(ifs, line);) {
 		std::stringstream line_ss(line);
 
@@ -402,7 +430,16 @@ void SomHunter::benchmark_native_text_queries(const std::string& queries_filepat
 		ImageId target_frame_ID{ utils::str2<ImageId>(tokens[0]) };
 		std::string text_query{ std::move(tokens[1]) };
 
-		bench_queries.emplace_back(PlainTextBenchmarkQuery{ std::vector<ImageId>{ target_frame_ID }, text_query });
+		// Split query into temporal one
+		size_t pos = 0;
+		std::string token;
+		std::vector<TextualQuery> tempQuery;
+		while ((pos = text_query.find(delimiter)) != std::string::npos) {
+			tempQuery.push_back(text_query.substr(0, pos));
+			text_query.erase(0, pos + delimiter.length());
+		}
+
+		bench_queries.emplace_back(PlainTextBenchmarkQuery{ std::vector<ImageId>{ target_frame_ID }, std::move(tempQuery) });
 	}
 
 	std::vector<std::vector<float>> query_results;
@@ -468,17 +505,10 @@ void SomHunter::benchmark_native_text_queries(const std::string& queries_filepat
 	}
 }
 
-void SomHunter::rescore_keywords(const std::string& query) {
-	// Do not rescore if query did not change
-	if (user.ctx.last_text_query == query) {
-		return;
-	}
+void SomHunter::rescore_keywords(const TextualQuery& query, size_t temporal) {
 
-	reset_scores();
+	keywords.rank_sentence_query(query, user.ctx.scores, features, config, temporal);
 
-	keywords.rank_sentence_query(query, user.ctx.scores, features, frames, config);
-
-	user.ctx.last_text_query = query;
 	user.ctx.used_tools.KWs_used = true;
 }
 
@@ -489,7 +519,12 @@ void SomHunter::rescore_feedback() {
 	user.ctx.used_tools.bayes_used = true;
 }
 
-void SomHunter::som_start() { user.async_SOM.start_work(features, user.ctx.scores); }
+void SomHunter::som_start(size_t temporal) {
+	user.async_SOM.start_work(features, user.ctx.scores, user.ctx.scores.v());
+	for (size_t i = 0; i < temporal; ++i) {
+		user.temp_async_SOM[i]->start_work(features, user.ctx.scores, user.ctx.scores.temp(i));
+	}
+}
 
 FramePointerRange SomHunter::get_random_display() {
 	// Get ids
@@ -659,7 +694,7 @@ FramePointerRange SomHunter::get_topKNN_display(ImageId selected_image, PageId p
 		ut.topknn_used = true;
 
 		user.submitter.submit_and_log_rescore(frames, user.ctx.scores, user.ctx.likes, ut, user.ctx.curr_disp_type, ids,
-		                                      user.ctx.last_text_query, config.topn_frames_per_video,
+		                                      "TODO add text query logging", config.topn_frames_per_video,
 		                                      config.topn_frames_per_shot);
 	}
 
@@ -719,7 +754,7 @@ const UserContext& SomHunter::switch_search_context(size_t index, size_t src_sea
 	user.ctx = SearchContext{ destContext };
 
 	// Kick-off the SOM for the old-new state
-	user.async_SOM.start_work(features, user.ctx.scores);
+	som_start(user.ctx.temporal_size);
 
 	// Returnp ptr to it
 	return user;

@@ -1,4 +1,3 @@
-
 /* This file is part of SOMHunter.
  *
  * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
@@ -19,18 +18,30 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SearchContext.h"
+#ifndef RELOCATION_RANKER_H_
+#define RELOCATION_RANKER_H_
 
-#include "DatasetFeatures.h"
+#include <cassert>
+#include <fstream>
+#include <iomanip>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "DatasetFrames.h"
+#include "EmbeddingRanker.h"
+#include "RelevanceScores.h"
+#include "common.h"
+#include "config_json.h"
+#include "utils.h"
+#include "query_types.h"
 
-using namespace sh;
+namespace sh {
+class RelocationRanker : public EmbeddingRanker {
+public:
+	void score(const RelocationQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& features) const;
+};
+}  // namespace sh
 
-SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFrames& frames) : ID(ID), scores(frames) {}
-
-bool SearchContext::operator==(const SearchContext& other) const {
-	return (ID == other.ID && used_tools == other.used_tools && current_display == other.current_display &&
-	        curr_disp_type == other.curr_disp_type && scores == other.scores &&
-	        last_temporal_queries == other.last_temporal_queries && likes == other.likes && shown_images == other.shown_images &&
-	        screenshot_fpth == other.screenshot_fpth && filters == other.filters);
-}
+#endif  // RELOCATION_H_

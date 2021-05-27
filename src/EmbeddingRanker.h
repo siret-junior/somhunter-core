@@ -1,4 +1,3 @@
-
 /* This file is part of SOMHunter.
  *
  * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
@@ -19,18 +18,37 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SearchContext.h"
+#ifndef EMBEDDING_RANKER_H_
+#define EMBEDDING_RANKER_H_
 
-#include "DatasetFeatures.h"
+#include <cassert>
+#include <fstream>
+#include <iomanip>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+
 #include "DatasetFrames.h"
+#include "RelevanceScores.h"
+#include "common.h"
+#include "config_json.h"
+#include "utils.h"
 
-using namespace sh;
+namespace sh {
 
-SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFrames& frames) : ID(ID), scores(frames) {}
+class EmbeddingRanker {
+public:
+    virtual ~EmbeddingRanker() noexcept {}
 
-bool SearchContext::operator==(const SearchContext& other) const {
-	return (ID == other.ID && used_tools == other.used_tools && current_display == other.current_display &&
-	        curr_disp_type == other.curr_disp_type && scores == other.scores &&
-	        last_temporal_queries == other.last_temporal_queries && likes == other.likes && shown_images == other.shown_images &&
-	        screenshot_fpth == other.screenshot_fpth && filters == other.filters);
-}
+protected:
+
+	std::vector<float> inverse_score_vector(const std::vector<float>& query_vecs, const DatasetFeatures& features) const;
+    
+    std::vector<float> inverse_score_vector(const float* query_vecs, const DatasetFeatures& features) const;
+
+};
+
+}  // namespace sh
+
+#endif  // EMBEDDING_RANKER_H_

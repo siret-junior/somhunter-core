@@ -32,8 +32,8 @@
 #include "utils.h"
 
 #include "DatasetFrames.h"
-#include "Filters.h"
 #include "RelevanceScores.h"
+#include "query_types.h"
 
 namespace sh {
 
@@ -45,8 +45,7 @@ class DatasetFeatures;
  *
  * It can be ome point in HISTORY.
  */
-class SearchContext {
-public:
+struct SearchContext {
 	SearchContext() = delete;
 	SearchContext(size_t ID, const Config& cfg, const DatasetFrames& frames);
 
@@ -58,7 +57,6 @@ public:
 	}
 	void reset_filters() { filters = Filters{}; }
 
-public:
 	// VBS logging
 	UsedTools used_tools;
 
@@ -69,8 +67,11 @@ public:
 	// Relevance scores
 	ScoreModel scores;
 
-	// Used keyword query
-	std::string last_text_query;
+	// Size of temporal query
+	size_t temporal_size;
+
+	// Used temporal queries
+	std::vector<TemporalQuery> last_temporal_queries;
 
 	// Relevance feedback context
 	LikesCont likes;
@@ -86,9 +87,6 @@ public:
 
 	/** Filters based on metadata (hour, weekday). */
 	Filters filters;
-
-	std::vector<VideoFrame>& get_curr_targets() { return curr_targets; }
-	void set_curr_targets(const std::vector<VideoFrame>& new_targets) { curr_targets = new_targets; }
 
 	/** Target we were looking for. (Data collection.) */
 	std::vector<VideoFrame> curr_targets;

@@ -71,9 +71,11 @@ public:
 	AsyncSom() = delete;
 	~AsyncSom() noexcept;
 
+	AsyncSom(AsyncSom&& cfg) = default;
+
 	AsyncSom(const Config& cfg);
 
-	void start_work(const DatasetFeatures& fs, const ScoreModel& sc);
+	void start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig);
 
 	bool map_ready() const {
 		bool t = m_ready;

@@ -249,14 +249,14 @@ KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) con
 StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query_raw) {
 	auto tokens{ tokenize_textual_query(query_raw) };
 
-	std::vector<std::vector<KeywordId>> temporal_queries_keyword_IDs{ split_tokens_to_temporal_queries(tokens) };
-	if (temporal_queries_keyword_IDs.empty()) {
+	if (tokens.empty()) {
 		// We return uniformly distributed valid vector
 		return utils::VecNorm(StdVector<float>(128, 0.3F));
 	}
 
-	auto textual_query_vectors{ embedd_text_queries(temporal_queries_keyword_IDs) };
-	return textual_query_vectors.front();
+	auto decoded{ decode_keywords(tokens) };
+	auto textual_query_vectors{ embedd_text_queries(decoded) };
+	return textual_query_vectors;
 }
 
 std::vector<std::string> KeywordRanker::tokenize_textual_query(const std::string& sentence_query_raw) const {
@@ -282,63 +282,40 @@ std::vector<std::string> KeywordRanker::tokenize_textual_query(const std::string
 	return query;
 }
 
-std::vector<std::vector<KeywordId>> KeywordRanker::split_tokens_to_temporal_queries(
-    const std::vector<std::string>& query) const {
-	std::vector<std::vector<KeywordId>> pos;
-
+std::vector<KeywordId> KeywordRanker::decode_keywords(const std::vector<std::string>& query) const {
 	std::vector<KeywordId> pos_one_query;
 	// Split tokens into temporal queries
 	for (const auto& kw_word : query) {
-		// If temp query separator
-		if (kw_word == ">>" || kw_word == ">") {
-			if (pos_one_query.empty()) continue;
-
-			// This query is done, deploy it
-			pos.emplace_back(std::move(pos_one_query));
-			pos_one_query.clear();
-			continue;
-		}
-
 		auto v = find(kw_word);
 
 		if (!v.empty()) pos_one_query.emplace_back(v.front().first);
 	}
 
-	// Deploy this last query
-	if (!pos_one_query.empty()) pos.emplace_back(std::move(pos_one_query));
-
-	return pos;
+	return pos_one_query;
 }
 
 void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
-                                        const DatasetFeatures& features, const DatasetFrames& frames,
-                                        const Config& cfg) const {
+                                        const DatasetFeatures& features, const Config& cfg, size_t temporal) const {
 	auto tokens{ tokenize_textual_query(sentence_query_raw) };
 
 	if (tokens.empty()) return;
 
-	std::vector<std::vector<KeywordId>> temporal_queries_keyword_IDs{ split_tokens_to_temporal_queries(tokens) };
-
-	rank_query(temporal_queries_keyword_IDs, model, features, frames, cfg);
-}
-
-void KeywordRanker::rank_query(const std::vector<std::vector<KeywordId>>& positive, ScoreModel& model,
-                               const DatasetFeatures& features, const DatasetFrames& frames, const Config& cfg) const {
-	// Don't waste time
-	if (positive.empty()) return;
+	auto decoded{ decode_keywords(tokens) };
 
 	// Get the most relevant images for this query
 	//  Distance is from [0, 1]
-	std::vector<std::pair<ImageId, float>> sorted_frames = get_sorted_frames(positive, features, frames, cfg);
+	auto embedded{ embedd_text_queries(decoded) };
+
+	// Compute the scores for each frame for this query
+	std::vector<float> scores{ inverse_score_vector(embedded, features) };
 
 	// Update the model
-	for (auto&& [frame_ID, dist] : sorted_frames) {
-		model.adjust(frame_ID, std::exp(dist * -50));
+	for (size_t i = 0; i < scores.size(); ++i) {
+		model.adjust(temporal, i, scores[i]);
 	}
-
-	model.normalize();
 }
 
+#ifdef TO_DELETE
 void KeywordRanker::apply_temp_queries(std::vector<std::vector<float>>& dist_cache, ImageId img_ID,
                                        const FeatureMatrix& queries, size_t query_idx, float& result_dist,
                                        const DatasetFeatures& features, const DatasetFrames& frames) {
@@ -379,88 +356,51 @@ void KeywordRanker::apply_temp_queries(std::vector<std::vector<float>>& dist_cac
 	// Write new dist to the parameter value
 	result_dist = result_dist * local_min_dist;
 }
+#endif
 
-std::vector<std::pair<ImageId, float>> KeywordRanker::get_sorted_frames(const std::vector<std::vector<KeywordId>>& kws,
+#ifdef TO_DELETE
+std::vector<std::pair<ImageId, float>> KeywordRanker::get_sorted_frames(const std::vector<KeywordId>& kws,
                                                                         const DatasetFeatures& features,
                                                                         const DatasetFrames& frames,
                                                                         const Config& /*cfg*/) const {
 	auto query_vecs{ embedd_text_queries(kws) };
 
 	// Compute the scores for each frame for this query
-	std::vector<float> scores{ score_vectors(query_vecs, features, frames) };
+	std::vector<float> scores{ inverse_score_vector(query_vecs, features, frames) };
 
 	// Get sorted results
-	auto id_scores{ sort_by_score(scores) };
+	auto id_scores{ ScoreModel::sort_by_score(scores) };
 
 	return id_scores;
 }
+#endif
 
-StdMatrix<float> KeywordRanker::embedd_text_queries(const StdMatrix<KeywordId>& keyword_queries) const {
-	std::vector<std::vector<float>> query_vecs;
+StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& keywords) const {
+	// Initialize zero vector
+	std::vector<float> score_vec(kw_pca_mean_vec.size(), 0.0f);
 
-	for (auto&& kw_IDs : keyword_queries) {
-		// Initialize zero vector
-		std::vector<float> score_vec(kw_pca_mean_vec.size(), 0.0f);
-
-		// Accumuate scores for given keywords
-		for (auto&& ID : kw_IDs) {
-			score_vec = utils::VecAdd(score_vec, kw_features[ID]);
-		}
-
-		// Add bias
-		score_vec = utils::VecAdd(score_vec, kw_features_bias_vec);
-
-		// Apply hyperbolic tangent function
-		std::transform(score_vec.begin(), score_vec.end(), score_vec.begin(),
-		               [](const float& score) { return std::tanh(score); });
-
-		std::vector<float> sentence_vec =
-		    utils::MatVecProd(kw_pca_mat, utils::VecSub(utils::VecNorm(score_vec), kw_pca_mean_vec));
-
-		sentence_vec = utils::VecNorm(sentence_vec);
-
-		query_vecs.emplace_back(std::move(sentence_vec));
+	// Accumuate scores for given keywords
+	for (auto&& ID : keywords) {
+		score_vec = utils::VecAdd(score_vec, kw_features[ID]);
 	}
 
-	return query_vecs;
+	// Add bias
+	score_vec = utils::VecAdd(score_vec, kw_features_bias_vec);
+
+	// Apply hyperbolic tangent function
+	std::transform(score_vec.begin(), score_vec.end(), score_vec.begin(),
+	               [](const float& score) { return std::tanh(score); });
+
+	std::vector<float> sentence_vec =
+	    utils::MatVecProd(kw_pca_mat, utils::VecSub(utils::VecNorm(score_vec), kw_pca_mean_vec));
+
+	sentence_vec = utils::VecNorm(sentence_vec);
+
+	return sentence_vec;
 }
 
-StdVector<float> KeywordRanker::score_vectors(StdMatrix<float> query_vecs, const DatasetFeatures& features,
-                                              const DatasetFrames& frames) {
-	size_t target_dim{ query_vecs.front().size() };
-
-	// Result is final score \in [0.0F, 1.0F] of `query_vecs` as temporal query
-	std::vector<float> scores;
-	scores.reserve(features.size());
-
-	// i-th index is for i-th query vector
-	std::vector<std::vector<float>> distance_cache;
-	distance_cache.resize(query_vecs.size(), std::vector(features.size(), std::numeric_limits<float>::quiet_NaN()));
-
-	// For all frame_IDs
-	for (ImageId frame_ID = 0; frame_ID < features.size(); ++frame_ID) {
-		const float* raw_frame_features = features.fv(frame_ID);
-
-		// Get cosine distance and scale it to [0.0f, 1.0f]
-		float dist = distance_cache[0][frame_ID];
-
-		// If not yet cached, compute it
-		if (std::isnan(dist)) {
-			dist = utils::d_cos_normalized(query_vecs.front(), raw_frame_features, target_dim) / 2.0f;
-			distance_cache[0][frame_ID] = dist;
-		}
-
-		// This will adjust `dist` based on temporal queries
-		apply_temp_queries(distance_cache, frame_ID, query_vecs, 1, dist, features, frames);
-
-		scores.emplace_back(dist);
-	}
-
-	return scores;
-}
-
-void KeywordRanker::report_results(StdVector<std::pair<ImageId, float>> sorted_results, const DatasetFrames& frames,
-                                   size_t num) {
+void KeywordRanker::report_results(const StdVector<std::pair<ImageId, float>>& sorted_results,
+                                   const DatasetFrames& frames, size_t num) {
 	size_t i{ 0 };
 	for (auto&& [frame_ID, score] : sorted_results) {
 		++i;
@@ -471,24 +411,4 @@ void KeywordRanker::report_results(StdVector<std::pair<ImageId, float>> sorted_r
 
 		if (i >= num) break;
 	}
-}
-
-std::vector<std::pair<ImageId, float>> KeywordRanker::sort_by_score(StdVector<float> scores) {
-	// Zip scores with frame IDs
-	std::vector<std::pair<ImageId, float>> id_scores;
-	id_scores.reserve(scores.size());
-	{
-		size_t i{ 0 };
-		std::transform(scores.begin(), scores.end(), std::back_inserter(id_scores), [&i](const float& x) {
-			return std::pair{ i++, x };
-		});
-	}
-
-	// Sort results
-	std::sort(id_scores.begin(), id_scores.end(),
-	          [](const std::pair<size_t, float>& left, const std::pair<size_t, float>& right) {
-		          return left.second < right.second;
-	          });
-
-	return id_scores;
 }

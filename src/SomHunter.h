@@ -32,11 +32,12 @@
 #include "CanvasQueryRanker.h"
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
-#include "Filters.h"
 #include "ImageManipulator.h"
 #include "KeywordRanker.h"
 #include "RelevanceScores.h"
+#include "RelocationRanker.h"
 #include "UserContext.h"
+#include "query_types.h"
 
 #include "AsyncSom.h"
 #include "SearchContext.h"
@@ -65,6 +66,7 @@ class SomHunter {
 	const DatasetFeatures features;
 	KeywordRanker keywords;
 	CanvasQueryRanker collageRanker;
+	const RelocationRanker relocationRanker;
 
 	// ********************************
 	// User contexts
@@ -83,7 +85,8 @@ public:
 	      features(frames, cfg),
 	      keywords(cfg, frames),
 	      collageRanker(cfg, &keywords),
-	      user(cfg.user_token, cfg, frames, features) {
+	      user(cfg.user_token, cfg, frames, features),
+	      relocationRanker{} {
 		// !!!!
 		// Generate new targets
 		// !!!!
@@ -105,7 +108,7 @@ public:
 				targets.emplace_back(f);
 				targets.emplace_back(nextf);
 			}
-			user.ctx.set_curr_targets(targets);
+			user.ctx.curr_targets = std::move(targets);
 		}
 	}
 
@@ -138,11 +141,12 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
-	RescoreResult rescore(Query& query, bool run_SOM = true);
+	RescoreResult rescore(const Query& query, bool run_SOM = true);
 
-	RescoreResult rescore(const std::string& text_query, CanvasQuery& collage, const Filters* p_filters = nullptr,
-	                      size_t src_search_ctx_ID = SIZE_T_ERR_VAL, const std::string& screenshot_fpth = ""s,
-	                      const std::string& label = ""s, bool run_SOM = true);
+	RescoreResult rescore(const std::vector<TemporalQuery>& temporal_query, const RelevanceFeedbackQuery& rfQuery,
+	                      const Filters* p_filters = nullptr, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
+	                      const std::string& screenshot_fpth = ""s, const std::string& label = ""s,
+	                      bool run_SOM = true);
 
 	/** Switches the search context for the user to the provided index in
 	 *  the history and returns reference to it.
@@ -227,7 +231,7 @@ private:
 	/**
 	 *	Applies text query from the user.
 	 */
-	void rescore_keywords(const std::string& query);
+	void rescore_keywords(const std::string& query, size_t temporal);
 
 	/**
 	 *	Applies feedback from the user based
@@ -238,7 +242,7 @@ private:
 	/**
 	 *	Gives SOM worker new work.
 	 */
-	void som_start();
+	void som_start(size_t temporal);
 
 	FramePointerRange get_random_display();
 

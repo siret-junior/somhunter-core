@@ -26,6 +26,7 @@
 #include <set>
 #include <vector>
 
+#include "config.h"
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
 
@@ -35,7 +36,7 @@ class ScoreModel {
 	/** Current score distribution for the frames. */
 	std::vector<float> _scores;
 
-	std::vector<std::vector<float>> _temporal_scores;
+	StdMatrix<float> _temporal_scores;
 
 	/**
 	 * Frames mask telling what frames should be placed inside the
@@ -54,15 +55,24 @@ class ScoreModel {
 
 public:
 	ScoreModel(const DatasetFrames& p)
-	    : _scores(p.size(), 1.0F), _mask(p.size(), true), _cache_dirty{ true }, _cache_ctx_dirty{ true } {}
+	    : _scores(p.size(), 1.0F),
+	      _temporal_scores(MAX_TEMPORAL_SIZE, _scores),
+	      _mask(p.size(), true),
+	      _cache_dirty{ true },
+	      _cache_ctx_dirty{ true } {}
 
 	bool operator==(const ScoreModel& other) const;
 	float operator[](ImageId i) const { return _scores[i]; }
 
 	void reset(float val = 1.0F);
 
-	/** Multiplies the relevance score with the provided value. */
+	/** Multiplies the relevance score with the provided value.
+	 * Does not update temporal scores.
+	 */
 	float adjust(ImageId i, float prob);
+
+	/** Multiplies the relevance score of temporal part with the provided value. */
+	float adjust(size_t temp, ImageId i, float prob);
 
 	/** Hard-sets the score with the provided value (normalization
 	 * required). */
@@ -71,18 +81,20 @@ public:
 	/** Pointer to the begin of the data. */
 	const float* v() const { return _scores.data(); }
 
+	const float* temp(size_t temp) const { return _temporal_scores[temp].data(); }
+
 	/** Returns number of scores stored. */
 	size_t size() const { return _scores.size(); }
 
-	/** Returns number of temporal score vectors */
-	size_t temporal_size() const { return _temporal_scores.size(); }
-
-	StdMatrix<float>& temporal() { return _temporal_scores; }
-
-	const StdMatrix<float>& temporal() const { return _temporal_scores; }
+	/** Transforms temporal inverse score into temporal
+	 * scores and aggregates into full image scores.
+	 * Depth parameter defines depth of temporal query
+	 */
+	void apply_temporals(size_t depth, const DatasetFrames& frames);
 
 	/** Normalizes the score distribution. */
-	void normalize();
+	void normalize(size_t depth = MAX_NUM_TEMP_QUERIES);
+	void normalize(float* scores, size_t size);
 
 	void invalidate_cache() {
 		_cache_dirty = true;
@@ -129,6 +141,10 @@ public:
 
 	/** Returns the current rank of the provided frame (starts from 0). */
 	size_t frame_rank(ImageId i) const;
+
+	/** Sorts images by given score vector */
+	static StdVector<std::pair<ImageId, float>> sort_by_score(const StdVector<float>& scores);
+
 };
 
 };  // namespace sh

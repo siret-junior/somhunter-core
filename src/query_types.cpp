@@ -35,27 +35,18 @@ std::vector<std::uint8_t> CanvasSubqueryBitmap::get_scaled_bitmap(size_t w, size
 }
 
 json11::Json CanvasQuery::to_JSON() const {
-	std::vector<json11::Json> arr;
-
-	// For each temporal part
-	for (size_t qidx{ 0 }; qidx < _begins.size() - 1; ++qidx) {
-		size_t qbegin{ _begins[qidx] };
-		size_t qend{ _begins[qidx + 1] };
-
-		std::vector<json11::Json> arr_temp;
-		for (size_t i{ qbegin }; i < qend; ++i) {
-			arr_temp.emplace_back(std::visit(
-			    overloaded{
-			        [](auto sq) { return sq.to_JSON(); },
-			    },
-			    _subqueries[i]));
-		}
-		arr.emplace_back(json11::Json{ arr_temp });
+	std::vector<json11::Json> arr_temp;
+	for (size_t i{ 0 }; i < _subqueries.size(); ++i) {
+		arr_temp.emplace_back(std::visit(
+			overloaded{
+				[](auto sq) { return sq.to_JSON(); },
+			},
+			_subqueries[i]));
 	}
-	return json11::Json(arr);
+	return json11::Json{ arr_temp };
 }
 
-CanvasQuery CanvasQuery::parse_json_contents(const std::string& contents, const fs::path parentPath) {
+std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& contents, const fs::path parentPath) {
 	std::string err;
 	auto json_all{ json11::Json::parse(contents, err) };
 
@@ -65,12 +56,13 @@ CanvasQuery CanvasQuery::parse_json_contents(const std::string& contents, const 
 		throw std::runtime_error(msg);
 	}
 
-	CanvasQuery q;
+	std::vector<CanvasQuery> qs;
 
 	json11::Json cqJson{ json_all["canvas_query"] };
 
+	size_t ti = 0;
 	for (auto&& tempQuery : cqJson.array_items()) {
-		q.push_query_begin();
+		qs.push_back(CanvasQuery());
 
 		for (auto&& obj : tempQuery.array_items()) {
 			require_value(obj, "rect");
@@ -79,20 +71,21 @@ CanvasQuery CanvasQuery::parse_json_contents(const std::string& contents, const 
 				               require_float_value<float>(positions[2]), require_float_value<float>(positions[3]) };
 
 			if (!obj["text_query"].is_null()) {  // Text query on canvas
-				q.emplace_back(rect, require_string_value(obj, "text_query"));
+				qs[ti].emplace_back(rect, require_string_value(obj, "text_query"));
 			} else {  // Image on canvas
 				fs::path p(parentPath / require_string_value(obj, "bitmap_filename"));
 				auto image = ImageManipulator::load_image<BitmapImage<uint8_t>>(p);
-				q.emplace_back(rect, image.w, image.h, image.num_channels, image.data.data());
+				qs[ti].emplace_back(rect, image.w, image.h, image.num_channels, image.data.data());
 			}
 		}
-	}
-	q.push_query_begin();
 
-	return q;
+		++ti;
+	}
+
+	return qs;
 }
 
-CanvasQuery CanvasQuery::parse_json(const std::string& filepath) {
+std::vector<CanvasQuery> CanvasQuery::parse_json(const std::string& filepath) {
 	std::string file_contents(utils::read_whole_file(filepath));
 	fs::path p(filepath);
 	return parse_json_contents(file_contents, p.parent_path());

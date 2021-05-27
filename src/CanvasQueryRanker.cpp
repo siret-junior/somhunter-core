@@ -1,34 +1,32 @@
+/* This file is part of SOMHunter.
+ *
+ * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
+ *                    Mirek Kratochvil <exa.exa@gmail.com>
+ *                    Patrik Veselý <prtrikvesely@gmail.com>
+ *
+ * SOMHunter is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * SOMHunter is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "CanvasQueryRanker.h"
 
 #include <filesystem>
 
 #include "KeywordRanker.h"
+#include "RelevanceScores.h"
 #include "utils.h"
 
 using namespace sh;
-
-void CanvasQuery::emplace_back(const RelativeRect& rect, const std::string& text_query) {
-	_subqueries.emplace_back(CanvasSubqueryText{ rect, text_query });
-}
-
-void CanvasQuery::emplace_back(const RelativeRect& rect, size_t bitmap_w, size_t bitmap_h, size_t num_channels,
-                               uint8_t* bitmap_RGBA_data) {
-	std::vector<std::uint8_t> image;
-
-	// DO: RGBA_to_RGB
-	size_t total_size{ bitmap_w * bitmap_h * num_channels };
-	for (size_t j = 0; j < total_size; j += num_channels) {
-		image.push_back(bitmap_RGBA_data[j + 0]);
-		image.push_back(bitmap_RGBA_data[j + 1]);
-		image.push_back(bitmap_RGBA_data[j + 2]);
-	}
-
-	_subqueries.emplace_back(CanvasSubqueryBitmap{ rect, bitmap_w, bitmap_h, 3, std::move(image) });
-}
-
-bool CanvasQuery::empty() const { return (size() == 0); }
-size_t CanvasQuery::size() const { return _subqueries.size(); }
 
 CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core)
     : _p_core{ p_core }, _loaded{ false } {
@@ -125,8 +123,8 @@ CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core
 	SHLOG_S("CanvasQueryRanker initialized.");
 }
 
-void CanvasQueryRanker::score(CanvasQuery& collage, ScoreModel& model, const DatasetFeatures& /*features*/,
-                              const DatasetFrames& frames) {
+void CanvasQueryRanker::score(const CanvasQuery& collage, ScoreModel& model, size_t temporal,
+                              const DatasetFeatures& /*features*/, const DatasetFrames& frames) {
 	if (!_loaded) {
 		SHLOG_W("Called CanvasQueryRanker::score without available subregion data. Leaving the scores intact.");
 		return;
@@ -140,7 +138,6 @@ void CanvasQueryRanker::score(CanvasQuery& collage, ScoreModel& model, const Dat
 
 		// Convert tensor to STD containered matrix
 		auto collage_vectors{ to_std_matrix<float>(tensor_features) };
-		// print_matrix(mat);
 
 		// get best IOU regions for each image in collage
 		auto regions = get_RoIs(collage);
@@ -150,65 +147,56 @@ void CanvasQueryRanker::score(CanvasQuery& collage, ScoreModel& model, const Dat
 		for (std::size_t i = 0; i < collage_vectors.size(); i++)
 			scores.push_back(score_image(collage_vectors[i], regions[i]));
 
-		// size_t q0_beg{ collage.query_begins(0) };
-		size_t q1_beg{ collage.query_begins(1) };
+		auto final_score = average_scores(scores);
 
-		// first query
-		StdMatrix<float> s0(scores.begin(), scores.begin() + q1_beg);
-		auto mean0 = average_scores(s0);
-
-		std::vector<float> final_score;
-
-		if (scores.begin() + q1_beg == scores.end())
-			final_score = mean0;
+		/*if (scores.begin() + q1_beg == scores.end())
+		    final_score = mean0;
 		else  // second query
 		{
-			StdMatrix<float> s1(scores.begin() + q1_beg, scores.end());
-			auto mean1 = average_scores(s1);
+		    StdMatrix<float> s1(scores.begin() + q1_beg, scores.end());
+		    auto mean1 = average_scores(s1);
 
-			// applied temporal query
-			size_t window = 5;
-			for (size_t i = 0; i < mean0.size(); i++) {
-				auto begin_it = frames.get_frame_it(i);
-				begin_it++;
-				if (begin_it == frames.end()) break;
+		    // applied temporal query
+		    size_t window = 5;
+		    for (size_t i = 0; i < mean0.size(); i++) {
+		        auto begin_it = frames.get_frame_it(i);
+		        begin_it++;
+		        if (begin_it == frames.end()) break;
 
-				auto end_it = begin_it;
-				VideoId vid_ID = begin_it->video_ID;
+		        auto end_it = begin_it;
+		        VideoId vid_ID = begin_it->video_ID;
 
-				// move iterator window times or stop if end of video/file
-				for (size_t j = 0; j < window; j++) {
-					end_it++;
-					if (end_it == frames.end() || end_it->video_ID != vid_ID) break;
-				}
+		        // move iterator window times or stop if end of video/file
+		        for (size_t j = 0; j < window; j++) {
+		            end_it++;
+		            if (end_it == frames.end() || end_it->video_ID != vid_ID) break;
+		        }
 
-				// get min between begin_it and end_it from mean1
-				float min;
-				if (end_it == frames.end())
-					min = *std::min_element(mean1.begin() + begin_it->frame_ID, mean1.end());
-				else
-					min = *std::min_element(mean1.begin() + begin_it->frame_ID, mean1.begin() + end_it->frame_ID);
+		        // get min between begin_it and end_it from mean1
+		        float min;
+		        if (end_it == frames.end())
+		            min = *std::min_element(mean1.begin() + begin_it->frame_ID, mean1.end());
+		        else
+		            min = *std::min_element(mean1.begin() + begin_it->frame_ID, mean1.begin() + end_it->frame_ID);
 
-				mean0[i] = mean0[i] * min;
-			}
+		        mean0[i] = mean0[i] * min;
+		    }
 
-			final_score = mean0;
-		}
+		    final_score = mean0;
+		}*/
 
-		auto sorted_results{ KeywordRanker::sort_by_score(final_score) };
+		auto sorted_results{ ScoreModel::sort_by_score(final_score) };
 		KeywordRanker::report_results(sorted_results, frames);
 
 		// Update the model
-		for (auto&& [frame_ID, dist] : sorted_results) {
-			model.adjust(frame_ID, std::exp(dist * -50));
+		for (size_t i = 0; i < final_score.size(); ++i) {
+			model.adjust(temporal, i, final_score[i]);
 		}
-
-		model.normalize();
 	}
 }
 
 // in 1st dim
-at::Tensor CanvasQueryRanker::get_L2norm(at::Tensor data) {
+at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const {
 	at::Tensor norm = torch::zeros({ data.sizes()[0], 1 });
 
 	for (int64_t i = 0; i < data.sizes()[0]; i++) norm[i] = torch::sqrt(torch::sum(data[i] * data[i]));
@@ -217,7 +205,7 @@ at::Tensor CanvasQueryRanker::get_L2norm(at::Tensor data) {
 }
 
 // returns 2048 dim normed vector for each image in collage
-at::Tensor CanvasQueryRanker::get_features(CanvasQuery& collage) {
+at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage) {
 	SHLOG_D("Extracting features\n");
 
 	std::vector<torch::Tensor> tensors;
@@ -327,13 +315,13 @@ at::Tensor CanvasQueryRanker::get_features(CanvasQuery& collage) {
 	return result_features;
 }
 
-std::vector<std::size_t> CanvasQueryRanker::get_RoIs(CanvasQuery& collage) {
+std::vector<std::size_t> CanvasQueryRanker::get_RoIs(const CanvasQuery& collage) const {
 	std::vector<std::size_t> regions;
 	for (std::size_t i = 0; i < collage.size(); i++) regions.push_back(get_RoI(collage[i]));
 	return regions;
 }
 
-std::size_t CanvasQueryRanker::get_RoI(CanvasSubquery image) {
+std::size_t CanvasQueryRanker::get_RoI(const CanvasSubquery& image) const {
 	RelativeRect rect{ std::visit(
 		overloaded{
 		    [](auto sq) { return sq.rect(); },
@@ -358,17 +346,17 @@ std::size_t CanvasQueryRanker::get_RoI(CanvasSubquery image) {
 	return std::distance(iou.begin(), std::max_element(iou.begin(), iou.end()));
 }
 
-std::vector<float> CanvasQueryRanker::score_image(std::vector<float> feature, std::size_t region) {
+std::vector<float> CanvasQueryRanker::score_image(const std::vector<float>& feature, std::size_t region) const {
 	std::vector<float> score;
 	for (size_t i = 0; i < region_data[region].size(); i++)
-		score.push_back(utils::d_cos_normalized(feature, region_data[region][i]));
+		score.push_back(utils::d_cos_normalized(feature, region_data[region][i]) / 2);
 	return score;
 }
 
-std::vector<float> CanvasQueryRanker::average_scores(std::vector<std::vector<float>> scores) {
+std::vector<float> CanvasQueryRanker::average_scores(const std::vector<std::vector<float>>& scores) const {
 	size_t count = scores.size();
 	std::vector<float> result;
-	std::cout << "COUNT " << count << "\n";
+
 	if (count == 0) return result;
 
 	for (size_t i = 0; i < scores[0].size(); i++) {

@@ -86,9 +86,9 @@ private:
 
 #ifdef TESTING_ITEC_DATASET
 		auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert(disp[0]->frame_ID == 602,
+		do_assert_equals(disp[0]->frame_ID, 602,
 		       "Incorrect frame in the display.");
-		do_assert(disp[1]->frame_ID == 433,
+		do_assert_equals(disp[1]->frame_ID, 433,
 		       "Incorrect frame in the display.");
 
 #endif
@@ -245,16 +245,16 @@ private:
 		/*
 		 * #1 Text
 		 */
-		Query q{ "cat" };
+		Query q{ std::vector({ "cat" }) };
 		auto h{ core.rescore(q).history };
 		auto state1{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
 
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert(disp[0]->frame_ID == 80,
+		do_assert_equals(disp[0]->frame_ID, 80,
 		       "Incorrect frame in the display.");
-		do_assert(disp[1]->frame_ID == 130,
+		do_assert_equals(disp[1]->frame_ID, 130,
 		       "Incorrect frame in the display.");
 
 #endif
@@ -263,21 +263,21 @@ private:
 		 * #2 Temporal text
 		 */
 		core.like_frames(std::vector<ImageId>{ 80 });
-		q = Query{"dog catalog >> habitat "};
+		q = Query{ std::vector({"dog catalog", "habitat "}) };
 		h = core.rescore(q).history;
 		auto state2{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
 
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert(disp[0]->frame_ID == 74,
+		do_assert_equals(disp[0]->frame_ID, 74,
 		       "Incorrect frame in the display.");
-		do_assert(disp[1]->frame_ID == 224,
+		do_assert_equals(disp[1]->frame_ID, 224,
 		       "Incorrect frame in the display.");
 
-		do_assert(disp[7]->frame_ID == 109,
+		do_assert_equals(disp[7]->frame_ID, 109,
 		       "Incorrect frame in the display.");
-		do_assert(disp[8]->frame_ID == 35,
+		do_assert_equals(disp[8]->frame_ID, 35,
 		       "Incorrect frame in the display.");
 #endif
 
@@ -287,23 +287,23 @@ private:
 		core.like_frames(std::vector<ImageId>{ 187 });
 		core.like_frames(std::vector<ImageId>{ 217 });
 		core.like_frames(std::vector<ImageId>{ 581 });
-		q = Query{"chicken"};
+		q = Query{ std::vector({"chicken"}) };
 		h = core.rescore(q).history;
 		auto state3{ core.user.ctx };
 		do_assert(h.back() == core.user.ctx, "Inconsistent data.");
-		do_assert(h.back().likes.size() == 0,
+		do_assert_equals(h.back().likes.size(), 0,
 		       "Likes should be reset with rescore.");
 
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert(disp[0]->frame_ID == 489,
+		do_assert_equals(disp[0]->frame_ID, 489,
 		       "Incorrect frame in the display.");
-		do_assert(disp[1]->frame_ID == 221,
+		do_assert_equals(disp[1]->frame_ID, 221,
 		       "Incorrect frame in the display.");
 
-		do_assert(disp[7]->frame_ID == 372,
+		do_assert_equals(disp[7]->frame_ID, 372,
 		       "Incorrect frame in the display.");
-		do_assert(disp[8]->frame_ID == 267,
+		do_assert_equals(disp[8]->frame_ID, 267,
 		       "Incorrect frame in the display.");
 #endif
 
@@ -314,9 +314,9 @@ private:
 		do_assert(state1 == core.user.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert(disp[0]->frame_ID == 80,
+		do_assert_equals(disp[0]->frame_ID, 80,
 		       "Incorrect frame in the display.");
-		do_assert(disp[1]->frame_ID == 130,
+		do_assert_equals(disp[1]->frame_ID, 130,
 		       "Incorrect frame in the display.");
 #endif
 
@@ -324,14 +324,14 @@ private:
 		do_assert(state2 == core.user.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert(disp[0]->frame_ID == 74,
+		do_assert_equals(disp[0]->frame_ID, 74,
 			"Incorrect frame in the display.");
-		do_assert(disp[1]->frame_ID == 224,
+		do_assert_equals(disp[1]->frame_ID, 224,
 			"Incorrect frame in the display.");
 
-		do_assert(disp[7]->frame_ID == 109,
+		do_assert_equals(disp[7]->frame_ID, 109,
 			"Incorrect frame in the display.");
-		do_assert(disp[8]->frame_ID == 35,
+		do_assert_equals(disp[8]->frame_ID, 35,
 			"Incorrect frame in the display.");
 #endif
 
@@ -339,14 +339,14 @@ private:
 		do_assert(state3 == core.user.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert(disp[0]->frame_ID == 489,
+		do_assert_equals(disp[0]->frame_ID, 489,
 			"Incorrect frame in the display.");
-		do_assert(disp[1]->frame_ID == 221,
+		do_assert_equals(disp[1]->frame_ID, 221,
 			"Incorrect frame in the display.");
 
-		do_assert(disp[7]->frame_ID == 372,
+		do_assert_equals(disp[7]->frame_ID, 372,
 			"Incorrect frame in the display.");
-		do_assert(disp[8]->frame_ID == 267,
+		do_assert_equals(disp[8]->frame_ID, 267,
 			"Incorrect frame in the display.");
 #endif
 
@@ -384,7 +384,7 @@ private:
 				WeekDaysFilter{days_mask}
 			};
 
-			Query q{ tq };
+			Query q{ std::vector({ tq }) };
 			q.filters = fs;
 
 			core.rescore(q);

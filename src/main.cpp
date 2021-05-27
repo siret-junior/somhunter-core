@@ -24,6 +24,7 @@
 #include <filesystem>
 #include <thread>
 #include <vector>
+#include <stdexcept>
 
 #if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 #	include "Windows.h"
@@ -86,6 +87,9 @@ int main() {
 
 	using directory_iterator = std::filesystem::directory_iterator;
 
+	// TODO change the loading from binary to loding from JSON
+	throw std::runtime_error("Loading outdated binary file");
+
 	std::vector<std::string> serialized_queries;
 	for (const auto& dirEntry : directory_iterator("saved-queries")) {
 		std::cout << dirEntry << std::endl;
@@ -110,7 +114,7 @@ int main() {
 		auto targets = q.canvas_query.get_targets();
 
 		// !!!!!
-		q.transform_to_no_pos_queries();
+		//q.transform_to_no_pos_queries();
 		// !!!!!
 
 		core.rescore(q);
@@ -168,7 +172,7 @@ int main() {
 
 #endif  // Run CanvasQuery benchmark
 
-#if 0 
+#if 0
 	NetworkApi api{ config.API_config, &core };
 	api.run();
 #endif
@@ -226,7 +230,7 @@ int main() {
 
 	// Try different displays
 	{
-		Query q{ "dog park" };
+		Query q{ std::vector({ "dog park" }) };
 		core.rescore(q);
 
 		auto d_topn = core.get_display(DisplayType::DTopN, 0, 0).frames;
@@ -244,7 +248,7 @@ int main() {
 
 	// Try keyword rescore
 	{
-		Query q{ "dog park" };
+		Query q{ std::vector({ "dog park" }) };
 		core.rescore(q);
 		auto d_topn1 = core.get_display(DisplayType::DTopN, 0, 0).frames;
 		std::cout << "TOP N\n";
@@ -268,7 +272,7 @@ int main() {
 		core.like_frames(likes);
 		std::cout << "Like " << likes[0] << std::endl;
 
-		Query q{ "\\/?!,.'\"" };
+		Query q{ std::vector({ "\\/?!,.'\"" }) };
 		core.rescore(q);
 	}
 
@@ -305,7 +309,7 @@ int main() {
 
 	tests::TESTER_SomHunter::run_all_tests(cfg_fpth);
 	// TODO update config tests
-	//tests::TESTER_Config::run_all_tests(cfg_fpth);
+	// tests::TESTER_Config::run_all_tests(cfg_fpth);
 
 #endif  // DO_TESTS
 

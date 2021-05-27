@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "DatasetFrames.h"
+#include "EmbeddingRanker.h"
 #include "RelevanceScores.h"
 #include "common.h"
 #include "config_json.h"
@@ -48,7 +49,7 @@ struct Keyword {
 	std::vector<const VideoFrame*> top_ex_imgs;
 };
 
-class KeywordRanker {
+class KeywordRanker : public EmbeddingRanker {
 	std::vector<Keyword> keywords;
 	FeatureMatrix kw_features;
 	FeatureVector kw_features_bias_vec;
@@ -104,15 +105,10 @@ public:
 	KeywordRanker& operator=(KeywordRanker&&) = default;
 	~KeywordRanker() noexcept = default;
 
-	static StdVector<float> score_vectors(StdMatrix<float> query_vecs, const DatasetFeatures& features,
-	                                      const DatasetFrames& frames);
-
-	static StdVector<std::pair<ImageId, float>> sort_by_score(StdVector<float> scores);
-
-	static void report_results(StdVector<std::pair<ImageId, float>> sorted_results, const DatasetFrames& frames,
+	static void report_results(const StdVector<std::pair<ImageId, float>>& sorted_results, const DatasetFrames& frames,
 	                           size_t num = 10);
 
-	StdMatrix<float> embedd_text_queries(const StdMatrix<KeywordId>& kws) const;
+	StdVector<float> embedd_text_queries(const StdVector<KeywordId>& kws) const;
 
 	/**
 	 * Gets all string representants of this keyword.
@@ -124,32 +120,33 @@ public:
 
 	KwSearchIds find(const std::string& search, size_t num_limit = 10) const;
 
-	void rank_query(const std::vector<std::vector<KeywordId>>& positive, ScoreModel& model,
-	                const DatasetFeatures& features, const DatasetFrames& frames, const Config& cfg) const;
-
 	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model, const DatasetFeatures& features,
-	                         const DatasetFrames& frames, const Config& cfg) const;
+	                         const Config& cfg, size_t temporal) const;
 
 	// ----
 	StdVector<float> get_text_query_feature(const std::string& query);
 	std::vector<std::string> tokenize_textual_query(const std::string& sentence_query_raw) const;
-	std::vector<std::vector<KeywordId>> split_tokens_to_temporal_queries(const std::vector<std::string>& query) const;
+	std::vector<KeywordId> decode_keywords(const std::vector<std::string>& query) const;
 
 	// -----
 
 private:
+#ifdef TO_DELETE
 	static void apply_temp_queries(std::vector<std::vector<float>>& dist_cache, ImageId img_ID,
 	                               const FeatureMatrix& queries, size_t query_idx, float& result_dist,
 	                               const DatasetFeatures& features, const DatasetFrames& frames);
+#endif
 
+#ifdef TO_DELETE
 	/**
 	 * Sorts all images based on provided query and retrieves vector
 	 * of image IDs with their distance from the query.
 	 *
 	 */
-	std::vector<std::pair<ImageId, float>> get_sorted_frames(const std::vector<std::vector<KeywordId>>& positive,
+	std::vector<std::pair<ImageId, float>> get_sorted_frames(const std::vector<KeywordId>& positive,
 	                                                         const DatasetFeatures& features,
 	                                                         const DatasetFrames& frames, const Config& cfg) const;
+#endif
 };
 };  // namespace sh
 
