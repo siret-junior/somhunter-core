@@ -235,7 +235,6 @@ RescoreResult SomHunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 	// Check if temporal queries has changed
 	if (user.ctx.last_temporal_queries != temporal_query) {
 		reset_scores();
-		user.ctx.temporal_size = temporal_query.size();
 		size_t moment = 0;
 
 		user.submitter.log_canvas_query(
@@ -244,6 +243,8 @@ RescoreResult SomHunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 
 		for (size_t mi = 0; mi < temporal_query.size(); ++mi) {
 			auto&& moment_query = temporal_query[mi];
+			if (moment_query.isEmpty()) continue;
+			
 			auto&& last_moment_query = user.ctx.last_temporal_queries[mi];
 
 			if (moment_query.isRelocation()) {
@@ -260,9 +261,13 @@ RescoreResult SomHunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 			}
 			++moment;
 		}
+		
+		user.ctx.temporal_size = moment;
 		// Cache the appliend temporal queries
 		user.ctx.last_temporal_queries = temporal_query;
-		// Apply temporal fusion
+		// Normalize the inverse scores
+		user.ctx.scores.normalize(user.ctx.temporal_size);
+		// Apply temporal fusion and trnsform inv. scores to scores
 		user.ctx.scores.apply_temporals(user.ctx.temporal_size, frames);
 		// Normalize the scores
 		user.ctx.scores.normalize(user.ctx.temporal_size);

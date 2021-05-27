@@ -172,7 +172,7 @@ int main() {
 
 #endif  // Run CanvasQuery benchmark
 
-#if 0
+#if 1
 	NetworkApi api{ config.API_config, &core };
 	api.run();
 #endif
