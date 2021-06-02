@@ -111,6 +111,8 @@ public:
 
 	void log_show_som_display(const DatasetFrames& frames, const std::vector<ImageId>& imgs);
 
+	void log_show_som_relocation_display(const DatasetFrames& frames, const std::vector<ImageId>& imgs);
+
 	void log_show_random_display(const DatasetFrames& frames, const std::vector<ImageId>& imgs);
 
 	void log_show_topn_display(const DatasetFrames& frames, const std::vector<ImageId>& imgs);

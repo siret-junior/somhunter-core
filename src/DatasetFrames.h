@@ -169,6 +169,10 @@ public:
 
 	const VideoFrame& get_frame(ImageId i) const { return _frames[i]; }
 
+	VideoFrame* get_frame_ptr(ImageId i) { return _frames.data() + i; }
+
+	const VideoFrame* get_frame_ptr(ImageId i) const { return _frames.data() + i; }
+
 	std::vector<VideoFrame>::const_iterator get_frame_it(ImageId i) const { return _frames.begin() + i; }
 
 	size_t size() const { return _frames.size(); }

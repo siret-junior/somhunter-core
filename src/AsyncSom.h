@@ -65,6 +65,9 @@ class AsyncSom {
 	std::vector<std::vector<ImageId>> mapping;
 	std::vector<float> koho;
 
+	const size_t width;
+	const size_t height;
+
 	static void async_som_worker(AsyncSom* parent, const Config& cfg);
 
 public:
@@ -73,9 +76,11 @@ public:
 
 	AsyncSom(AsyncSom&& cfg) = default;
 
-	AsyncSom(const Config& cfg);
+	AsyncSom(const Config& cfg, size_t width, size_t height);
 
 	void start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig);
+
+	std::vector<ImageId> get_display(ScoreModel scores) const;
 
 	bool map_ready() const {
 		bool t = m_ready;

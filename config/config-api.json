@@ -173,6 +173,43 @@
                 }
             }
         },
+        "/get_som_relocation_screen": {
+            "post": {
+                "tags": [
+                    "Search session"
+                ],
+                "summary": "Gets the SOM relocation display data.",
+                "operationId": "handle__get_SOM_relocation_screen__POST",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "temporalId",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Index of temporal query."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response__GetTopScreen__Post"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
         "/get_frame_detail_data": {
             "get": {
                 "tags": [
@@ -646,7 +683,8 @@
                 "required": [
                     "search",
                     "history",
-                    "bookmarkedFrames"
+                    "bookmarkedFrames",
+                    "relocation"
                 ],
                 "type": "object",
                 "properties": {
@@ -693,6 +731,12 @@
                     },
                     "filters": {
                         "$ref": "#/components/schemas/QueryFilters"
+                    },
+                    "relocation": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/FrameReference"
+                        }
                     }
                 }
             },

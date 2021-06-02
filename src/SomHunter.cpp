@@ -51,6 +51,10 @@ GetDisplayResult SomHunter::get_display(DisplayType d_type, ImageId selected_ima
 			frs = get_som_display();
 			break;
 
+		case DisplayType::DRelocation:
+			frs = get_som_relocation_display(page);
+		break;
+
 		case DisplayType::DVideoDetail:
 			frs = get_video_detail_display(selected_image, log_it);
 			break;
@@ -333,6 +337,8 @@ RescoreResult SomHunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 
 bool SomHunter::som_ready() const { return user.async_SOM.map_ready(); }
 
+bool SomHunter::som_ready(size_t temp_id) const { return user.temp_async_SOM[temp_id]->map_ready(); }
+
 bool SomHunter::login_to_dres() const { return user.submitter.login_to_DRES(); }
 
 void SomHunter::submit_to_server(ImageId frame_id) {
@@ -587,56 +593,7 @@ FramePointerRange SomHunter::get_som_display() {
 		return FramePointerRange();
 	}
 
-	std::vector<ImageId> ids;
-	ids.resize(SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT);
-
-	// Select weighted example from cluster
-	for (size_t i = 0; i < SOM_DISPLAY_GRID_WIDTH; ++i) {
-		for (size_t j = 0; j < SOM_DISPLAY_GRID_HEIGHT; ++j) {
-			if (!user.async_SOM.map(i + SOM_DISPLAY_GRID_WIDTH * j).empty()) {
-				ImageId id = user.ctx.scores.weighted_example(user.async_SOM.map(i + SOM_DISPLAY_GRID_WIDTH * j));
-				ids[i + SOM_DISPLAY_GRID_WIDTH * j] = id;
-			}
-		}
-	}
-
-	auto begin = std::chrono::steady_clock::now();
-	// Fix empty cluster
-	std::vector<size_t> stolen_count(SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT, 1);
-	for (size_t i = 0; i < SOM_DISPLAY_GRID_WIDTH; ++i) {
-		for (size_t j = 0; j < SOM_DISPLAY_GRID_HEIGHT; ++j) {
-			if (user.async_SOM.map(i + SOM_DISPLAY_GRID_WIDTH * j).empty()) {
-				SHLOG_D("Fixing cluster " << i + SOM_DISPLAY_GRID_WIDTH * j);
-
-				// Get SOM node of empty cluster
-				auto k = user.async_SOM.get_koho(i + SOM_DISPLAY_GRID_WIDTH * j);
-
-				// Get nearest cluster with enough elements
-				size_t clust = user.async_SOM.nearest_cluster_with_atleast(k, stolen_count);
-
-				stolen_count[clust]++;
-				std::vector<ImageId> ci = user.async_SOM.map(clust);
-
-				for (ImageId ii : ids) {
-					auto fi = std::find(ci.begin(), ci.end(), ii);
-					if (fi != ci.end()) ci.erase(fi);
-				}
-
-				// If some frame candidates
-				if (!ci.empty()) {
-					ImageId id = user.ctx.scores.weighted_example(ci);
-					ids[i + SOM_DISPLAY_GRID_WIDTH * j] = id;
-				}
-				// Subsitute with "empty" frame
-				else {
-					ids[i + SOM_DISPLAY_GRID_WIDTH * j] = ERR_VAL<ImageId>();
-				}
-			}
-		}
-	}
-	auto end = std::chrono::steady_clock::now();
-	SHLOG_D("Fixing clusters took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-	                                << " [ms]");
+	auto ids { user.async_SOM.get_display(user.ctx.scores) };
 
 	// Log
 	user.submitter.log_show_som_display(frames, ids);
@@ -649,6 +606,30 @@ FramePointerRange SomHunter::get_som_display() {
 	}
 	user.ctx.current_display = frames.ids_to_video_frame(ids);
 	user.ctx.curr_disp_type = DisplayType::DSom;
+
+	return FramePointerRange(user.ctx.current_display);
+}
+
+FramePointerRange SomHunter::get_som_relocation_display(size_t temp_id) {
+	assert(temp_id < user.temp_async_SOM.size());
+
+	if (!user.temp_async_SOM[temp_id]->map_ready()) {
+		return FramePointerRange();
+	}
+
+	auto ids { user.temp_async_SOM[temp_id]->get_display(user.ctx.scores) };
+
+	// Log
+	user.submitter.log_show_som_relocation_display(frames, ids);
+
+	// Update context
+	for (auto id : ids) {
+		if (id == IMAGE_ID_ERR_VAL) continue;
+
+		user.ctx.shown_images.insert(id);
+	}
+	user.ctx.current_display = frames.ids_to_video_frame(ids);
+	user.ctx.curr_disp_type = DisplayType::DRelocation;
 
 	return FramePointerRange(user.ctx.current_display);
 }

@@ -36,6 +36,8 @@ using namespace sh;
 void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 	std::random_device rd;
 	std::mt19937 rng(rd());
+	const size_t width = parent->width;
+	const size_t height = parent->height;
 
 	SHLOG_D("SOM worker is starting...");
 
@@ -68,28 +70,28 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 
 		// at this point: restart is off, input is ready.
 
-		std::vector<float> nhbrdist(SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT *
-		                            SOM_DISPLAY_GRID_HEIGHT);
-		for (size_t x1 = 0; x1 < SOM_DISPLAY_GRID_WIDTH; ++x1)
-			for (size_t y1 = 0; y1 < SOM_DISPLAY_GRID_HEIGHT; ++y1)
-				for (size_t x2 = 0; x2 < SOM_DISPLAY_GRID_WIDTH; ++x2)
-					for (size_t y2 = 0; y2 < SOM_DISPLAY_GRID_HEIGHT; ++y2)
-						nhbrdist[x1 + SOM_DISPLAY_GRID_WIDTH *
-						                  (y1 + SOM_DISPLAY_GRID_HEIGHT * (x2 + SOM_DISPLAY_GRID_WIDTH * y2))] =
+		std::vector<float> nhbrdist(width * width * height *
+		                            height);
+		for (size_t x1 = 0; x1 < width; ++x1)
+			for (size_t y1 = 0; y1 < height; ++y1)
+				for (size_t x2 = 0; x2 < width; ++x2)
+					for (size_t y2 = 0; y2 < height; ++y2)
+						nhbrdist[x1 + width *
+						                  (y1 + height * (x2 + width * y2))] =
 						    abs(float(x1) - float(x2)) + abs(float(y1) - float(y2));
 
 		if (parent->new_data || parent->terminate) continue;
 
-		std::vector<float> koho(SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT * cfg.features_dim, 0);
+		std::vector<float> koho(width * height * cfg.features_dim, 0);
 		float negAlpha = -0.01f;
 		float negRadius = 1.1f;
 		float alphasA[2] = { 0.3f, 0.1f };
 		float alphasB[2] = { negAlpha * alphasA[0], negAlpha * alphasA[1] };
-		float radiiA[2] = { float(SOM_DISPLAY_GRID_WIDTH + SOM_DISPLAY_GRID_HEIGHT) / 3, 0.1f };
+		float radiiA[2] = { float(width + height) / 3, 0.1f };
 		float radiiB[2] = { negRadius * radiiA[0], negRadius * radiiA[1] };
 
 		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
-		fit_SOM(n, SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT, cfg.features_dim, SOM_ITERS, points, koho,
+		fit_SOM(n, width * height, cfg.features_dim, SOM_ITERS, points, koho,
 		        nhbrdist, alphasA, radiiA, alphasB, radiiB, scores, present_mask, rng);
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 		SHLOG_D("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
@@ -105,7 +107,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 			auto worker = [&](size_t id) {
 				size_t start = id * n / n_threads;
 				size_t end = (id + 1) * n / n_threads;
-				map_points_to_kohos(start, end, SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT, cfg.features_dim,
+				map_points_to_kohos(start, end, width * height, cfg.features_dim,
 				                    points, koho, point_to_koho, present_mask);
 			};
 
@@ -120,7 +122,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 		if (parent->new_data || parent->terminate) continue;
 
 		parent->mapping.clear();
-		parent->mapping.resize(SOM_DISPLAY_GRID_WIDTH * SOM_DISPLAY_GRID_HEIGHT);
+		parent->mapping.resize(width * height);
 		for (ImageId im = 0; im < point_to_koho.size(); ++im)
 			if (present_mask[im]) parent->mapping[point_to_koho[im]].push_back(im);
 
@@ -137,7 +139,8 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 	SHLOG_D("SOM worker finished.");
 }
 
-AsyncSom::AsyncSom(const Config& cfg) {
+AsyncSom::AsyncSom(const Config& cfg, size_t w, size_t h) :
+	width(w), height(h) {
 	new_data = m_ready = terminate = false;
 	worker = std::thread(async_som_worker, this, cfg);
 }
@@ -161,4 +164,59 @@ void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc, const
 	lck.unlock();
 
 	new_data_wakeup.notify_all();
+}
+
+std::vector<ImageId> AsyncSom::get_display(ScoreModel scores) const {
+	std::vector<ImageId> ids;
+	ids.resize(width * height);
+
+	// Select weighted example from cluster
+	for (size_t i = 0; i < width; ++i) {
+		for (size_t j = 0; j < height; ++j) {
+			if (!map(i + width * j).empty()) {
+				ImageId id = scores.weighted_example(map(i + width * j));
+				ids[i + width * j] = id;
+			}
+		}
+	}
+
+	auto begin = std::chrono::steady_clock::now();
+	// Fix empty cluster
+	std::vector<size_t> stolen_count(width * height, 1);
+	for (size_t i = 0; i < width; ++i) {
+		for (size_t j = 0; j < height; ++j) {
+			if (map(i + width * j).empty()) {
+				SHLOG_D("Fixing cluster " << i + width * j);
+
+				// Get SOM node of empty cluster
+				auto k = get_koho(i + width * j);
+
+				// Get nearest cluster with enough elements
+				size_t clust = nearest_cluster_with_atleast(k, stolen_count);
+
+				stolen_count[clust]++;
+				std::vector<ImageId> ci = map(clust);
+
+				for (ImageId ii : ids) {
+					auto fi = std::find(ci.begin(), ci.end(), ii);
+					if (fi != ci.end()) ci.erase(fi);
+				}
+
+				// If some frame candidates
+				if (!ci.empty()) {
+					ImageId id = scores.weighted_example(ci);
+					ids[i + width * j] = id;
+				}
+				// Subsitute with "empty" frame
+				else {
+					ids[i + width * j] = ERR_VAL<ImageId>();
+				}
+			}
+		}
+	}
+
+	auto end = std::chrono::steady_clock::now();
+	SHLOG_D("Fixing clusters took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+	                                << " [ms]");
+	return ids;
 }

@@ -229,10 +229,8 @@ json::value to_SearchContext(SomHunter* p_core, const UserContext& ctx) {
 			std::string q1{};
 
 			// Scan the query string
-			if (search_ctx.last_temporal_queries.size() > 0)
-				q0 = search_ctx.last_temporal_queries[0].textual;
-			if (search_ctx.last_temporal_queries.size() > 1)
-				q1 = search_ctx.last_temporal_queries[1].textual;
+			if (search_ctx.last_temporal_queries.size() > 0) q0 = search_ctx.last_temporal_queries[0].textual;
+			if (search_ctx.last_temporal_queries.size() > 1) q1 = search_ctx.last_temporal_queries[1].textual;
 
 			json::value q0_napi = json::value::string(to_string_t(q0));
 			json::value q1_napi = json::value::string(to_string_t(q1));
@@ -241,6 +239,29 @@ json::value to_SearchContext(SomHunter* p_core, const UserContext& ctx) {
 		}
 
 		result_obj[U("textQueries")] = value_arr;
+	}
+
+	{ /* *** relocation *** */
+
+		json::value value_arr{ json::value::array(2) };
+		{
+			// \todo This should be generalized in the
+			// future
+
+			ImageId q0{IMAGE_ID_ERR_VAL};
+			ImageId q1{IMAGE_ID_ERR_VAL};
+
+			// Scan the query string
+			if (search_ctx.last_temporal_queries.size() > 0) q0 = search_ctx.last_temporal_queries[0].relocation;
+			if (search_ctx.last_temporal_queries.size() > 1) q1 = search_ctx.last_temporal_queries[1].relocation;
+
+			json::value q0_napi = to_FrameReference(p_core, p_core->get_frame_ptr(q0), {}, {}, "");
+			json::value q1_napi = to_FrameReference(p_core, p_core->get_frame_ptr(q1), {}, {}, "");
+			value_arr[0] = q0_napi;
+			value_arr[1] = q1_napi;
+		}
+
+		result_obj[U("relocation")] = value_arr;
 	}
 
 	{ /* *** displayType *** */
@@ -541,6 +562,7 @@ void NetworkApi::initialize() {
 
 	push_endpoint("get_top_screen", {}, &NetworkApi::handle__get_top_screen__POST);
 	push_endpoint("get_som_screen", {}, &NetworkApi::handle__get_SOM_screen__POST);
+	push_endpoint("get_som_relocation_screen", {}, &NetworkApi::handle__get_SOM_relocation_screen__POST);
 	push_endpoint("get_frame_detail_data", &NetworkApi::handle__get_frame_detail_data__GET);
 
 	push_endpoint("get_autocomplete_results", &NetworkApi::handle__get_autocomplete_results__GET);
@@ -760,10 +782,6 @@ void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
 
 	auto body = req.extract_json().get();
 
-	/*ImageId frame_ID{ body[U("frameId")].as_integer() };
-	size_t page_idx{ body[U("pageId")].as_integer() };*/
-	// std::string type{ to_utf8string(body[U("type")].as_string()) };
-
 	auto dtype{ str_to_disp_type("SOM_display") };
 
 	if (!_p_core->som_ready()) {
@@ -777,6 +795,34 @@ void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
 	// Fetch the data
 	auto display_frames{ _p_core->get_display(dtype) };
 	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, 0, "SOM_display", "") };
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(res_data);
+
+	// Send the response
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
+
+void NetworkApi::handle__get_SOM_relocation_screen__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	SHLOG_REQ(remote_addr, "handle__get_SOM_relocation_screen__POST");
+
+	auto body = req.extract_json().get();
+	size_t temporal_id{ static_cast<size_t>(body[U("temporalId")].as_integer()) };
+
+	if (!_p_core->som_ready(temporal_id)) {
+		http_response res{ construct_error_res(status_codes::BadRequest, "SOM relocation not ready!") };
+		res.set_status_code(222);
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
+
+	// Fetch the data
+	auto display_frames{ _p_core->get_display(DisplayType::DRelocation, ERR_VAL<ImageId>(), temporal_id) };
+	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, 0, "SOM_relocation_display", "") };
 
 	// Construct the response
 	http_response res(status_codes::OK);
@@ -1029,7 +1075,17 @@ std::vector<TextualQuery> NetworkApi::extract_textual_query(web::json::value& bo
 	/*
 	 * Process it
 	 */
-	return {q0, q1};
+	return { q0, q1 };
+}
+
+std::vector<RelocationQuery> NetworkApi::extract_relocation_query(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	RelocationQuery relocation0{ static_cast<RelocationQuery>(body[U("relocation0")].as_integer()) };
+	RelocationQuery relocation1{ static_cast<RelocationQuery>(body[U("relocation1")].as_integer()) };
+
+	return { relocation0, relocation1};
 }
 
 std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body) {
@@ -1104,8 +1160,7 @@ std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body
 		}
 	}
 
-	for (CanvasQuery& q : canvas_query)
-		q.is_save = is_save;
+	for (CanvasQuery& q : canvas_query) q.is_save = is_save;
 
 	return canvas_query;
 }
@@ -1150,6 +1205,9 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		// Text queries
 		std::vector<TextualQuery> textual_query{ extract_textual_query(body) };
 
+		// Relocation query
+		std::vector<RelocationQuery> relocation_query{ extract_relocation_query(body) };
+
 		// Filters
 		Filters filters{ extract_filters(body) };
 
@@ -1170,11 +1228,10 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 		size_t temp_length = std::max(textual_query.size(), canvas_query.size());
 		for (size_t i = 0; i < temp_length; ++i) {
 			TemporalQuery tq;
-			if (i < textual_query.size())
-				tq.textual = textual_query[i];
-			if (i < canvas_query.size())
-				tq.canvas = canvas_query[i];
-			// TODO add relocation
+			if (i < textual_query.size()) tq.textual = textual_query[i];
+			if (i < canvas_query.size()) tq.canvas = canvas_query[i];
+			if (i < relocation_query.size()) tq.relocation = relocation_query[i];
+			
 			query.temporal_queries.push_back(tq);
 		}
 	} catch (...) {

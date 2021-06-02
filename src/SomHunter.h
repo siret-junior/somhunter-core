@@ -177,8 +177,16 @@ public:
 
 	const VideoFrame& get_frame(ImageId ID) const { return frames.get_frame(ID); }
 
+	VideoFramePointer get_frame_ptr(ImageId img) const {
+		if (img < frames.size())
+			return frames.get_frame_ptr(img);
+		return nullptr;
+	}
+
 	/** Returns true if the user's SOM is ready */
 	bool som_ready() const;
+
+	bool som_ready(size_t temp_id) const;
 
 	/** Resets current search context and starts new search */
 	void reset_search_session();
@@ -251,6 +259,8 @@ private:
 	FramePointerRange get_topn_context_display(PageId page);
 
 	FramePointerRange get_som_display();
+
+	FramePointerRange get_som_relocation_display(size_t temp_id);
 
 	FramePointerRange get_video_detail_display(ImageId selected_image, bool log_it = true);
 

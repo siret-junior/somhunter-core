@@ -86,6 +86,7 @@ private:
 
 	void handle__get_top_screen__POST(http_request req);
 	void handle__get_SOM_screen__POST(http_request req);
+	void handle__get_SOM_relocation_screen__POST(http_request req);
 	void handle__get_frame_detail_data__GET(http_request req);
 	void handle__get_autocomplete_results__GET(http_request req);
 
@@ -107,6 +108,7 @@ private:
 	// *** Helpers ***
 	RescoreMetadata extract_rescore_metadata(web::json::value& body);
 	std::vector<TextualQuery> extract_textual_query(web::json::value& body);
+	std::vector<RelocationQuery> extract_relocation_query(web::json::value& body);
 	std::vector<CanvasQuery> extract_canvas_query(web::json::value& body);
 	Filters extract_filters(web::json::value& body);
 

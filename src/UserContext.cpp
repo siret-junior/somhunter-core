@@ -31,13 +31,13 @@ UserContext::UserContext(const std::string& user_token, const Config& cfg, const
     : ctx(0, cfg, frames),
       user_token(user_token),
       submitter(cfg.submitter_config),
-      async_SOM(cfg){
+      async_SOM(cfg, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT){
 		  
 	SHLOG_D("Triggering main SOM worker");
 	async_SOM.start_work(features, ctx.scores, ctx.scores.v());
 	for (size_t i = 0; i < MAX_NUM_TEMP_QUERIES; ++i) {
 		SHLOG_D("Triggering " << i << " SOM worker");
-		temp_async_SOM.push_back(std::make_unique<AsyncSom>(cfg));
+		temp_async_SOM.push_back(std::make_unique<AsyncSom>(cfg, RELOCATION_GRID_WIDTH, RELOCATION_GRID_HEIGHT));
 		temp_async_SOM[i]->start_work(features, ctx.scores, ctx.scores.temp(i));
 	}
 

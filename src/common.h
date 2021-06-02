@@ -82,6 +82,7 @@ enum class DisplayType {
 	DRand,
 	DVideoDetail,
 	DVideoReplay,
+	DRelocation,
 	NumItems
 };
 

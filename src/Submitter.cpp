@@ -794,6 +794,16 @@ void Submitter::log_show_som_display(const DatasetFrames& /*frames*/, const std:
 #endif  // LOG_LOGS
 }
 
+void Submitter::log_show_som_relocation_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/) {
+	push_event("browsing", "exploration", "som_relocation_display");
+
+#ifdef LOG_LOGS
+
+	alog() << "show_SOM_relocation_display\t" << std::endl;
+
+#endif  // LOG_LOGS
+}
+
 void Submitter::log_show_topn_display(const DatasetFrames& /*frames*/, const std::vector<ImageId>& /*imgs*/) {
 	push_event("browsing", "rankedList", "topn_display");
 

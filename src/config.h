@@ -89,10 +89,19 @@ constexpr int TOP_N_SELECTED_FRAME_POSITION = 2;
 constexpr float RANDOM_DISPLAY_WEIGHT = 3.0f;
 
 /** SOM window image grid width */
-#define SOM_DISPLAY_GRID_WIDTH 8
+constexpr size_t SOM_DISPLAY_GRID_WIDTH = 8;
 
 /** SOM window image grid height */
-#define SOM_DISPLAY_GRID_HEIGHT 8
+constexpr size_t SOM_DISPLAY_GRID_HEIGHT = 8;
+
+/** SOM relocation grid width */
+constexpr size_t RELOCATION_GRID_WIDTH = 5;
+
+/** SOM relocation grid height */
+constexpr size_t RELOCATION_GRID_HEIGHT = 5;
+
+/** Maximal size of temporal query */
+constexpr int MAX_TEMPORAL_SIZE = 2;
 
 };  // namespace sh
 
@@ -106,7 +115,5 @@ template <class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
 
 #include "log.h"
-
-constexpr int MAX_TEMPORAL_SIZE = 2;
 
 #endif
