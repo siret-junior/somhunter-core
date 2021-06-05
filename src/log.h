@@ -99,7 +99,7 @@ static Modifier defbg{ TermColor::BG_DEFAULT };
 /**
  * Returns a view pointing to at most `len` long tail of the `str`.
  */
-static std::string_view view_tail(const std::string& str, size_t len) {
+static inline std::string_view view_tail(const std::string& str, size_t len) {
 	return std::string_view{ str.data() + std::max<size_t>(0, str.length() - len) };
 }
 

@@ -52,3 +52,7 @@ set(SOURCES
 
 target_sources(${SOMHUNTER_TARGET} PRIVATE ${SOURCES} ${HEADERS} main.cpp)
 target_sources(${SOMHUNTER_TARGET_TESTS} PRIVATE ${SOURCES} ${HEADERS})
+
+add_subdirectory(API)
+add_subdirectory(evaluation-server)
+add_subdirectory(system-logging)
