@@ -43,8 +43,8 @@ class DatasetFeatures;
 class UserContext {
 public:
 	UserContext() = delete;
-	UserContext(const std::string& user_token, const Config& cfg, const DatasetFrames& frames,
-	            const DatasetFeatures features);
+	UserContext(const std::string& user_token, const Settings& cfg, const DatasetFrames& _dataset_frames,
+	            const DatasetFeatures _dataset_features);
 
 	bool operator==(const UserContext& other) const;
 	void reset() {
@@ -79,7 +79,7 @@ public:
 
 /** Result type `get_display` returns */
 struct GetDisplayResult {
-	FramePointerRange frames;
+	FramePointerRange _dataset_frames;
 	const LikesCont& likes;
 	const LikesCont& bookmarks;
 };

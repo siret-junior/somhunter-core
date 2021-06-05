@@ -26,7 +26,7 @@
 using namespace sh;
 
 std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string& filepath,
-                                                               const DatasetFrames& frames) {
+                                                               const DatasetFrames& _dataset_frames) {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
 
 	SHLOG_D("Loading supported textual model keywords from '" << filepath << "'...");
@@ -65,7 +65,7 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 				for (std::stringstream top_ex_imgs_ss(tokens[2]); std::getline(top_ex_imgs_ss, token, '#');) {
 					ImageId img_ID{ utils::str2<ImageId>(token) };
 
-					top_ex_imgs.push_back(&frames.get_frame(img_ID));
+					top_ex_imgs.push_back(&_dataset_frames.get_frame(img_ID));
 				}
 			}
 		}
@@ -215,9 +215,9 @@ KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) con
 	KwSearchIds r;
 	KwSearchIds r2;
 
-	for (KeywordId i = 0; i < keywords.size(); ++i)
-		for (size_t j = 0; j < keywords[i].synset_strs.size(); ++j) {
-			auto kw = keywords[i];
+	for (KeywordId i = 0; i < _keyword_ranker.size(); ++i)
+		for (size_t j = 0; j < _keyword_ranker[i].synset_strs.size(); ++j) {
+			auto kw = _keyword_ranker[i];
 
 			auto& s = kw.synset_strs[j];
 			auto f = s.find(search);
@@ -231,7 +231,7 @@ KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) con
 		}
 
 	std::sort(r.begin(), r.end(), [&](const KwSearchId& a, const KwSearchId& b) {
-		return keywords[a.first].synset_strs[a.second] < keywords[b.first].synset_strs[b.second];
+		return _keyword_ranker[a.first].synset_strs[a.second] < _keyword_ranker[b.first].synset_strs[b.second];
 	});
 
 	r.insert(r.end(), r2.begin(), r2.end());
@@ -295,7 +295,8 @@ std::vector<KeywordId> KeywordRanker::decode_keywords(const std::vector<std::str
 }
 
 void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
-                                        const DatasetFeatures& features, const Config& /*cfg*/, size_t temporal) const {
+                                        const DatasetFeatures& _dataset_features, const Settings& /*cfg*/,
+                                        size_t temporal) const {
 	auto tokens{ tokenize_textual_query(sentence_query_raw) };
 
 	if (tokens.empty()) return;
@@ -307,7 +308,7 @@ void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, S
 	auto embedded{ embedd_text_queries(decoded) };
 
 	// Compute the scores for each frame for this query
-	std::vector<float> scores{ inverse_score_vector(embedded, features) };
+	std::vector<float> scores{ inverse_score_vector(embedded, _dataset_features) };
 
 	// Update the model
 	for (size_t i = 0; i < scores.size(); ++i) {
@@ -400,12 +401,12 @@ StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& 
 }
 
 void KeywordRanker::report_results(const StdVector<std::pair<ImageId, float>>& sorted_results,
-                                   const DatasetFrames& frames, size_t num) {
+                                   const DatasetFrames& _dataset_frames, size_t num) {
 	size_t i{ 0 };
 	for (auto&& [frame_ID, score] : sorted_results) {
 		++i;
 
-		auto filepath{ frames[frame_ID] };
+		auto filepath{ _dataset_frames[frame_ID] };
 		std::cout << i << "\t ";
 		std::cout << std::fixed << std::setprecision(4) << score << " => " << filepath << std::endl;
 

@@ -52,14 +52,14 @@ struct Keyword {
 };
 
 class KeywordRanker : public EmbeddingRanker {
-	std::vector<Keyword> keywords;
+	std::vector<Keyword> _keyword_ranker;
 	FeatureMatrix kw_features;
 	FeatureVector kw_features_bias_vec;
 	FeatureMatrix kw_pca_mat;
 	FeatureVector kw_pca_mean_vec;
 
 public:
-	static std::vector<Keyword> parse_kw_classes_text_file(const std::string& filepath, const DatasetFrames& frames);
+	static std::vector<Keyword> parse_kw_classes_text_file(const std::string& filepath, const DatasetFrames& _dataset_frames);
 
 	/**
 	 * Parses float matrix from a binary file that is written in row-major
@@ -79,8 +79,8 @@ public:
 	// @todo Make this template and inside some `Parsers` class
 	static FeatureVector parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0);
 
-	inline KeywordRanker(const Config& config, const DatasetFrames& frames)
-	    : keywords(parse_kw_classes_text_file(config.kws_file, frames)),
+	inline KeywordRanker(const Settings& config, const DatasetFrames& _dataset_frames)
+	    : _keyword_ranker(parse_kw_classes_text_file(config.kws_file, _dataset_frames)),
 
 	      kw_features(parse_float_matrix(config.kw_scores_mat_file, config.pre_PCA_features_dim)),
 	      kw_features_bias_vec(parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim)),
@@ -107,7 +107,7 @@ public:
 	KeywordRanker& operator=(KeywordRanker&&) = default;
 	~KeywordRanker() noexcept = default;
 
-	static void report_results(const StdVector<std::pair<ImageId, float>>& sorted_results, const DatasetFrames& frames,
+	static void report_results(const StdVector<std::pair<ImageId, float>>& sorted_results, const DatasetFrames& _dataset_frames,
 	                           size_t num = 10);
 
 	StdVector<float> embedd_text_queries(const StdVector<KeywordId>& kws) const;
@@ -117,13 +117,13 @@ public:
 	 */
 	const Keyword& operator[](KeywordId idx) const {
 		// Get all keywords with this Keyword ID
-		return keywords[idx];
+		return _keyword_ranker[idx];
 	}
 
 	KwSearchIds find(const std::string& search, size_t num_limit = 10) const;
 
-	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model, const DatasetFeatures& features,
-	                         const Config& cfg, size_t temporal) const;
+	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model, const DatasetFeatures& _dataset_features,
+	                         const Settings& cfg, size_t temporal) const;
 
 	// ----
 	StdVector<float> get_text_query_feature(const std::string& query);
@@ -147,7 +147,7 @@ private:
 	 */
 	std::vector<std::pair<ImageId, float>> get_sorted_frames(const std::vector<KeywordId>& positive,
 	                                                         const DatasetFeatures& features,
-	                                                         const DatasetFrames& frames, const Config& cfg) const;
+	                                                         const DatasetFrames& frames, const Settings& cfg) const;
 #endif
 };
 };  // namespace sh

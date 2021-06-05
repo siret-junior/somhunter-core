@@ -387,7 +387,7 @@ json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext
  */
 json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayResult& res, size_t page_num,
                                             const std::string& type, const std::string& path_prefix) {
-	const auto& frames{ res.frames };
+	const auto& _dataset_frames{ res._dataset_frames };
 	const auto& likes{ res.likes };
 	const auto& bookmarks{ res.bookmarks };
 
@@ -403,11 +403,11 @@ json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayR
 	}
 
 	{ /* *** frames *** */
-		auto s{ frames.end() - frames.begin() };
+		auto s{ _dataset_frames.end() - _dataset_frames.begin() };
 		json::value arr{ json::value::array(s) };
 
 		size_t i{ 0 };
-		for (auto it{ frames.begin() }; it != frames.end(); ++it) {
+		for (auto it{ _dataset_frames.begin() }; it != _dataset_frames.end(); ++it) {
 			auto fr{ to_FrameReference(p_core, *it, likes, bookmarks, path_prefix) };
 
 			arr[i] = fr;
@@ -430,7 +430,7 @@ json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayR
 
 json::value to_Response__GetDetailScreen__Post(Somhunter* p_core, const GetDisplayResult& res, size_t page_num,
                                                const std::string& /*type*/, const std::string& path_prefix) {
-	const auto& frames{ res.frames };
+	const auto& _dataset_frames{ res._dataset_frames };
 	const auto& likes{ res.likes };
 	const auto& bookmarks{ res.bookmarks };
 
@@ -442,11 +442,11 @@ json::value to_Response__GetDetailScreen__Post(Somhunter* p_core, const GetDispl
 	}
 
 	{ /* *** frames *** */
-		auto s{ frames.end() - frames.begin() };
+		auto s{ _dataset_frames.end() - _dataset_frames.begin() };
 		json::value arr{ json::value::array(s) };
 
 		size_t i{ 0 };
-		for (auto it{ frames.begin() }; it != frames.end(); ++it) {
+		for (auto it{ _dataset_frames.begin() }; it != _dataset_frames.end(); ++it) {
 			auto fr{ to_FrameReference(p_core, *it, likes, bookmarks, path_prefix) };
 
 			arr[i] = fr;
@@ -898,8 +898,8 @@ void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {
 	auto record_count{ query_map.find(U("count")) };
 
 	// Fetch the data
-	auto keywords{ _p_core->autocomplete_keywords(prefix, count) };
-	json::value res_data{ to_Response__GetAutocompleteResults__Get(_p_core, keywords, count, "") };
+	auto _keyword_ranker{ _p_core->autocomplete_keywords(prefix, count) };
+	json::value res_data{ to_Response__GetAutocompleteResults__Get(_p_core, _keyword_ranker, count, "") };
 
 	// Construct the response
 	http_response res(status_codes::OK);

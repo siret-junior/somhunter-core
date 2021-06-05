@@ -44,9 +44,9 @@ public:
 
 protected:
 	std::vector<float> inverse_score_vector(const std::vector<float>& query_vecs,
-	                                        const DatasetFeatures& features) const;
+	                                        const DatasetFeatures& _dataset_features) const;
 
-	std::vector<float> inverse_score_vector(const float* query_vecs, const DatasetFeatures& features) const;
+	std::vector<float> inverse_score_vector(const float* query_vecs, const DatasetFeatures& _dataset_features) const;
 };
 
 }  // namespace sh

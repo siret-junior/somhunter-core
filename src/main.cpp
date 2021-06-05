@@ -32,28 +32,47 @@
 // !!!
 #include "somhunter.h"  // Do not move this beloe other includes
                         // -> otherwise the libtorch compile error wil bite you
+#include "network-api.h"
 // !!!
 
 #include "common.h"
 #include "utils.hpp"
 
-#include "network-api.h"
-
 #include "tests.h"
 
 using namespace sh;
 
+namespace sh {
+
 /**
  * Does the global application initialization.
  */
-namespace sh {
 static void initialize_aplication();
-}
+};  // namespace sh
 
 int main() {
 	initialize_aplication();
 
-#if 0
+	const std::string cfg_fpth{ "config/config-core.json" };
+
+	// Parse config file
+	auto config = Settings::parse_JSON_config(cfg_fpth);
+
+	// Instantiate the SOMHunter
+	Somhunter core{ config, cfg_fpth };
+
+	NetworkApi api{ config.API_config, &core };
+	api.run();
+
+	/* ***
+	 * Benchmarks
+	 */
+	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
+
+	/* ***
+	 * Test features here...
+	 */
+
 	{  // *** PNGs ***
 		cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(TEST_PNGS[0]) };
 		BitmapImage<uint8_t> std_img_u8{ ImageManipulator::load_image<BitmapImage<uint8_t>>(TEST_PNGS[0]) };
@@ -71,154 +90,6 @@ int main() {
 		ImageManipulator::show_image(TEST_JPEGS[0]);
 		ImageManipulator::show_image(cv_img);
 	}
-#endif
-	const std::string cfg_fpth{ "config/config-core.json" };
-
-	// Parse config file
-	auto config = Config::parse_json_config(cfg_fpth);
-	// Instantiate the SOMHunter
-	Somhunter core{ config, cfg_fpth };
-
-	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
-
-#if 0  // Run CanvasQuery benchmark
-	// #####################################
-	// Run the serialized Canvas query
-	std::vector<size_t> ranks;
-
-	using directory_iterator = std::filesystem::directory_iterator;
-
-	// TODO change the loading from binary to loding from JSON
-	throw std::runtime_error("Loading outdated binary file");
-
-	std::vector<std::string> serialized_queries;
-	for (const auto& dirEntry : directory_iterator("saved-queries")) {
-		std::cout << dirEntry << std::endl;
-
-		for (const auto& file : std::filesystem::directory_iterator(dirEntry)) {
-			std::string filepath{ file.path().string() };
-
-			std::string suffix{ filepath.substr(filepath.length() - 3) };
-			if (suffix == "bin") {
-				serialized_queries.emplace_back(filepath);
-			}
-			std::cout << "\t" << file << std::endl;
-		}
-	}
-
-	size_t q_idx{0};
-
-	for (auto&& f : serialized_queries) {
-		std::cout << "Running query from '" << f << "' file..." << std::endl;
-
-		Query q{ utils::deserialize_from_file<CanvasQuery>(f) };
-		auto targets = q.canvas_query.get_targets();
-
-		// !!!!!
-		//q.transform_to_no_pos_queries();
-		// !!!!!
-
-		core.rescore(q);
-		auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-
-		size_t res = 0;
-
-		
-
-		size_t i{ 0 };
-		for (auto it{ disp.begin() }; it != disp.end(); ++it) {
-			if (targets[0] == (*it)->frame_ID || targets[1] == (*it)->frame_ID) {
-
-				ranks.push_back(i);
-				break;
-			}
-			++i;
-		}
-
-		++q_idx;
-	}
-	// #####################################
-
-	// print it
-	//std::sort(ranks.begin(), ranks.end());
-
-
-	size_t num_ticks{100};
-	size_t num_frames{core.get_num_frames()};
-
-	float scale{num_ticks / float(num_frames)};
-
-	std::vector<size_t> hist;
-	hist.resize(num_ticks, 0);
-	{
-		size_t i{ 0 };
-		for (auto&& r : ranks) {
-			size_t scaled_rank{static_cast<size_t>(r * scale)};
-			++hist[scaled_rank];
-
-			++i;
-		}
-	}
-
-	size_t acc{0};
-	for (auto& i : hist) {
-		auto xx = i;
-		i = acc;
-		acc += xx;
-	}
-
-	for (size_t i = 0; i < hist.size(); i++) {
-		std::cout << i << ","<< hist[i] << std::endl;
-	}
-
-#endif  // Run CanvasQuery benchmark
-
-#if 1
-	NetworkApi api{ config.API_config, &core };
-	api.run();
-#endif
-
-#ifdef DO_TESTS
-#	if 0  // Serialized CanvasQueries
-	using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
-
-	std::vector<std::string> serialized_queries;
-	for (const auto& dirEntry : recursive_directory_iterator("logs/queries/")) {
-		std::cout << dirEntry << std::endl;
-
-		for (auto&& file : std::filesystem::directory_iterator(dirEntry)) {
-			std::string filepath{ file.path().string() };
-
-			std::string suffix{ filepath.substr(filepath.length() - 3) };
-			if (suffix == "bin") {
-				serialized_queries.emplace_back(filepath);
-			}
-			std::cout << "\t" << file << std::endl;
-		}
-	}
-
-#	endif  // Serialized CanvasQueries
-
-	/* ********************************
-	 * Test features here...
-	 * ******************************** */
-
-#	if 0
-	/* !!!!!!!!!!!!!!!!!!!!!!!!!!
-	 * Test collage queries
-	 * !!!!!!!!!!!!!!!!!!!!!!!!!! */
-	namespace fs = std::filesystem;
-
-	for (auto& p : fs::directory_iterator(TEST_COLLAGE_DATA_DIR)) {
-		// Skip directories
-		if (p.is_directory()) continue;
-
-		std::cout << "Running collage query from: " << p.path() << std::endl;
-		Collage c{ deserialize_from_file<Collage>(p.path().string()) };
-		core.rescore(c, nullptr);
-	}
-
-#	endif  // TEST_COLLAGE_QUERIES
 
 	// *** SHA file checksum ***
 	std::cout << "SHA256: " << utils::SHA256_sum("config/config-core.json") << std::endl;
@@ -234,15 +105,15 @@ int main() {
 		Query q{ std::vector({ "dog park" }) };
 		core.rescore(q);
 
-		auto d_topn = core.get_display(DisplayType::DTopN, 0, 0).frames;
+		auto d_topn = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
 		std::cout << "TOP N\n";
 		d_topn.print_display();
 
-		auto d_topknn = core.get_display(DisplayType::DTopKNN, 2, 0).frames;
+		auto d_topknn = core.get_display(DisplayType::DTopKNN, 2, 0)._dataset_frames;
 		std::cout << "TOP KNN\n";
 		d_topknn.print_display();
 
-		auto d_rand = core.get_display(DisplayType::DRand).frames;
+		auto d_rand = core.get_display(DisplayType::DRand)._dataset_frames;
 		std::cout << "RANDOM\n";
 		d_rand.print_display();
 	}
@@ -251,7 +122,7 @@ int main() {
 	{
 		Query q{ std::vector({ "dog park" }) };
 		core.rescore(q);
-		auto d_topn1 = core.get_display(DisplayType::DTopN, 0, 0).frames;
+		auto d_topn1 = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
 		std::cout << "TOP N\n";
 		d_topn1.print_display();
 	}
@@ -261,7 +132,7 @@ int main() {
 
 	// Try relevance feedback
 	{
-		auto d_rand1 = core.get_display(DisplayType::DRand).frames;
+		auto d_rand1 = core.get_display(DisplayType::DRand)._dataset_frames;
 		std::vector<ImageId> likes;
 		auto d_rand_b = d_rand1.begin();
 		likes.push_back((*d_rand_b)->frame_ID);
@@ -278,16 +149,16 @@ int main() {
 	}
 
 	{
-		auto d_topn2 = core.get_display(DisplayType::DTopN, 0, 0).frames;
+		auto d_topn2 = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
 		d_topn2.print_display();
 		std::cout << "Len of top n page 0 " << d_topn2.size() << std::endl;
 	}
 	{
-		auto d_topn2 = core.get_display(DisplayType::DTopN, 0, 1).frames;
+		auto d_topn2 = core.get_display(DisplayType::DTopN, 0, 1)._dataset_frames;
 		std::cout << "Len of top n page 1 " << d_topn2.size() << std::endl;
 	}
 	{
-		auto d_topn2 = core.get_display(DisplayType::DTopN, 0, 2).frames;
+		auto d_topn2 = core.get_display(DisplayType::DTopN, 0, 2)._dataset_frames;
 		std::cout << "Len of top n page 2 " << d_topn2.size() << std::endl;
 	}
 
@@ -307,12 +178,6 @@ int main() {
 	SHLOG_S("this is a success log");
 	SHLOG_D("this is a debug log");
 	SHLOG_REQ("123.0.0.1", "this is an API request");
-
-	tests::TESTER_Somhunter::run_all_tests(cfg_fpth);
-	// TODO update config tests
-	// tests::TESTER_Config::run_all_tests(cfg_fpth);
-
-#endif  // DO_TESTS
 
 	return 0;
 }

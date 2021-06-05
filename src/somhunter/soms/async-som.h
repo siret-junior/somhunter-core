@@ -68,7 +68,7 @@ class AsyncSom {
 	const size_t width;
 	const size_t height;
 
-	static void async_som_worker(AsyncSom* parent, const Config& cfg);
+	static void async_som_worker(AsyncSom* parent, const Settings& cfg);
 
 public:
 	AsyncSom() = delete;
@@ -76,7 +76,7 @@ public:
 
 	AsyncSom(AsyncSom&& cfg) = default;
 
-	AsyncSom(const Config& cfg, size_t width, size_t height);
+	AsyncSom(const Settings& cfg, size_t width, size_t height);
 
 	void start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig);
 

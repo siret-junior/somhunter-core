@@ -57,57 +57,43 @@ class Somhunter {
 	// Loaded dataset
 	//		(shared for all the users)
 	// ********************************
-	const std::string _config_filepath;
-	const std::string _API_config_filepath;
-	const Config config;
-	const DatasetFrames frames;
-	const DatasetFeatures features;
-	KeywordRanker keywords;
-	CanvasQueryRanker collageRanker;
-	const RelocationRanker relocationRanker;
+	const DatasetFrames _dataset_frames;
+	const DatasetFeatures _dataset_features;
 
 	// ********************************
 	// User contexts
 	//		(private for each unique user session)
 	// ********************************
-public:
-	UserContext user;  // This will become std::vector<UserContext>
+	UserContext _user_context;  // This will become std::vector<UserContext>
 
+	// ********************************
+	// Services
+	//		(shared for all the users)
+	// ********************************
+	const std::string _core_settings_filepath;
+	const std::string _API_settings_filepath;
+	const Settings _settings;
+
+	KeywordRanker _keyword_ranker;
+	CanvasQueryRanker _collage_ranker;
+	const RelocationRanker _relocation_ranker;
+
+public:
 	Somhunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
-	inline Somhunter(const Config& cfg, const std::string& config_filepath)
-	    : _config_filepath{ config_filepath },
-	      _API_config_filepath{ cfg.API_config.config_filepath },
-	      config(cfg),
-	      frames(cfg),
-	      features(frames, cfg),
-	      keywords(cfg, frames),
-	      collageRanker(cfg, &keywords),
-	      user(cfg.user_token, cfg, frames, features),
-	      relocationRanker{} {
-		// !!!!
-		// Generate new targets
-		// !!!!
-		{
-			size_t num_frames{ frames.size() };
-			ImageId target_ID{ utils::irand<ImageId>(1, num_frames - 2) };
+	inline Somhunter(const Settings& settings, const std::string& config_filepath)
+	    : _core_settings_filepath{ config_filepath },
+	      _API_settings_filepath{ settings.API_config.config_filepath },
+	      _settings(settings),
+	      _dataset_frames(settings),
+	      _dataset_features(_dataset_frames, settings),
+	      _keyword_ranker(settings, _dataset_frames),
+	      _collage_ranker(settings, &_keyword_ranker),
+	      _user_context(settings.user_token, settings, _dataset_frames, _dataset_features),
+	      _relocation_ranker{} {
 
-			// Get next or prev frame to create pair from the same video
-			const auto& prevf{ frames.get_frame(target_ID - 1) };
-			const auto& f{ frames.get_frame(target_ID) };
-			const auto& nextf{ frames.get_frame(target_ID + 1) };
+		generate_new_targets();
 
-			std::vector<VideoFrame> targets;
-			targets.reserve(2);
-			if (prevf.video_ID == f.video_ID) {
-				targets.emplace_back(prevf);
-				targets.emplace_back(f);
-			} else {
-				targets.emplace_back(f);
-				targets.emplace_back(nextf);
-			}
-			user.ctx.curr_targets = std::move(targets);
-		}
 	}
 
 	// ********************************
@@ -173,10 +159,10 @@ public:
 	 */
 	const UserContext& get_user_context() const;
 
-	const VideoFrame& get_frame(ImageId ID) const { return frames.get_frame(ID); }
+	const VideoFrame& get_frame(ImageId ID) const { return _dataset_frames.get_frame(ID); }
 
 	VideoFramePointer get_frame_ptr(ImageId img) const {
-		if (img < frames.size()) return frames.get_frame_ptr(img);
+		if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
 		return nullptr;
 	}
 
@@ -218,7 +204,7 @@ public:
 
 	std::string store_rescore_screenshot(const std::string& filepath);
 
-	size_t get_num_frames() const { return frames.size(); }
+	size_t get_num_frames() const { return _dataset_frames.size(); }
 	std::vector<ImageId> get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
 	std::vector<float> get_top_scored_scores(std::vector<ImageId>& top_scored_frames) const;
 	size_t find_targets(const std::vector<ImageId>& top_scored, const std::vector<ImageId>& targets) const;
@@ -226,13 +212,19 @@ public:
 	// ********************************
 	// Other
 	// ********************************
-	const std::string& get_config_filepath() { return _config_filepath; }
-	const std::string& get_API_config_filepath() { return _API_config_filepath; }
-	const KeywordRanker* textual_model() { return &keywords; };
+	const std::string& get_config_filepath() { return _core_settings_filepath; }
+	const std::string& get_API_config_filepath() { return _API_settings_filepath; }
+	const KeywordRanker* textual_model() { return &_keyword_ranker; };
 
 	void benchmark_native_text_queries(const std::string& queries_filepath, const std::string& out_dir);
+	void benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir);
 
 private:
+	/**
+	 *	Generates the new debug targets.
+	 */
+	void generate_new_targets();
+
 	/**
 	 *	Applies text query from the user.
 	 */
@@ -272,11 +264,11 @@ private:
 	 * context (with next contiguous ID number) */
 	void push_search_ctx() {
 		// Make sure we're not pushing in any old screenshot
-		user.ctx.screenshot_fpth = "";
+		_user_context.ctx.screenshot_fpth = "";
 
 		// Increment context ID
-		user.ctx.ID = user.history.size();
-		user.history.emplace_back(user.ctx);
+		_user_context.ctx.ID = _user_context.history.size();
+		_user_context.history.emplace_back(_user_context.ctx);
 	}
 
 	bool has_metadata() const;
@@ -285,5 +277,5 @@ private:
 	friend sh::tests::TESTER_Somhunter;
 };
 
-};  // namespace sh
-#endif // SOMHUNTER_H_
+};      // namespace sh
+#endif  // SOMHUNTER_H_

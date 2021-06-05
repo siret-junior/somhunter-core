@@ -26,7 +26,8 @@
 
 using namespace sh;
 
-SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFrames& frames) : ID(ID), scores(frames) {}
+SearchContext::SearchContext(size_t ID, const Settings& /*settings*/, const DatasetFrames& _dataset_frames)
+    : ID(ID), scores(_dataset_frames) {}
 
 bool SearchContext::operator==(const SearchContext& other) const {
 	return (ID == other.ID && used_tools == other.used_tools && current_display == other.current_display &&

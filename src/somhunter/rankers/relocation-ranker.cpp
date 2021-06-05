@@ -26,11 +26,11 @@
 using namespace sh;
 
 void RelocationRanker::score(const RelocationQuery& query, ScoreModel& model, size_t temporal,
-                             const DatasetFeatures& features) const {
+                             const DatasetFeatures& _dataset_features) const {
 	if (query == IMAGE_ID_ERR_VAL) return;
 
 	// Compute inverse scores in for the example query
-	auto scores{ inverse_score_vector(features.fv(query), features) };
+	auto scores{ inverse_score_vector(_dataset_features.fv(query), _dataset_features) };
 
 	// Update the model
 	for (size_t i = 0; i < scores.size(); ++i) {

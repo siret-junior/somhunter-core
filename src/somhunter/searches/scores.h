@@ -91,7 +91,7 @@ public:
 	 * scores and aggregates into full image scores.
 	 * Depth parameter defines depth of temporal query
 	 */
-	void apply_temporals(size_t depth, const DatasetFrames& frames);
+	void apply_temporals(size_t depth, const DatasetFrames& _dataset_frames);
 
 	/** Normalizes the score distribution. */
 	void normalize(size_t depth = MAX_NUM_TEMP_QUERIES);
@@ -119,19 +119,19 @@ public:
 	/**
 	 * Applies relevance feedback rescore based on the Bayesian update rule.
 	 */
-	void apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& screen, const DatasetFeatures& features);
+	void apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& screen, const DatasetFeatures& _dataset_features);
 
 	/**
 	 * Gets the images with the highest scores but respecting the provided
 	 * limits. */
-	std::vector<ImageId> top_n(const DatasetFrames& frames, size_t n, size_t from_vid_limit = 0,
+	std::vector<ImageId> top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit = 0,
 	                           size_t from_shot_limit = 0) const;
 
 	/**
 	 * Gets the images with the highest scores while respecting the
 	 * provided limits and each frame is wrapped by it's context based on
 	 * the number of frames per line. */
-	std::vector<ImageId> top_n_with_context(const DatasetFrames& frames, size_t n, size_t from_vid_limit,
+	std::vector<ImageId> top_n_with_context(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
 	                                        size_t from_shot_limit) const;
 
 	/** Samples `n` random frames from the current scores distribution. */

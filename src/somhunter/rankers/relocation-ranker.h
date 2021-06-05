@@ -41,7 +41,7 @@
 namespace sh {
 class RelocationRanker : public EmbeddingRanker {
 public:
-	void score(const RelocationQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& features) const;
+	void score(const RelocationQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& _dataset_features) const;
 };
 }  // namespace sh
 

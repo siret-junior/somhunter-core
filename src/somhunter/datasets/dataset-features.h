@@ -39,25 +39,25 @@ class DatasetFeatures {
 	std::vector<float> data;
 
 public:
-	DatasetFeatures(const DatasetFrames&, const Config& config);
+	DatasetFeatures(const DatasetFrames&, const Settings& config);
 
 	size_t size() const { return n; }
 	size_t dim() const { return features_dim; }
 
 	inline const float* fv(size_t i) const { return data.data() + features_dim * i; }
 
-	std::vector<ImageId> get_top_knn(const DatasetFrames& frames, ImageId id, size_t per_vid_limit = 0,
+	std::vector<ImageId> get_top_knn(const DatasetFrames& _dataset_frames, ImageId id, size_t per_vid_limit = 0,
 	                                 size_t from_shot_limit = 0) const {
 		return get_top_knn(
-		    frames, id, [](ImageId /*frame_ID*/) { return true; }, per_vid_limit, from_shot_limit);
+		    _dataset_frames, id, [](ImageId /*frame_ID*/) { return true; }, per_vid_limit, from_shot_limit);
 	}
 
-	inline std::vector<ImageId> get_top_knn(const DatasetFrames& frames, ImageId id,
+	inline std::vector<ImageId> get_top_knn(const DatasetFrames& _dataset_frames, ImageId id,
 	                                        std::function<bool(ImageId ID)> pred, size_t per_vid_limit = 0,
 	                                        size_t from_shot_limit = 0) const {
-		if (per_vid_limit == 0) per_vid_limit = frames.size();
+		if (per_vid_limit == 0) per_vid_limit = _dataset_frames.size();
 
-		if (from_shot_limit == 0) from_shot_limit = frames.size();
+		if (from_shot_limit == 0) from_shot_limit = _dataset_frames.size();
 
 		auto cmp = [](const std::pair<ImageId, float>& left, const std::pair<ImageId, float>& right) {
 			return left.second > right.second;
@@ -73,7 +73,7 @@ public:
 		std::vector<ImageId> res;
 		res.reserve(TOPKNN_LIMIT);
 
-		size_t num_videos = frames.get_num_videos();
+		size_t num_videos = _dataset_frames.get_num_videos();
 		std::vector<size_t> per_vid_frame_hist(num_videos, 0);
 		std::map<VideoId, std::map<ShotId, size_t>> frames_per_shot;
 
@@ -84,7 +84,7 @@ public:
 
 			q3.pop();
 
-			auto vf = frames.get_frame(adept_ID);
+			auto vf = _dataset_frames.get_frame(adept_ID);
 
 			// If we have already enough from this video
 			if (per_vid_frame_hist[vf.video_ID] >= per_vid_limit) continue;

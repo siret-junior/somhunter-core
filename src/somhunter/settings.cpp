@@ -10,12 +10,12 @@ using namespace sh;
  *
  * That means basically what we have in config.h now (paths etc.)
  */
-Config Config::parse_json_config(const std::string& filepath) {
+Settings Settings::parse_JSON_config(const std::string& filepath) {
 	std::string cfg_file_contents(utils::read_whole_file(filepath));
-	return parse_json_config_string(cfg_file_contents);
+	return parse_JSON_config_string(cfg_file_contents);
 }
 
-Config Config::parse_json_config_string(const std::string& cfg_file_contents) {
+Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents) {
 	std::string err;
 	auto json_all{ json11::Json::parse(cfg_file_contents, err) };
 
@@ -30,9 +30,9 @@ Config Config::parse_json_config_string(const std::string& cfg_file_contents) {
 	std::string msg_missing_value{ "Missing config value" };
 
 	// clang-format off
-	auto cfg = Config{ 
+	auto cfg = Settings{ 
 		// .API_config
-		Config::parse_API_config(json["API"]),
+		Settings::parse_API_config(json["API"]),
 		// .user_token
 		require_string_value(json, "user_token"),
 		// .submitter_config
@@ -119,7 +119,7 @@ Config Config::parse_json_config_string(const std::string& cfg_file_contents) {
 	return cfg;
 }
 
-SubmitterConfig Config::parse_submitter_config(const json11::Json& json) {
+SubmitterConfig Settings::parse_submitter_config(const json11::Json& json) {
 	SubmitterConfig res;
 
 	res.submit_to_VBS = json["submit_to_VBS"].bool_value();
@@ -158,7 +158,7 @@ SubmitterConfig Config::parse_submitter_config(const json11::Json& json) {
 	return res;
 }
 
-ApiConfig Config::parse_API_config(const json11::Json& json) {
+ApiConfig Settings::parse_API_config(const json11::Json& json) {
 	auto docs_dir{ json["docs_dir"].string_value() };
 
 	if (docs_dir.back() != '/') {
@@ -169,12 +169,12 @@ ApiConfig Config::parse_API_config(const json11::Json& json) {
 	return ApiConfig{ static_cast<size_t>(json["port"].int_value()), json["config_filepath"].string_value(), docs_dir };
 }
 
-ServerConfigVbs Config::parse_vbs_config(const json11::Json& json) {
+ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {
 	return ServerConfigVbs{ json["submit_URL"].string_value(), json["submit_rerank_URL"].string_value(),
 		                    json["submit_interaction_URL"].string_value() };
 }
 
-ServerConfigDres Config::parse_dres_config(const json11::Json& json) {
+ServerConfigDres Settings::parse_dres_config(const json11::Json& json) {
 	return ServerConfigDres{ json["submit_URL"].string_value(),
 		                     json["submit_rerank_URL"].string_value(),
 		                     json["submit_interaction_URL"].string_value(),

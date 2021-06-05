@@ -85,7 +85,7 @@ struct SubmitterConfig {
 /** Parsed current config of the core.
  * \see ParseJsonConfig
  */
-struct Config {
+struct Settings {
 	ApiConfig API_config;
 	std::string user_token;
 	SubmitterConfig submitter_config;
@@ -126,8 +126,8 @@ struct Config {
 
 	std::string test_data_root;
 
-	static Config parse_json_config(const std::string& filepath);
-	static Config parse_json_config_string(const std::string& cfg_file_contents);
+	static Settings parse_JSON_config(const std::string& filepath);
+	static Settings parse_JSON_config_string(const std::string& cfg_file_contents);
 
 private:
 	static SubmitterConfig parse_submitter_config(const json11::Json& json);

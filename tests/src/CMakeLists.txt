@@ -27,6 +27,6 @@ target_include_directories(${SOMHUNTER_TARGET_TESTS}
 target_sources(${SOMHUNTER_TARGET_TESTS}
 	PUBLIC 
 		${SOURCES}
-		ImageManipulatorTests.cpp
-		CanvasQueryRankerTests.cpp
+		canvas-query-ranker-tests.hpp
+		image-processor-tests.hpp
 )

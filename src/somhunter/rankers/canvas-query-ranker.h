@@ -117,9 +117,9 @@ public:
 	static const size_t models_input_height{ 224 };
 	static const size_t models_num_channels{ 3 };
 
-	CanvasQueryRanker(const Config& config, KeywordRanker* p_core);
-	void score(const CanvasQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& features,
-	           const DatasetFrames& frames);
+	CanvasQueryRanker(const Settings& _settings, KeywordRanker* p_core);
+	void score(const CanvasQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& _dataset_features,
+	           const DatasetFrames& _dataset_frames);
 
 private:
 	std::vector<FeatureMatrix> region_data;

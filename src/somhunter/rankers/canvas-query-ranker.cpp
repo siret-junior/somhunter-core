@@ -28,27 +28,27 @@
 
 using namespace sh;
 
-CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core)
+CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p_core)
     : _p_core{ p_core }, _loaded{ false } {
 	SHLOG_D("Initializing CanvasQueryRanker...");
 
 	// Check if we have subregions data
-	if (config.collage_region_file_prefix.empty()) {
+	if (_settings.collage_region_file_prefix.empty()) {
 		SHLOG_W("No subregion features! Running without canvas queries.");
 		_loaded = false;
 		return;
 	}
 
 	try {
-		if (!std::filesystem::exists(config.model_ResNet_file)) {
-			std::string msg{ "Unable to open file '" + config.model_ResNext_file + "'." };
+		if (!std::filesystem::exists(_settings.model_ResNet_file)) {
+			std::string msg{ "Unable to open file '" + _settings.model_ResNext_file + "'." };
 			SHLOG_E(msg);
 			throw std::runtime_error{ msg };
 		}
-		resnet152 = torch::jit::load(config.model_ResNet_file);
-		SHLOG_S("ResNet model loaded from  '" << config.model_ResNet_file << "'.");
+		resnet152 = torch::jit::load(_settings.model_ResNet_file);
+		SHLOG_S("ResNet model loaded from  '" << _settings.model_ResNet_file << "'.");
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error openning ResNet model file: " + config.model_ResNet_file + "\n" + e.what() };
+		std::string msg{ "Error openning ResNet model file: " + _settings.model_ResNet_file + "\n" + e.what() };
 		msg.append(
 		    "\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? "
 		    "Windows libtorch debug/release libs are NOT ABI compatible.");
@@ -57,61 +57,64 @@ CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core
 	}
 
 	try {
-		if (!std::filesystem::exists(config.model_ResNext_file)) {
-			std::string msg{ "Unable to open file '" + config.model_ResNext_file + "'." };
+		if (!std::filesystem::exists(_settings.model_ResNext_file)) {
+			std::string msg{ "Unable to open file '" + _settings.model_ResNext_file + "'." };
 			msg.append(
 			    "\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? "
 			    "Windows libtorch debug/release libs are NOT ABI compatible.");
 			SHLOG_E(msg);
 			throw std::runtime_error{ msg };
 		}
-		resnext101 = torch::jit::load(config.model_ResNext_file);
-		SHLOG_S("ResNext model loaded from  '" << config.model_ResNext_file << "'.");
+		resnext101 = torch::jit::load(_settings.model_ResNext_file);
+		SHLOG_S("ResNext model loaded from  '" << _settings.model_ResNext_file << "'.");
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error openning ResNext model file: " + config.model_ResNext_file + "\n" + e.what() };
+		std::string msg{ "Error openning ResNext model file: " + _settings.model_ResNext_file + "\n" + e.what() };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
 	try {
-		bias = torch::tensor(KeywordRanker::parse_float_vector(config.model_W2VV_img_bias, 2048));
-		SHLOG_S("W2VV bias loaded from '" << config.model_ResNext_file << "' with dimension (2048).");
+		bias = torch::tensor(KeywordRanker::parse_float_vector(_settings.model_W2VV_img_bias, 2048));
+		SHLOG_S("W2VV bias loaded from '" << _settings.model_ResNext_file << "' with dimension (2048).");
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error loading W2VV FC bias: " + config.model_W2VV_img_bias + "\n" + e.what() };
+		std::string msg{ "Error loading W2VV FC bias: " + _settings.model_W2VV_img_bias + "\n" + e.what() };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
 	try {
-		weights = torch::tensor(KeywordRanker::parse_float_vector(config.model_W2VV_img_weigths, 4096 * 2048))
+		weights = torch::tensor(KeywordRanker::parse_float_vector(_settings.model_W2VV_img_weigths, 4096 * 2048))
 		              .reshape({ 2048, 4096 })
 		              .permute({ 1, 0 });
-		SHLOG_S("W2VV FC weights loaded from '" << config.model_W2VV_img_weigths << "' with dimension (4096, 2048).");
+		SHLOG_S("W2VV FC weights loaded from '" << _settings.model_W2VV_img_weigths
+		                                        << "' with dimension (4096, 2048).");
 	} catch (const c10::Error& e) {
-		std::string msg{ "Error loading W2VV FC weights: " + config.model_W2VV_img_weigths + "\n" + e.what() };
+		std::string msg{ "Error loading W2VV FC weights: " + _settings.model_W2VV_img_weigths + "\n" + e.what() };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
-	kw_pca_mat = torch::tensor(KeywordRanker::parse_float_vector(config.kw_PCA_mat_file,
-	                                                             config.pre_PCA_features_dim * config.kw_PCA_mat_dim))
-	                 .reshape({ (long long)(config.kw_PCA_mat_dim), (long long)(config.pre_PCA_features_dim) })
-	                 .permute({ 1, 0 });
-	SHLOG_S("Loaded PCA matrix from '" << config.kw_PCA_mat_file << "' with dimension (" << config.pre_PCA_features_dim
-	                                   << " ," << config.kw_PCA_mat_dim << ").");
+	kw_pca_mat =
+	    torch::tensor(KeywordRanker::parse_float_vector(_settings.kw_PCA_mat_file,
+	                                                    _settings.pre_PCA_features_dim * _settings.kw_PCA_mat_dim))
+	        .reshape({ (long long)(_settings.kw_PCA_mat_dim), (long long)(_settings.pre_PCA_features_dim) })
+	        .permute({ 1, 0 });
+	SHLOG_S("Loaded PCA matrix from '" << _settings.kw_PCA_mat_file << "' with dimension ("
+	                                   << _settings.pre_PCA_features_dim << " ," << _settings.kw_PCA_mat_dim << ").");
 	kw_pca_mean_vec =
-	    torch::tensor(KeywordRanker::parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim));
+	    torch::tensor(KeywordRanker::parse_float_vector(_settings.kw_bias_vec_file, _settings.pre_PCA_features_dim));
 
-	SHLOG_S("Loaded PCA mean vector from '" << config.kw_bias_vec_file << "' with dimension ("
-	                                        << config.pre_PCA_features_dim << ").");
+	SHLOG_S("Loaded PCA mean vector from '" << _settings.kw_bias_vec_file << "' with dimension ("
+	                                        << _settings.pre_PCA_features_dim << ").");
 
 	try {
-		for (int i = 0; i < config.collage_regions; i++) {
+		for (int i = 0; i < _settings.collage_regions; i++) {
 			FeatureMatrix m = KeywordRanker::parse_float_matrix(
-			    config.collage_region_file_prefix + std::to_string(i) + ".bin", 128, 0);
+			    _settings.collage_region_file_prefix + std::to_string(i) + ".bin", 128, 0);
 			region_data.push_back(m);
 		}
-		SHLOG_S("Loaded " << config.collage_regions << " from prefix  '" << config.collage_region_file_prefix << "'.");
+		SHLOG_S("Loaded " << _settings.collage_regions << " from prefix  '" << _settings.collage_region_file_prefix
+		                  << "'.");
 
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error loading region data \n" };
@@ -124,7 +127,7 @@ CanvasQueryRanker::CanvasQueryRanker(const Config& config, KeywordRanker* p_core
 }
 
 void CanvasQueryRanker::score(const CanvasQuery& collage, ScoreModel& model, size_t temporal,
-                              const DatasetFeatures& /*features*/, const DatasetFrames& frames) {
+                              const DatasetFeatures& /*features*/, const DatasetFrames& _dataset_frames) {
 	if (!_loaded) {
 		SHLOG_W("Called CanvasQueryRanker::score without available subregion data. Leaving the scores intact.");
 		return;
@@ -186,7 +189,7 @@ void CanvasQueryRanker::score(const CanvasQuery& collage, ScoreModel& model, siz
 		}*/
 
 		auto sorted_results{ ScoreModel::sort_by_score(final_score) };
-		KeywordRanker::report_results(sorted_results, frames);
+		KeywordRanker::report_results(sorted_results, _dataset_frames);
 
 		// Update the model
 		for (size_t i = 0; i < final_score.size(); ++i) {

@@ -73,7 +73,7 @@ std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_f
 	return result_vec;
 }
 
-DatasetFrames::DatasetFrames(const Config& config) {
+DatasetFrames::DatasetFrames(const Settings& config) {
 	// Save the config values
 	frames_dir = config.frames_dir;
 	thumbs_dir = config.thumbs_dir;

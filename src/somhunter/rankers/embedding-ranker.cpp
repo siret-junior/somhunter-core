@@ -23,21 +23,21 @@
 using namespace sh;
 
 std::vector<float> EmbeddingRanker::inverse_score_vector(const std::vector<float>& query_vec,
-                                                         const DatasetFeatures& features) const {
-	return inverse_score_vector(query_vec.data(), features);
+                                                         const DatasetFeatures& _dataset_features) const {
+	return inverse_score_vector(query_vec.data(), _dataset_features);
 }
 
 std::vector<float> EmbeddingRanker::inverse_score_vector(const float* query_vec,
-                                                         const DatasetFeatures& features) const {
-	size_t target_dim{ features.dim() };
+                                                         const DatasetFeatures& _dataset_features) const {
+	size_t target_dim{ _dataset_features.dim() };
 
 	// Result is final score \in [0.0F, 1.0F] of `query_vec` as temporal query
 	std::vector<float> scores;
-	scores.resize(features.size());
+	scores.resize(_dataset_features.size());
 
 	// For all frame_IDs
-	for (ImageId frame_ID = 0; frame_ID < features.size(); ++frame_ID) {
-		const float* raw_frame_features = features.fv(frame_ID);
+	for (ImageId frame_ID = 0; frame_ID < _dataset_features.size(); ++frame_ID) {
+		const float* raw_frame_features = _dataset_features.fv(frame_ID);
 
 		auto dist = utils::d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0f;
 

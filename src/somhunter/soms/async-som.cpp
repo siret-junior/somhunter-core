@@ -32,7 +32,7 @@
 
 using namespace sh;
 
-void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
+void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& cfg) {
 	std::random_device rd;
 	std::mt19937 rng(rd());
 	const size_t width = parent->width;
@@ -136,7 +136,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 	SHLOG_D("SOM worker finished.");
 }
 
-AsyncSom::AsyncSom(const Config& cfg, size_t w, size_t h) : width(w), height(h) {
+AsyncSom::AsyncSom(const Settings& cfg, size_t w, size_t h) : width(w), height(h) {
 	new_data = m_ready = terminate = false;
 	worker = std::thread(async_som_worker, this, cfg);
 }

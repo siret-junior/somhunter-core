@@ -111,8 +111,8 @@ float ScoreModel::set(ImageId i, float prob) {
 	return _scores[i] = prob;
 }
 
-std::vector<ImageId> ScoreModel::top_n_with_context(const DatasetFrames& frames, size_t n, size_t from_vid_limit,
-                                                    size_t from_shot_limit) const {
+std::vector<ImageId> ScoreModel::top_n_with_context(const DatasetFrames& _dataset_frames, size_t n,
+                                                    size_t from_vid_limit, size_t from_shot_limit) const {
 	// Is this cached
 	// !! We assume that vid/shot limits do not change during the runtime.
 	if (!_cache_ctx_dirty) {
@@ -123,14 +123,14 @@ std::vector<ImageId> ScoreModel::top_n_with_context(const DatasetFrames& frames,
 	if we want to keep reporting `n` unique results. */
 	n = n * DISPLAY_GRID_WIDTH;
 
-	auto to_show = top_n(frames, n / DISPLAY_GRID_WIDTH, from_vid_limit, from_shot_limit);
+	auto to_show = top_n(_dataset_frames, n / DISPLAY_GRID_WIDTH, from_vid_limit, from_shot_limit);
 
 	_topn_ctx_cache.clear();
 	_topn_ctx_cache.reserve(n);
 	for (auto&& selected : to_show) {
-		auto video_id = frames.get_video_id(selected);
+		auto video_id = _dataset_frames.get_video_id(selected);
 		for (int i = -TOP_N_SELECTED_FRAME_POSITION; i < DISPLAY_GRID_WIDTH - TOP_N_SELECTED_FRAME_POSITION; ++i) {
-			if (frames.get_video_id(selected + i) == video_id) {
+			if (_dataset_frames.get_video_id(selected + i) == video_id) {
 				_topn_ctx_cache.push_back(selected + i);
 			} else {
 				_topn_ctx_cache.push_back(IMAGE_ID_ERR_VAL);
@@ -142,7 +142,7 @@ std::vector<ImageId> ScoreModel::top_n_with_context(const DatasetFrames& frames,
 	return _topn_ctx_cache;
 }
 
-std::vector<ImageId> ScoreModel::top_n(const DatasetFrames& frames, size_t n, size_t from_vid_limit,
+std::vector<ImageId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
                                        size_t from_shot_limit) const {
 	// Is this cached
 	// !! We assume that vid/shot limits do not change during the runtime.
@@ -176,7 +176,7 @@ std::vector<ImageId> ScoreModel::top_n(const DatasetFrames& frames, size_t n, si
 	size_t t = 0;
 	for (ImageId i = 0; t < n && i < score_ids.size(); ++i) {
 		ImageId frame = score_ids[i].id;
-		auto vf = frames.get_frame(frame);
+		auto vf = _dataset_frames.get_frame(frame);
 
 		// If we have already enough from this video
 		if (frames_per_vid[vf.video_ID]++ >= from_vid_limit) continue;
@@ -264,7 +264,7 @@ ImageId ScoreModel::weighted_example(const std::vector<ImageId>& subset) const {
 }
 
 void ScoreModel::apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& screen,
-                             const DatasetFeatures& features) {
+                             const DatasetFeatures& _dataset_features) {
 	if (likes.empty()) return;
 
 	invalidate_cache();
@@ -303,10 +303,10 @@ void ScoreModel::apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& s
 				if (_mask[ii]) {
 					float divSum = 0;
 
-					for (ImageId oi : others) divSum += expf(-features.d_dot(ii, oi) / Sigma);
+					for (ImageId oi : others) divSum += expf(-_dataset_features.d_dot(ii, oi) / Sigma);
 
 					for (auto&& like : likes) {
-						const float likeValTmp = expf(-features.d_dot(ii, like) / Sigma);
+						const float likeValTmp = expf(-_dataset_features.d_dot(ii, like) / Sigma);
 						_scores[ii] *= likeValTmp / (likeValTmp + divSum);
 					}
 				}
@@ -323,7 +323,7 @@ void ScoreModel::apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& s
 	normalize();
 }
 
-void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& frames) {
+void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& _dataset_frames) {
 	if (depth == 0) return;
 
 	depth = std::min(depth, _temporal_scores.size());
@@ -337,7 +337,7 @@ void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& frames) {
 	// Other levels multiply with minimal inverse scores from window
 	for (long i = depth - 2; i >= 0; --i) {
 		for (size_t j = 0; j < _scores.size(); ++j) {
-			auto img_it = frames.get_frame_it(j);
+			auto img_it = _dataset_frames.get_frame_it(j);
 			VideoId vid_ID = img_it->video_ID;
 
 			// Select minimal proportional inverse score

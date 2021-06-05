@@ -152,7 +152,7 @@ class DatasetFrames {
 	VideoFilenameOffsets offs{};
 
 public:
-	DatasetFrames(const Config& config);
+	DatasetFrames(const Settings& config);
 
 	std::string operator[](ImageId i) const { return frames_dir + std::string{ _frames.at(i).filename }; }
 
