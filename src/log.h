@@ -77,23 +77,23 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Modifier& mod) { return os << "\033[" << mod.code << "m"; }
 };
 
-static Modifier red{ TermColor::FG_RED };
-static Modifier green{ TermColor::FG_GREEN };
-static Modifier yellow{ TermColor::FG_YELLOW };
-static Modifier blue{ TermColor::FG_BLUE };
-static Modifier cyan{ TermColor::FG_CYAN };
-static Modifier white{ TermColor::FG_WHITE };
-static Modifier grey{ TermColor::FG_GREY };
-static Modifier def{ TermColor::FG_DEFAULT };
+static Modifier red{ TermColor::Code::FG_RED };
+static Modifier green{ TermColor::Code::FG_GREEN };
+static Modifier yellow{ TermColor::Code::FG_YELLOW };
+static Modifier blue{ TermColor::Code::FG_BLUE };
+static Modifier cyan{ TermColor::Code::FG_CYAN };
+static Modifier white{ TermColor::Code::FG_WHITE };
+static Modifier grey{ TermColor::Code::FG_GREY };
+static Modifier def{ TermColor::Code::FG_DEFAULT };
 
-static Modifier redbg{ TermColor::BG_RED };
-static Modifier greenbg{ TermColor::BG_GREEN };
-static Modifier yellowbg{ TermColor::BG_YELLOW };
-static Modifier bluebg{ TermColor::BG_BLUE };
-static Modifier cyanbg{ TermColor::BG_CYAN };
-static Modifier whitebg{ TermColor::BG_WHITE };
-static Modifier greybg{ TermColor::BG_GREY };
-static Modifier defbg{ TermColor::BG_DEFAULT };
+static Modifier redbg{ TermColor::Code::BG_RED };
+static Modifier greenbg{ TermColor::Code::BG_GREEN };
+static Modifier yellowbg{ TermColor::Code::BG_YELLOW };
+static Modifier bluebg{ TermColor::Code::BG_BLUE };
+static Modifier cyanbg{ TermColor::Code::BG_CYAN };
+static Modifier whitebg{ TermColor::Code::BG_WHITE };
+static Modifier greybg{ TermColor::Code::BG_GREY };
+static Modifier defbg{ TermColor::Code::BG_DEFAULT };
 }  // namespace TermColor
 
 /**

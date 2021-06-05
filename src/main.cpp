@@ -37,17 +37,19 @@
 
 #include "config-tests.h"  //< Comment this to disable testing behaviour
 
-#include "log.h"
+#include "config.h"
 #include "utils.h"
 
-#include "NetworkApi.h"
+#include "network-API.h"
 
 using namespace sh;
 
 /**
  * Does the global application initialization.
  */
+namespace sh {
 static void initialize_aplication();
+}
 
 int main() {
 	initialize_aplication();
@@ -316,7 +318,7 @@ int main() {
 	return 0;
 }
 
-static void initialize_aplication() {
+static void sh::initialize_aplication() {
 	// Enable ANSII colored output if not enabled by default
 #if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 	// From: https://superuser.com/a/1529908

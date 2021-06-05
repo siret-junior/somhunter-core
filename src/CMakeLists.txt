@@ -23,9 +23,6 @@ set(HEADERS
 	CanvasQueryRanker.h
 	EmbeddingRanker.h
 	RelocationRanker.h
-
-	#Extractor.h
-	NetworkApi.h
 )
 
 set(SOURCES
@@ -45,9 +42,6 @@ set(SOURCES
 	CanvasQueryRanker.cpp
 	EmbeddingRanker.cpp
 	RelocationRanker.cpp
-
-	#Extractor.cpp
-	NetworkApi.cpp
 )
 
 target_sources(${SOMHUNTER_TARGET} PRIVATE ${SOURCES} ${HEADERS} main.cpp)
@@ -55,4 +49,5 @@ target_sources(${SOMHUNTER_TARGET_TESTS} PRIVATE ${SOURCES} ${HEADERS})
 
 add_subdirectory(API)
 add_subdirectory(evaluation-server)
+add_subdirectory(extraction)
 add_subdirectory(system-logging)

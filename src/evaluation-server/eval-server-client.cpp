@@ -19,7 +19,7 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
 #include "eval-server-client.h"
+#include "config.h"
 
 using namespace sh;

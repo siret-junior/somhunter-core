@@ -101,8 +101,7 @@
 		"model_ResNext_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnext101.pt",
 		"model_ResNext_SHA256": "d5c990df4ec76d2a0671e8d61717fa0cf27e90cc627750d41c1be443ea36b9f9",
 
-        "collage_regions": 12,
-        "collage_region_file_prefix": "data/ITEC_w2vv/collage/region_",
+        
 		"models_dir": "data/nn_models/",
 
 		"ui_dir": "ui/",
@@ -116,24 +115,26 @@
 			"fr_filename_frame_num_off": 42,
 			"fr_filename_frame_num_len": 8
 		},
-	
-		"frames_list_file": "data/ITEC_w2vv/ITEC.keyframes.dataset",
-		"frames_dir": "data/ITEC_w2vv/frames/",
-		"thumbs_dir": "data/ITEC_w2vv/thumbs/",
-        "data_dir": "data/ITEC_w2vv/",
 		
-		"features_file_data_off": 12,
-		"features_dim": 128,
-		"features_file": "data/ITEC_w2vv/ITEC_20200411.w2vv.images.normed.128pca.viretfromat",
+		"frames_list_file": "data/V3C1_2021_May/frame-ID-to-filepath.V3C1.csv",
+        "frames_dir": "data/V3C1_2021_May/frames/",
+        "thumbs_dir": "data/V3C1_2021_May/thumbs/",
+        "data_dir": "data/V3C1_2021_May/",
 		
-		"kw_bias_vec_file": "data/ITEC_w2vv/txt_bias-2048floats.bin",
-		"kw_scores_mat_file": "data/ITEC_w2vv/txt_weight-11147x2048floats.bin",
+        "features_file_data_off": 0,
+        "features_dim": 128,
+        "features_file": "data/V3C1_2021_May/W2VV_BoW/frame-features.V3C1.W2VV-BoW.1154020x128.float32.bin",
+		"collage_regions": 12,
+		"collage_region_file_prefix": "data/V3C1_2021_May/W2VV_BoW/subframes/region_",
+
+        "kws_file": "data/V3C1_2021_May/W2VV_BoW/keyword-to-ID.W2VV-BoW.csv",
+        "kw_bias_vec_file": "data/V3C1_2021_May/W2VV_BoW/keyword-dense-bias.W2VV-BoW.2048.float32.bin",
+        "kw_scores_mat_file": "data/V3C1_2021_May/W2VV_BoW/keyword-dense-weigths.W2VV-BoW.11147x2048.float32.bin",
 		
-		"kws_file": "data/ITEC_w2vv/word2idx.txt",
-		"kw_PCA_mat_dim": 128,
-		"pre_PCA_features_dim": 2048,
-		"kw_PCA_mean_vec_file": "data/ITEC_w2vv/ITEC_20200411.w2vv.pca.mean.bin",
-		"kw_PCA_mat_file": "data/ITEC_w2vv/ITEC_20200411.w2vv.pca.matrix.bin",
+        "kw_PCA_mat_dim": 128,
+        "pre_PCA_features_dim": 2048,
+        "kw_PCA_mean_vec_file": "data/V3C1_2021_May/W2VV_BoW/PCA-mean.V3C1.W2VV-BoW.2048.float32.bin",
+        "kw_PCA_mat_file": "data/V3C1_2021_May/W2VV_BoW/PCA-matrix.V3C1.W2VV-BoW.2048x128.float32.bin",
 			
 		"LSC_metadata_file": "",
 
