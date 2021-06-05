@@ -18,7 +18,7 @@ set(SOMHUNTER_TARGET_TESTS somhunter-tests)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 SET(WITH_CUDA 0 CACHE STRING "Set to 1 if you have CUDA installed.")
-set(THIRD_PARTY_DIR "${CMAKE_HOME_DIRECTORY}/3rdparty")
+set(THIRD_PARTY_DIR "${CMAKE_HOME_DIRECTORY}/third-party")
 
 # Output dirs
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
@@ -156,24 +156,6 @@ file(
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOMHUNTER_SOURCE_FILEPATHS}) 
 
-
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-
-# Put gtest targets into dorectories
-set_target_properties(gtest PROPERTIES FOLDER third-party)
-set_target_properties(gtest_main PROPERTIES FOLDER third-party)
-set_target_properties(gmock PROPERTIES FOLDER third-party)
-set_target_properties(gmock_main PROPERTIES FOLDER third-party)
-
-enable_testing()
-
 # ####################################
 # Create the target
 # ####################################
@@ -185,12 +167,9 @@ set_target_properties(${SOMHUNTER_TARGET} PROPERTIES CXX_STANDARD 17)
 add_executable(${SOMHUNTER_TARGET_TESTS})
 target_compile_features(${SOMHUNTER_TARGET_TESTS} PRIVATE cxx_std_17)
 set_target_properties(${SOMHUNTER_TARGET_TESTS} PROPERTIES CXX_STANDARD 17)
-target_link_libraries(${SOMHUNTER_TARGET_TESTS} PRIVATE gtest_main)
 
 # Add testing definition
 target_compile_definitions(${SOMHUNTER_TARGET_TESTS} PRIVATE TESTING)
-
-
 
 # ####################################
 # Linking
@@ -250,8 +229,5 @@ endif (MSVC)
 # Subdirectories
 # ####################################
 add_subdirectory(src)
-add_subdirectory(3rdparty)
+add_subdirectory(third-party)
 add_subdirectory(tests)
-
-include(GoogleTest)
-gtest_discover_tests(${SOMHUNTER_TARGET_TESTS})

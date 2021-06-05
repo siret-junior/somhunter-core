@@ -7,8 +7,8 @@
 	"dependencies":{
 		"libtorch": {
 			"install_dir": {
-				"release": "3rdparty/libtorch-Release",
-				"debug": "3rdparty/libtorch-Debug"
+				"release": "third-party/libtorch-Release",
+				"debug": "third-party/libtorch-Debug"
 			},
 			"win":{
 				"CUDA": {

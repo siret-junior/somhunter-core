@@ -1,33 +1,24 @@
-#include <cmath>
 #include <filesystem>
+#include <iostream>
 #include <string>
 #include <vector>
 
-#include <gtest/gtest.h>
+#include "tests.h"
 
 using namespace std;
 
-#if GTEST_OS_ESP8266 || GTEST_OS_ESP32
-#	if GTEST_OS_ESP8266
-extern "C" {
-#	endif
-void setup() { testing::InitGoogleTest(); }
-
-void loop() { RUN_ALL_TESTS(); }
-
-#	if GTEST_OS_ESP8266
-}
-#	endif
-
-#else
-
-GTEST_API_ int main(int argc, char **argv) {
+int main(int /*argc*/, char ** /*argv*/) {
 	auto path = std::filesystem::current_path();
 	std::filesystem::current_path(path.parent_path());
 	std::cout << "CD:" << path.string() << std::endl;
 
-	printf("Running main() from %s\n", __FILE__);
-	testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+	std::cout << "Running main() from " << __FILE__ << std::endl;
+
+	const std::string cfg_fpth{ "config/config-core.json" };
+
+	sh::tests::TESTER_SomHunter::run_all_tests(cfg_fpth);
+	// TODO update config tests
+	// sh::tests::TESTER_Config::run_all_tests(cfg_fpth);
+
+	return 0;
 }
-#endif

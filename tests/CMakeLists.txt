@@ -1,10 +1,12 @@
 
 set(HEADERS
-	
+	tests.h
+	config-tests.h
 )
 
 set(SOURCES 
 	${HEADERS}
+	tests.cpp
 )
 
 target_include_directories(somhunter 
@@ -27,8 +29,6 @@ target_include_directories(${SOMHUNTER_TARGET_TESTS}
 target_sources(${SOMHUNTER_TARGET_TESTS}
 	PUBLIC 
 		${SOURCES}
-		tests.hpp
-		config-tests.h
 		main-tests.cpp
 )
 

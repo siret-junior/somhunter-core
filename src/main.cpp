@@ -37,10 +37,11 @@
 
 #include "config-tests.h"  //< Comment this to disable testing behaviour
 
-#include "config.h"
-#include "utils.h"
+#include "common.h"
+#include "utils.hpp"
 
 #include "network-API.h"
+#include "tests.h"
 
 using namespace sh;
 
