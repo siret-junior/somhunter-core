@@ -19,29 +19,27 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef somhunter_h
-#define somhunter_h
+#ifndef SOMHUNTER_H_
+#define SOMHUNTER_H_
 
 #include <array>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "utils.hpp"
-
-#include "CanvasQueryRanker.h"
-#include "DatasetFeatures.h"
-#include "DatasetFrames.h"
-#include "ImageManipulator.h"
-#include "KeywordRanker.h"
-#include "RelevanceScores.h"
-#include "RelocationRanker.h"
-#include "UserContext.h"
+#include "async-som.h"
+#include "canvas-query-ranker.h"
+#include "dataset-features.h"
+#include "dataset-frames.h"
+#include "image-processor.h"
+#include "keyword-ranker.h"
+#include "logger.h"
 #include "query-types.h"
-
-#include "AsyncSom.h"
-#include "SearchContext.h"
-#include "Submitter.h"
+#include "relocation-ranker.h"
+#include "scores.h"
+#include "search-context.h"
+#include "user-context.h"
+#include "utils.hpp"
 
 namespace sh {
 
@@ -288,4 +286,4 @@ private:
 };
 
 };  // namespace sh
-#endif
+#endif // SOMHUNTER_H_

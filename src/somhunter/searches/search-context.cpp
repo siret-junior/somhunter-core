@@ -1,3 +1,4 @@
+
 /* This file is part of SOMHunter.
  *
  * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
@@ -18,37 +19,18 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef EMBEDDING_RANKER_H_
-#define EMBEDDING_RANKER_H_
+#include "search-context.h"
 
-#include <cassert>
-#include <fstream>
-#include <iomanip>
-#include <map>
-#include <set>
-#include <string>
-#include <vector>
+#include "dataset-features.h"
+#include "dataset-frames.h"
 
-#include "common.h"
+using namespace sh;
 
-#include "DatasetFrames.h"
-#include "RelevanceScores.h"
-#include "somhunter-config.h"
-#include "utils.hpp"
+SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFrames& frames) : ID(ID), scores(frames) {}
 
-namespace sh {
-
-class EmbeddingRanker {
-public:
-	virtual ~EmbeddingRanker() noexcept {}
-
-protected:
-	std::vector<float> inverse_score_vector(const std::vector<float>& query_vecs,
-	                                        const DatasetFeatures& features) const;
-
-	std::vector<float> inverse_score_vector(const float* query_vecs, const DatasetFeatures& features) const;
-};
-
-}  // namespace sh
-
-#endif  // EMBEDDING_RANKER_H_
+bool SearchContext::operator==(const SearchContext& other) const {
+	return (ID == other.ID && used_tools == other.used_tools && current_display == other.current_display &&
+	        curr_disp_type == other.curr_disp_type && scores == other.scores &&
+	        last_temporal_queries == other.last_temporal_queries && likes == other.likes &&
+	        shown_images == other.shown_images && screenshot_fpth == other.screenshot_fpth && filters == other.filters);
+}

@@ -23,8 +23,8 @@
 
 #include "common.h"
 
-#include "DatasetFeatures.h"
-#include "SomHunter.h"
+#include "dataset-features.h"
+#include "somhunter.h"
 
 using namespace sh;
 

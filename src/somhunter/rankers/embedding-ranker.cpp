@@ -18,7 +18,7 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "EmbeddingRanker.h"
+#include "embedding-ranker.h"
 
 using namespace sh;
 

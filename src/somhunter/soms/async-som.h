@@ -27,9 +27,9 @@
 #include <thread>
 #include <vector>
 
-#include "DatasetFeatures.h"
-#include "DatasetFrames.h"
-#include "RelevanceScores.h"
+#include "dataset-features.h"
+#include "dataset-frames.h"
+#include "scores.h"
 
 namespace sh {
 

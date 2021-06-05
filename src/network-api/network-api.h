@@ -1,7 +1,7 @@
 
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 František Mejzlík <frankmejzlik@gmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
  *                    Patrik Veselý <prtrikvesely@gmail.com>
  *
@@ -30,12 +30,13 @@
 #include <cpprest/producerconsumerstream.h>
 #include <cpprest/uri.h>
 
-using namespace web;
-using namespace http;
-using namespace utility;
-using namespace http::experimental::listener;
-
 #include "common.h"
+#include "query-types.h"
+
+using namespace web;                           //< cpprest
+using namespace http;                          //< cpprest
+using namespace utility;                       //< cpprest
+using namespace http::experimental::listener;  //< cpprest
 
 namespace sh {
 

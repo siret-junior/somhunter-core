@@ -31,16 +31,15 @@
 #endif  // defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 
 // !!!
-#include "SomHunter.h"  // Do not move this beloe other includes
+#include "somhunter.h"  // Do not move this beloe other includes
                         // -> otherwise the libtorch compile error wil bite you
 // !!!
-
-#include "config-tests.h"  //< Comment this to disable testing behaviour
 
 #include "common.h"
 #include "utils.hpp"
 
-#include "network-API.h"
+#include "network-api.h"
+
 #include "tests.h"
 
 using namespace sh;

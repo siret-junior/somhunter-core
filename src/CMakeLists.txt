@@ -16,5 +16,6 @@ target_sources(${SOMHUNTER_TARGET_TESTS} PRIVATE ${SOURCES} ${HEADERS})
 
 add_subdirectory(config)
 add_subdirectory(extractor)
+add_subdirectory(network-api)
 add_subdirectory(somhunter)
 add_subdirectory(common)

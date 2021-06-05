@@ -19,10 +19,10 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "UserContext.h"
+#include "user-context.h"
 
-#include "DatasetFeatures.h"
-#include "DatasetFrames.h"
+#include "dataset-features.h"
+#include "dataset-frames.h"
 
 using namespace sh;
 

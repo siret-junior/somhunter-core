@@ -18,22 +18,37 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "RelocationRanker.h"
-#include "DatasetFrames.h"
-#include "RelevanceScores.h"
-#include "query-types.h"
+#ifndef EMBEDDING_RANKER_H_
+#define EMBEDDING_RANKER_H_
 
-using namespace sh;
+#include <cassert>
+#include <fstream>
+#include <iomanip>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
 
-void RelocationRanker::score(const RelocationQuery& query, ScoreModel& model, size_t temporal,
-                             const DatasetFeatures& features) const {
-	if (query == IMAGE_ID_ERR_VAL) return;
+#include "common.h"
 
-	// Compute inverse scores in for the example query
-	auto scores{ inverse_score_vector(features.fv(query), features) };
+#include "dataset-frames.h"
+#include "scores.h"
+#include "settings.h"
+#include "utils.hpp"
 
-	// Update the model
-	for (size_t i = 0; i < scores.size(); ++i) {
-		model.adjust(temporal, i, scores[i]);
-	}
-}
+namespace sh {
+
+class EmbeddingRanker {
+public:
+	virtual ~EmbeddingRanker() noexcept {}
+
+protected:
+	std::vector<float> inverse_score_vector(const std::vector<float>& query_vecs,
+	                                        const DatasetFeatures& features) const;
+
+	std::vector<float> inverse_score_vector(const float* query_vecs, const DatasetFeatures& features) const;
+};
+
+}  // namespace sh
+
+#endif  // EMBEDDING_RANKER_H_

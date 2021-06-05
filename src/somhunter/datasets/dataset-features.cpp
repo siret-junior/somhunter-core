@@ -19,7 +19,7 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "DatasetFeatures.h"
+#include "dataset-features.h"
 
 #include <exception>
 #include <fstream>

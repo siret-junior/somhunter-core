@@ -29,6 +29,12 @@ namespace sh {
 // ----------------------------------------
 // Old
 
+#define MINIMAL_SCORE 1e-18f
+
+//#define DEBUG_CURL_REQUESTS
+#define LOG_LOGS
+#define LOG_CURL_REQUESTS
+
 /** For the LSC submits */
 #define SUBMIT_FILENAME_ID
 

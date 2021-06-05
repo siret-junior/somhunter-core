@@ -30,12 +30,14 @@
 #include <string>
 #include <vector>
 
-#include "DatasetFrames.h"
-#include "EmbeddingRanker.h"
-#include "RelevanceScores.h"
 #include "common.h"
-#include "somhunter-config.h"
+
 #include "utils.hpp"
+
+#include "dataset-frames.h"
+#include "embedding-ranker.h"
+#include "scores.h"
+#include "settings.h"
 
 namespace sh {
 

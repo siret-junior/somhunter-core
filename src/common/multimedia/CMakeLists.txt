@@ -1,11 +1,11 @@
 
 set(HEADERS
-  	static-config.h
-	intrinsics.h
+  	image-processor.h
 )
 
 set(SOURCES
 	${HEADERS}
+	image-processor.cpp
 )
 
 target_include_directories(${SOMHUNTER_TARGET} PRIVATE .)

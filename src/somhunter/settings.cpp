@@ -1,5 +1,5 @@
 
-#include "somhunter-config.h"
+#include "settings.h"
 
 #include "json-helpers.hpp"
 #include "utils.hpp"

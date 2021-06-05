@@ -1,11 +1,17 @@
 
 set(HEADERS
-  	static-config.h
-	intrinsics.h
+	canvas-query-ranker.h
+	embedding-ranker.h
+	keyword-ranker.h
+	relocation-ranker.h
 )
 
 set(SOURCES
 	${HEADERS}
+	canvas-query-ranker.cpp
+	embedding-ranker.cpp
+	keyword-ranker.cpp
+	relocation-ranker.cpp
 )
 
 target_include_directories(${SOMHUNTER_TARGET} PRIVATE .)

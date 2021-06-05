@@ -19,7 +19,7 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SOM.h"
+#include "som.h"
 
 #include <cmath>
 

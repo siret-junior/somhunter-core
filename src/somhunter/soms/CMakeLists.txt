@@ -1,11 +1,13 @@
 
 set(HEADERS
-  	static-config.h
-	intrinsics.h
+  	som.h
+	async-som.h
 )
 
 set(SOURCES
 	${HEADERS}
+	som.cpp
+	async-som.cpp
 )
 
 target_include_directories(${SOMHUNTER_TARGET} PRIVATE .)

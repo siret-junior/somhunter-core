@@ -19,7 +19,7 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "RelevanceScores.h"
+#include "scores.h"
 
 #include <algorithm>
 #include <cassert>
@@ -33,8 +33,6 @@
 #include "common.h"
 
 using namespace sh;
-
-#define MINIMAL_SCORE 1e-18f
 
 struct FrameScoreIdPair {
 	float score;

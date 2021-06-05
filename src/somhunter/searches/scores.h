@@ -28,8 +28,8 @@
 
 #include "common.h"
 
-#include "DatasetFeatures.h"
-#include "DatasetFrames.h"
+#include "dataset-features.h"
+#include "dataset-frames.h"
 
 namespace sh {
 

@@ -18,13 +18,14 @@
  * You should have received a copy of the GNU General Public License along with
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
+
+#include "network-api.h"
+
 #include <algorithm>
 
-#include "SomHunter.h"
+#include "somhunter.h"
 
-#include "network-API.h"
-
-using namespace utility::conversions;
+using namespace utility::conversions;  //< cpprest
 
 using namespace sh;
 

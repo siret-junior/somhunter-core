@@ -30,9 +30,9 @@
 
 #include "common.h"
 
-#include "AsyncSom.h"
-#include "SearchContext.h"
-#include "Submitter.h"
+#include "async-som.h"
+#include "search-context.h"
+#include "logger.h"
 
 namespace sh {
 
@@ -69,7 +69,7 @@ public:
 	std::string user_token;
 	std::vector<SearchContext> history;
 
-	Submitter submitter;
+	Logger submitter;
 	AsyncSom async_SOM;
 	std::vector<std::unique_ptr<AsyncSom>> temp_async_SOM;
 

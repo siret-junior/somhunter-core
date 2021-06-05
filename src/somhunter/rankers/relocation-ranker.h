@@ -31,10 +31,10 @@
 
 #include "common.h"
 
-#include "DatasetFrames.h"
-#include "EmbeddingRanker.h"
-#include "RelevanceScores.h"
-#include "somhunter-config.h"
+#include "dataset-frames.h"
+#include "embedding-ranker.h"
+#include "scores.h"
+#include "settings.h"
 #include "query-types.h"
 #include "utils.hpp"
 

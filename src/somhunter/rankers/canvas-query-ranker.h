@@ -37,13 +37,13 @@
 
 #include "common.h"
 
-#include "ImageManipulator.h"
-#include "KeywordRanker.h"
+#include "image-processor.h"
+#include "keyword-ranker.h"
 #include "query-types.h"
 
 namespace sh {
 
-class SomHunter;
+class Somhunter;
 
 template <typename DType>
 std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features) {

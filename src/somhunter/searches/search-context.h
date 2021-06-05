@@ -30,8 +30,8 @@
 #include "common.h"
 #include "utils.hpp"
 
-#include "DatasetFrames.h"
-#include "RelevanceScores.h"
+#include "dataset-frames.h"
+#include "scores.h"
 #include "query-types.h"
 
 namespace sh {

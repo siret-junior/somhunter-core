@@ -25,7 +25,7 @@
 
 #include <json11.hpp>
 
-#include "ImageManipulator.h"
+#include "image-processor.h"
 #include "json-helpers.hpp"
 
 using namespace sh;

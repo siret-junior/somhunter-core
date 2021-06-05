@@ -22,7 +22,7 @@
 #include <chrono>
 #include <stdexcept>
 
-#include "SomHunter.h"
+#include "somhunter.h"
 
 #include "common.h"
 #include "utils.hpp"

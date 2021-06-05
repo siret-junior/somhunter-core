@@ -18,12 +18,12 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "CanvasQueryRanker.h"
+#include "canvas-query-ranker.h"
 
 #include <filesystem>
 
-#include "KeywordRanker.h"
-#include "RelevanceScores.h"
+#include "keyword-ranker.h"
+#include "scores.h"
 #include "utils.hpp"
 
 using namespace sh;

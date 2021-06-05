@@ -19,7 +19,7 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ImageManipulator.h"
+#include "image-processor.h"
 
 // Let STB to put it's implementation inside this TU
 #define STB_IMAGE_IMPLEMENTATION

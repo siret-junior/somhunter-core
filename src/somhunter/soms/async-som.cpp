@@ -19,16 +19,16 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "AsyncSom.h"
-#include "SomHunter.h"
-
-#include "SOM.h"
+#include "async-som.h"
 
 #include <chrono>
 #include <random>
 #include <thread>
 
 #include "common.h"
+#include "som.h"
+
+#include "somhunter.h"
 
 using namespace sh;
 

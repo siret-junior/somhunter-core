@@ -30,7 +30,7 @@
 // *** TYPES ***
 
 #include "common-types.h"
-#include "somhunter-config.h"
+#include "settings.h"
 
 // *** TOOLS ***
 #include "static-logger.hpp"

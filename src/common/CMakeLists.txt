@@ -18,4 +18,5 @@ target_sources(${SOMHUNTER_TARGET_TESTS} PRIVATE ${SOURCES} ${HEADERS})
 
 add_subdirectory(json)
 add_subdirectory(math)
+add_subdirectory(multimedia)
 add_subdirectory(network)

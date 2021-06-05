@@ -19,7 +19,7 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "KeywordRanker.h"
+#include "keyword-ranker.h"
 
 #include <cmath>
 

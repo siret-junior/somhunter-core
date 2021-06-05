@@ -1,10 +1,11 @@
 
 set(HEADERS
-  	
+  	http.h
 )
 
 set(SOURCES
 	${HEADERS}
+	http.cpp
 )
 
 target_include_directories(${SOMHUNTER_TARGET} PRIVATE .)

@@ -1,11 +1,13 @@
 
 set(HEADERS
-  	static-config.h
-	intrinsics.h
+	dataset-frames.h
+	dataset-features.h
 )
 
 set(SOURCES
 	${HEADERS}
+	dataset-frames.cpp
+	dataset-features.cpp
 )
 
 target_include_directories(${SOMHUNTER_TARGET} PRIVATE .)
