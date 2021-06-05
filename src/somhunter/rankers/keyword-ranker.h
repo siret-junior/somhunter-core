@@ -107,7 +107,7 @@ public:
 	KeywordRanker& operator=(KeywordRanker&&) = default;
 	~KeywordRanker() noexcept = default;
 
-	static void report_results(const StdVector<std::pair<ImageId, float>>& sorted_results, const DatasetFrames& _dataset_frames,
+	static void report_results(const StdVector<std::pair<FrameId, float>>& sorted_results, const DatasetFrames& _dataset_frames,
 	                           size_t num = 10);
 
 	StdVector<float> embedd_text_queries(const StdVector<KeywordId>& kws) const;

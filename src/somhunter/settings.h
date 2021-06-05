@@ -87,7 +87,7 @@ struct SubmitterConfig {
  */
 struct Settings {
 	ApiConfig API_config;
-	std::string user_token;
+	std::string _user_token;
 	SubmitterConfig submitter_config;
 
 	size_t max_frame_filename_len;

@@ -89,7 +89,7 @@ public:
 	      _dataset_features(_dataset_frames, settings),
 	      _keyword_ranker(settings, _dataset_frames),
 	      _collage_ranker(settings, &_keyword_ranker),
-	      _user_context(settings.user_token, settings, _dataset_frames, _dataset_features),
+	      _user_context(settings._user_token, settings, _dataset_frames, _dataset_features),
 	      _relocation_ranker{} {
 
 		generate_new_targets();
@@ -106,14 +106,14 @@ public:
 	 *	Some diplays may even support paging (e.g. top_n) or
 	 * selection of one frame (e.g. top_knn)
 	 */
-	GetDisplayResult get_display(DisplayType d_type, ImageId selected_image = 0, PageId page = 0, bool log_it = true);
+	GetDisplayResult get_display(DisplayType d_type, FrameId selected_image = 0, PageId page = 0, bool log_it = true);
 
 	/** Inverts the like states of the provided frames and returns the new
 	 * states. */
-	std::vector<bool> like_frames(const std::vector<ImageId>& new_likes);
+	std::vector<bool> like_frames(const std::vector<FrameId>& new_likes);
 
 	/** (De)selects the provided frames from the bookmark list. */
-	std::vector<bool> bookmark_frames(const std::vector<ImageId>& new_bookmarks);
+	std::vector<bool> bookmark_frames(const std::vector<FrameId>& new_bookmarks);
 
 	/** Returns the nearest supported keyword matches to the provided
 	 * prefix. */
@@ -159,9 +159,9 @@ public:
 	 */
 	const UserContext& get_user_context() const;
 
-	const VideoFrame& get_frame(ImageId ID) const { return _dataset_frames.get_frame(ID); }
+	const VideoFrame& get_frame(FrameId ID) const { return _dataset_frames.get_frame(ID); }
 
-	VideoFramePointer get_frame_ptr(ImageId img) const {
+	VideoFramePointer get_frame_ptr(FrameId img) const {
 		if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
 		return nullptr;
 	}
@@ -185,7 +185,7 @@ public:
 	bool login_to_dres() const;
 
 	/** Sumbits frame with given id to VBS server */
-	void submit_to_server(ImageId frame_id);
+	void submit_to_server(FrameId frame_id);
 
 	// ********************************
 	// Logging calls
@@ -194,7 +194,7 @@ public:
 	/*
 	 * Log events that need to be triggered from the outside (e.g. the UI).
 	 */
-	void log_video_replay(ImageId frame_ID, float delta_X);
+	void log_video_replay(FrameId frame_ID, float delta_X);
 	void log_scroll(DisplayType t, float delta_Y);
 	void log_text_query_change(const std::string& text_query);
 
@@ -205,9 +205,9 @@ public:
 	std::string store_rescore_screenshot(const std::string& filepath);
 
 	size_t get_num_frames() const { return _dataset_frames.size(); }
-	std::vector<ImageId> get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
-	std::vector<float> get_top_scored_scores(std::vector<ImageId>& top_scored_frames) const;
-	size_t find_targets(const std::vector<ImageId>& top_scored, const std::vector<ImageId>& targets) const;
+	std::vector<FrameId> get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
+	std::vector<float> get_top_scored_scores(std::vector<FrameId>& top_scored_frames) const;
+	size_t find_targets(const std::vector<FrameId>& top_scored, const std::vector<FrameId>& targets) const;
 
 	// ********************************
 	// Other
@@ -251,9 +251,9 @@ private:
 
 	FramePointerRange get_som_relocation_display(size_t temp_id);
 
-	FramePointerRange get_video_detail_display(ImageId selected_image, bool log_it = true);
+	FramePointerRange get_video_detail_display(FrameId selected_image, bool log_it = true);
 
-	FramePointerRange get_topKNN_display(ImageId selected_image, PageId page);
+	FramePointerRange get_topKNN_display(FrameId selected_image, PageId page);
 
 	// Gets only part of last display
 	FramePointerRange get_page_from_last(PageId page);
@@ -267,8 +267,8 @@ private:
 		_user_context.ctx.screenshot_fpth = "";
 
 		// Increment context ID
-		_user_context.ctx.ID = _user_context.history.size();
-		_user_context.history.emplace_back(_user_context.ctx);
+		_user_context.ctx.ID = _user_context._history.size();
+		_user_context._history.emplace_back(_user_context.ctx);
 	}
 
 	bool has_metadata() const;

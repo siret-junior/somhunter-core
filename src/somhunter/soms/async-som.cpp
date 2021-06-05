@@ -120,7 +120,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& cfg) {
 
 		parent->mapping.clear();
 		parent->mapping.resize(width * height);
-		for (ImageId im = 0; im < point_to_koho.size(); ++im)
+		for (FrameId im = 0; im < point_to_koho.size(); ++im)
 			if (present_mask[im]) parent->mapping[point_to_koho[im]].push_back(im);
 
 		parent->koho = std::move(koho);
@@ -154,7 +154,7 @@ void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc, const
 	points = std::vector<float>(fs.fv(0), fs.fv(0) + fs.dim() * sc.size());
 	scores = std::vector<float>(scores_orig, scores_orig + sc.size());
 	present_mask = std::vector<bool>(sc.size(), false);
-	for (ImageId ii = 0; ii < sc.size(); ++ii) present_mask[ii] = sc.is_masked(ii);
+	for (FrameId ii = 0; ii < sc.size(); ++ii) present_mask[ii] = sc.is_masked(ii);
 
 	new_data = true;
 	lck.unlock();
@@ -162,15 +162,15 @@ void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc, const
 	new_data_wakeup.notify_all();
 }
 
-std::vector<ImageId> AsyncSom::get_display(ScoreModel model_scores) const {
-	std::vector<ImageId> ids;
+std::vector<FrameId> AsyncSom::get_display(ScoreModel model_scores) const {
+	std::vector<FrameId> ids;
 	ids.resize(width * height);
 
 	// Select weighted example from cluster
 	for (size_t i = 0; i < width; ++i) {
 		for (size_t j = 0; j < height; ++j) {
 			if (!map(i + width * j).empty()) {
-				ImageId id = model_scores.weighted_example(map(i + width * j));
+				FrameId id = model_scores.weighted_example(map(i + width * j));
 				ids[i + width * j] = id;
 			}
 		}
@@ -191,21 +191,21 @@ std::vector<ImageId> AsyncSom::get_display(ScoreModel model_scores) const {
 				size_t clust = nearest_cluster_with_atleast(k, stolen_count);
 
 				stolen_count[clust]++;
-				std::vector<ImageId> ci = map(clust);
+				std::vector<FrameId> ci = map(clust);
 
-				for (ImageId ii : ids) {
+				for (FrameId ii : ids) {
 					auto fi = std::find(ci.begin(), ci.end(), ii);
 					if (fi != ci.end()) ci.erase(fi);
 				}
 
 				// If some frame candidates
 				if (!ci.empty()) {
-					ImageId id = model_scores.weighted_example(ci);
+					FrameId id = model_scores.weighted_example(ci);
 					ids[i + width * j] = id;
 				}
 				// Subsitute with "empty" frame
 				else {
-					ids[i + width * j] = ERR_VAL<ImageId>();
+					ids[i + width * j] = ERR_VAL<FrameId>();
 				}
 			}
 		}

@@ -39,7 +39,7 @@ using VideoFramePointer = const VideoFrame*;
 
 struct VideoFrame {
 	VideoFrame() = default;
-	VideoFrame(std::string&& filename, VideoId video_ID, ShotId shot_ID, ImageId frame_number, ImageId image_ID,
+	VideoFrame(std::string&& filename, VideoId video_ID, ShotId shot_ID, FrameId frame_number, FrameId image_ID,
 	           uint8_t weekday = ERR_VAL<uint8_t>(), uint8_t hour = ERR_VAL<uint8_t>())
 	    : filename{ std::move(filename) },
 	      video_ID{ video_ID },
@@ -53,8 +53,8 @@ struct VideoFrame {
 	std::string filename;
 	VideoId video_ID;
 	ShotId shot_ID;
-	ImageId frame_number;
-	ImageId frame_ID;
+	FrameId frame_number;
+	FrameId frame_ID;
 
 	// *** LSC medadata ***
 	/** Original filename without the suffix */
@@ -154,7 +154,7 @@ class DatasetFrames {
 public:
 	DatasetFrames(const Settings& config);
 
-	std::string operator[](ImageId i) const { return frames_dir + std::string{ _frames.at(i).filename }; }
+	std::string operator[](FrameId i) const { return frames_dir + std::string{ _frames.at(i).filename }; }
 
 	std::vector<VideoFrame>::iterator end() { return _frames.end(); };
 	std::vector<VideoFrame>::iterator begin() { return _frames.begin(); };
@@ -164,19 +164,19 @@ public:
 
 	size_t get_num_videos() const { return _frames.back().video_ID + 1; }
 
-	VideoFrame& get_frame(ImageId i) { return _frames[i]; }
+	VideoFrame& get_frame(FrameId i) { return _frames[i]; }
 
-	const VideoFrame& get_frame(ImageId i) const { return _frames[i]; }
+	const VideoFrame& get_frame(FrameId i) const { return _frames[i]; }
 
-	VideoFrame* get_frame_ptr(ImageId i) { return _frames.data() + i; }
+	VideoFrame* get_frame_ptr(FrameId i) { return _frames.data() + i; }
 
-	const VideoFrame* get_frame_ptr(ImageId i) const { return _frames.data() + i; }
+	const VideoFrame* get_frame_ptr(FrameId i) const { return _frames.data() + i; }
 
-	std::vector<VideoFrame>::const_iterator get_frame_it(ImageId i) const { return _frames.begin() + i; }
+	std::vector<VideoFrame>::const_iterator get_frame_it(FrameId i) const { return _frames.begin() + i; }
 
 	size_t size() const { return _frames.size(); }
 
-	VideoId get_video_id(ImageId img_ID) const {
+	VideoId get_video_id(FrameId img_ID) const {
 		if (img_ID >= _frames.size()) {
 			return VIDEO_ID_ERR_VAL;
 		} else {
@@ -218,7 +218,7 @@ public:
 	}
 
 	/** Translation to VideoFrameRefs from vector ids or FrameRange */
-	std::vector<VideoFramePointer> ids_to_video_frame(const std::vector<ImageId>& ids) const;
+	std::vector<VideoFramePointer> ids_to_video_frame(const std::vector<FrameId>& ids) const;
 	static std::vector<VideoFramePointer> range_to_video_frame(const FrameRange& ids);
 
 private:

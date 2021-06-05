@@ -46,8 +46,8 @@ using VideoId = unsigned;
 using FrameNum = unsigned;
 using ShotId = unsigned;
 
-using ImageId = unsigned long;
-using ScreenImgsCont = std::vector<ImageId>;
+using FrameId = unsigned long;
+using ScreenImgsCont = std::vector<FrameId>;
 using FeatureMatrix = std::vector<std::vector<float>>;
 using FeatureVector = std::vector<float>;
 
@@ -57,12 +57,12 @@ using StdMatrix = std::vector<std::vector<T>>;
 template <typename T = float>
 using StdVector = std::vector<T>;
 
-using LikesCont = std::set<ImageId>;
-using BookmarksCont = std::set<ImageId>;
-using ShownFramesCont = std::set<ImageId>;
+using LikesCont = std::set<FrameId>;
+using BookmarksCont = std::set<FrameId>;
+using ShownFramesCont = std::set<FrameId>;
 
 #define SIZE_T_ERR_VAL (std::numeric_limits<size_t>::max)()
-#define IMAGE_ID_ERR_VAL (std::numeric_limits<ImageId>::max)()
+#define IMAGE_ID_ERR_VAL (std::numeric_limits<FrameId>::max)()
 #define VIDEO_ID_ERR_VAL (std::numeric_limits<VideoId>::max)()
 
 /** Value indicating error/invalid/"NULL" value for the given type. */
@@ -171,7 +171,7 @@ struct SubmitData {
 
 	{}
 
-	bool push_submit(ImageId fr_ID) {
+	bool push_submit(FrameId fr_ID) {
 		// If we're busy, notify caller
 		if (want_submit) return false;
 
@@ -180,7 +180,7 @@ struct SubmitData {
 		return true;
 	}
 
-	ImageId get_and_pop_submit() {
+	FrameId get_and_pop_submit() {
 		want_submit = false;
 		return frame_ID;
 	}
@@ -188,7 +188,7 @@ struct SubmitData {
 	bool submit_requested() const { return want_submit; }
 
 	bool want_submit;
-	ImageId frame_ID;
+	FrameId frame_ID;
 };
 
 using PageId = unsigned;

@@ -82,7 +82,7 @@ struct Filters {
 };
 
 struct RescoreMetadata {
-	std::string user_token;
+	std::string _user_token;
 	std::string screenshot_filepath;
 	size_t srd_search_ctx_ID;
 	std::string time_label;
@@ -92,7 +92,7 @@ using RelevanceFeedbackQuery = LikesCont;
 
 using TextualQuery = std::string;
 
-using RelocationQuery = ImageId;
+using RelocationQuery = FrameId;
 
 struct RelativeRect {
 	float left, top, right, bottom;
@@ -389,7 +389,7 @@ struct Query {
 };
 
 struct BaseBenchmarkQuery {
-	std::vector<ImageId> targets;
+	std::vector<FrameId> targets;
 };
 
 struct PlainTextBenchmarkQuery : public BaseBenchmarkQuery {

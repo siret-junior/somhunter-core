@@ -133,7 +133,7 @@ int main() {
 	// Try relevance feedback
 	{
 		auto d_rand1 = core.get_display(DisplayType::DRand)._dataset_frames;
-		std::vector<ImageId> likes;
+		std::vector<FrameId> likes;
 		auto d_rand_b = d_rand1.begin();
 		likes.push_back((*d_rand_b)->frame_ID);
 		d_rand_b++;

@@ -31,8 +31,8 @@
 #include "common.h"
 
 #include "async-som.h"
-#include "search-context.h"
 #include "logger.h"
+#include "search-context.h"
 
 namespace sh {
 
@@ -43,7 +43,7 @@ class DatasetFeatures;
 class UserContext {
 public:
 	UserContext() = delete;
-	UserContext(const std::string& user_token, const Settings& cfg, const DatasetFrames& _dataset_frames,
+	UserContext(const std::string& _user_token, const Settings& cfg, const DatasetFrames& _dataset_frames,
 	            const DatasetFeatures _dataset_features);
 
 	bool operator==(const UserContext& other) const;
@@ -55,39 +55,41 @@ public:
 		ctx.ID = 0;
 
 		// Reset bookmarks
-		bookmarks.clear();
+		_bookmarks.clear();
 
-		history.clear();
-		history.emplace_back(ctx);
+		_history.clear();
+		_history.emplace_back(ctx);
 	}
 
-public:
+	
+public:  //< This is temporary, until we support multiple users
 	// *** SEARCH CONTEXT ***
 	SearchContext ctx;
 
 	// *** USER SPECIFIC ***
-	std::string user_token;
-	std::vector<SearchContext> history;
+	std::string _user_token;
+	std::string _user_eval_server_token;  //< For remote auth
+	std::vector<SearchContext> _history;
 
-	Logger submitter;
-	AsyncSom async_SOM;
-	std::vector<std::unique_ptr<AsyncSom>> temp_async_SOM;
+	Logger _logger;
+	AsyncSom _async_SOM;
+	std::vector<std::unique_ptr<AsyncSom>> _temp_async_SOM;
 
 	/** Frames selected as important. */
-	BookmarksCont bookmarks;
+	BookmarksCont _bookmarks;
 };
 
 /** Result type `get_display` returns */
 struct GetDisplayResult {
 	FramePointerRange _dataset_frames;
 	const LikesCont& likes;
-	const LikesCont& bookmarks;
+	const LikesCont& _bookmarks;
 };
 
 /** Result type `rescore` returns */
 struct RescoreResult {
 	size_t curr_ctx_ID;
-	const std::vector<SearchContext>& history;
+	const std::vector<SearchContext>& _history;
 	const std::vector<VideoFrame> targets;
 };
 

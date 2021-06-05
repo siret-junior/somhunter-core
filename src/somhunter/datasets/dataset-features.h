@@ -46,31 +46,31 @@ public:
 
 	inline const float* fv(size_t i) const { return data.data() + features_dim * i; }
 
-	std::vector<ImageId> get_top_knn(const DatasetFrames& _dataset_frames, ImageId id, size_t per_vid_limit = 0,
+	std::vector<FrameId> get_top_knn(const DatasetFrames& _dataset_frames, FrameId id, size_t per_vid_limit = 0,
 	                                 size_t from_shot_limit = 0) const {
 		return get_top_knn(
-		    _dataset_frames, id, [](ImageId /*frame_ID*/) { return true; }, per_vid_limit, from_shot_limit);
+		    _dataset_frames, id, [](FrameId /*frame_ID*/) { return true; }, per_vid_limit, from_shot_limit);
 	}
 
-	inline std::vector<ImageId> get_top_knn(const DatasetFrames& _dataset_frames, ImageId id,
-	                                        std::function<bool(ImageId ID)> pred, size_t per_vid_limit = 0,
+	inline std::vector<FrameId> get_top_knn(const DatasetFrames& _dataset_frames, FrameId id,
+	                                        std::function<bool(FrameId ID)> pred, size_t per_vid_limit = 0,
 	                                        size_t from_shot_limit = 0) const {
 		if (per_vid_limit == 0) per_vid_limit = _dataset_frames.size();
 
 		if (from_shot_limit == 0) from_shot_limit = _dataset_frames.size();
 
-		auto cmp = [](const std::pair<ImageId, float>& left, const std::pair<ImageId, float>& right) {
+		auto cmp = [](const std::pair<FrameId, float>& left, const std::pair<FrameId, float>& right) {
 			return left.second > right.second;
 		};
 
-		std::priority_queue<std::pair<ImageId, float>, std::vector<std::pair<ImageId, float>>, decltype(cmp)> q3(cmp);
+		std::priority_queue<std::pair<FrameId, float>, std::vector<std::pair<FrameId, float>>, decltype(cmp)> q3(cmp);
 
-		for (ImageId i{ 0 }; i < n; ++i) {
+		for (FrameId i{ 0 }; i < n; ++i) {
 			auto d = d_dot(id, i);
 			q3.emplace(i, d);
 		}
 
-		std::vector<ImageId> res;
+		std::vector<FrameId> res;
 		res.reserve(TOPKNN_LIMIT);
 
 		size_t num_videos = _dataset_frames.get_num_videos();

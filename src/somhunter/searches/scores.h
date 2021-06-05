@@ -49,9 +49,9 @@ class ScoreModel {
 	std::vector<bool> _mask;
 
 	// *** CACHING VARIABLES ***
-	mutable std::vector<ImageId> _topn_cache;
+	mutable std::vector<FrameId> _topn_cache;
 	mutable bool _cache_dirty;
-	mutable std::vector<ImageId> _topn_ctx_cache;
+	mutable std::vector<FrameId> _topn_ctx_cache;
 	mutable bool _cache_ctx_dirty;
 
 public:
@@ -63,21 +63,21 @@ public:
 	      _cache_ctx_dirty{ true } {}
 
 	bool operator==(const ScoreModel& other) const;
-	float operator[](ImageId i) const { return _scores[i]; }
+	float operator[](FrameId i) const { return _scores[i]; }
 
 	void reset(float val = 1.0F);
 
 	/** Multiplies the relevance score with the provided value.
 	 * Does not update temporal scores.
 	 */
-	float adjust(ImageId i, float prob);
+	float adjust(FrameId i, float prob);
 
 	/** Multiplies the relevance score of temporal part with the provided value. */
-	float adjust(size_t temp, ImageId i, float prob);
+	float adjust(size_t temp, FrameId i, float prob);
 
 	/** Hard-sets the score with the provided value (normalization
 	 * required). */
-	float set(ImageId i, float prob);
+	float set(FrameId i, float prob);
 
 	/** Pointer to the begin of the data. */
 	const float* v() const { return _scores.data(); }
@@ -108,10 +108,10 @@ public:
 	};
 
 	/** Returns the current value for the frame */
-	bool is_masked(ImageId ID) const { return _mask[ID]; }
+	bool is_masked(FrameId ID) const { return _mask[ID]; }
 
 	/** Sets the mask value for the frame. */
-	bool set_mask(ImageId ID, bool val) {
+	bool set_mask(FrameId ID, bool val) {
 		invalidate_cache();
 		return _mask[ID] = val;
 	}
@@ -119,32 +119,32 @@ public:
 	/**
 	 * Applies relevance feedback rescore based on the Bayesian update rule.
 	 */
-	void apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& screen, const DatasetFeatures& _dataset_features);
+	void apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const DatasetFeatures& _dataset_features);
 
 	/**
 	 * Gets the images with the highest scores but respecting the provided
 	 * limits. */
-	std::vector<ImageId> top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit = 0,
+	std::vector<FrameId> top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit = 0,
 	                           size_t from_shot_limit = 0) const;
 
 	/**
 	 * Gets the images with the highest scores while respecting the
 	 * provided limits and each frame is wrapped by it's context based on
 	 * the number of frames per line. */
-	std::vector<ImageId> top_n_with_context(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
+	std::vector<FrameId> top_n_with_context(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
 	                                        size_t from_shot_limit) const;
 
 	/** Samples `n` random frames from the current scores distribution. */
-	std::vector<ImageId> weighted_sample(size_t n, float pow = 1) const;
+	std::vector<FrameId> weighted_sample(size_t n, float pow = 1) const;
 
 	/** Samples a random frame from the current scores distribution. */
-	ImageId weighted_example(const std::vector<ImageId>& subset) const;
+	FrameId weighted_example(const std::vector<FrameId>& subset) const;
 
 	/** Returns the current rank of the provided frame (starts from 0). */
-	size_t frame_rank(ImageId i) const;
+	size_t frame_rank(FrameId i) const;
 
 	/** Sorts images by given score vector */
-	static StdVector<std::pair<ImageId, float>> sort_by_score(const StdVector<float>& scores);
+	static StdVector<std::pair<FrameId, float>> sort_by_score(const StdVector<float>& scores);
 };
 
 };  // namespace sh

@@ -36,7 +36,7 @@ std::vector<float> EmbeddingRanker::inverse_score_vector(const float* query_vec,
 	scores.resize(_dataset_features.size());
 
 	// For all frame_IDs
-	for (ImageId frame_ID = 0; frame_ID < _dataset_features.size(); ++frame_ID) {
+	for (FrameId frame_ID = 0; frame_ID < _dataset_features.size(); ++frame_ID) {
 		const float* raw_frame_features = _dataset_features.fv(frame_ID);
 
 		auto dist = utils::d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0f;

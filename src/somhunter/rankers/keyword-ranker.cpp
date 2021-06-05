@@ -52,7 +52,7 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 
 		// Parse wordnet synset ID
 		SynsetId synset_ID{ utils::str2<SynsetId>(tokens[1]) };
-		ImageId vec_idx{ ImageId(synset_ID) };
+		FrameId vec_idx{ FrameId(synset_ID) };
 
 		// String representations
 		SynsetStrings synset_strings{ tokens[0] };
@@ -63,7 +63,7 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 			{
 				std::string token;
 				for (std::stringstream top_ex_imgs_ss(tokens[2]); std::getline(top_ex_imgs_ss, token, '#');) {
-					ImageId img_ID{ utils::str2<ImageId>(token) };
+					FrameId img_ID{ utils::str2<FrameId>(token) };
 
 					top_ex_imgs.push_back(&_dataset_frames.get_frame(img_ID));
 				}
@@ -400,7 +400,7 @@ StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& 
 	return sentence_vec;
 }
 
-void KeywordRanker::report_results(const StdVector<std::pair<ImageId, float>>& sorted_results,
+void KeywordRanker::report_results(const StdVector<std::pair<FrameId, float>>& sorted_results,
                                    const DatasetFrames& _dataset_frames, size_t num) {
 	size_t i{ 0 };
 	for (auto&& [frame_ID, score] : sorted_results) {

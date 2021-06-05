@@ -36,7 +36,7 @@ using namespace sh;
 
 struct FrameScoreIdPair {
 	float score;
-	ImageId id;
+	FrameId id;
 
 	inline bool operator==(const FrameScoreIdPair& a) const { return score == a.score && id == a.id; }
 
@@ -93,25 +93,25 @@ void ScoreModel::reset(float val) {
 	}
 }
 
-float ScoreModel::adjust(ImageId i, float prob) {
+float ScoreModel::adjust(FrameId i, float prob) {
 	invalidate_cache();
 
 	return _scores[i] *= prob;
 }
 
-float ScoreModel::adjust(size_t temp, ImageId i, float prob) {
+float ScoreModel::adjust(size_t temp, FrameId i, float prob) {
 	invalidate_cache();
 
 	return _temporal_scores[temp][i] *= prob;
 }
 
-float ScoreModel::set(ImageId i, float prob) {
+float ScoreModel::set(FrameId i, float prob) {
 	invalidate_cache();
 
 	return _scores[i] = prob;
 }
 
-std::vector<ImageId> ScoreModel::top_n_with_context(const DatasetFrames& _dataset_frames, size_t n,
+std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _dataset_frames, size_t n,
                                                     size_t from_vid_limit, size_t from_shot_limit) const {
 	// Is this cached
 	// !! We assume that vid/shot limits do not change during the runtime.
@@ -142,7 +142,7 @@ std::vector<ImageId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 	return _topn_ctx_cache;
 }
 
-std::vector<ImageId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
+std::vector<FrameId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
                                        size_t from_shot_limit) const {
 	// Is this cached
 	// !! We assume that vid/shot limits do not change during the runtime.
@@ -157,7 +157,7 @@ std::vector<ImageId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, siz
 	if (n > _scores.size() || n == 0) n = _scores.size();
 
 	std::vector<FrameScoreIdPair> score_ids;
-	for (ImageId i = 0; i < _scores.size(); ++i) {
+	for (FrameId i = 0; i < _scores.size(); ++i) {
 		auto mask{ _mask[i] };
 
 		// Filter out masked values
@@ -174,8 +174,8 @@ std::vector<ImageId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, siz
 	_topn_cache.clear();
 	_topn_cache.reserve(n);
 	size_t t = 0;
-	for (ImageId i = 0; t < n && i < score_ids.size(); ++i) {
-		ImageId frame = score_ids[i].id;
+	for (FrameId i = 0; t < n && i < score_ids.size(); ++i) {
+		FrameId frame = score_ids[i].id;
 		auto vf = _dataset_frames.get_frame(frame);
 
 		// If we have already enough from this video
@@ -192,7 +192,7 @@ std::vector<ImageId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, siz
 	return _topn_cache;
 }
 
-std::vector<ImageId> ScoreModel::weighted_sample(size_t k, float pow) const {
+std::vector<FrameId> ScoreModel::weighted_sample(size_t k, float pow) const {
 	size_t n = _scores.size();
 
 	assert(n >= 2);
@@ -225,9 +225,9 @@ std::vector<ImageId> ScoreModel::weighted_sample(size_t k, float pow) const {
 
 	for (size_t i = branches; i > 0; --i) upd(i - 1);
 
-	std::vector<ImageId> res(k, 0);
+	std::vector<FrameId> res(k, 0);
 
-	for (ImageId& rei : res) {
+	for (FrameId& rei : res) {
 		float x = real_dist(gen) * tree[0];
 		size_t i = 0;
 		for (;;) {
@@ -247,23 +247,23 @@ std::vector<ImageId> ScoreModel::weighted_sample(size_t k, float pow) const {
 
 		tree[i] = 0;
 		updb(i);
-		rei = ImageId(i - branches);
+		rei = FrameId(i - branches);
 	}
 
 	return res;
 }
 
-ImageId ScoreModel::weighted_example(const std::vector<ImageId>& subset) const {
+FrameId ScoreModel::weighted_example(const std::vector<FrameId>& subset) const {
 	std::vector<float> fs(subset.size());
 	for (size_t i = 0; i < subset.size(); ++i) fs[i] = _scores[subset[i]];
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::discrete_distribution<ImageId> dist(fs.begin(), fs.end());
+	std::discrete_distribution<FrameId> dist(fs.begin(), fs.end());
 	return subset[dist(gen)];
 }
 
-void ScoreModel::apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& screen,
+void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen,
                              const DatasetFeatures& _dataset_features) {
 	if (likes.empty()) return;
 
@@ -272,9 +272,9 @@ void ScoreModel::apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& s
 	constexpr float Sigma = .1f;
 	constexpr size_t max_others = 64;
 
-	std::vector<ImageId> others;
+	std::vector<FrameId> others;
 	others.reserve(screen.size());
-	for (ImageId id : screen)
+	for (FrameId id : screen)
 		if (likes.count(id) == 0) others.push_back(id);
 
 	if (others.size() > max_others) {
@@ -296,14 +296,14 @@ void ScoreModel::apply_bayes(std::set<ImageId> likes, const std::set<ImageId>& s
 		std::vector<std::thread> threads(n_threads);
 
 		auto worker = [&](size_t threadID) {
-			const ImageId first = ImageId(threadID * _scores.size() / n_threads);
-			const ImageId last = ImageId((threadID + 1) * _scores.size() / n_threads);
+			const FrameId first = FrameId(threadID * _scores.size() / n_threads);
+			const FrameId last = FrameId((threadID + 1) * _scores.size() / n_threads);
 
-			for (ImageId ii = first; ii < last; ++ii) {
+			for (FrameId ii = first; ii < last; ++ii) {
 				if (_mask[ii]) {
 					float divSum = 0;
 
-					for (ImageId oi : others) divSum += expf(-_dataset_features.d_dot(ii, oi) / Sigma);
+					for (FrameId oi : others) divSum += expf(-_dataset_features.d_dot(ii, oi) / Sigma);
 
 					for (auto&& like : likes) {
 						const float likeValTmp = expf(-_dataset_features.d_dot(ii, like) / Sigma);
@@ -373,7 +373,7 @@ void ScoreModel::normalize(size_t depth) {
 void ScoreModel::normalize(float* scores, size_t size) {
 	float smax = 0;
 
-	for (ImageId ii = 0; ii < size; ++ii)
+	for (FrameId ii = 0; ii < size; ++ii)
 		if (scores[ii] > smax) smax = scores[ii];
 
 	if (smax < MINIMAL_SCORE) {
@@ -382,7 +382,7 @@ void ScoreModel::normalize(float* scores, size_t size) {
 	}
 
 	size_t n = 0;
-	for (ImageId ii = 0; ii < size; ++ii) {
+	for (FrameId ii = 0; ii < size; ++ii) {
 		if (_mask[ii]) {
 			scores[ii] /= smax;
 			if (scores[ii] < MINIMAL_SCORE) ++n, scores[ii] = MINIMAL_SCORE;
@@ -390,7 +390,7 @@ void ScoreModel::normalize(float* scores, size_t size) {
 	}
 }
 
-size_t ScoreModel::frame_rank(ImageId i) const {
+size_t ScoreModel::frame_rank(FrameId i) const {
 	size_t rank{ 0 };
 	float tar_score = _scores[i];
 	for (float s : _scores) {
@@ -399,9 +399,9 @@ size_t ScoreModel::frame_rank(ImageId i) const {
 	return rank;
 }
 
-std::vector<std::pair<ImageId, float>> ScoreModel::sort_by_score(const StdVector<float>& scores) {
+std::vector<std::pair<FrameId, float>> ScoreModel::sort_by_score(const StdVector<float>& scores) {
 	// Zip scores with frame IDs
-	std::vector<std::pair<ImageId, float>> id_scores;
+	std::vector<std::pair<FrameId, float>> id_scores;
 	id_scores.reserve(scores.size());
 	{
 		size_t i{ 0 };

@@ -118,12 +118,12 @@ json::value to_QueryFilters(Somhunter* /*p_core*/, const SearchContext& search_c
  * OpenAPI: FrameReference
  */
 json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, const LikesCont& likes,
-                              const BookmarksCont& bookmarks, const std::string& path_prefix) {
+                              const BookmarksCont& _bookmarks, const std::string& path_prefix) {
 	json::value result_obj = json::value::object();
 	{
-		ImageId ID{ IMAGE_ID_ERR_VAL };
-		ImageId v_ID{ IMAGE_ID_ERR_VAL };
-		ImageId s_ID{ IMAGE_ID_ERR_VAL };
+		FrameId ID{ IMAGE_ID_ERR_VAL };
+		FrameId v_ID{ IMAGE_ID_ERR_VAL };
+		FrameId s_ID{ IMAGE_ID_ERR_VAL };
 
 		Hour hour{ ERR_VAL<Hour>() };
 		Weekday weekday{ ERR_VAL<Weekday>() };
@@ -146,7 +146,7 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 			is_liked = (likes.count(ID) > 0 ? true : false);
 			filename = path_prefix + p_frame->filename;
 
-			is_bookmarked = (bookmarks.count(ID) > 0 ? true : false);
+			is_bookmarked = (_bookmarks.count(ID) > 0 ? true : false);
 		}
 
 		{ /* *** id *** */
@@ -214,7 +214,7 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 
 json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx) {
 	auto search_ctx{ ctx.ctx };
-	auto bookmarks{ ctx.bookmarks };
+	auto _bookmarks{ ctx._bookmarks };
 
 	// Return structure
 	json::value result_obj = json::value::object();
@@ -249,8 +249,8 @@ json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx) {
 			// \todo This should be generalized in the
 			// future
 
-			ImageId q0{ IMAGE_ID_ERR_VAL };
-			ImageId q1{ IMAGE_ID_ERR_VAL };
+			FrameId q0{ IMAGE_ID_ERR_VAL };
+			FrameId q1{ IMAGE_ID_ERR_VAL };
 
 			// Scan the query string
 			if (search_ctx.last_temporal_queries.size() > 0) q0 = search_ctx.last_temporal_queries[0].relocation;
@@ -294,7 +294,7 @@ json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx) {
 		size_t i{ 0 };
 		for (auto&& f_ID : search_ctx.likes) {
 			const VideoFrame& f{ p_core->get_frame(f_ID) };
-			auto fr{ to_FrameReference(p_core, &f, search_ctx.likes, bookmarks, "") };
+			auto fr{ to_FrameReference(p_core, &f, search_ctx.likes, _bookmarks, "") };
 
 			likes_arr[i] = fr;
 			++i;
@@ -311,11 +311,11 @@ json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx) {
 	return result_obj;
 }
 
-json::value to_HistoryArray(Somhunter* /*p_core*/, const std::vector<SearchContext>& history) {
-	json::value history_arr{ json::value::array(history.size()) };
+json::value to_HistoryArray(Somhunter* /*p_core*/, const std::vector<SearchContext>& _history) {
+	json::value history_arr{ json::value::array(_history.size()) };
 
 	size_t i{ 0 };
-	for (auto&& ctx : history) {
+	for (auto&& ctx : _history) {
 		json::value hist_point{ json::value::object() };
 
 		{  // *** id ***
@@ -342,7 +342,7 @@ json::value to_HistoryArray(Somhunter* /*p_core*/, const std::vector<SearchConte
  */
 json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext& ctx) {
 	auto search_ctx{ ctx.ctx };
-	auto bookmarks{ ctx.bookmarks };
+	auto _bookmarks{ ctx._bookmarks };
 
 	// Return structure
 	json::value result_obj = json::value::object();
@@ -352,14 +352,14 @@ json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext
 	}
 
 	{ /* *** history *** */
-		result_obj[U("history")] = to_HistoryArray(p_core, ctx.history);
+		result_obj[U("history")] = to_HistoryArray(p_core, ctx._history);
 	}
 
 	{ /* *** bookmarkedFrames *** */
-		auto bookmarked_arr{ json::value::array(ctx.bookmarks.size()) };
+		auto bookmarked_arr{ json::value::array(ctx._bookmarks.size()) };
 
 		size_t i{ 0 };
-		for (auto&& b : ctx.bookmarks) {
+		for (auto&& b : ctx._bookmarks) {
 			bookmarked_arr[i] = json::value::number(uint32_t(b));
 			++i;
 		}
@@ -389,7 +389,7 @@ json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayR
                                             const std::string& type, const std::string& path_prefix) {
 	const auto& _dataset_frames{ res._dataset_frames };
 	const auto& likes{ res.likes };
-	const auto& bookmarks{ res.bookmarks };
+	const auto& _bookmarks{ res._bookmarks };
 
 	// Return structure
 	json::value result = json::value::object();
@@ -408,7 +408,7 @@ json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayR
 
 		size_t i{ 0 };
 		for (auto it{ _dataset_frames.begin() }; it != _dataset_frames.end(); ++it) {
-			auto fr{ to_FrameReference(p_core, *it, likes, bookmarks, path_prefix) };
+			auto fr{ to_FrameReference(p_core, *it, likes, _bookmarks, path_prefix) };
 
 			arr[i] = fr;
 			++i;
@@ -432,7 +432,7 @@ json::value to_Response__GetDetailScreen__Post(Somhunter* p_core, const GetDispl
                                                const std::string& /*type*/, const std::string& path_prefix) {
 	const auto& _dataset_frames{ res._dataset_frames };
 	const auto& likes{ res.likes };
-	const auto& bookmarks{ res.bookmarks };
+	const auto& _bookmarks{ res._bookmarks };
 
 	// Return structure
 	json::value result = json::value::object();
@@ -447,7 +447,7 @@ json::value to_Response__GetDetailScreen__Post(Somhunter* p_core, const GetDispl
 
 		size_t i{ 0 };
 		for (auto it{ _dataset_frames.begin() }; it != _dataset_frames.end(); ++it) {
-			auto fr{ to_FrameReference(p_core, *it, likes, bookmarks, path_prefix) };
+			auto fr{ to_FrameReference(p_core, *it, likes, _bookmarks, path_prefix) };
 
 			arr[i] = fr;
 			++i;
@@ -500,7 +500,7 @@ json::value to_Response__GetAutocompleteResults__Get(Somhunter* /*p_core*/, cons
 
 json::value to_Response__Rescore__Post(Somhunter* p_core, const RescoreResult& rescore_res) {
 	size_t curr_ctx_ID{ rescore_res.curr_ctx_ID };
-	const auto& history{ rescore_res.history };
+	const auto& _history{ rescore_res._history };
 
 	json::value result_obj = json::value::object();
 
@@ -509,7 +509,7 @@ json::value to_Response__Rescore__Post(Somhunter* p_core, const RescoreResult& r
 	}
 
 	{ /* *** history *** */
-		result_obj[U("history")] = to_HistoryArray(p_core, history);
+		result_obj[U("history")] = to_HistoryArray(p_core, _history);
 	}
 
 	{ /* *** targets *** */
@@ -755,9 +755,9 @@ void NetworkApi::handle__get_top_screen__POST(http_request req) {
 
 	auto body = req.extract_json().get();
 
-	ImageId frame_ID{ ERR_VAL<ImageId>() };
+	FrameId frame_ID{ ERR_VAL<FrameId>() };
 	if (body.has_field(U("frameId")) && !body[U("frameId")].is_null()) {
-		frame_ID = static_cast<ImageId>(body[U("frameId")].as_integer());
+		frame_ID = static_cast<FrameId>(body[U("frameId")].as_integer());
 	}
 	size_t page_idx{ static_cast<size_t>(body[U("pageId")].as_integer()) };
 	std::string type{ to_utf8string(body[U("type")].as_string()) };
@@ -822,7 +822,7 @@ void NetworkApi::handle__get_SOM_relocation_screen__POST(http_request req) {
 	}
 
 	// Fetch the data
-	auto display_frames{ _p_core->get_display(DisplayType::DRelocation, ERR_VAL<ImageId>(), temporal_id) };
+	auto display_frames{ _p_core->get_display(DisplayType::DRelocation, ERR_VAL<FrameId>(), temporal_id) };
 	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, 0, "SOM_relocation_display", "") };
 
 	// Construct the response
@@ -929,9 +929,9 @@ void NetworkApi::handle__log_scroll__GET(http_request req) {
 	}
 
 	try {
-		ImageId frame_ID{ ERR_VAL<ImageId>() };
+		FrameId frame_ID{ ERR_VAL<FrameId>() };
 		if (frame_ID_record != query_map.end()) {
-			frame_ID = static_cast<ImageId>(utils::str_to_int(to_utf8string(frame_ID_record->second)));
+			frame_ID = static_cast<FrameId>(utils::str_to_int(to_utf8string(frame_ID_record->second)));
 		}
 
 		auto scroll_area{ to_utf8string(scroll_area_record->second) };
@@ -939,7 +939,7 @@ void NetworkApi::handle__log_scroll__GET(http_request req) {
 		float delta{ (utils::str2<float>(to_utf8string(delta_record->second)) > 0 ? 1.0F : -1.0F) };
 
 		// If normal scroll
-		if (frame_ID == ERR_VAL<ImageId>()) {
+		if (frame_ID == ERR_VAL<FrameId>()) {
 			_p_core->log_scroll(disp, delta);
 		}
 		// Else replay scroll over the frrame_ID frame
@@ -990,10 +990,10 @@ void NetworkApi::handle__submit_frame__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, "handle__submit_frame__POST");
 
-	ImageId frame_ID{ ERR_VAL<ImageId>() };
+	FrameId frame_ID{ ERR_VAL<FrameId>() };
 	auto body = req.extract_json().get();
 	try {
-		frame_ID = static_cast<ImageId>(body[U("frameId")].as_integer());
+		frame_ID = static_cast<FrameId>(body[U("frameId")].as_integer());
 	} catch (...) {
 		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `frameId` parameter.") };
 		NetworkApi::add_CORS_headers(res);
@@ -1047,7 +1047,7 @@ RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body) {
 	 */
 	size_t src_ctx_ID{ static_cast<size_t>(body[U("srcSearchCtxId")].as_integer()) };
 	std::string screenshot_data{ to_utf8string(body[U("screenshotData")].as_string()) };
-	std::string user_token{ "matfyz" };
+	std::string _user_token{ "matfyz" };
 
 	/*
 	 * Process it
@@ -1059,7 +1059,7 @@ RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body) {
 	std::string time_label{ utils::get_formated_timestamp("%H:%M:%S") };
 
 	RescoreMetadata md;
-	md.user_token = user_token;
+	md._user_token = _user_token;
 	md.screenshot_filepath = _p_core->store_rescore_screenshot(screenshot_data);
 	md.srd_search_ctx_ID = src_ctx_ID;
 	md.time_label = time_label;
@@ -1243,11 +1243,11 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 	}
 	// Rescore
 	auto rescore_result{ _p_core->rescore(query) };
-	json::value history{ to_Response__Rescore__Post(_p_core, rescore_result) };
+	json::value _history{ to_Response__Rescore__Post(_p_core, rescore_result) };
 
 	// Construct the response
 	http_response res(status_codes::OK);
-	res.set_body(history);
+	res.set_body(_history);
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
 }
@@ -1256,10 +1256,10 @@ void NetworkApi::handle__like_frame__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, "handle__like_frame__POST");
 
-	ImageId frame_ID{ ERR_VAL<ImageId>() };
+	FrameId frame_ID{ ERR_VAL<FrameId>() };
 	auto body = req.extract_json().get();
 	try {
-		frame_ID = static_cast<ImageId>(body[U("frameId")].as_integer());
+		frame_ID = static_cast<FrameId>(body[U("frameId")].as_integer());
 	} catch (...) {
 		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `frameId` parameter.") };
 		NetworkApi::add_CORS_headers(res);
@@ -1285,10 +1285,10 @@ void NetworkApi::handle__search__bookmark__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, "handle__search__bookmark__POST");
 
-	ImageId frame_ID{ ERR_VAL<ImageId>() };
+	FrameId frame_ID{ ERR_VAL<FrameId>() };
 	auto body = req.extract_json().get();
 	try {
-		frame_ID = static_cast<ImageId>(body[U("frameId")].as_integer());
+		frame_ID = static_cast<FrameId>(body[U("frameId")].as_integer());
 	} catch (...) {
 		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid `frameId` parameter.") };
 		NetworkApi::add_CORS_headers(res);

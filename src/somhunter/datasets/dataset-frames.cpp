@@ -106,7 +106,7 @@ DatasetFrames::DatasetFrames(const Settings& config) {
 	}
 
 	{
-		ImageId i = 0;
+		FrameId i = 0;
 		size_t prev_frame_vid_ID = SIZE_T_ERR_VAL;
 
 		size_t beg_img_ID = SIZE_T_ERR_VAL;
@@ -204,10 +204,10 @@ std::tuple<Weekday, Hour, LscId> DatasetFrames::parse_metadata_line(const std::s
 	return std::tuple{ wd, h, LSC_id };
 }
 
-std::vector<VideoFramePointer> DatasetFrames::ids_to_video_frame(const std::vector<ImageId>& ids) const {
+std::vector<VideoFramePointer> DatasetFrames::ids_to_video_frame(const std::vector<FrameId>& ids) const {
 	std::vector<VideoFramePointer> res;
 	res.reserve(ids.size());
-	for (ImageId i : ids) {
+	for (FrameId i : ids) {
 		if (i == IMAGE_ID_ERR_VAL) {
 			res.push_back(nullptr);
 			continue;

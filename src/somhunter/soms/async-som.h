@@ -62,7 +62,7 @@ class AsyncSom {
 	 * memory is fenced correctly.
 	 */
 	bool m_ready;
-	std::vector<std::vector<ImageId>> mapping;
+	std::vector<std::vector<FrameId>> mapping;
 	std::vector<float> koho;
 
 	const size_t width;
@@ -80,14 +80,14 @@ public:
 
 	void start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig);
 
-	std::vector<ImageId> get_display(ScoreModel scores) const;
+	std::vector<FrameId> get_display(ScoreModel scores) const;
 
 	bool map_ready() const {
 		bool t = m_ready;
 		std::atomic_thread_fence(std::memory_order_acquire);
 		return t;
 	}
-	const std::vector<ImageId>& map(size_t i) const { return mapping.at(i); }
+	const std::vector<FrameId>& map(size_t i) const { return mapping.at(i); }
 
 	const float* get_koho(size_t i) const { return koho.data() + i * features_dim; }
 

@@ -26,27 +26,27 @@
 
 using namespace sh;
 
-UserContext::UserContext(const std::string& user_token, const Settings& cfg, const DatasetFrames& _dataset_frames,
+UserContext::UserContext(const std::string& _user_token, const Settings& cfg, const DatasetFrames& _dataset_frames,
                          const DatasetFeatures _dataset_features)
     : ctx(0, cfg, _dataset_frames),
-      user_token(user_token),
-      submitter(cfg.submitter_config),
-      async_SOM(cfg, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT) {
+      _user_token(_user_token),
+      _logger(cfg.submitter_config),
+      _async_SOM(cfg, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT) {
 	SHLOG_D("Triggering main SOM worker");
-	async_SOM.start_work(_dataset_features, ctx.scores, ctx.scores.v());
+	_async_SOM.start_work(_dataset_features, ctx.scores, ctx.scores.v());
 	for (size_t i = 0; i < MAX_NUM_TEMP_QUERIES; ++i) {
 		SHLOG_D("Triggering " << i << " SOM worker");
-		temp_async_SOM.push_back(std::make_unique<AsyncSom>(cfg, RELOCATION_GRID_WIDTH, RELOCATION_GRID_HEIGHT));
-		temp_async_SOM[i]->start_work(_dataset_features, ctx.scores, ctx.scores.temp(i));
+		_temp_async_SOM.push_back(std::make_unique<AsyncSom>(cfg, RELOCATION_GRID_WIDTH, RELOCATION_GRID_HEIGHT));
+		_temp_async_SOM[i]->start_work(_dataset_features, ctx.scores, ctx.scores.temp(i));
 	}
 
 	/*
 	 * Store this initial state into the history
 	 */
 	ctx.screenshot_fpth = "";
-	history.emplace_back(ctx);
+	_history.emplace_back(ctx);
 }
 
 bool UserContext::operator==(const UserContext& other) const {
-	return (ctx == other.ctx && user_token == other.user_token && history == other.history);
+	return (ctx == other.ctx && _user_token == other._user_token && _history == other._history);
 }
