@@ -19,7 +19,6 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
 #include <chrono>
 #include <filesystem>
 #include <stdexcept>
@@ -78,7 +77,7 @@ int main() {
 	// Parse config file
 	auto config = Config::parse_json_config(cfg_fpth);
 	// Instantiate the SOMHunter
-	SomHunter core{ config, cfg_fpth };
+	Somhunter core{ config, cfg_fpth };
 
 	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
 
@@ -309,7 +308,7 @@ int main() {
 	SHLOG_D("this is a debug log");
 	SHLOG_REQ("123.0.0.1", "this is an API request");
 
-	tests::TESTER_SomHunter::run_all_tests(cfg_fpth);
+	tests::TESTER_Somhunter::run_all_tests(cfg_fpth);
 	// TODO update config tests
 	// tests::TESTER_Config::run_all_tests(cfg_fpth);
 

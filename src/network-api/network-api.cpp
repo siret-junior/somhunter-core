@@ -91,7 +91,7 @@ std::vector<_ElemType> from_double_array(json::value x) {
  *
  * OpenAPI: QueryFilters
  */
-json::value to_QueryFilters(SomHunter* /*p_core*/, const SearchContext& search_ctx) {
+json::value to_QueryFilters(Somhunter* /*p_core*/, const SearchContext& search_ctx) {
 	json::value result_obj = json::value::object();
 
 	{ /* *** weekdays *** */
@@ -117,7 +117,7 @@ json::value to_QueryFilters(SomHunter* /*p_core*/, const SearchContext& search_c
  *
  * OpenAPI: FrameReference
  */
-json::value to_FrameReference(SomHunter* /*p_core*/, const VideoFrame* p_frame, const LikesCont& likes,
+json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, const LikesCont& likes,
                               const BookmarksCont& bookmarks, const std::string& path_prefix) {
 	json::value result_obj = json::value::object();
 	{
@@ -212,7 +212,7 @@ json::value to_FrameReference(SomHunter* /*p_core*/, const VideoFrame* p_frame, 
 	return result_obj;
 }
 
-json::value to_SearchContext(SomHunter* p_core, const UserContext& ctx) {
+json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx) {
 	auto search_ctx{ ctx.ctx };
 	auto bookmarks{ ctx.bookmarks };
 
@@ -311,7 +311,7 @@ json::value to_SearchContext(SomHunter* p_core, const UserContext& ctx) {
 	return result_obj;
 }
 
-json::value to_HistoryArray(SomHunter* /*p_core*/, const std::vector<SearchContext>& history) {
+json::value to_HistoryArray(Somhunter* /*p_core*/, const std::vector<SearchContext>& history) {
 	json::value history_arr{ json::value::array(history.size()) };
 
 	size_t i{ 0 };
@@ -340,7 +340,7 @@ json::value to_HistoryArray(SomHunter* /*p_core*/, const std::vector<SearchConte
  *
  * OpenAPI: Response__User__Context__Get
  */
-json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext& ctx) {
+json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext& ctx) {
 	auto search_ctx{ ctx.ctx };
 	auto bookmarks{ ctx.bookmarks };
 
@@ -385,7 +385,7 @@ json::value to_Response__User__Context__Get(SomHunter* p_core, const UserContext
  *
  * OpenAPI: Response__GetTopScreen__Post
  */
-json::value to_Response__GetTopScreen__Post(SomHunter* p_core, const GetDisplayResult& res, size_t page_num,
+json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayResult& res, size_t page_num,
                                             const std::string& type, const std::string& path_prefix) {
 	const auto& frames{ res.frames };
 	const auto& likes{ res.likes };
@@ -428,7 +428,7 @@ json::value to_Response__GetTopScreen__Post(SomHunter* p_core, const GetDisplayR
 	return result2;
 }
 
-json::value to_Response__GetDetailScreen__Post(SomHunter* p_core, const GetDisplayResult& res, size_t page_num,
+json::value to_Response__GetDetailScreen__Post(Somhunter* p_core, const GetDisplayResult& res, size_t page_num,
                                                const std::string& /*type*/, const std::string& path_prefix) {
 	const auto& frames{ res.frames };
 	const auto& likes{ res.likes };
@@ -459,7 +459,7 @@ json::value to_Response__GetDetailScreen__Post(SomHunter* p_core, const GetDispl
 	return result;
 }
 
-json::value to_Response__GetAutocompleteResults__Get(SomHunter* /*p_core*/, const std::vector<const Keyword*>& kws,
+json::value to_Response__GetAutocompleteResults__Get(Somhunter* /*p_core*/, const std::vector<const Keyword*>& kws,
                                                      size_t example_count, const std::string& path_prefix) {
 	json::value result_arr{ json::value::array(kws.size()) };
 
@@ -498,7 +498,7 @@ json::value to_Response__GetAutocompleteResults__Get(SomHunter* /*p_core*/, cons
 	return result_arr;
 }
 
-json::value to_Response__Rescore__Post(SomHunter* p_core, const RescoreResult& rescore_res) {
+json::value to_Response__Rescore__Post(Somhunter* p_core, const RescoreResult& rescore_res) {
 	size_t curr_ctx_ID{ rescore_res.curr_ctx_ID };
 	const auto& history{ rescore_res.history };
 
@@ -544,7 +544,7 @@ void handle_options(http_request request) {
 	request.reply(response);
 }
 
-NetworkApi::NetworkApi(const ApiConfig& API_config, SomHunter* p_core)
+NetworkApi::NetworkApi(const ApiConfig& API_config, Somhunter* p_core)
     : _API_config{ API_config },
       _p_core{ p_core },
       _base_addr{ "http://127.0.0.1:" + std::to_string(API_config.port) } {}

@@ -44,7 +44,7 @@
 namespace sh {
 
 namespace tests {
-class TESTER_SomHunter;
+class TESTER_Somhunter;
 }  // namespace tests
 
 /**
@@ -52,7 +52,7 @@ class TESTER_SomHunter;
  *
  * \todo Export for a library compilation.
  */
-class SomHunter {
+class Somhunter {
 	// ********************************
 	// Loaded dataset
 	//		(shared for all the users)
@@ -73,9 +73,9 @@ class SomHunter {
 public:
 	UserContext user;  // This will become std::vector<UserContext>
 
-	SomHunter() = delete;
+	Somhunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
-	inline SomHunter(const Config& cfg, const std::string& config_filepath)
+	inline Somhunter(const Config& cfg, const std::string& config_filepath)
 	    : _config_filepath{ config_filepath },
 	      _API_config_filepath{ cfg.API_config.config_filepath },
 	      config(cfg),
@@ -282,7 +282,7 @@ private:
 	bool has_metadata() const;
 
 	/** The tester class */
-	friend sh::tests::TESTER_SomHunter;
+	friend sh::tests::TESTER_Somhunter;
 };
 
 };  // namespace sh

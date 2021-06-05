@@ -20,8 +20,8 @@
 
 #include "relocation-ranker.h"
 #include "dataset-frames.h"
-#include "scores.h"
 #include "query-types.h"
+#include "scores.h"
 
 using namespace sh;
 

@@ -40,14 +40,14 @@ using namespace http::experimental::listener;  //< cpprest
 
 namespace sh {
 
-class SomHunter;
+class Somhunter;
 
 class NetworkApi {
 public:
 	static void add_CORS_headers(http_response& res);
 
 	NetworkApi() = delete;
-	NetworkApi(const ApiConfig& API_config, SomHunter* p_core);
+	NetworkApi(const ApiConfig& API_config, Somhunter* p_core);
 
 	void run();
 	void initialize();
@@ -98,7 +98,7 @@ private:
 
 private:
 	ApiConfig _API_config;
-	SomHunter* _p_core;
+	Somhunter* _p_core;
 	std::string _base_addr;
 	std::vector<http_listener> _endpoints;
 };

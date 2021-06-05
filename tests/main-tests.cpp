@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int main(int /*argc*/, char ** /*argv*/) {
+int main(int /*argc*/, char** /*argv*/) {
 	auto path = std::filesystem::current_path();
 	std::filesystem::current_path(path.parent_path());
 	std::cout << "CD:" << path.string() << std::endl;
@@ -16,7 +16,7 @@ int main(int /*argc*/, char ** /*argv*/) {
 
 	const std::string cfg_fpth{ "config/config-core.json" };
 
-	sh::tests::TESTER_SomHunter::run_all_tests(cfg_fpth);
+	sh::tests::TESTER_Somhunter::run_all_tests(cfg_fpth);
 	// TODO update config tests
 	// sh::tests::TESTER_Config::run_all_tests(cfg_fpth);
 
