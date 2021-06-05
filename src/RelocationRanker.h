@@ -34,8 +34,8 @@
 #include "RelevanceScores.h"
 #include "common.h"
 #include "config_json.h"
-#include "utils.h"
 #include "query_types.h"
+#include "utils.h"
 
 namespace sh {
 class RelocationRanker : public EmbeddingRanker {

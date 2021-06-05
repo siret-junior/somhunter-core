@@ -31,6 +31,6 @@ SearchContext::SearchContext(size_t ID, const Config& /*cfg*/, const DatasetFram
 bool SearchContext::operator==(const SearchContext& other) const {
 	return (ID == other.ID && used_tools == other.used_tools && current_display == other.current_display &&
 	        curr_disp_type == other.curr_disp_type && scores == other.scores &&
-	        last_temporal_queries == other.last_temporal_queries && likes == other.likes && shown_images == other.shown_images &&
-	        screenshot_fpth == other.screenshot_fpth && filters == other.filters);
+	        last_temporal_queries == other.last_temporal_queries && likes == other.likes &&
+	        shown_images == other.shown_images && screenshot_fpth == other.screenshot_fpth && filters == other.filters);
 }

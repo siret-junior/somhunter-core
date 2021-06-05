@@ -70,14 +70,12 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 
 		// at this point: restart is off, input is ready.
 
-		std::vector<float> nhbrdist(width * width * height *
-		                            height);
+		std::vector<float> nhbrdist(width * width * height * height);
 		for (size_t x1 = 0; x1 < width; ++x1)
 			for (size_t y1 = 0; y1 < height; ++y1)
 				for (size_t x2 = 0; x2 < width; ++x2)
 					for (size_t y2 = 0; y2 < height; ++y2)
-						nhbrdist[x1 + width *
-						                  (y1 + height * (x2 + width * y2))] =
+						nhbrdist[x1 + width * (y1 + height * (x2 + width * y2))] =
 						    abs(float(x1) - float(x2)) + abs(float(y1) - float(y2));
 
 		if (parent->new_data || parent->terminate) continue;
@@ -91,8 +89,8 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 		float radiiB[2] = { negRadius * radiiA[0], negRadius * radiiA[1] };
 
 		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
-		fit_SOM(n, width * height, cfg.features_dim, SOM_ITERS, points, koho,
-		        nhbrdist, alphasA, radiiA, alphasB, radiiB, scores, present_mask, rng);
+		fit_SOM(n, width * height, cfg.features_dim, SOM_ITERS, points, koho, nhbrdist, alphasA, radiiA, alphasB,
+		        radiiB, scores, present_mask, rng);
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 		SHLOG_D("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
 
@@ -107,8 +105,8 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 			auto worker = [&](size_t id) {
 				size_t start = id * n / n_threads;
 				size_t end = (id + 1) * n / n_threads;
-				map_points_to_kohos(start, end, width * height, cfg.features_dim,
-				                    points, koho, point_to_koho, present_mask);
+				map_points_to_kohos(start, end, width * height, cfg.features_dim, points, koho, point_to_koho,
+				                    present_mask);
 			};
 
 			for (size_t i = 0; i < n_threads; ++i) threads[i] = std::thread(worker, i);
@@ -139,8 +137,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Config& cfg) {
 	SHLOG_D("SOM worker finished.");
 }
 
-AsyncSom::AsyncSom(const Config& cfg, size_t w, size_t h) :
-	width(w), height(h) {
+AsyncSom::AsyncSom(const Config& cfg, size_t w, size_t h) : width(w), height(h) {
 	new_data = m_ready = terminate = false;
 	worker = std::thread(async_som_worker, this, cfg);
 }
@@ -166,7 +163,7 @@ void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc, const
 	new_data_wakeup.notify_all();
 }
 
-std::vector<ImageId> AsyncSom::get_display(ScoreModel scores) const {
+std::vector<ImageId> AsyncSom::get_display(ScoreModel model_scores) const {
 	std::vector<ImageId> ids;
 	ids.resize(width * height);
 
@@ -174,7 +171,7 @@ std::vector<ImageId> AsyncSom::get_display(ScoreModel scores) const {
 	for (size_t i = 0; i < width; ++i) {
 		for (size_t j = 0; j < height; ++j) {
 			if (!map(i + width * j).empty()) {
-				ImageId id = scores.weighted_example(map(i + width * j));
+				ImageId id = model_scores.weighted_example(map(i + width * j));
 				ids[i + width * j] = id;
 			}
 		}
@@ -204,7 +201,7 @@ std::vector<ImageId> AsyncSom::get_display(ScoreModel scores) const {
 
 				// If some frame candidates
 				if (!ci.empty()) {
-					ImageId id = scores.weighted_example(ci);
+					ImageId id = model_scores.weighted_example(ci);
 					ids[i + width * j] = id;
 				}
 				// Subsitute with "empty" frame

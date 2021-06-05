@@ -53,7 +53,7 @@ GetDisplayResult SomHunter::get_display(DisplayType d_type, ImageId selected_ima
 
 		case DisplayType::DRelocation:
 			frs = get_som_relocation_display(page);
-		break;
+			break;
 
 		case DisplayType::DVideoDetail:
 			frs = get_video_detail_display(selected_image, log_it);
@@ -199,9 +199,9 @@ RescoreResult SomHunter::rescore(const Query& query, bool run_SOM) {
 }
 
 RescoreResult SomHunter::rescore(const std::vector<TemporalQuery>& temporal_query,
-                                 const RelevanceFeedbackQuery& rfQuery,
-                                 const Filters* p_filters, size_t src_search_ctx_ID, const std::string& screenshot_fpth,
-                                 const std::string& label, bool run_SOM) {
+                                 const RelevanceFeedbackQuery& rfQuery, const Filters* p_filters,
+                                 size_t src_search_ctx_ID, const std::string& screenshot_fpth, const std::string& label,
+                                 bool run_SOM) {
 	/* ***
 	 * Set the filters to the context
 	 */
@@ -241,15 +241,14 @@ RescoreResult SomHunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 		reset_scores();
 		size_t moment = 0;
 
-		user.submitter.log_canvas_query(
-			temporal_query,
-			&user.ctx.curr_targets);  // < This triggers log into the /logs/collage/
+		user.submitter.log_canvas_query(temporal_query,
+		                                &user.ctx.curr_targets);  // < This triggers log into the /logs/collage/
 
 		for (size_t mi = 0; mi < temporal_query.size(); ++mi) {
 			auto&& moment_query = temporal_query[mi];
 			if (moment_query.isEmpty()) continue;
-			
-			auto&& last_moment_query = user.ctx.last_temporal_queries[mi];
+
+			// auto&& last_moment_query = user.ctx.last_temporal_queries[mi];
 
 			if (moment_query.isRelocation()) {
 				SHLOG_D("Running the relocation query model...");
@@ -265,7 +264,7 @@ RescoreResult SomHunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 			}
 			++moment;
 		}
-		
+
 		user.ctx.temporal_size = moment;
 		// Cache the appliend temporal queries
 		user.ctx.last_temporal_queries = temporal_query;
@@ -450,7 +449,8 @@ void SomHunter::benchmark_native_text_queries(const std::string& queries_filepat
 			text_query.erase(0, pos + delimiter.length());
 		}
 
-		bench_queries.emplace_back(PlainTextBenchmarkQuery{ std::vector<ImageId>{ target_frame_ID }, std::move(tempQuery) });
+		bench_queries.emplace_back(
+		    PlainTextBenchmarkQuery{ std::vector<ImageId>{ target_frame_ID }, std::move(tempQuery) });
 	}
 
 	std::vector<std::vector<float>> query_results;
@@ -517,7 +517,6 @@ void SomHunter::benchmark_native_text_queries(const std::string& queries_filepat
 }
 
 void SomHunter::rescore_keywords(const TextualQuery& query, size_t temporal) {
-
 	keywords.rank_sentence_query(query, user.ctx.scores, features, config, temporal);
 
 	user.ctx.used_tools.KWs_used = true;
@@ -593,7 +592,7 @@ FramePointerRange SomHunter::get_som_display() {
 		return FramePointerRange();
 	}
 
-	auto ids { user.async_SOM.get_display(user.ctx.scores) };
+	auto ids{ user.async_SOM.get_display(user.ctx.scores) };
 
 	// Log
 	user.submitter.log_show_som_display(frames, ids);
@@ -617,7 +616,7 @@ FramePointerRange SomHunter::get_som_relocation_display(size_t temp_id) {
 		return FramePointerRange();
 	}
 
-	auto ids { user.temp_async_SOM[temp_id]->get_display(user.ctx.scores) };
+	auto ids{ user.temp_async_SOM[temp_id]->get_display(user.ctx.scores) };
 
 	// Log
 	user.submitter.log_show_som_relocation_display(frames, ids);

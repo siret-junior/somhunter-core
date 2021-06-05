@@ -38,10 +38,10 @@ json11::Json CanvasQuery::to_JSON() const {
 	std::vector<json11::Json> arr_temp;
 	for (size_t i{ 0 }; i < _subqueries.size(); ++i) {
 		arr_temp.emplace_back(std::visit(
-			overloaded{
-				[](auto sq) { return sq.to_JSON(); },
-			},
-			_subqueries[i]));
+		    overloaded{
+		        [](auto sq) { return sq.to_JSON(); },
+		    },
+		    _subqueries[i]));
 	}
 	return json11::Json{ arr_temp };
 }
@@ -74,7 +74,7 @@ std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& con
 				qs[ti].emplace_back(rect, require_string_value(obj, "text_query"));
 			} else {  // Image on canvas
 				fs::path p(parentPath / require_string_value(obj, "bitmap_filename"));
-				auto image = ImageManipulator::load_image<BitmapImage<uint8_t>>(p);
+				auto image = ImageManipulator::load_image<BitmapImage<uint8_t>>(p.string());
 				qs[ti].emplace_back(rect, image.w, image.h, image.num_channels, image.data.data());
 			}
 		}

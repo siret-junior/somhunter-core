@@ -295,7 +295,7 @@ std::vector<KeywordId> KeywordRanker::decode_keywords(const std::vector<std::str
 }
 
 void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
-                                        const DatasetFeatures& features, const Config& cfg, size_t temporal) const {
+                                        const DatasetFeatures& features, const Config& /*cfg*/, size_t temporal) const {
 	auto tokens{ tokenize_textual_query(sentence_query_raw) };
 
 	if (tokens.empty()) return;
@@ -375,12 +375,12 @@ std::vector<std::pair<ImageId, float>> KeywordRanker::get_sorted_frames(const st
 }
 #endif
 
-StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& keywords) const {
+StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& kws) const {
 	// Initialize zero vector
 	std::vector<float> score_vec(kw_pca_mean_vec.size(), 0.0f);
 
 	// Accumuate scores for given keywords
-	for (auto&& ID : keywords) {
+	for (auto&& ID : kws) {
 		score_vec = utils::VecAdd(score_vec, kw_features[ID]);
 	}
 

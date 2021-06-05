@@ -104,7 +104,7 @@ class CanvasQueryRanker {
 	torch::Tensor weights;
 	torch::Tensor kw_pca_mat;
 	torch::Tensor kw_pca_mean_vec;
-	
+
 	const std::vector<std::vector<float>> RoIs = {
 		{ 0.0, 0.0, 1.0, 1.0 }, { 0.1, 0.2, 0.4, 0.6 }, { 0.3, 0.2, 0.4, 0.6 }, { 0.5, 0.2, 0.4, 0.6 },
 
@@ -119,10 +119,10 @@ public:
 	static const size_t models_num_channels{ 3 };
 
 	CanvasQueryRanker(const Config& config, KeywordRanker* p_core);
-	void score(const CanvasQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& features, const DatasetFrames& frames);
+	void score(const CanvasQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& features,
+	           const DatasetFrames& frames);
 
 private:
-
 	std::vector<FeatureMatrix> region_data;
 
 	at::Tensor get_features(const CanvasQuery&);
@@ -131,9 +131,8 @@ private:
 	std::vector<std::size_t> get_RoIs(const CanvasQuery& collage) const;
 	std::size_t get_RoI(const CanvasSubquery& image) const;
 
-	std::vector<float> score_image(const std::vector<float>&  feature, std::size_t region) const;
+	std::vector<float> score_image(const std::vector<float>& feature, std::size_t region) const;
 	std::vector<float> average_scores(const std::vector<std::vector<float>>& scores) const;
-
 };
 
 // This serves for default parameters of type Collage&

@@ -655,8 +655,8 @@ void Submitter::submit_and_log_rescore(const DatasetFrames& frames, const ScoreM
 #endif  // LOG_LOGS
 }
 
-void Submitter::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/, const std::vector<VideoFrame>* p_targets) {
-
+void Submitter::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/,
+                                 const std::vector<VideoFrame>* p_targets) {
 	if (temp_queries.empty()) return;
 
 	auto path{ cfg.log_queries_dir + "/"s + std::to_string(utils::timestamp()) + "/"s };
@@ -689,15 +689,14 @@ void Submitter::log_canvas_query(const std::vector<TemporalQuery>& temp_queries 
 	}
 
 	std::vector<json11::Json> arr;
-	for (auto&& tq : temp_queries)
-		arr.push_back(tq.canvas.to_JSON());
+	for (auto&& tq : temp_queries) arr.push_back(tq.canvas.to_JSON());
 	Json json{ arr };
 
 	// Write bitmaps as JPEGs
 	// For each temporal part
-	
+
 	for (size_t qidx{ 0 }; qidx < temp_queries.size(); ++qidx) {
-		auto&& canvas_query{temp_queries[qidx].canvas};
+		auto&& canvas_query{ temp_queries[qidx].canvas };
 		for (size_t i{ 0 }; i < canvas_query.size(); ++i) {
 			auto& sqo{ json.array_items()[qidx].array_items()[i].object_items() };
 

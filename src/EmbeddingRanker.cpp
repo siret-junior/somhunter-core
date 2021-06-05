@@ -22,11 +22,13 @@
 
 using namespace sh;
 
-std::vector<float> EmbeddingRanker::inverse_score_vector(const std::vector<float>& query_vec, const DatasetFeatures& features) const {
+std::vector<float> EmbeddingRanker::inverse_score_vector(const std::vector<float>& query_vec,
+                                                         const DatasetFeatures& features) const {
 	return inverse_score_vector(query_vec.data(), features);
 }
 
-std::vector<float> EmbeddingRanker::inverse_score_vector(const float* query_vec, const DatasetFeatures& features) const {
+std::vector<float> EmbeddingRanker::inverse_score_vector(const float* query_vec,
+                                                         const DatasetFeatures& features) const {
 	size_t target_dim{ features.dim() };
 
 	// Result is final score \in [0.0F, 1.0F] of `query_vec` as temporal query

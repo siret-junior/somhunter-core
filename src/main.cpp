@@ -22,9 +22,9 @@
 #include <stdio.h>
 #include <chrono>
 #include <filesystem>
+#include <stdexcept>
 #include <thread>
 #include <vector>
-#include <stdexcept>
 
 #if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 #	include "Windows.h"

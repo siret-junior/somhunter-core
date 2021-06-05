@@ -19,21 +19,20 @@
  */
 
 #include "RelocationRanker.h"
-#include "query_types.h"
-#include "RelevanceScores.h"
 #include "DatasetFrames.h"
+#include "RelevanceScores.h"
+#include "query_types.h"
 
 using namespace sh;
 
 void RelocationRanker::score(const RelocationQuery& query, ScoreModel& model, size_t temporal,
-                             const DatasetFeatures& features) const 
-{
-    if (query == IMAGE_ID_ERR_VAL) return;
-    
-    // Compute inverse scores in for the example query
-    auto scores { inverse_score_vector(features.fv(query), features) };
+                             const DatasetFeatures& features) const {
+	if (query == IMAGE_ID_ERR_VAL) return;
 
-    // Update the model
+	// Compute inverse scores in for the example query
+	auto scores{ inverse_score_vector(features.fv(query), features) };
+
+	// Update the model
 	for (size_t i = 0; i < scores.size(); ++i) {
 		model.adjust(temporal, i, scores[i]);
 	}

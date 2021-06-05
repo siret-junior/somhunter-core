@@ -178,8 +178,7 @@ public:
 	const VideoFrame& get_frame(ImageId ID) const { return frames.get_frame(ID); }
 
 	VideoFramePointer get_frame_ptr(ImageId img) const {
-		if (img < frames.size())
-			return frames.get_frame_ptr(img);
+		if (img < frames.size()) return frames.get_frame_ptr(img);
 		return nullptr;
 	}
 

@@ -111,7 +111,7 @@ struct RelativeRect {
 		archive(left, top, right, bottom);
 	}
 
-	bool operator ==(const RelativeRect &b) const {
+	bool operator==(const RelativeRect& b) const {
 		return left == b.left && top == b.top && right == b.right && bottom == b.bottom;
 	}
 };
@@ -157,12 +157,11 @@ public:
 
 	std::vector<uint8_t> get_scaled_bitmap(size_t w, size_t h) const;
 
-	bool operator !=(const CanvasSubqueryBitmap &b) const {
-		return !((*this) == b);
-	}
+	bool operator!=(const CanvasSubqueryBitmap& b) const { return !((*this) == b); }
 
-	bool operator ==(const CanvasSubqueryBitmap &b) const {
-		return _num_channels == b._num_channels && _width == b._width && _height == b._height && _data_int == b._data_int && _rect == b._rect;
+	bool operator==(const CanvasSubqueryBitmap& b) const {
+		return _num_channels == b._num_channels && _width == b._width && _height == b._height &&
+		       _data_int == b._data_int && _rect == b._rect;
 	}
 
 	json11::Json to_JSON() const {
@@ -219,13 +218,9 @@ public:
 		archive(_rect, _text_query);
 	}
 
-	bool operator !=(const CanvasSubqueryText &b) const {
-		return !((*this) == b);
-	}
+	bool operator!=(const CanvasSubqueryText& b) const { return !((*this) == b); }
 
-	bool operator ==(const CanvasSubqueryText &b) const {
-		return _text_query == b._text_query && _rect == b._rect;
-	}
+	bool operator==(const CanvasSubqueryText& b) const { return _text_query == b._text_query && _rect == b._rect; }
 
 	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x);
 };
@@ -288,9 +283,10 @@ public:
 	static std::vector<CanvasQuery> parse_json(const std::string& filepath);
 
 	/** Parses JSON string created by to_JSON */
-	static std::vector<CanvasQuery> parse_json_contents(const std::string& contents, const std::filesystem::path parentPath);
+	static std::vector<CanvasQuery> parse_json_contents(const std::string& contents,
+	                                                    const std::filesystem::path parentPath);
 
-	bool operator ==(const CanvasQuery &b) const {
+	bool operator==(const CanvasQuery& b) const {
 		if (b.size() != size()) return false;
 
 		for (size_t i = 0; i < size(); ++i) {
@@ -301,7 +297,8 @@ public:
 				auto&& s1t = std::get<CanvasSubqueryText>(s1);
 				auto&& s2t = std::get<CanvasSubqueryText>(s2);
 				if (s1t != s2t) return false;
-			} else if (std::holds_alternative<CanvasSubqueryBitmap>(s1) && std::holds_alternative<CanvasSubqueryBitmap>(s2)) {
+			} else if (std::holds_alternative<CanvasSubqueryBitmap>(s1) &&
+			           std::holds_alternative<CanvasSubqueryBitmap>(s2)) {
 				auto&& s1b = std::get<CanvasSubqueryBitmap>(s1);
 				auto&& s2b = std::get<CanvasSubqueryBitmap>(s2);
 				if (s1b != s2b) return false;
@@ -319,11 +316,12 @@ struct TemporalQuery {
 	CanvasQuery canvas;
 	RelocationQuery relocation;
 
-	TemporalQuery() : textual{}, canvas{}, relocation{IMAGE_ID_ERR_VAL} {}
-	TemporalQuery(TextualQuery tq) : textual{tq}, canvas{}, relocation{IMAGE_ID_ERR_VAL} {}
-	TemporalQuery(CanvasQuery cq) : textual{}, canvas{cq}, relocation{IMAGE_ID_ERR_VAL} {}
-	TemporalQuery(RelocationQuery rq) : textual{}, canvas{}, relocation{rq} {}
-	TemporalQuery(TextualQuery tq, CanvasQuery cq, RelocationQuery rq) : textual{tq}, canvas{cq}, relocation{rq} {}
+	TemporalQuery() : textual{}, canvas{}, relocation{ IMAGE_ID_ERR_VAL } {}
+	TemporalQuery(TextualQuery tq) : textual{ tq }, canvas{}, relocation{ IMAGE_ID_ERR_VAL } {}
+	TemporalQuery(CanvasQuery cq) : textual{}, canvas{ cq }, relocation{ IMAGE_ID_ERR_VAL } {}
+	TemporalQuery(RelocationQuery rq) : textual{}, canvas{}, relocation{ rq } {}
+	TemporalQuery(TextualQuery tq, CanvasQuery cq, RelocationQuery rq)
+	    : textual{ tq }, canvas{ cq }, relocation{ rq } {}
 
 	const bool isRelocation() const { return relocation != IMAGE_ID_ERR_VAL; }
 	const bool isCanvas() const { return !canvas.empty(); }
@@ -335,11 +333,9 @@ struct TemporalQuery {
 		archive(textual, canvas, relocation);
 	}
 
-	bool operator !=(const TemporalQuery &b) const {
-		return !((*this) == b);
-	}
+	bool operator!=(const TemporalQuery& b) const { return !((*this) == b); }
 
-	bool operator ==(const TemporalQuery &b) const {
+	bool operator==(const TemporalQuery& b) const {
 		return textual == b.textual && canvas == b.canvas && relocation == b.relocation;
 	}
 };
@@ -348,13 +344,11 @@ struct TemporalQuery {
 struct Query {
 	Query() = default;
 	template <typename Q>
-	Query(const std::vector<Q>& temp_queries)
-	    : metadata{}, filters{}, relevance_feeedback{} {
-			for (auto&& q : temp_queries) {
-				temporal_queries.emplace_back(q);
-			}
+	Query(const std::vector<Q>& temp_queries) : metadata{}, filters{}, relevance_feeedback{} {
+		for (auto&& q : temp_queries) {
+			temporal_queries.emplace_back(q);
 		}
-	
+	}
 
 	RescoreMetadata metadata;
 	Filters filters;

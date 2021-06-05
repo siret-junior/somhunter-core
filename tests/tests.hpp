@@ -80,15 +80,15 @@ private:
 		SHLOG("\t Testing `SomHunter::rescore` method with collage queries...");
 		core.reset_search_session();
 
-		auto canvQuery = CanvasQuery::parse_json(fs::path(cfg.test_data_root) / "collages/test_collage/query-info25-05-2021_22-06-33.json");
+		auto canvQuery = CanvasQuery::parse_json((fs::path(cfg.test_data_root) / "collages/test_collage/query-info25-05-2021_22-06-33.json").string());
 		Query q(std::move(canvQuery));
 		core.rescore(q);
 
 #ifdef TESTING_ITEC_DATASET
 		auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert_equals(disp[0]->frame_ID, 602,
+		do_assert_equals(disp[0]->frame_ID, 602U,
 		       "Incorrect frame in the display.");
-		do_assert_equals(disp[1]->frame_ID, 433,
+		do_assert_equals(disp[1]->frame_ID, 433U,
 		       "Incorrect frame in the display.");
 
 #endif
@@ -252,9 +252,9 @@ private:
 
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert_equals(disp[0]->frame_ID, 80,
+		do_assert_equals(disp[0]->frame_ID, 80U,
 		       "Incorrect frame in the display.");
-		do_assert_equals(disp[1]->frame_ID, 130,
+		do_assert_equals(disp[1]->frame_ID, 130U,
 		       "Incorrect frame in the display.");
 
 #endif
@@ -270,14 +270,14 @@ private:
 
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert_equals(disp[0]->frame_ID, 74,
+		do_assert_equals(disp[0]->frame_ID, 74U,
 		       "Incorrect frame in the display.");
-		do_assert_equals(disp[1]->frame_ID, 224,
+		do_assert_equals(disp[1]->frame_ID, 224U,
 		       "Incorrect frame in the display.");
 
-		do_assert_equals(disp[7]->frame_ID, 109,
+		do_assert_equals(disp[7]->frame_ID, 109U,
 		       "Incorrect frame in the display.");
-		do_assert_equals(disp[8]->frame_ID, 35,
+		do_assert_equals(disp[8]->frame_ID, 35U,
 		       "Incorrect frame in the display.");
 #endif
 
@@ -296,14 +296,14 @@ private:
 
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert_equals(disp[0]->frame_ID, 489,
+		do_assert_equals(disp[0]->frame_ID, 489U,
 		       "Incorrect frame in the display.");
-		do_assert_equals(disp[1]->frame_ID, 221,
+		do_assert_equals(disp[1]->frame_ID, 221U,
 		       "Incorrect frame in the display.");
 
-		do_assert_equals(disp[7]->frame_ID, 372,
+		do_assert_equals(disp[7]->frame_ID, 372U,
 		       "Incorrect frame in the display.");
-		do_assert_equals(disp[8]->frame_ID, 267,
+		do_assert_equals(disp[8]->frame_ID, 267U,
 		       "Incorrect frame in the display.");
 #endif
 
@@ -314,9 +314,9 @@ private:
 		do_assert(state1 == core.user.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert_equals(disp[0]->frame_ID, 80,
+		do_assert_equals(disp[0]->frame_ID, 80U,
 		       "Incorrect frame in the display.");
-		do_assert_equals(disp[1]->frame_ID, 130,
+		do_assert_equals(disp[1]->frame_ID, 130U,
 		       "Incorrect frame in the display.");
 #endif
 
@@ -324,14 +324,14 @@ private:
 		do_assert(state2 == core.user.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert_equals(disp[0]->frame_ID, 74,
+		do_assert_equals(disp[0]->frame_ID, 74U,
 			"Incorrect frame in the display.");
-		do_assert_equals(disp[1]->frame_ID, 224,
+		do_assert_equals(disp[1]->frame_ID, 224U,
 			"Incorrect frame in the display.");
 
-		do_assert_equals(disp[7]->frame_ID, 109,
+		do_assert_equals(disp[7]->frame_ID, 109U,
 			"Incorrect frame in the display.");
-		do_assert_equals(disp[8]->frame_ID, 35,
+		do_assert_equals(disp[8]->frame_ID, 35U,
 			"Incorrect frame in the display.");
 #endif
 
@@ -339,14 +339,14 @@ private:
 		do_assert(state3 == core.user.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 		disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-		do_assert_equals(disp[0]->frame_ID, 489,
+		do_assert_equals(disp[0]->frame_ID, 489U,
 			"Incorrect frame in the display.");
-		do_assert_equals(disp[1]->frame_ID, 221,
+		do_assert_equals(disp[1]->frame_ID, 221U,
 			"Incorrect frame in the display.");
 
-		do_assert_equals(disp[7]->frame_ID, 372,
+		do_assert_equals(disp[7]->frame_ID, 372U,
 			"Incorrect frame in the display.");
-		do_assert_equals(disp[8]->frame_ID, 267,
+		do_assert_equals(disp[8]->frame_ID, 267U,
 			"Incorrect frame in the display.");
 #endif
 

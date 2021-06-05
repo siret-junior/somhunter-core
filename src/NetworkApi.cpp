@@ -248,8 +248,8 @@ json::value to_SearchContext(SomHunter* p_core, const UserContext& ctx) {
 			// \todo This should be generalized in the
 			// future
 
-			ImageId q0{IMAGE_ID_ERR_VAL};
-			ImageId q1{IMAGE_ID_ERR_VAL};
+			ImageId q0{ IMAGE_ID_ERR_VAL };
+			ImageId q1{ IMAGE_ID_ERR_VAL };
 
 			// Scan the query string
 			if (search_ctx.last_temporal_queries.size() > 0) q0 = search_ctx.last_temporal_queries[0].relocation;
@@ -1085,7 +1085,7 @@ std::vector<RelocationQuery> NetworkApi::extract_relocation_query(web::json::val
 	RelocationQuery relocation0{ static_cast<RelocationQuery>(body[U("relocation0")].as_integer()) };
 	RelocationQuery relocation1{ static_cast<RelocationQuery>(body[U("relocation1")].as_integer()) };
 
-	return { relocation0, relocation1};
+	return { relocation0, relocation1 };
 }
 
 std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body) {
@@ -1231,7 +1231,7 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 			if (i < textual_query.size()) tq.textual = textual_query[i];
 			if (i < canvas_query.size()) tq.canvas = canvas_query[i];
 			if (i < relocation_query.size()) tq.relocation = relocation_query[i];
-			
+
 			query.temporal_queries.push_back(tq);
 		}
 	} catch (...) {

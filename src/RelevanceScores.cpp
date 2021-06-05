@@ -369,8 +369,7 @@ void ScoreModel::normalize(size_t depth) {
 	depth = std::min<size_t>(depth, MAX_TEMPORAL_SIZE);
 
 	normalize(_scores.data(), _scores.size());
-	for (size_t i = 0; i < depth; ++i)
-		normalize(_temporal_scores[i].data(), _temporal_scores[i].size());
+	for (size_t i = 0; i < depth; ++i) normalize(_temporal_scores[i].data(), _temporal_scores[i].size());
 }
 
 void ScoreModel::normalize(float* scores, size_t size) {

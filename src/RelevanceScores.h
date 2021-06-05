@@ -26,9 +26,9 @@
 #include <set>
 #include <vector>
 
-#include "config.h"
 #include "DatasetFeatures.h"
 #include "DatasetFrames.h"
+#include "config.h"
 
 namespace sh {
 
@@ -144,7 +144,6 @@ public:
 
 	/** Sorts images by given score vector */
 	static StdVector<std::pair<ImageId, float>> sort_by_score(const StdVector<float>& scores);
-
 };
 
 };  // namespace sh

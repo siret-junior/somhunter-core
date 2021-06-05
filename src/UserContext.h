@@ -23,10 +23,10 @@
 #ifndef USER_CONTEXT_H_
 #define USER_CONTEXT_H_
 
-#include <optional>
-#include <vector>
 #include <array>
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "common.h"
 

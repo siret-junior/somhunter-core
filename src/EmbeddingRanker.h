@@ -39,14 +39,13 @@ namespace sh {
 
 class EmbeddingRanker {
 public:
-    virtual ~EmbeddingRanker() noexcept {}
+	virtual ~EmbeddingRanker() noexcept {}
 
 protected:
+	std::vector<float> inverse_score_vector(const std::vector<float>& query_vecs,
+	                                        const DatasetFeatures& features) const;
 
-	std::vector<float> inverse_score_vector(const std::vector<float>& query_vecs, const DatasetFeatures& features) const;
-    
-    std::vector<float> inverse_score_vector(const float* query_vecs, const DatasetFeatures& features) const;
-
+	std::vector<float> inverse_score_vector(const float* query_vecs, const DatasetFeatures& features) const;
 };
 
 }  // namespace sh
