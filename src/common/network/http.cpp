@@ -106,9 +106,6 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	static struct curl_slist reqheader = { hdr.data(), nullptr };
 	auto data_serialized{ body.dump() };
 
-	// URL
-	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
 	// POST/GET
 	switch (type) {
 		case RequestType::GET:
@@ -125,10 +122,20 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 
 			// Data
 			for (auto& el : body.items()) {
-				url.append(el.key());
-				url.append("=");
-				url.append(el.value());
-				url.append("&");
+				std::string s;
+				if (el.value().is_string()) {
+					s.append(el.key()).append("=").append(el.value()).append("&");
+				} else {
+					std::stringstream ss;
+					ss << el.key() << "=" << el.value() << "&";
+					s = ss.str();
+				}
+
+				url.append(s);
+			}
+
+			if (!body.is_null()) {
+				url.pop_back();
 			}
 
 			curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
@@ -140,6 +147,9 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data_serialized.length());
 			break;
 	}
+
+	// URL
+	curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
 // Verbose CURL debug print
 #if DEBUG_CURL_REQUESTS
@@ -178,7 +188,7 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res_code);
 
 	if (res == CURLE_OK) {
-		SHLOG_I("POST request OK: " << url);
+		SHLOG_I("POST request OK: '" << url << "'");
 
 		nlohmann::json json_data{ nlohmann::json::parse(res_buffer) };
 
@@ -241,7 +251,7 @@ std::pair<ReqCode, nlohmann::json> sh::Http::do_POST_sync(const std::string& URL
 }
 
 std::pair<ReqCode, nlohmann::json> sh::Http::do_GET_sync(const std::string& URL, const nlohmann::json& body,
-                                                         const nlohmann::json& headers) {
+                                                         const nlohmann::json& /*headers*/) {
 	bool fail{ false };
 
 	nlohmann::json res_data;

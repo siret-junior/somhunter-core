@@ -180,11 +180,11 @@ public:
 	 * Tries to login into the DRES evaluation server
 	 *		https://github.com/lucaro/DRES
 	 */
-	bool login_to_dres();
+	bool login_to_eval_server();
 	bool logout_from_eval_server();
 
 	/** Sumbits frame with given id to VBS server */
-	void submit_to_server(FrameId frame_id);
+	bool submit_to_eval_server(FrameId frame_id);
 
 	// ********************************
 	// Logging calls

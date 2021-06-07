@@ -1002,12 +1002,15 @@ void NetworkApi::handle__eval_server__submit__POST(http_request req) {
 	}
 
 	// Submit it!
-	_p_core->submit_to_server(frame_ID);
+	bool correct{ _p_core->submit_to_eval_server(frame_ID) };
+
+	auto res_obj{ json::value::object() };
+	res_obj[U("result")] = json::value::boolean(correct);
 
 	// Construct the response
 	http_response res(status_codes::OK);
+	res.set_body(res_obj);
 	NetworkApi::add_CORS_headers(res);
-	res.set_body(json::value::object());
 	req.reply(res);
 }
 
@@ -1015,7 +1018,7 @@ void NetworkApi::handle__eval_server__login__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
-	bool result{ _p_core->login_to_dres() };
+	bool result{ _p_core->login_to_eval_server() };
 
 	auto res_obj{ json::value::object() };
 	res_obj[U("result")] = json::value::boolean(result);

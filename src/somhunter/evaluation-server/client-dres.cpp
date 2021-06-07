@@ -49,6 +49,8 @@ bool ClientDres::login() {
 	};
 	// clang-format on
 
+	bool success{ false };
+
 	nlohmann::json res;
 	ReqCode code{ 0 };
 
@@ -71,20 +73,21 @@ bool ClientDres::login() {
 
 				std::string msg{ "Login request successfull, user_token: " + user_token };
 				SHLOG_S(msg);
+				success = true;
 			}
 
 		} catch (std::exception ex) {
 			SHLOG_W("Login request failed!" << std::endl << ex.what());
-			return false;
 		}
 	} else {
 		std::string msg{ "Logout request wasn't actually made. Turn it on if unintended." };
 		SHLOG_W(msg);
 		code = 200;
+		success = true;
 	}
 
 	write_log(LogType::LOGIN, ts, body, code, res);
-	return res;
+	return success;
 }
 
 bool ClientDres::logout() {
@@ -98,6 +101,7 @@ bool ClientDres::logout() {
 	};
 	// clang-format on
 
+	bool success{ false };
 	nlohmann::json res;
 	ReqCode code{ 0 };
 
@@ -119,20 +123,21 @@ bool ClientDres::logout() {
 				SHLOG_S(msg);
 
 				set_user_token("");
+				success = true;
 			}
 
 		} catch (std::exception ex) {
 			SHLOG_W("Logout request failed!" << std::endl << ex.what());
-			return false;
 		}
 	} else {
 		std::string msg{ "Logout request wasn't actually made. Turn it on if unintended." };
 		SHLOG_W(msg);
 		code = 200;
+		success = true;
 	}
 
 	write_log(LogType::LOGOUT, ts, params, code, res);
-	return res;
+	return success;
 }
 
 bool sh::ClientDres::submit(const VideoFrame& frame) {
@@ -160,6 +165,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame) {
 	nlohmann::json params{ { "session", _user_token }, { "item", item_ss.str() }, { "frame", frame.frame_number } };
 	// clang-format on
 
+	bool success{ false };
 	nlohmann::json res;
 	ReqCode code{ 0 };
 
@@ -178,6 +184,11 @@ bool sh::ClientDres::submit(const VideoFrame& frame) {
 			// 2XX
 			else {
 				auto sub_string{ res["submission"].get<std::string>() };
+
+				if (sub_string == "CORRECT") {
+					success = true;
+				}
+
 				std::string msg{ "Submit request successfull, result: " + sub_string };
 				SHLOG_S(msg);
 			}
@@ -193,7 +204,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame) {
 	}
 
 	write_log(LogType::LOGOUT, ts, params, code, res);
-	return res;
+	return success;
 }
 
 void ClientDres::write_log(LogType type, Timestamp ts, const nlohmann::json& req, ReqCode code,

@@ -68,9 +68,9 @@
 					"session_URL": "https://herkules.ms.mff.cuni.cz:8443//api/user/session",
 					"server_time_URL": "https://herkules.ms.mff.cuni.cz:8443/api/status/time",
 
-					"submit_URL": "localhost:1234/submit",
-					"submit_rerank_URL": "localhost:1234/log/result",
-					"submit_interaction_URL": "localhost:1234/log/query"
+					"submit_URL": "https://herkules.ms.mff.cuni.cz:8443/submit",
+					"submit_rerank_URL": "https://herkules.ms.mff.cuni.cz:8443/log/result",
+					"submit_interaction_URL": "https://herkules.ms.mff.cuni.cz:8443/log/query"
 				}
 			},
 		

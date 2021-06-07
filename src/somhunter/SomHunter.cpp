@@ -322,11 +322,11 @@ bool Somhunter::som_ready() const { return _user_context._async_SOM.map_ready();
 
 bool Somhunter::som_ready(size_t temp_id) const { return _user_context._temp_async_SOM[temp_id]->map_ready(); }
 
-bool Somhunter::login_to_dres() { return _user_context._eval_server.login(); }
+bool Somhunter::login_to_eval_server() { return _user_context._eval_server.login(); }
 bool Somhunter::logout_from_eval_server() { return _user_context._eval_server.logout(); }
 
-void Somhunter::submit_to_server(FrameId frame_id) {
-	_user_context._logger.submit_and_log_submit(_dataset_frames, _user_context.ctx.curr_disp_type, frame_id);
+bool Somhunter::submit_to_eval_server(FrameId frame_id) {
+	return _user_context._logger.submit_and_log_submit(_dataset_frames, _user_context.ctx.curr_disp_type, frame_id);
 }
 
 void Somhunter::reset_search_session() {
