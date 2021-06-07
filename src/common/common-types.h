@@ -30,6 +30,8 @@
 
 namespace sh {
 
+using Timestamp = std::int64_t;
+
 // some types
 using KeywordId = size_t;
 using KeywordIds = std::vector<KeywordId>;

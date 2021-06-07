@@ -33,6 +33,7 @@
 #include "async-som.h"
 #include "logger.h"
 #include "search-context.h"
+#include "eval-server-client.h"
 
 namespace sh {
 
@@ -71,6 +72,7 @@ public:  //< This is temporary, until we support multiple users
 	std::string _user_eval_server_token;  //< For remote auth
 	std::vector<SearchContext> _history;
 
+	EvalServerClient _eval_server;
 	Logger _logger;
 	AsyncSom _async_SOM;
 	std::vector<std::unique_ptr<AsyncSom>> _temp_async_SOM;

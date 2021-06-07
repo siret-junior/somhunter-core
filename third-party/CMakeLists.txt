@@ -3,6 +3,7 @@ target_include_directories(${SOMHUNTER_TARGET}
 	PUBLIC
 		stb
 		json11
+		json
 		cereal/include
 		hash-library
 )
@@ -11,13 +12,14 @@ target_include_directories(${SOMHUNTER_TARGET_TESTS}
 	PUBLIC
 		stb
 		json11
+		json
 		cereal/include
 		hash-library
 )
 
 set(HEADERS
 	json11/json11.hpp
-	json11/json11.hpp
+	json/nlohmann/json.hpp
 	hash-library/sha256.h
 )
 

@@ -154,7 +154,7 @@ static inline std::string_view view_tail(const std::string& str, size_t len) {
 #	define SHLOG_D(x) _dont_write_log_err
 #endif
 
-#ifdef LOG_API_CALLS
+#if LOG_API_CALLS
 
 #	define _write_API_log_d(id, x)                                                                      \
 		do {                                                                                             \

@@ -89,11 +89,9 @@ public:
 	      _dataset_features(_dataset_frames, settings),
 	      _keyword_ranker(settings, _dataset_frames),
 	      _collage_ranker(settings, &_keyword_ranker),
-	      _user_context(settings._user_token, settings, _dataset_frames, _dataset_features),
+	      _user_context(/* \todo Do users! */ "admin", settings, _dataset_frames, _dataset_features),
 	      _relocation_ranker{} {
-
 		generate_new_targets();
-
 	}
 
 	// ********************************
@@ -182,7 +180,8 @@ public:
 	 * Tries to login into the DRES evaluation server
 	 *		https://github.com/lucaro/DRES
 	 */
-	bool login_to_dres() const;
+	bool login_to_dres();
+	bool logout_from_eval_server();
 
 	/** Sumbits frame with given id to VBS server */
 	void submit_to_server(FrameId frame_id);

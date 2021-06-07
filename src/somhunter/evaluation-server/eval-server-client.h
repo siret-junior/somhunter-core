@@ -22,12 +22,40 @@
 #ifndef EVAL_SERVER_CLIENT_H_
 #define EVAL_SERVER_CLIENT_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+// ---
+#include "settings.h"
+#include "client-dres.h"
+
+
 namespace sh {
 
+struct VideoFrame;
+
 class EvalServerClient {
-	
+	// *** METHODS ***
+public:
+	EvalServerClient(const SubmitterConfig& settings);
+	// ---
+	bool login();
+	bool logout();
+	bool submit(const VideoFrame& frame);
+
+	const std::string& get_submit_URL() const;
+	const std::string& get_rerank_URL() const;
+	const std::string& get_interaction_URL() const;
+
+
+
+	// *** MEMBER VARIABLES ***
+private:
+	SubmitterConfig _submitter_settings;
+	std::unique_ptr<IServerClient> _p_client;
+	std::string _dummy{ "" };
 };
 
 };  // namespace sh
 
-#endif // EVAL_SERVER_CLIENT_H_
+#endif  // EVAL_SERVER_CLIENT_H_

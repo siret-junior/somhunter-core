@@ -30,7 +30,8 @@ UserContext::UserContext(const std::string& _user_token, const Settings& cfg, co
                          const DatasetFeatures _dataset_features)
     : ctx(0, cfg, _dataset_frames),
       _user_token(_user_token),
-      _logger(cfg.submitter_config),
+	_eval_server{cfg.eval_server},
+      _logger(cfg.eval_server, &_eval_server),
       _async_SOM(cfg, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT) {
 	SHLOG_D("Triggering main SOM worker");
 	_async_SOM.start_work(_dataset_features, ctx.scores, ctx.scores.v());

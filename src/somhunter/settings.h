@@ -41,15 +41,19 @@ struct ServerConfigVbs {
  * https://github.com/lucaro/DRES
  */
 struct ServerConfigDres {
+	std::string cookie_file;
+
+	std::string username;
+	std::string password;
+
 	std::string submit_URL;
 	std::string submit_rerank_URL;
 	std::string submit_interaction_URL;
 
-	std::string cookie_file;
-
 	std::string login_URL;
-	std::string username;
-	std::string password;
+	std::string logout_URL;
+	std::string session_URL;
+	std::string server_time_URL;
 };
 
 using ServerConfig = std::variant<ServerConfigVbs, ServerConfigDres>;
@@ -61,10 +65,11 @@ using ServerConfig = std::variant<ServerConfigVbs, ServerConfigDres>;
  * \see ServerConfigDres
  */
 struct SubmitterConfig {
-	/** If submit actions will create actual HTTP request */
-	bool submit_to_VBS;
-
 	ServerConfig server_cfg;
+
+	bool do_network_requests;
+	bool submit_LSC_IDs;
+	bool allow_insecure;
 
 	size_t team_ID;
 	size_t member_ID;
@@ -87,10 +92,8 @@ struct SubmitterConfig {
  */
 struct Settings {
 	ApiConfig API_config;
-	std::string _user_token;
-	SubmitterConfig submitter_config;
+	SubmitterConfig eval_server;
 
-	size_t max_frame_filename_len;
 	VideoFilenameOffsets filename_offsets;
 
 	std::string frames_list_file;
@@ -130,7 +133,7 @@ struct Settings {
 	static Settings parse_JSON_config_string(const std::string& cfg_file_contents);
 
 private:
-	static SubmitterConfig parse_submitter_config(const json11::Json& json);
+	static SubmitterConfig parse_eval_server(const json11::Json& json);
 	static ApiConfig parse_API_config(const json11::Json& json);
 	static ServerConfigVbs parse_vbs_config(const json11::Json& json);
 	static ServerConfigDres parse_dres_config(const json11::Json& json);

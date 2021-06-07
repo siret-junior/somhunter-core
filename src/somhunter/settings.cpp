@@ -33,12 +33,8 @@ Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents
 	auto cfg = Settings{ 
 		// .API_config
 		Settings::parse_API_config(json["API"]),
-		// .user_token
-		require_string_value(json, "user_token"),
-		// .submitter_config
-		parse_submitter_config(json["submitter_config"]),
-		// .max_frame_filename_len
-		require_int_value<size_t>(json, "max_frame_filename_len"),
+		// .eval_server
+		parse_eval_server(json["eval_server"]),
 		
 		// .filename_offsets
 		VideoFilenameOffsets{
@@ -119,10 +115,15 @@ Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents
 	return cfg;
 }
 
-SubmitterConfig Settings::parse_submitter_config(const json11::Json& json) {
+SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
 	SubmitterConfig res;
 
-	res.submit_to_VBS = json["submit_to_VBS"].bool_value();
+	// .do_network_requests
+	res.do_network_requests = require_bool_value(json, "do_network_requests"),
+	// .submit_LSC_IDs
+	res.submit_LSC_IDs = require_bool_value(json, "submit_LSC_IDs"),
+	// .allow_insecure
+	res.allow_insecure = require_bool_value(json, "allow_insecure"),
 
 	res.team_ID = size_t(json["team_ID"].int_value());
 	res.member_ID = size_t(json["member_ID"].int_value());
@@ -170,18 +171,37 @@ ApiConfig Settings::parse_API_config(const json11::Json& json) {
 }
 
 ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {
-	return ServerConfigVbs{ json["submit_URL"].string_value(), json["submit_rerank_URL"].string_value(),
-		                    json["submit_interaction_URL"].string_value() };
+	return ServerConfigVbs{ 
+		                    // .submit_URL
+		                    json["submit_URL"].string_value(),
+		                    // .submit_rerank_URL
+		                    json["submit_rerank_URL"].string_value(),
+		                    // .submit_interaction_URL
+		                    json["submit_interaction_URL"].string_value()
+	};
 }
 
 ServerConfigDres Settings::parse_dres_config(const json11::Json& json) {
-	return ServerConfigDres{ json["submit_URL"].string_value(),
-		                     json["submit_rerank_URL"].string_value(),
-		                     json["submit_interaction_URL"].string_value(),
-
+	return ServerConfigDres{ 
+		                     // .cookie_file
 		                     json["cookie_file"].string_value(),
-
-		                     json["login_URL"].string_value(),
-		                     json["username"].string_value(),
-		                     json["password"].string_value() };
+		                     // .username
+		                     require_string_value(json, "username"),
+		                     // .password
+		                     require_string_value(json, "password"),
+		                     // .submit_URL
+		                     require_string_value(json, "submit_URL"),
+		                     // .submit_rerank_URL
+		                     require_string_value(json, "submit_rerank_URL"),
+		                     // .submit_interaction_URL
+		                     require_string_value(json, "submit_interaction_URL"),
+		                     // .login_URL
+		                     require_string_value(json, "login_URL"),
+		                     // .logout_URL
+		                     require_string_value(json, "logout_URL"),
+		                     // .session_URL
+		                     require_string_value(json, "session_URL"),
+		                     // .server_time_URL
+		                     require_string_value(json, "server_time_URL")
+	};
 }

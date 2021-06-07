@@ -89,12 +89,25 @@ DataType deserialize_from_file(const std::string filepath) {
  *  @param fmt  Format string using the same rules as put_time method.
  *  @return   String representing current date and time in desired format.
  */
-inline std::string get_formated_timestamp(const std::string& fmt) {
-	auto now = std::chrono::system_clock::now();
-	auto in_time_t = std::chrono::system_clock::to_time_t(now);
+inline std::string get_formated_timestamp(
+    const std::string& fmt) {
+
+	auto ts = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 	std::stringstream ss;
-	ss << std::put_time(std::localtime(&in_time_t), fmt.data());
+	ss << std::put_time(std::localtime(&ts), fmt.data());
+	return ss.str();
+}
+
+inline std::string get_formated_timestamp(
+    const std::string& fmt, Timestamp ts) {
+
+	auto x = std::chrono::duration<std::size_t, std::milli>(ts);
+	std::chrono::time_point<std::chrono::system_clock> tp{x};
+	auto tts{std::chrono::system_clock::to_time_t(tp)};
+
+	std::stringstream ss;
+	ss << std::put_time(std::localtime(&tts), fmt.data());
 	return ss.str();
 }
 
@@ -475,11 +488,15 @@ inline bool file_exists(const std::string& filepath) { return std::filesystem::e
 inline bool dir_exists(const std::string& path) { return std::filesystem::is_directory(path); }
 
 inline bool dir_create(const std::string& path) {
-	if (!std::filesystem::is_directory(path)) {
-		std::filesystem::create_directories(path);
-		return true;
+	try {
+		if (!std::filesystem::is_directory(path)) {
+			std::filesystem::create_directories(path);
+		}
+	} catch (...) {
+		return false;
 	}
-	return false;
+
+	return true;
 }
 
 template <typename DType_>

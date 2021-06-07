@@ -1,7 +1,7 @@
 
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 František Mejzlík <frankmejzlik@gmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
  *                    Patrik Veselý <prtrikvesely@gmail.com>
  *
@@ -24,14 +24,17 @@
 
 namespace sh {
 
-#define LOG_API_CALLS
+/** If verbose CURL debug request log should be printed. */
+#define DEBUG_CURL_REQUESTS 0
+
+/** If 1, each call to Core API will be logged. */
+#define LOG_API_CALLS 1
 
 // ----------------------------------------
 // Old
 
 #define MINIMAL_SCORE 1e-18f
 
-//#define DEBUG_CURL_REQUESTS
 #define LOG_LOGS
 #define LOG_CURL_REQUESTS
 
