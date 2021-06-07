@@ -43,12 +43,6 @@ public:
 	bool logout();
 	bool submit(const VideoFrame& frame);
 
-	const std::string& get_submit_URL() const;
-	const std::string& get_rerank_URL() const;
-	const std::string& get_interaction_URL() const;
-
-
-
 	// *** MEMBER VARIABLES ***
 private:
 	SubmitterConfig _submitter_settings;

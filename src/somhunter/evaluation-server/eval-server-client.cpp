@@ -41,8 +41,3 @@ bool EvalServerClient::logout() { return _p_client->logout(); }
 
 bool EvalServerClient::submit(const VideoFrame& frame) { return _p_client->submit(frame); }
 
-const std::string& sh::EvalServerClient::get_submit_URL() const { return _dummy; }
-
-const std::string& sh::EvalServerClient::get_rerank_URL() const { return _dummy; }
-
-const std::string& sh::EvalServerClient::get_interaction_URL() const { return _dummy; }
