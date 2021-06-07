@@ -570,8 +570,8 @@ void NetworkApi::initialize() {
 	push_endpoint("search/keyword-autocomplete", &NetworkApi::handle__search__keyword_autocomplete__GET);
 	push_endpoint("search/reset", {}, &NetworkApi::handle__search__reset__POST);
 	push_endpoint("search/rescore", {}, &NetworkApi::handle__search__rescore__POST);
-	push_endpoint("search/like", {}, &NetworkApi::handle__search__like_frame__POST);
-	push_endpoint("search/bookmark", {}, &NetworkApi::handle__search__bookmark_frame__POST);
+	push_endpoint("search/like-frame", {}, &NetworkApi::handle__search__like_frame__POST);
+	push_endpoint("search/bookmark-frame", {}, &NetworkApi::handle__search__bookmark_frame__POST);
 	push_endpoint("search/context", &NetworkApi::handle__search__context__GET,
 	              &NetworkApi::handle__search__context__POST);
 

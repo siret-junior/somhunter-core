@@ -157,7 +157,7 @@
                     "Search session"
                 ],
                 "summary": "Gets the SOM display data.",
-                "operationId": "search_get_som_screen_post",
+                "operationId": "search_get_som_display_post",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -221,7 +221,7 @@
                     "Dataset"
                 ],
                 "summary": "Gets the data about the frame.",
-                "operationId": "search_video_detail_get",
+                "operationId": "dataset_video_detail_get",
                 "parameters": [
                     {
                         "in": "query",

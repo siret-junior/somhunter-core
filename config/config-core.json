@@ -110,7 +110,8 @@
 		"model_ResNext_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnext101.pt",
 		"model_ResNext_SHA256": "d5c990df4ec76d2a0671e8d61717fa0cf27e90cc627750d41c1be443ea36b9f9",
 
-        
+        "collage_regions": 12,
+        "collage_region_file_prefix": "data/ITEC_w2vv/collage/region_",
 		"models_dir": "data/nn_models/",
 
 		"ui_dir": "ui/",
@@ -125,26 +126,23 @@
 			"fr_filename_frame_num_len": 8
 		},
 	
-        "collage_regions": 12,
-        "collage_region_file_prefix": "data/v3c1-first100/collage/region_",
-
-		"frames_list_file": "data/v3c1-first100/dataset.keyframes.dataset",
-        "frames_dir": "data/v3c1-first100/thumbs/",
-        "thumbs_dir": "data/v3c1-first100/thumbs/",
-        "data_dir": "data/v3c1-first100/",
-
-        "features_file_data_off": 0,
-        "features_file": "data/v3c1-first100/dataset.w2vv",
-        "features_dim": 128,
-
-        "kw_bias_vec_file": "data/v3c1-first100/txt_bias-2048floats.bin",
-        "kw_scores_mat_file": "data/v3c1-first100/txt_weight-11147x2048floats.bin",
-        
-        "kws_file": "data/v3c1-first100/word2idx.txt",
-        "kw_PCA_mat_dim": 128,
-        "pre_PCA_features_dim": 2048,
-        "kw_PCA_mean_vec_file": "data/v3c1-first100/dataset.w2vv.pca.mean.bin",
-        "kw_PCA_mat_file": "data/v3c1-first100/dataset.w2vv.pca.matrix.bin",
+		"frames_list_file": "data/ITEC_w2vv/ITEC.keyframes.dataset",
+		"frames_dir": "data/ITEC_w2vv/frames/",
+		"thumbs_dir": "data/ITEC_w2vv/thumbs/",
+        "data_dir": "data/ITEC_w2vv/",
+		
+		"features_file_data_off": 12,
+		"features_dim": 128,
+		"features_file": "data/ITEC_w2vv/ITEC_20200411.w2vv.images.normed.128pca.viretfromat",
+		
+		"kw_bias_vec_file": "data/ITEC_w2vv/txt_bias-2048floats.bin",
+		"kw_scores_mat_file": "data/ITEC_w2vv/txt_weight-11147x2048floats.bin",
+		
+		"kws_file": "data/ITEC_w2vv/word2idx.txt",
+		"kw_PCA_mat_dim": 128,
+		"pre_PCA_features_dim": 2048,
+		"kw_PCA_mean_vec_file": "data/ITEC_w2vv/ITEC_20200411.w2vv.pca.mean.bin",
+		"kw_PCA_mat_file": "data/ITEC_w2vv/ITEC_20200411.w2vv.pca.matrix.bin",
 			
 		"LSC_metadata_file": "",
 
