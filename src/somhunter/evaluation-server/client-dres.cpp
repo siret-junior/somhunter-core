@@ -203,7 +203,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame) {
 		code = 200;
 	}
 
-	write_log(LogType::LOGOUT, ts, params, code, res);
+	write_log(LogType::SUBMIT, ts, params, code, res);
 	return success;
 }
 

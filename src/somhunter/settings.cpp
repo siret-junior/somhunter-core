@@ -121,9 +121,9 @@ SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
 	// .do_network_requests
 	res.do_network_requests = require_bool_value(json, "do_network_requests"),
 	// .submit_LSC_IDs
-	res.submit_LSC_IDs = require_bool_value(json, "submit_LSC_IDs"),
+	    res.submit_LSC_IDs = require_bool_value(json, "submit_LSC_IDs"),
 	// .allow_insecure
-	res.allow_insecure = require_bool_value(json, "allow_insecure"),
+	    res.allow_insecure = require_bool_value(json, "allow_insecure"),
 
 	res.team_ID = size_t(json["team_ID"].int_value());
 	res.member_ID = size_t(json["member_ID"].int_value());
@@ -171,8 +171,7 @@ ApiConfig Settings::parse_API_config(const json11::Json& json) {
 }
 
 ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {
-	return ServerConfigVbs{ 
-		                    // .submit_URL
+	return ServerConfigVbs{ // .submit_URL
 		                    json["submit_URL"].string_value(),
 		                    // .submit_rerank_URL
 		                    json["submit_rerank_URL"].string_value(),
@@ -182,8 +181,7 @@ ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {
 }
 
 ServerConfigDres Settings::parse_dres_config(const json11::Json& json) {
-	return ServerConfigDres{ 
-		                     // .cookie_file
+	return ServerConfigDres{ // .cookie_file
 		                     json["cookie_file"].string_value(),
 		                     // .username
 		                     require_string_value(json, "username"),

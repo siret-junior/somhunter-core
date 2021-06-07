@@ -89,9 +89,7 @@ DataType deserialize_from_file(const std::string filepath) {
  *  @param fmt  Format string using the same rules as put_time method.
  *  @return   String representing current date and time in desired format.
  */
-inline std::string get_formated_timestamp(
-    const std::string& fmt) {
-
+inline std::string get_formated_timestamp(const std::string& fmt) {
 	auto ts = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 	std::stringstream ss;
@@ -99,12 +97,10 @@ inline std::string get_formated_timestamp(
 	return ss.str();
 }
 
-inline std::string get_formated_timestamp(
-    const std::string& fmt, Timestamp ts) {
-
+inline std::string get_formated_timestamp(const std::string& fmt, Timestamp ts) {
 	auto x = std::chrono::duration<std::size_t, std::milli>(ts);
-	std::chrono::time_point<std::chrono::system_clock> tp{x};
-	auto tts{std::chrono::system_clock::to_time_t(tp)};
+	std::chrono::time_point<std::chrono::system_clock> tp{ x };
+	auto tts{ std::chrono::system_clock::to_time_t(tp) };
 
 	std::stringstream ss;
 	ss << std::put_time(std::localtime(&tts), fmt.data());

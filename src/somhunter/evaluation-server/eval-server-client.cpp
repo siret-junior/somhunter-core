@@ -30,24 +30,19 @@
 using namespace sh;
 
 EvalServerClient::EvalServerClient(const SubmitterConfig& settings)
-    :_submitter_settings{settings}, _p_client{ std::make_unique<ClientDres>(settings) } {
-
-    
+    : _submitter_settings{ settings }, _p_client{ std::make_unique<ClientDres>(settings) } {
 	// Make sure that submitted logs directory exists
 	utils::dir_create(_submitter_settings.log_submitted_dir);
-
 }
 
 bool EvalServerClient::login() { return _p_client->login(); }
 
 bool EvalServerClient::logout() { return _p_client->logout(); }
 
-bool EvalServerClient::submit(const VideoFrame& frame) { 
-    return _p_client->submit(frame); }
+bool EvalServerClient::submit(const VideoFrame& frame) { return _p_client->submit(frame); }
 
 const std::string& sh::EvalServerClient::get_submit_URL() const { return _dummy; }
 
 const std::string& sh::EvalServerClient::get_rerank_URL() const { return _dummy; }
 
 const std::string& sh::EvalServerClient::get_interaction_URL() const { return _dummy; }
-
