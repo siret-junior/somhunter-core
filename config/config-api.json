@@ -19,12 +19,17 @@
                     "API"
                 ],
                 "summary": "Gets the config JSON of the HTTP API.",
-                "operationId": "handle__api__config__GET",
+                "operationId": "NetworkApi::handle__api__config__GET",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json": {}
+                            "application/json": {
+                                "schema": {},
+                                "examples": {
+                                    "test1": {}
+                                }
+                            }
                         }
                     },
                     "500": {
@@ -36,20 +41,20 @@
                 }
             }
         },
-        "/config": {
+        "/settings": {
             "get": {
                 "tags": [
                     "Client"
                 ],
                 "summary": "Gets the config JSON from the core.",
-                "operationId": "handle__config__GET",
+                "operationId": "get_settings",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Response__Config__Get"
+                                    "$ref": "#/components/schemas/Response__Settings__Get"
                                 }
                             }
                         }
@@ -69,7 +74,7 @@
                     "Client"
                 ],
                 "summary": "Gets the current state of the user.",
-                "operationId": "handle__user__context__GET",
+                "operationId": "user_context_get",
                 "parameters": [
                     {
                         "in": "query",
@@ -108,13 +113,13 @@
                 }
             }
         },
-        "/get_top_screen": {
+        "/search/get-top-display": {
             "post": {
                 "tags": [
                     "Search session"
                 ],
                 "summary": "Gets the top scored display data.",
-                "operationId": "handle__get_top_screen__POST",
+                "operationId": "search_get_top_display",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -146,13 +151,13 @@
                 }
             }
         },
-        "/get_som_screen": {
+        "/search/get-som-display": {
             "post": {
                 "tags": [
                     "Search session"
                 ],
                 "summary": "Gets the SOM display data.",
-                "operationId": "handle__get_SOM_screen__POST",
+                "operationId": "search_get_som_screen_post",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -173,13 +178,13 @@
                 }
             }
         },
-        "/get_som_relocation_screen": {
+        "/search/get-som-relocation-display": {
             "post": {
                 "tags": [
                     "Search session"
                 ],
                 "summary": "Gets the SOM relocation display data.",
-                "operationId": "handle__get_SOM_relocation_screen__POST",
+                "operationId": "search_get_som_relocation_display",
                 "parameters": [
                     {
                         "in": "query",
@@ -210,13 +215,13 @@
                 }
             }
         },
-        "/get_frame_detail_data": {
+        "/dataset/video-detail": {
             "get": {
                 "tags": [
-                    "Search session"
+                    "Dataset"
                 ],
                 "summary": "Gets the data about the frame.",
-                "operationId": "handle__get_frame_detail_data__GET",
+                "operationId": "search_video_detail_get",
                 "parameters": [
                     {
                         "in": "query",
@@ -263,13 +268,13 @@
                 }
             }
         },
-        "/get_autocomplete_results": {
+        "/search/keyword-autocomplete": {
             "get": {
                 "tags": [
                     "Search session"
                 ],
                 "summary": "Returns the nearest supported keywords.",
-                "operationId": "handle__get_autocomplete_results__GET",
+                "operationId": "search_keyword_autocomplete",
                 "parameters": [
                     {
                         "in": "query",
@@ -300,13 +305,13 @@
                 }
             }
         },
-        "/log_scroll": {
+        "/log/scroll": {
             "get": {
                 "tags": [
                     "Logs"
                 ],
                 "summary": "Notifies the core about thhis event.",
-                "operationId": "handle__log_scroll__GET",
+                "operationId": "log_scroll_event",
                 "parameters": [
                     {
                         "in": "query",
@@ -333,13 +338,13 @@
                 }
             }
         },
-        "/log_text_query_change": {
+        "/log/text-query-change": {
             "get": {
                 "tags": [
                     "Logs"
                 ],
                 "summary": "Notifies the core about thhis event.",
-                "operationId": "handle__log_text_query_change__GET",
+                "operationId": "log_text_query_change",
                 "parameters": [
                     {
                         "in": "query",
@@ -366,13 +371,13 @@
                 }
             }
         },
-        "/submit_frame": {
+        "/eval-server/submit": {
             "post": {
                 "tags": [
                     "Evaluation server"
                 ],
                 "summary": "Submits the specified frame ID to the evaluation server.",
-                "operationId": "handle__submit_frame__POST",
+                "operationId": "NetworkApi::handle__submit_frame__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -391,13 +396,13 @@
                 }
             }
         },
-        "/login_to_dres": {
+        "/eval-server/login": {
             "post": {
                 "tags": [
                     "Evaluation server"
                 ],
                 "summary": "TODO",
-                "operationId": "handle__login_to_dres__POST",
+                "operationId": "NetworkApi::handle__login_to_dres__POST",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -427,13 +432,49 @@
                 }
             }
         },
-        "/reset_search_session": {
+        "/eval-server/logout": {
+            "post": {
+                "tags": [
+                    "Evaluation server"
+                ],
+                "summary": "TODO",
+                "operationId": "logout_from_eval_server",
+                "requestBody": {
+                    "description": "...",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "result": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Error"
+                    }
+                }
+            }
+        },
+        "/search/reset": {
             "post": {
                 "tags": [
                     "Search session"
                 ],
                 "summary": "Resets the user's search session.",
-                "operationId": "handle__reset_search_session__POST",
+                "operationId": "search_reset",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -454,18 +495,21 @@
                 }
             }
         },
-        "/rescore": {
+        "/search/rescore": {
             "post": {
                 "tags": [
                     "Search session"
                 ],
                 "summary": "Applies the current query on the scores.",
-                "operationId": "handle__rescore__POST",
+                "operationId": "search_rescore",
                 "requestBody": {
-                    "description": "...",
                     "required": true,
                     "content": {
-                        "application/json": {}
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Request__Rescore__Post"
+                            }
+                        }
                     }
                 },
                 "responses": {
@@ -481,13 +525,13 @@
                 }
             }
         },
-        "/like_frame": {
+        "/search/like-frame": {
             "post": {
                 "tags": [
                     "Search session"
                 ],
                 "summary": "(De)selects the provided frames as a positive example for relevance feedback models.",
-                "operationId": "handle__like_frame__POST",
+                "operationId": "search_like_frame",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -508,13 +552,13 @@
                 }
             }
         },
-        "/search/bookmark": {
+        "/search/bookmark-frame": {
             "post": {
                 "tags": [
                     "Search session"
                 ],
                 "summary": "Bookmarks the selected frame for later use.",
-                "operationId": "handle__search__bookmark__POST",
+                "operationId": "search_bookmark_frame",
                 "requestBody": {
                     "description": "...",
                     "required": true,
@@ -540,20 +584,39 @@
                 "tags": [
                     "Search session"
                 ],
-                "summary": "Updates the current user's context to the provided state.",
-                "operationId": "handle__search__context__POST",
+                "summary": "Switches context to the provided one.",
+                "operationId": "search_context_post",
                 "requestBody": {
                     "description": "...",
                     "required": true,
                     "content": {
-                        "application/json": {}
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "srcSearchCtxId": {
+                                        "type": "integer"
+                                    },
+                                    "screenshotData": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "responses": {
                     "200": {
                         "description": "OK",
                         "content": {
-                            "application/json": {}
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Response__User__Context__Get"
+                                }
+                            }
                         }
                     },
                     "500": {
@@ -566,7 +629,7 @@
                     "Search session"
                 ],
                 "summary": "Returns the current user's search context.",
-                "operationId": "handle__search__context__GET",
+                "operationId": "search_context_get",
                 "parameters": [
                     {
                         "in": "query",
@@ -596,6 +659,94 @@
     },
     "components": {
         "schemas": {
+            "Request__Rescore__Post": {
+                "type": "object",
+                "properties": {
+                    "canvas_query": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CanvasQuery"
+                        }
+                    }
+                }
+            },
+            "CanvasQuery": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/CanvasSubquery"
+                }
+            },
+            "CanvasSubquery": {
+                "type": "array",
+                "items": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "bitmap"
+                                    ]
+                                },
+                                "rect": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "number",
+                                        "minimum": 0.0,
+                                        "maximum": 1.0,
+                                        "minItems": 4,
+                                        "maxItems": 4,
+                                        "exclusiveMinimum": true,
+                                        "exclusiveMaximum": true
+                                    }
+                                },
+                                "num_channels": {
+                                    "type": "integer"
+                                },
+                                "width_pixels": {
+                                    "type": "integer"
+                                },
+                                "height_pixels": {
+                                    "type": "integer"
+                                },
+                                "bitmap_data": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "text"
+                                    ]
+                                },
+                                "rect": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "number",
+                                        "minimum": 0.0,
+                                        "maximum": 1.0,
+                                        "minItems": 4,
+                                        "maxItems": 4,
+                                        "exclusiveMinimum": true,
+                                        "exclusiveMaximum": true
+                                    }
+                                },
+                                "text_query": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
             "Response__FrameDetailData__Get": {
                 "required": [
                     "frames",
@@ -664,7 +815,7 @@
                     "$ref": "#/components/schemas/FrameReference"
                 }
             },
-            "Response__Config__Get": {
+            "Response__Settings__Get": {
                 "required": [
                     "api",
                     "core"
@@ -683,8 +834,7 @@
                 "required": [
                     "search",
                     "history",
-                    "bookmarkedFrames",
-                    "relocation"
+                    "bookmarkedFrames"
                 ],
                 "type": "object",
                 "properties": {

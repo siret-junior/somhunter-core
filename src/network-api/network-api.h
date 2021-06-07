@@ -68,26 +68,26 @@ private:
 	void handle__config__GET(http_request req);
 	void handle__user__context__GET(http_request req);
 
-	void handle__get_top_screen__POST(http_request req);
-	void handle__get_SOM_screen__POST(http_request req);
-	void handle__get_SOM_relocation_screen__POST(http_request req);
-	void handle__get_frame_detail_data__GET(http_request req);
-	void handle__get_autocomplete_results__GET(http_request req);
+	void handle__dataset__video_detail__GET(http_request req);
 
-	void handle__log_scroll__GET(http_request req);
-	void handle__log_text_query_change__GET(http_request req);
+	void handle__search__get_top_display__POST(http_request req);
+	void handle__search__get_som_display__POST(http_request req);
+	void handle__search__get_som_relocation_display__POST(http_request req);
+	void handle__search__keyword_autocomplete__GET(http_request req);
 
-	void handle__submit_frame__POST(http_request req);
-	void handle__login_to_DRES__POST(http_request req);
-
-	void handle__reset_search_session__POST(http_request req);
-	void handle__rescore__POST(http_request req);
-
-	void handle__like_frame__POST(http_request req);
-	void handle__search__bookmark__POST(http_request req);
-
+	void handle__search__reset__POST(http_request req);
+	void handle__search__rescore__POST(http_request req);
+	void handle__search__like_frame__POST(http_request req);
+	void handle__search__bookmark_frame__POST(http_request req);
 	void handle__search__context__POST(http_request req);
 	void handle__search__context__GET(http_request req);
+
+	void handle__log__scroll__GET(http_request req);
+	void handle__log__text_query_change__GET(http_request req);
+
+	void handle__eval_server__submit__POST(http_request req);
+	void handle__eval_server__login__POST(http_request req);
+	void handle__eval_server__logout__POST(http_request req);
 
 	// *** Helpers ***
 	RescoreMetadata extract_rescore_metadata(web::json::value& body);

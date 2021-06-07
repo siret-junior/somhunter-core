@@ -48,32 +48,40 @@
             "config_filepath": "config/config-api.json",
             "docs_dir": "docs/api/"
         },
-		"user_token": "admin",
-		"submitter_config":{
-			"submit_to_VBS": false,
-
+		"eval_server":{
 			"submit_server": "dres",
 			"server_config": {
 				"vbs": {
+					
 					"submit_interaction_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/query",
 					"submit_rerank_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/log",
 					"submit_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/submit"
 				},
 				"dres": {
-					"submit_interaction_URL": "localhost:1234/log/query",
-					"submit_rerank_URL": "localhost:1234/log/result",
-					"submit_URL": "localhost:1234/submit",
 					"cookie_file": "cookie.txt",
-					"login_URL": "localhost:1234/api/login/",
+					
 					"username": "somhunter",
-					"password": "ZW6cVRXk"
+					"password": "f3vL2HVASLHea2rHcBsa",
+
+					"login_URL": "https://herkules.ms.mff.cuni.cz:8443/api/login",
+					"logout_URL": "https://herkules.ms.mff.cuni.cz:8443/api/logout",
+					"session_URL": "https://herkules.ms.mff.cuni.cz:8443//api/user/session",
+					"server_time_URL": "https://herkules.ms.mff.cuni.cz:8443/api/status/time",
+
+					"submit_URL": "localhost:1234/submit",
+					"submit_rerank_URL": "localhost:1234/log/result",
+					"submit_interaction_URL": "localhost:1234/log/query"
 				}
 			},
 		
+			"do_network_requests": true,
+			"submit_LSC_IDs": false,
+			"allow_insecure": true,
+
 			"team_ID": 4,
 			"member_ID": 1,
 		
-			"log_submitted_dir": "logs/submitted_logs/",
+			"log_submitted_dir": "logs/eval-server-requests/",
 			"log_actions_dir": "logs/actions/",
 			"log_queries_dir": "logs/queries/",
 			"log_requests_dir": "logs/requests/",
@@ -84,8 +92,9 @@
 			"apply_log_action_timeout_in_core": false,
 			"log_action_timeout": 500
 		},
+		"logger": {
 
-		"max_frame_filename_len": 64,
+		},
 		"display_page_size": 128,
 		"topn_frames_per_video": 0,
 		"topn_frames_per_shot": 0,
@@ -115,26 +124,27 @@
 			"fr_filename_frame_num_off": 42,
 			"fr_filename_frame_num_len": 8
 		},
-		
-		"frames_list_file": "data/V3C1_2021_May/frame-ID-to-filepath.V3C1.csv",
-        "frames_dir": "data/V3C1_2021_May/frames/",
-        "thumbs_dir": "data/V3C1_2021_May/thumbs/",
-        "data_dir": "data/V3C1_2021_May/",
-		
-        "features_file_data_off": 0,
-        "features_dim": 128,
-        "features_file": "data/V3C1_2021_May/W2VV_BoW/frame-features.V3C1.W2VV-BoW.1154020x128.float32.bin",
-		"collage_regions": 12,
-		"collage_region_file_prefix": "data/V3C1_2021_May/W2VV_BoW/subframes/region_",
+	
+        "collage_regions": 12,
+        "collage_region_file_prefix": "data/v3c1-first100/collage/region_",
 
-        "kws_file": "data/V3C1_2021_May/W2VV_BoW/keyword-to-ID.W2VV-BoW.csv",
-        "kw_bias_vec_file": "data/V3C1_2021_May/W2VV_BoW/keyword-dense-bias.W2VV-BoW.2048.float32.bin",
-        "kw_scores_mat_file": "data/V3C1_2021_May/W2VV_BoW/keyword-dense-weigths.W2VV-BoW.11147x2048.float32.bin",
-		
+		"frames_list_file": "data/v3c1-first100/dataset.keyframes.dataset",
+        "frames_dir": "data/v3c1-first100/thumbs/",
+        "thumbs_dir": "data/v3c1-first100/thumbs/",
+        "data_dir": "data/v3c1-first100/",
+
+        "features_file_data_off": 0,
+        "features_file": "data/v3c1-first100/dataset.w2vv",
+        "features_dim": 128,
+
+        "kw_bias_vec_file": "data/v3c1-first100/txt_bias-2048floats.bin",
+        "kw_scores_mat_file": "data/v3c1-first100/txt_weight-11147x2048floats.bin",
+        
+        "kws_file": "data/v3c1-first100/word2idx.txt",
         "kw_PCA_mat_dim": 128,
         "pre_PCA_features_dim": 2048,
-        "kw_PCA_mean_vec_file": "data/V3C1_2021_May/W2VV_BoW/PCA-mean.V3C1.W2VV-BoW.2048.float32.bin",
-        "kw_PCA_mat_file": "data/V3C1_2021_May/W2VV_BoW/PCA-matrix.V3C1.W2VV-BoW.2048x128.float32.bin",
+        "kw_PCA_mean_vec_file": "data/v3c1-first100/dataset.w2vv.pca.mean.bin",
+        "kw_PCA_mat_file": "data/v3c1-first100/dataset.w2vv.pca.matrix.bin",
 			
 		"LSC_metadata_file": "",
 

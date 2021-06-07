@@ -557,30 +557,30 @@ void NetworkApi::initialize() {
 	// Add all desired endpoints
 	push_endpoint("api", &NetworkApi::handle__api__GET);
 	push_endpoint("api/config", &NetworkApi::handle__api__config__GET);
-
 	push_endpoint("config", &NetworkApi::handle__config__GET);
+
 	push_endpoint("user/context", &NetworkApi::handle__user__context__GET);
 
-	push_endpoint("get_top_screen", {}, &NetworkApi::handle__get_top_screen__POST);
-	push_endpoint("get_som_screen", {}, &NetworkApi::handle__get_SOM_screen__POST);
-	push_endpoint("get_som_relocation_screen", {}, &NetworkApi::handle__get_SOM_relocation_screen__POST);
-	push_endpoint("get_frame_detail_data", &NetworkApi::handle__get_frame_detail_data__GET);
+	push_endpoint("dataset/video-detail", &NetworkApi::handle__dataset__video_detail__GET);
 
-	push_endpoint("get_autocomplete_results", &NetworkApi::handle__get_autocomplete_results__GET);
-
-	push_endpoint("log_scroll", &NetworkApi::handle__log_scroll__GET);
-	push_endpoint("log_text_query_change", &NetworkApi::handle__log_text_query_change__GET);
-	push_endpoint("submit_frame", {}, &NetworkApi::handle__submit_frame__POST);
-	push_endpoint("login_to_dres", {}, &NetworkApi::handle__login_to_DRES__POST);
-
-	push_endpoint("reset_search_session", {}, &NetworkApi::handle__reset_search_session__POST);
-	push_endpoint("rescore", {}, &NetworkApi::handle__rescore__POST);
-
-	push_endpoint("like_frame", {}, &NetworkApi::handle__like_frame__POST);
-	push_endpoint("search/bookmark", {}, &NetworkApi::handle__search__bookmark__POST);
-
+	push_endpoint("search/get-top-display", {}, &NetworkApi::handle__search__get_top_display__POST);
+	push_endpoint("search/get-som-display", {}, &NetworkApi::handle__search__get_som_display__POST);
+	push_endpoint("search/get-som-relocation-display", {},
+	              &NetworkApi::handle__search__get_som_relocation_display__POST);
+	push_endpoint("search/keyword-autocomplete", &NetworkApi::handle__search__keyword_autocomplete__GET);
+	push_endpoint("search/reset", {}, &NetworkApi::handle__search__reset__POST);
+	push_endpoint("search/rescore", {}, &NetworkApi::handle__search__rescore__POST);
+	push_endpoint("search/like", {}, &NetworkApi::handle__search__like_frame__POST);
+	push_endpoint("search/bookmark", {}, &NetworkApi::handle__search__bookmark_frame__POST);
 	push_endpoint("search/context", &NetworkApi::handle__search__context__GET,
 	              &NetworkApi::handle__search__context__POST);
+
+	push_endpoint("log/scroll", &NetworkApi::handle__log__scroll__GET);
+	push_endpoint("log/text-query-change", &NetworkApi::handle__log__text_query_change__GET);
+
+	push_endpoint("eval-server/submit", {}, &NetworkApi::handle__eval_server__submit__POST);
+	push_endpoint("eval-server/login", {}, &NetworkApi::handle__eval_server__login__POST);
+	push_endpoint("eval-server/logout", {}, &NetworkApi::handle__eval_server__logout__POST);
 
 	SHLOG_S("Listening for requests at '" << _base_addr << "' at the API endpoints.");
 }
@@ -684,7 +684,7 @@ void NetworkApi::handle__api__GET(http_request message) {
 }
 void NetworkApi::handle__api__config__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__api__config__GET");
+	SHLOG_REQ(remote_addr, __func__);
 
 	// auto b = message.extract_json().get();
 
@@ -704,7 +704,7 @@ void NetworkApi::handle__api__config__GET(http_request req) {
 
 void NetworkApi::handle__config__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__config__GET");
+	SHLOG_REQ(remote_addr, __func__);
 
 	// auto b = message.extract_json().get();
 
@@ -729,7 +729,7 @@ void NetworkApi::handle__config__GET(http_request req) {
 
 void NetworkApi::handle__user__context__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__user__context__GET");
+	SHLOG_REQ(remote_addr, __func__);
 
 	auto body = req.extract_json().get();
 	// \ytbi
@@ -749,9 +749,9 @@ void NetworkApi::handle__user__context__GET(http_request req) {
 	req.reply(response);
 }
 
-void NetworkApi::handle__get_top_screen__POST(http_request req) {
+void NetworkApi::handle__search__get_top_display__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__get_top_screen__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	auto body = req.extract_json().get();
 
@@ -777,9 +777,9 @@ void NetworkApi::handle__get_top_screen__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
+void NetworkApi::handle__search__get_som_display__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__get_SOM_screen__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	auto body = req.extract_json().get();
 
@@ -806,9 +806,9 @@ void NetworkApi::handle__get_SOM_screen__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__get_SOM_relocation_screen__POST(http_request req) {
+void NetworkApi::handle__search__get_som_relocation_display__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__get_SOM_relocation_screen__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	auto body = req.extract_json().get();
 	size_t temporal_id{ static_cast<size_t>(body[U("temporalId")].as_integer()) };
@@ -834,9 +834,9 @@ void NetworkApi::handle__get_SOM_relocation_screen__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__get_frame_detail_data__GET(http_request req) {
+void NetworkApi::handle__dataset__video_detail__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__get_frame_detail_data__GET");
+	SHLOG_REQ(remote_addr, __func__);
 
 	// auto paths = http::uri::split_path(http::uri::decode(req.relative_uri().path()));
 
@@ -875,9 +875,9 @@ void NetworkApi::handle__get_frame_detail_data__GET(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {
+void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__get_autocomplete_results__GET");
+	SHLOG_REQ(remote_addr, __func__);
 
 	auto query{ req.relative_uri().query() };
 	auto query_map{ web::uri::split_query(query) };
@@ -910,9 +910,9 @@ void NetworkApi::handle__get_autocomplete_results__GET(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__log_scroll__GET(http_request req) {
+void NetworkApi::handle__log__scroll__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__log_scroll__GET");
+	SHLOG_REQ(remote_addr, __func__);
 
 	auto query{ req.relative_uri().query() };
 	auto query_map{ web::uri::split_query(query) };
@@ -961,9 +961,9 @@ void NetworkApi::handle__log_scroll__GET(http_request req) {
 	}
 }
 
-void NetworkApi::handle__log_text_query_change__GET(http_request req) {
+void NetworkApi::handle__log__text_query_change__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__log_text_query_change__GET");
+	SHLOG_REQ(remote_addr, __func__);
 
 	auto query{ req.relative_uri().query() };
 	auto query_map{ web::uri::split_query(query) };
@@ -986,9 +986,9 @@ void NetworkApi::handle__log_text_query_change__GET(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__submit_frame__POST(http_request req) {
+void NetworkApi::handle__eval_server__submit__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__submit_frame__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	FrameId frame_ID{ ERR_VAL<FrameId>() };
 	auto body = req.extract_json().get();
@@ -1011,9 +1011,9 @@ void NetworkApi::handle__submit_frame__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__login_to_DRES__POST(http_request req) {
+void NetworkApi::handle__eval_server__login__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__login_to_DRES__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	bool result{ _p_core->login_to_dres() };
 
@@ -1027,9 +1027,25 @@ void NetworkApi::handle__login_to_DRES__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__reset_search_session__POST(http_request req) {
+void NetworkApi::handle__eval_server__logout__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__reset_search_session__POST");
+	SHLOG_REQ(remote_addr, __func__);
+
+	bool result{ _p_core->logout_from_eval_server() };
+
+	auto res_obj{ json::value::object() };
+	res_obj[U("result")] = json::value::boolean(result);
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	res.set_body(res_obj);
+	NetworkApi::add_CORS_headers(res);
+	req.reply(res);
+}
+
+void NetworkApi::handle__search__reset__POST(http_request req) {
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	SHLOG_REQ(remote_addr, __func__);
 
 	// Reset
 	_p_core->reset_search_session();
@@ -1189,9 +1205,9 @@ Filters NetworkApi::extract_filters(web::json::value& body) {
 	return Filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask } };
 }
 
-void NetworkApi::handle__rescore__POST(http_request req) {
+void NetworkApi::handle__search__rescore__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__rescore__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	auto body = req.extract_json().get();
 
@@ -1252,9 +1268,9 @@ void NetworkApi::handle__rescore__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__like_frame__POST(http_request req) {
+void NetworkApi::handle__search__like_frame__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__like_frame__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	FrameId frame_ID{ ERR_VAL<FrameId>() };
 	auto body = req.extract_json().get();
@@ -1281,9 +1297,9 @@ void NetworkApi::handle__like_frame__POST(http_request req) {
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__bookmark__POST(http_request req) {
+void NetworkApi::handle__search__bookmark_frame__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__search__bookmark__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	FrameId frame_ID{ ERR_VAL<FrameId>() };
 	auto body = req.extract_json().get();
@@ -1312,7 +1328,7 @@ void NetworkApi::handle__search__bookmark__POST(http_request req) {
 
 void NetworkApi::handle__search__context__POST(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
-	SHLOG_REQ(remote_addr, "handle__search__context__POST");
+	SHLOG_REQ(remote_addr, __func__);
 
 	try {
 		auto body = req.extract_json().get();
