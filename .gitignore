@@ -8,7 +8,7 @@ third-party/libtorch-Release/libtorch-Release.zip
 third-party/libtorch-Release/
 data/nn_models/traced_Resnet152.pt
 data/nn_models/traced_Resnext101.pt
-logs/
+/logs/
 scripts/__pycache__/
 __pycache__
 cookie.txt

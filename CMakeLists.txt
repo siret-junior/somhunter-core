@@ -86,7 +86,7 @@ message("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
 message("Running 'config.py' script, this may take a while (it's downloading large files)...")
 message("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 execute_process (
-    COMMAND python3 ${CMAKE_HOME_DIRECTORY}/scripts/configure.py 
+    COMMAND python ${CMAKE_HOME_DIRECTORY}/scripts/configure.py 
             ${PLATFORM}                                 # What platform \in {win, UNIX}
             ${CMAKE_HOME_DIRECTORY}/config/config-core.json         # Config file
             ${CMAKE_HOME_DIRECTORY}/config/config-install.json # Install config file
