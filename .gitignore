@@ -2,7 +2,7 @@ build
 third-party/libtorch/
 third-party/cuda_libtorch.zip
 third-party/libtorch.zip
-tests/test*
+
 third-party/libtorch-Debug/
 third-party/libtorch-Release/libtorch-Release.zip
 third-party/libtorch-Release/
