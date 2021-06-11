@@ -523,7 +523,9 @@ json::value to_Response__Rescore__Post(Somhunter* p_core, const RescoreResult& r
 		}
 		result_obj[U("targets")] = arr;
 	}
-
+	{ /* *** target_position *** */
+		result_obj[U("target_position")] = rescore_res.target_pos;
+	}
 	return result_obj;
 }
 
@@ -547,7 +549,7 @@ void handle_options(http_request request) {
 NetworkApi::NetworkApi(const ApiConfig& API_config, Somhunter* p_core)
     : _API_config{ API_config },
       _p_core{ p_core },
-      _base_addr{ "http://127.0.0.1:" + std::to_string(API_config.port) } {}
+      _base_addr{ "http://*:" + std::to_string(API_config.port) } {}
 
 void NetworkApi::initialize() {
 	uri_builder endpoint(utility::conversions::to_string_t(_base_addr));

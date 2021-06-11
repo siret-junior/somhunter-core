@@ -175,6 +175,9 @@ target_compile_definitions(${SOMHUNTER_TARGET_TESTS} PRIVATE TESTING)
 # Linking
 # ####################################
 
+SET_TARGET_PROPERTIES(${SOMHUNTER_TARGET} PROPERTIES LINK_FLAGS    "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
+SET_TARGET_PROPERTIES(${SOMHUNTER_TARGET_TESTS} PROPERTIES LINK_FLAGS    "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
+
 target_include_directories(${SOMHUNTER_TARGET} 
 	PRIVATE
 		${CURL_INCLUDE_DIR}
