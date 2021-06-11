@@ -21,6 +21,7 @@ struct VideoFilenameOffsets {
 };
 
 struct ApiConfig {
+	bool local_only;
 	size_t port;
 	std::string config_filepath;
 	std::string docs_dir;

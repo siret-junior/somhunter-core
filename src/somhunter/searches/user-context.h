@@ -93,6 +93,7 @@ struct RescoreResult {
 	size_t curr_ctx_ID;
 	const std::vector<SearchContext>& _history;
 	const std::vector<VideoFrame> targets;
+	size_t target_pos;
 };
 
 };  // namespace sh

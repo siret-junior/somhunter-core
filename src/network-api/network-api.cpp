@@ -549,7 +549,7 @@ void handle_options(http_request request) {
 NetworkApi::NetworkApi(const ApiConfig& API_config, Somhunter* p_core)
     : _API_config{ API_config },
       _p_core{ p_core },
-      _base_addr{ "http://*:" + std::to_string(API_config.port) } {}
+      _base_addr{ (API_config.local_only ? "http://127.0.0.1:" : "http://*:") + std::to_string(API_config.port) } {}
 
 void NetworkApi::initialize() {
 	uri_builder endpoint(utility::conversions::to_string_t(_base_addr));
@@ -638,10 +638,27 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 		// For CORS
 		ep_listener.support(methods::OPTIONS, std::bind(handle_options, std::placeholders::_1));
 
-		ep_listener.open().wait();
+		auto res = ep_listener.open().wait();
+
+		// Check if failed
+		if (res != Concurrency::completed) {
+			std::string msg{ "Unable to set the HTTP listener for '" + path + ".!" };
+
+			SHLOG_E(msg);
+			throw std::runtime_error{ msg };
+		}
+
 		_endpoints.emplace_back(std::move(ep_listener));
 	} catch (const std::exception& e) {
-		std::cout << e.what() << std::endl;
+		std::string msg{ "Unable to set the HTTP listener for '" + path + "'!" };
+
+		msg.append("\n\nIf these are access problems, try running it as an administrator.\n\n");
+
+		msg.append("\nMESSAGE: \n");
+		msg.append(e.what());
+
+		SHLOG_E(msg);
+		throw std::runtime_error{ msg };
 	}
 }
 

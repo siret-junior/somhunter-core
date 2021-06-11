@@ -313,9 +313,19 @@ RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 	                                             "TODO add text query logging", _settings.topn_frames_per_video,
 	                                             _settings.topn_frames_per_shot);
 
-	generate_new_targets();
 
-	return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets };
+	const auto& targets {_user_context.ctx.curr_targets};
+
+	size_t tar_pos{_dataset_frames.size()};
+	for (auto&& t : targets) {
+		size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
+
+		tar_pos = std::min(r, tar_pos);
+	}
+
+	SHLOG_S("Target position is " << tar_pos << ".");
+
+	return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets, tar_pos };
 }
 
 bool Somhunter::som_ready() const { return _user_context._async_SOM.map_ready(); }
@@ -343,6 +353,8 @@ void Somhunter::reset_search_session() {
 
 	// Reset UserContext
 	_user_context.reset();
+
+	generate_new_targets();
 }
 
 void Somhunter::log_video_replay(FrameId frame_ID, float delta_X) {

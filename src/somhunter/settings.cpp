@@ -160,14 +160,25 @@ SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
 }
 
 ApiConfig Settings::parse_API_config(const json11::Json& json) {
-	auto docs_dir{ json["docs_dir"].string_value() };
+	auto docs_dir{ require_string_value(json, "docs_dir") };
 
 	if (docs_dir.back() != '/') {
 		docs_dir.append("/");
 		SHLOG_W("Appending '/' to the `docs_dir` value - '" << docs_dir << "'.");
 	}
 
-	return ApiConfig{ static_cast<size_t>(json["port"].int_value()), json["config_filepath"].string_value(), docs_dir };
+	return ApiConfig{ 
+		// .local_only
+		require_bool_value(json, "local_only"),
+
+		// .port
+		require_int_value<std::size_t>(json, "port"),
+		
+		// .config_filepath
+		require_string_value(json, "config_filepath"),
+		
+		// .docs_dir
+		docs_dir };
 }
 
 ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {

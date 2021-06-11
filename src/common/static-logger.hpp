@@ -128,7 +128,7 @@ static inline std::string_view view_tail(const std::string& str, size_t len) {
 			          << std::endl;                                                                          \
 		} while (0)
 
-#	define SHLOG_E(x) _write_log_err(TermColor::red << "E:", x << TermColor::def)
+#	define SHLOG_E(x) _write_log_err(TermColor::red << "E: ", x << TermColor::def)
 #else
 #	define SHLOG_E(x)
 #	define _write_log_err(level, x)
