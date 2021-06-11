@@ -313,10 +313,9 @@ RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 	                                             "TODO add text query logging", _settings.topn_frames_per_video,
 	                                             _settings.topn_frames_per_shot);
 
+	const auto& targets{ _user_context.ctx.curr_targets };
 
-	const auto& targets {_user_context.ctx.curr_targets};
-
-	size_t tar_pos{_dataset_frames.size()};
+	size_t tar_pos{ _dataset_frames.size() };
 	for (auto&& t : targets) {
 		size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
 
@@ -605,23 +604,34 @@ void Somhunter::benchmark_canvas_queries(const std::string& /*queries_dir*/, con
 }
 
 void Somhunter::generate_new_targets() {
-	size_t num_frames{ _dataset_frames.size() };
-	FrameId target_ID{ utils::irand<FrameId>(1, num_frames - 2) };
-
-	// Get next or prev frame to create pair from the same video
-	const auto& prevf{ _dataset_frames.get_frame(target_ID - 1) };
-	const auto& f{ _dataset_frames.get_frame(target_ID) };
-	const auto& nextf{ _dataset_frames.get_frame(target_ID + 1) };
+	constexpr std::size_t num_seq{ 5 };
+	std::size_t num_frames{ _dataset_frames.size() };
 
 	std::vector<VideoFrame> targets;
-	targets.reserve(2);
-	if (prevf.video_ID == f.video_ID) {
-		targets.emplace_back(prevf);
-		targets.emplace_back(f);
-	} else {
-		targets.emplace_back(f);
-		targets.emplace_back(nextf);
+	targets.reserve(num_seq);
+
+	while (true) {
+		FrameId target_ID{ utils::irand<FrameId>(0, num_frames - 5) };
+
+		const auto& f{ _dataset_frames.get_frame(target_ID) };
+
+		for (std::size_t i{ 1 }; i < num_seq; ++i) {
+			const auto& f{ _dataset_frames.get_frame(target_ID + i) };
+
+			if (f.video_ID != f.video_ID) {
+				continue;
+			}
+		}
+
+		// Done!
+		for (std::size_t i{ 0 }; i < num_seq; ++i) {
+			const auto& f{ _dataset_frames.get_frame(target_ID + i) };
+
+			targets.emplace_back(f);
+		}
+		break;
 	}
+
 	_user_context.ctx.curr_targets = std::move(targets);
 }
 
