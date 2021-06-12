@@ -61,13 +61,14 @@ int main() {
 	// Instantiate the SOMHunter
 	Somhunter core{ config, cfg_fpth };
 
-	NetworkApi api{ config.API_config, &core };
-	api.run();
-
 	/* ***
 	 * Benchmarks
 	 */
 	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
+	core.benchmark_canvas_queries("saved-queries", "saved-queries-out");
+
+	NetworkApi api{ config.API_config, &core };
+	api.run();
 
 	/* ***
 	 * Test features here...

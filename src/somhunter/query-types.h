@@ -27,8 +27,8 @@
 #include <sstream>
 #include <variant>
 
-#include <json11.hpp>
 #include <cereal/types/variant.hpp>
+#include <json11.hpp>
 
 #include "common.h"
 
@@ -246,9 +246,7 @@ using CanvasSubquery = std::variant<CanvasSubqueryBitmap, CanvasSubqueryText>;
  * Type representing query related to the canvas (atm text & bitmap) rectangles.
  */
 class CanvasQuery {
-	/** Subregion queries */
-	std::vector<CanvasSubquery> _subqueries;
-
+	// *** METHODS ***
 public:
 	/** Emplace new subregion TEXT query. */
 	void emplace_back(const RelativeRect& rect, const std::string& text_query);
@@ -260,6 +258,7 @@ public:
 
 	size_t size() const { return _subqueries.size(); }
 	bool empty() const { return (size() == 0); }
+	const std::vector<CanvasSubquery>& subqueries() const { return _subqueries; };
 
 	/**
 	 * This allows portable binary serialization of Collage instances to files.
@@ -310,39 +309,48 @@ public:
 
 		return true;
 	}
+	// *** MEMBER VARIABLES ***
+private:
+	/** Subregion queries */
+	std::vector<CanvasSubquery> _subqueries;
 };
 
 struct TemporalQuery {
-	TextualQuery textual;
-	CanvasQuery canvas;
-	RelocationQuery relocation;
-
-	TemporalQuery() : textual{}, canvas{}, relocation{ IMAGE_ID_ERR_VAL } {}
-	TemporalQuery(TextualQuery tq) : textual{ tq }, canvas{}, relocation{ IMAGE_ID_ERR_VAL } {}
-	TemporalQuery(CanvasQuery cq) : textual{}, canvas{ cq }, relocation{ IMAGE_ID_ERR_VAL } {}
+	// *** METHODS ***
+public:
+	TemporalQuery() : textual{}, canvas{}, relocation{ ERR_VAL<FrameId>() } {}
+	TemporalQuery(TextualQuery tq) : textual{ tq }, canvas{}, relocation{ ERR_VAL<FrameId>() } {}
+	TemporalQuery(CanvasQuery cq) : textual{}, canvas{ cq }, relocation{ ERR_VAL<FrameId>() } {}
 	TemporalQuery(RelocationQuery rq) : textual{}, canvas{}, relocation{ rq } {}
 	TemporalQuery(TextualQuery tq, CanvasQuery cq, RelocationQuery rq)
 	    : textual{ tq }, canvas{ cq }, relocation{ rq } {}
-
-	const bool isRelocation() const { return relocation != IMAGE_ID_ERR_VAL; }
-	const bool isCanvas() const { return !canvas.empty(); }
-	const bool isText() const { return !textual.empty(); }
-	const bool isEmpty() const { return !isRelocation() && !isCanvas() && !isText(); }
+	// ---
+	const bool is_relocation() const { return relocation != ERR_VAL<FrameId>(); }
+	const bool is_canvas() const { return !canvas.empty(); }
+	const bool is_text() const { return !textual.empty(); }
+	const bool empty() const { return !is_relocation() && !is_canvas() && !is_text(); }
 
 	template <class Archive>
 	void serialize(Archive& archive) {
 		archive(textual, canvas, relocation);
 	}
-
+	// ---
 	bool operator!=(const TemporalQuery& b) const { return !((*this) == b); }
-
 	bool operator==(const TemporalQuery& b) const {
 		return textual == b.textual && canvas == b.canvas && relocation == b.relocation;
 	}
+
+	// *** MEMBER VARIABLES ***
+public:
+	TextualQuery textual;
+	CanvasQuery canvas;
+	RelocationQuery relocation;
 };
 
 /** The type representing the whole query. */
 struct Query {
+	// *** METHODS ***
+public:
 	Query() = default;
 	template <typename Q>
 	Query(const std::vector<Q>& temp_queries) : metadata{}, filters{}, relevance_feeedback{} {
@@ -350,42 +358,33 @@ struct Query {
 			temporal_queries.emplace_back(q);
 		}
 	}
+	// ---
 
+	void transform_to_no_pos_queries() {
+		for (auto&& tq : temporal_queries) {
+			TextualQuery new_query;
+
+			const auto& sqs{ tq.canvas.subqueries() };
+			std::string text;
+			for (size_t idx{ 0 }; idx < sqs.size(); ++idx) {
+				const auto& sq{ sqs[idx] };
+
+				do_assert(std::holds_alternative<CanvasSubqueryText>(sq), "Text canvases only!");
+
+				const CanvasSubqueryText& s{ std::get<CanvasSubqueryText>(sq) };
+				text.append(s.query()).append(" ");
+			}
+			tq.textual = text;
+			tq.canvas = CanvasQuery{};  //< Empty canvas query
+		}
+	}
+
+	// *** MEMBER VARIABLES ***
+public:
 	RescoreMetadata metadata;
 	Filters filters;
 	RelevanceFeedbackQuery relevance_feeedback;
 	std::vector<TemporalQuery> temporal_queries;
-
-	/* TODO
-	void transform_to_no_pos_queries() {
-	    std::string t0;
-	    std::string t1;
-	    TextualQuery new_text;
-	    CanvasQuery new_canvas;
-
-	    size_t div{ canvas_query._begins[1] };
-
-	    for (size_t idx{ 0 }; idx < canvas_query._subqueries.size(); ++idx) {
-	        auto&& sq{ canvas_query._subqueries[idx] };
-
-	        CanvasSubqueryText& s{ std::get<CanvasSubqueryText>(sq) };
-	        const std::string& text{ s.query() };
-	        // if first
-	        if (idx < div) {
-	            t0.append(text).append(" ");
-	        }
-	        // else second
-	        else {
-	            t1.append(text).append(" ");
-	        }
-	    }
-
-	    new_text.query = t0.append(" << ").append(t1);
-
-	    // Swap them
-	    canvas_query = new_canvas;
-	    textual_query = new_text;
-	}*/
 };
 
 struct BaseBenchmarkQuery {

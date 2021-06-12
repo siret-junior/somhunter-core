@@ -249,20 +249,20 @@ RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 
 		for (size_t mi = 0; mi < temporal_query.size(); ++mi) {
 			auto&& moment_query = temporal_query[mi];
-			if (moment_query.isEmpty()) continue;
+			if (moment_query.empty()) continue;
 
 			// auto&& last_moment_query = user.ctx.last_temporal_queries[mi];
 
-			if (moment_query.isRelocation()) {
+			if (moment_query.is_relocation()) {
 				SHLOG_D("Running the relocation query model...");
 				_relocation_ranker.score(moment_query.relocation, _user_context.ctx.scores, moment, _dataset_features);
-			} else if (moment_query.isCanvas()) {
+			} else if (moment_query.is_canvas()) {
 				SHLOG_D("Running the canvas query model...");
 				// canvas_query.set_targets(user.ctx.curr_targets);
 				_collage_ranker.score(moment_query.canvas, _user_context.ctx.scores, moment, _dataset_features,
 				                      _dataset_frames);
 
-			} else if (moment_query.isText()) {
+			} else if (moment_query.is_text()) {
 				SHLOG_D("Running plain texual model...");
 				rescore_keywords(moment_query.textual, moment);
 			}
@@ -512,95 +512,167 @@ void Somhunter::benchmark_native_text_queries(const std::string& queries_filepat
 	}
 }
 
-void Somhunter::benchmark_canvas_queries(const std::string& /*queries_dir*/, const std::string& /*out_dir*/) {
-#if 0
-	// #####################################
-	// Run the serialized Canvas query
-	std::vector<size_t> ranks;
-
+void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const std::string& /*out_dir*/) {
 	using directory_iterator = std::filesystem::directory_iterator;
 
-	// TODO change the loading from binary to loding from JSON
-	throw std::runtime_error("Loading outdated binary file");
+	std::vector<std::size_t> ranks_positioned;
+	std::vector<std::size_t> ranks_unpositioned;
+	std::vector<std::string> queries;
 
+	// ***
+	// Load the filenames from the directory
 	std::vector<std::string> serialized_queries;
-	for (const auto& dirEntry : directory_iterator("saved-queries")) {
-		std::cout << dirEntry << std::endl;
+	std::vector<std::string> serialized_queries_infos;
 
-		for (const auto& file : std::filesystem::directory_iterator(dirEntry)) {
+	std::cout << "Loading queries from the directory '" << queries_dir << "'..." << std::endl;
+	for (const auto& dir_entry : directory_iterator(queries_dir)) {
+		std::cout << "\t - " << dir_entry << std::endl;
+
+		for (const auto& file : std::filesystem::directory_iterator(dir_entry)) {
 			std::string filepath{ file.path().string() };
 
 			std::string suffix{ filepath.substr(filepath.length() - 3) };
 			if (suffix == "bin") {
 				serialized_queries.emplace_back(filepath);
 			}
+
+			if (suffix == "son") {
+				serialized_queries_infos.emplace_back(filepath);
+			}
+
 			std::cout << "\t" << file << std::endl;
 		}
+		do_assert_equals(serialized_queries.size(), serialized_queries_infos.size(),
+		                 "There must be the same number of infos & bin files.");
 	}
 
-	size_t q_idx{ 0 };
+	// ***
+	// Rank them
+	{
+		size_t q_idx{ 0 };
+		for (auto&& f : serialized_queries) {
+			using namespace nlohmann;
+			std::cout << "Running query from '" << f << "' file..." << std::endl;
 
-	for (auto&& f : serialized_queries) {
-		std::cout << "Running query from '" << f << "' file..." << std::endl;
+			const auto& f_info{ serialized_queries_infos[q_idx] };
+			std::ifstream ifs_info(f_info);
+			json info_json;
+			ifs_info >> info_json;
 
-		// \todo Fix this
-		Query q{ utils::deserialize_from_file<CanvasQuery>(f) };
-		auto targets = q.canvas_query.get_targets();
+			std::vector<TemporalQuery> q{ utils::deserialize_from_file<std::vector<TemporalQuery>>(f) };
+			auto targets = info_json["targets"].get<std::vector<std::size_t>>();
 
-		// !!!!!
-		// q.transform_to_no_pos_queries();
-		// !!!!!
+			// ***
+			// POSITIONAL
+			{
+				rescore(q, false);
+				auto disp = get_top_scored();
 
-		core.rescore(q);
-		auto disp = core.get_display(DisplayType::DTopN, 0, 0).frames;
-
-		size_t res = 0;
-
-		size_t i{ 0 };
-		for (auto it{ disp.begin() }; it != disp.end(); ++it) {
-			if (targets[0] == (*it)->frame_ID || targets[1] == (*it)->frame_ID) {
-				ranks.push_back(i);
-				break;
+				size_t i{ 0 };
+				for (auto it{ disp.begin() }; it != disp.end(); ++it) {
+					if (std::find(targets.begin(), targets.end(), *it) != targets.end()) {
+						ranks_positioned.push_back(i);
+						break;
+					}
+					++i;
+				}
 			}
-			++i;
-		}
 
-		++q_idx;
+			// ***
+			// Decay to unpositioned
+			Query qq;
+			qq.temporal_queries = q;
+			qq.transform_to_no_pos_queries();
+
+			std::string this_query;
+			for (auto&& temp_q : qq.temporal_queries) {
+				this_query.append(temp_q.textual).append(" >> ");
+			}
+			for (size_t i = 0; i < 4; ++i) this_query.pop_back();
+
+			queries.emplace_back(this_query);
+
+			// ***
+			// UNPOSITIONAL
+			{
+				rescore(qq, false);
+				auto disp = get_top_scored();
+
+				size_t i{ 0 };
+				for (auto it{ disp.begin() }; it != disp.end(); ++it) {
+					if (std::find(targets.begin(), targets.end(), *it) != targets.end()) {
+						ranks_unpositioned.push_back(i);
+						break;
+					}
+					++i;
+				}
+			}
+
+			do_assert_equals(ranks_positioned.size(), ranks_unpositioned.size(), "Numbers must match!");
+			do_assert_equals(queries.size(), ranks_unpositioned.size(), "Numbers must match!");
+
+			std::cout << "\t RANKS: " << ranks_positioned[q_idx] << ranks_unpositioned[q_idx] << std::endl;
+			++q_idx;
+		}
 	}
 	// #####################################
 
 	// print it
 	// std::sort(ranks.begin(), ranks.end());
 
-	size_t num_ticks{ 100 };
-	size_t num_frames{ core.get_num_frames() };
+	size_t num_ticks{ 500 };
+	size_t num_frames{ get_num_frames() };
 
 	float scale{ num_ticks / float(num_frames) };
 
-	std::vector<size_t> hist;
-	hist.resize(num_ticks, 0);
+	// POS
+	std::vector<size_t> hist_positioned;
+	hist_positioned.resize(num_ticks, 0);
 	{
-		size_t i{ 0 };
-		for (auto&& r : ranks) {
-			size_t scaled_rank{ static_cast<size_t>(r * scale) };
-			++hist[scaled_rank];
+		{
+			size_t i{ 0 };
+			for (auto&& r : ranks_positioned) {
+				size_t scaled_rank{ static_cast<size_t>(r * scale) };
+				++hist_positioned[scaled_rank];
 
-			++i;
+				++i;
+			}
+		}
+
+		size_t acc{ 0 };
+		for (auto& i : hist_positioned) {
+			auto xx = i;
+			i = acc;
+			acc += xx;
 		}
 	}
 
-	size_t acc{ 0 };
-	for (auto& i : hist) {
-		auto xx = i;
-		i = acc;
-		acc += xx;
+	// NPOS
+	std::vector<size_t> hist_unpositioned;
+	hist_unpositioned.resize(num_ticks, 0);
+	{
+		{
+			size_t i{ 0 };
+			for (auto&& r : ranks_positioned) {
+				size_t scaled_rank{ static_cast<size_t>(r * scale) };
+				++hist_unpositioned[scaled_rank];
+
+				++i;
+			}
+		}
+
+		size_t acc{ 0 };
+		for (auto& i : hist_unpositioned) {
+			auto xx = i;
+			i = acc;
+			acc += xx;
+		}
 	}
 
-	for (size_t i = 0; i < hist.size(); i++) {
-		std::cout << i << "," << hist[i] << std::endl;
+	std::cout << "tick;positioned;unpositioned;query" << std::endl;
+	for (size_t i = 0; i < hist_positioned.size(); i++) {
+		std::cout << i << ";" << hist_positioned[i] << ";" << hist_unpositioned[i] << queries[i] << std::endl;
 	}
-
-#endif
 }
 
 void Somhunter::generate_new_targets() {
@@ -616,9 +688,9 @@ void Somhunter::generate_new_targets() {
 		const auto& f{ _dataset_frames.get_frame(target_ID) };
 
 		for (std::size_t i{ 1 }; i < num_seq; ++i) {
-			const auto& f{ _dataset_frames.get_frame(target_ID + i) };
+			const auto& ff{ _dataset_frames.get_frame(target_ID + i) };
 
-			if (f.video_ID != f.video_ID) {
+			if (f.video_ID != ff.video_ID) {
 				continue;
 			}
 		}

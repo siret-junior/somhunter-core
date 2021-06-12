@@ -171,12 +171,9 @@ namespace sh {
 /** Assert on equals execuded at all times.
  */
 template <typename T1, typename T2>
-inline void do_assert_equals(const T1& a, const T2&& b, const std::string_view msg = {}, const char* file = __FILE__,
+inline void do_assert_equals(const T1& a, const T2& b, const std::string_view msg = {}, const char* file = __FILE__,
                              const int line = __LINE__) {
-	if (!(a == b)) {
-		std::cerr << "ASSERTION FAILED: " << msg << "\n\tEXPECTED: " << a << "\tGOT: " << b << "."
-		          << "() in " << view_tail(file, FILE_NAME_TAIL_LEN) << " :" << line << "" << std::endl;
-	}
+	do_assert(a == b, msg, file, line);
 }
 
 /** Assert execuded at all times. */
@@ -187,6 +184,7 @@ inline void do_assert(T&& assertion, const std::string_view msg = {}, const char
 		std::cerr << "ASSERTION FAILED: " << msg << "\n\t"
 		          << "."
 		          << "() in " << view_tail(file, FILE_NAME_TAIL_LEN) << " :" << line << "" << std::endl;
+		throw std::runtime_error("ASSERTION FAILED!");
 	}
 }
 

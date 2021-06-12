@@ -126,24 +126,21 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 	SHLOG_S("CanvasQueryRanker initialized.");
 }
 
-void CanvasQueryRanker::score(const CanvasQuery& collage, ScoreModel& model, size_t temporal,
-                              const DatasetFeatures& /*features*/, const DatasetFrames& _dataset_frames) {
+void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model, size_t temporal,
+                              const DatasetFeatures& /*features*/, const DatasetFrames& /*_dataset_frames*/) {
 	if (!_loaded) {
 		SHLOG_W("Called CanvasQueryRanker::score without available subregion data. Leaving the scores intact.");
 		return;
 	}
 
-	if (collage.size() > 0) {
-		/*collage.RGBA_to_RGB();
-		collage.resize_all(224, 224);*/
-
-		at::Tensor tensor_features = get_features(collage);
+	if (canvas_query.size() > 0) {
+		at::Tensor tensor_features = get_features(canvas_query);
 
 		// Convert tensor to STD containered matrix
 		auto collage_vectors{ to_std_matrix<float>(tensor_features) };
 
 		// get best IOU regions for each image in collage
-		auto regions = get_RoIs(collage);
+		auto regions = get_RoIs(canvas_query);
 
 		// get scores for all collage images and whole dataset of region
 		std::vector<std::vector<float>> scores;
@@ -151,45 +148,9 @@ void CanvasQueryRanker::score(const CanvasQuery& collage, ScoreModel& model, siz
 			scores.push_back(score_image(collage_vectors[i], regions[i]));
 
 		auto final_score = average_scores(scores);
-
-		/*if (scores.begin() + q1_beg == scores.end())
-		    final_score = mean0;
-		else  // second query
-		{
-		    StdMatrix<float> s1(scores.begin() + q1_beg, scores.end());
-		    auto mean1 = average_scores(s1);
-
-		    // applied temporal query
-		    size_t window = 5;
-		    for (size_t i = 0; i < mean0.size(); i++) {
-		        auto begin_it = frames.get_frame_it(i);
-		        begin_it++;
-		        if (begin_it == frames.end()) break;
-
-		        auto end_it = begin_it;
-		        VideoId vid_ID = begin_it->video_ID;
-
-		        // move iterator window times or stop if end of video/file
-		        for (size_t j = 0; j < window; j++) {
-		            end_it++;
-		            if (end_it == frames.end() || end_it->video_ID != vid_ID) break;
-		        }
-
-		        // get min between begin_it and end_it from mean1
-		        float min;
-		        if (end_it == frames.end())
-		            min = *std::min_element(mean1.begin() + begin_it->frame_ID, mean1.end());
-		        else
-		            min = *std::min_element(mean1.begin() + begin_it->frame_ID, mean1.begin() + end_it->frame_ID);
-
-		        mean0[i] = mean0[i] * min;
-		    }
-
-		    final_score = mean0;
-		}*/
-
 		auto sorted_results{ ScoreModel::sort_by_score(final_score) };
-		KeywordRanker::report_results(sorted_results, _dataset_frames);
+		
+		//KeywordRanker::report_results(sorted_results, _dataset_frames);
 
 		// Update the model
 		for (size_t i = 0; i < final_score.size(); ++i) {
