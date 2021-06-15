@@ -29,24 +29,10 @@ class UserContext;
 using ImageKeywords = KeywordRanker;
 
 class Logger {
-	EvalServerClient* _p_eval_server;
-
-	std::vector<Json> backlog;
-	std::int64_t last_submit_timestamp;
-
-	const SubmitterConfig cfg;
-
-	std::ofstream act_log;
-	/** Just a shortcut so we have the unified log prefix. */
-	auto& alog() { return act_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
-
-	std::ofstream req_log;
-	/** Just a shortcut so we have the unified log prefix. */
-	auto& rlog() { return req_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
-
+	// *** METHODS ***
 public:
 	Logger() = delete;
-	Logger(const SubmitterConfig& config, EvalServerClient* p_eval_server);
+	Logger(const SubmitterConfig& settings, const UserContext* p_user_ctx, EvalServerClient* p_eval_server);
 
 	// waits until the last thread submits
 	~Logger() noexcept;
@@ -100,13 +86,29 @@ private:
 	 */
 	void send_backlog_only();
 
-	
-
 	/** Called by @ref submit_and_log_rescore */
 	void log_rerank(const DatasetFrames& _dataset_frames, DisplayType from_disp_type,
 	                const std::vector<FrameId>& topn_imgs);
 
 	void push_event(const std::string& cat, const std::string& type, const std::string& value);
+
+	// *** MEMBER VARIABLES ***
+private:
+	const SubmitterConfig cfg;
+	const UserContext* _p_user_ctx;
+	EvalServerClient* _p_eval_server;
+
+	std::vector<Json> backlog;
+	std::int64_t last_submit_timestamp;
+
+
+	std::ofstream act_log;
+	/** Just a shortcut so we have the unified log prefix. */
+	auto& alog() { return act_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
+
+	std::ofstream req_log;
+	/** Just a shortcut so we have the unified log prefix. */
+	auto& rlog() { return req_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
 };
 
 };  // namespace sh

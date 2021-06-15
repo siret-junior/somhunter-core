@@ -209,7 +209,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame) {
 
 void ClientDres::write_log(LogType type, Timestamp ts, const nlohmann::json& req, ReqCode code,
                            nlohmann::json& res) const {
-	std::string log_filepath = _eval_server_settings.log_submitted_dir + std::string("/") + std::to_string(ts) +
+	std::string log_filepath = _eval_server_settings.log_dir_eval_server_requests + std::string("/") + std::to_string(ts) +
 	                           std::string("__") + log_type_to_str(type) + _eval_server_settings.log_file_suffix;
 
 	std::ofstream ofs(log_filepath, std::ios::app);

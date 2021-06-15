@@ -34,14 +34,17 @@
 
 using namespace sh;
 
-Logger::Logger(const SubmitterConfig& settings, EvalServerClient* p_eval_server)
-    : _p_eval_server{ p_eval_server }, last_submit_timestamp(utils::timestamp()), cfg(settings) {
+Logger::Logger(const SubmitterConfig& settings, const UserContext* p_user_ctx, EvalServerClient* p_eval_server)
+    : cfg{ settings },
+      _p_user_ctx{ p_user_ctx },
+      _p_eval_server{ p_eval_server },
+      last_submit_timestamp{ utils::timestamp() } {
 	// Make sure the directory exists
-	if (!(std::filesystem::exists(cfg.log_actions_dir))) {
-		std::filesystem::create_directories(cfg.log_actions_dir);
+	if (!(std::filesystem::exists(cfg.log_dir_user_actions))) {
+		std::filesystem::create_directories(cfg.log_dir_user_actions);
 	}
 
-	std::string filepath{ cfg.log_actions_dir + "/actions_" + utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
+	std::string filepath{ cfg.log_dir_user_actions + "/actions_" + utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
 		                  ".log" };
 
 	act_log.open(filepath, std::ios::out);
@@ -58,11 +61,10 @@ Logger::Logger(const SubmitterConfig& settings, EvalServerClient* p_eval_server)
 Logger::~Logger() { send_backlog_only(); }
 
 void Logger::log_submit(const UserContext& /*user_ctx*/, const VideoFrame frame) {
-
 	//// clang-format off
-	//nlohmann::json body{ 
-	//	{ "username", _settings.username }, 
-	//	{ "password", _settings.password } 
+	// nlohmann::json body{
+	//	{ "username", _settings.username },
+	//	{ "password", _settings.password }
 	//};
 	//// clang-format on
 
@@ -70,8 +72,6 @@ void Logger::log_submit(const UserContext& /*user_ctx*/, const VideoFrame frame)
 	       << "\t"
 	       << "frame_ID=" << frame.frame_ID << "\t"
 	       << "disp_type=" << disp_type_to_str(disp_type) << std::endl;*/
-
-
 }
 
 void Logger::log_rerank(const DatasetFrames& /*frames*/, DisplayType /*from_disp_type*/,
@@ -240,7 +240,7 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
                               const std::vector<VideoFrame>* p_targets) {
 	if (temp_queries.empty()) return;
 
-	auto path{ cfg.log_queries_dir + "/"s + std::to_string(utils::timestamp()) + "/"s };
+	auto path{ cfg.log_dir_user_actions_summary + "/"s + std::to_string(utils::timestamp()) + "/"s };
 
 	if (temp_queries[0].canvas.is_save) {
 		path = "saved-queries/"s + std::to_string(utils::timestamp()) + "/"s;

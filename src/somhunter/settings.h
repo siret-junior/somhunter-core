@@ -75,10 +75,10 @@ struct SubmitterConfig {
 	size_t team_ID;
 	size_t member_ID;
 
-	std::string log_submitted_dir;
-	std::string log_actions_dir;
-	std::string log_queries_dir;
-	std::string log_requests_dir;
+	std::string log_dir_eval_server_requests;
+	std::string log_dir_user_actions;
+	std::string log_dir_user_actions_summary;
+	std::string log_dir_debug;
 	std::string log_file_suffix;
 	bool extra_verbose_log;
 

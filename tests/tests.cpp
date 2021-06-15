@@ -389,15 +389,14 @@ const char *json_contents = R"(
 		"team_ID": 4,
 		"member_ID": 1,
 	  
-		"log_submitted_dir": "logs/submitted_logs/",
-		"log_actions_dir": "logs/actions/",
-		"log_queries_dir": "logs/collages/",
-		"log_requests_dir": "logs/requests/",
+		"log_dir_eval_server_requests": "logs/submitted_logs/",
+		"log_dir_user_actions": "logs/actions/",
+		"log_dir_user_actions_summary": "logs/collages/",
+		"log_dir_debug": "logs/requests/",
 		"log_file_suffix": ".json",
 		"extra_verbose_log": false,
 	  
 		"send_logs_to_server_period": 10000,
-		"apply_log_action_timeout_in_core": false,
 		"log_action_timeout": 500
 	},
 
@@ -467,10 +466,10 @@ void TESTER_Config::TEST_parse_JSON_config(const Settings &c) {
 	
 	do_assert(sbc.team_ID == 4_z, "Incorrect parse.");
 	do_assert(sbc.member_ID == 1_z, "Incorrect parse.");
-	do_assert(sbc.log_submitted_dir == "logs/submitted_logs/", "Incorrect parse.");
-	do_assert(sbc.log_actions_dir == "logs/actions/", "Incorrect parse.");
-	do_assert(sbc.log_queries_dir == "logs/collages/", "Incorrect parse.");
-	do_assert(sbc.log_requests_dir == "logs/requests/", "Incorrect parse.");
+	do_assert(sbc.log_dir_eval_server_requests == "logs/submitted_logs/", "Incorrect parse.");
+	do_assert(sbc.log_dir_user_actions == "logs/actions/", "Incorrect parse.");
+	do_assert(sbc.log_dir_user_actions_summary == "logs/collages/", "Incorrect parse.");
+	do_assert(sbc.log_dir_debug == "logs/requests/", "Incorrect parse.");
 	do_assert(sbc.log_file_suffix == ".json", "Incorrect parse.");
 	do_assert(sbc.extra_verbose_log == false, "Incorrect parse.");
 	do_assert(sbc.send_logs_to_server_period == 10000_z, "Incorrect parse.");

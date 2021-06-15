@@ -128,16 +128,16 @@ SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
 	res.team_ID = size_t(json["team_ID"].int_value());
 	res.member_ID = size_t(json["member_ID"].int_value());
 
-	res.log_submitted_dir = json["log_submitted_dir"].string_value();
-	res.log_actions_dir = json["log_actions_dir"].string_value();
-	res.log_queries_dir = json["log_queries_dir"].string_value();
-	res.log_requests_dir = json["log_requests_dir"].string_value();
+	res.log_dir_eval_server_requests = json["log_dir_eval_server_requests"].string_value();
+	res.log_dir_user_actions = json["log_dir_user_actions"].string_value();
+	res.log_dir_user_actions_summary = json["log_dir_user_actions_summary"].string_value();
+	res.log_dir_debug = json["log_dir_debug"].string_value();
 	res.log_file_suffix = json["log_file_suffix"].string_value();
 	res.extra_verbose_log = json["extra_verbose_log"].bool_value();
 
 	res.send_logs_to_server_period = size_t(json["send_logs_to_server_period"].int_value());
 
-	res.apply_log_action_timeout = json["apply_log_action_timeout_in_core"].bool_value();
+	res.apply_log_action_timeout = json[""].bool_value();
 	res.log_action_timeout = size_t(json["log_action_timeout"].int_value());
 
 	// Parse a type of the submit server
