@@ -94,7 +94,7 @@ public:
 	      _collage_ranker(settings, &_keyword_ranker),
 	      _user_context(settings, /* \todo */ "admin", &_dataset_frames, &_dataset_features),
 	      _relocation_ranker{},
-		_prev_query{}
+	      _prev_query{}
 	{
 		generate_new_targets();
 	}

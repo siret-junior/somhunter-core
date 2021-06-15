@@ -36,9 +36,10 @@
 #include "settings.h"
 #include "utils.hpp"
 
-namespace sh {
-
-class EmbeddingRanker {
+namespace sh
+{
+class EmbeddingRanker
+{
 public:
 	virtual ~EmbeddingRanker() noexcept {}
 

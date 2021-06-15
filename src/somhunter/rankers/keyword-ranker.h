@@ -39,8 +39,8 @@
 #include "scores.h"
 #include "settings.h"
 
-namespace sh {
-
+namespace sh
+{
 struct Keyword {
 	KeywordId kw_ID;
 	SynsetId synset_ID;
@@ -51,7 +51,8 @@ struct Keyword {
 	std::vector<const VideoFrame*> top_ex_imgs;
 };
 
-class KeywordRanker : public EmbeddingRanker {
+class KeywordRanker : public EmbeddingRanker
+{
 	std::vector<Keyword> _keyword_ranker;
 	FeatureMatrix kw_features;
 	FeatureVector kw_features_bias_vec;
@@ -59,7 +60,8 @@ class KeywordRanker : public EmbeddingRanker {
 	FeatureVector kw_pca_mean_vec;
 
 public:
-	static std::vector<Keyword> parse_kw_classes_text_file(const std::string& filepath, const DatasetFrames& _dataset_frames);
+	static std::vector<Keyword> parse_kw_classes_text_file(const std::string& filepath,
+	                                                       const DatasetFrames& _dataset_frames);
 
 	/**
 	 * Parses float matrix from a binary file that is written in row-major
@@ -86,7 +88,8 @@ public:
 	      kw_features_bias_vec(parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim)),
 
 	      kw_pca_mat(parse_float_matrix(config.kw_PCA_mat_file, config.pre_PCA_features_dim)),
-	      kw_pca_mean_vec(parse_float_vector(config.kw_PCA_mean_vec_file, config.pre_PCA_features_dim)) {
+	      kw_pca_mean_vec(parse_float_vector(config.kw_PCA_mean_vec_file, config.pre_PCA_features_dim))
+	{
 		assert(kw_pca_mat.size() > 1);  // Make sure it's a matrix!
 
 		SHLOG_S("Keyword features loaded from '" << config.kw_scores_mat_file << "' with dimension ("
@@ -107,23 +110,25 @@ public:
 	KeywordRanker& operator=(KeywordRanker&&) = default;
 	~KeywordRanker() noexcept = default;
 
-	static void report_results(const StdVector<std::pair<FrameId, float>>& sorted_results, const DatasetFrames& _dataset_frames,
-	                           size_t num = 10);
+	static void report_results(const StdVector<std::pair<FrameId, float>>& sorted_results,
+	                           const DatasetFrames& _dataset_frames, size_t num = 10);
 
 	StdVector<float> embedd_text_queries(const StdVector<KeywordId>& kws) const;
 
 	/**
 	 * Gets all string representants of this keyword.
 	 */
-	const Keyword& operator[](KeywordId idx) const {
+	const Keyword& operator[](KeywordId idx) const
+	{
 		// Get all keywords with this Keyword ID
 		return _keyword_ranker[idx];
 	}
 
 	KwSearchIds find(const std::string& search, size_t num_limit = 10) const;
 
-	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model, const DatasetFeatures& _dataset_features,
-	                         const Settings& _logger_settings, size_t temporal) const;
+	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
+	                         const DatasetFeatures& _dataset_features, const Settings& _logger_settings,
+	                         size_t temporal) const;
 
 	// ----
 	StdVector<float> get_text_query_feature(const std::string& query);

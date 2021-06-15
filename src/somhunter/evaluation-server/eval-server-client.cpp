@@ -42,9 +42,10 @@ bool EvalServerClient::logout() { return _p_client->logout(); }
 
 bool EvalServerClient::submit(const VideoFrame& frame) { return _p_client->submit(frame); }
 
-
-bool EvalServerClient::send_results_log(const nlohmann::json& log_JSON) { return _p_client->send_results_log(log_JSON); }
-
+bool EvalServerClient::send_results_log(const nlohmann::json& log_JSON)
+{
+	return _p_client->send_results_log(log_JSON);
+}
 
 UnixTimestamp EvalServerClient::get_server_ts() { return _p_client->get_server_ts(); }
 

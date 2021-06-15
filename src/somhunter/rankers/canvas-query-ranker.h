@@ -21,8 +21,8 @@
 #ifndef COLLAGE_RANKER_H_
 #define COLLAGE_RANKER_H_
 
-#include <torch/torch.h>
 #include <torch/script.h>
+#include <torch/torch.h>
 #include <cereal/types/complex.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
@@ -41,12 +41,13 @@
 #include "keyword-ranker.h"
 #include "query-types.h"
 
-namespace sh {
-
+namespace sh
+{
 class Somhunter;
 
 template <typename DType>
-std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features) {
+std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features)
+{
 	if (tensor_features.sizes().size() != 2) {
 		throw std::runtime_error("Not 2x<dim> matrix.");
 	}
@@ -71,7 +72,8 @@ std::vector<std::vector<DType>> to_std_matrix(const at::Tensor& tensor_features)
 }
 
 template <c10::ScalarType TensorDType_ = at::kFloat, typename OrigDType_ = float>
-at::Tensor to_tensor(std::vector<OrigDType_>& orig_vec) {
+at::Tensor to_tensor(std::vector<OrigDType_>& orig_vec)
+{
 	do_assert_debug(orig_vec.size() > 0, "Vector cannot be empty.");
 	// SHLOG_D("shape = (" << orig_vec.size() << ")");
 
@@ -79,7 +81,8 @@ at::Tensor to_tensor(std::vector<OrigDType_>& orig_vec) {
 }
 
 template <c10::ScalarType TensorDType_ = at::kFloat, typename OrigDType_ = float>
-at::Tensor to_tensor(std::vector<std::vector<OrigDType_>>& orig_mat) {
+at::Tensor to_tensor(std::vector<std::vector<OrigDType_>>& orig_mat)
+{
 	do_assert_cond(orig_mat.size() > 0, "Matrix cannot be empty.");
 	// SHLOG_D("shape = (" << orig_vec.size() << ", " << orig_vec.front(0).size() << ")");
 
@@ -93,7 +96,8 @@ at::Tensor to_tensor(std::vector<std::vector<OrigDType_>>& orig_mat) {
 	return torch::cat(meta, 0);
 }
 
-class CanvasQueryRanker {
+class CanvasQueryRanker
+{
 	KeywordRanker* _p_core;
 	bool _loaded;
 

@@ -22,7 +22,6 @@
 #ifndef NETWORK_API_H_
 #define NETWORK_API_H_
 
-
 #include <cpprest/asyncrt_utils.h>
 #include <cpprest/containerstream.h>
 #include <cpprest/filestream.h>
@@ -39,11 +38,12 @@ using namespace http;                          //< cpprest
 using namespace utility;                       //< cpprest
 using namespace http::experimental::listener;  //< cpprest
 
-namespace sh {
-
+namespace sh
+{
 class Somhunter;
 
-class NetworkApi {
+class NetworkApi
+{
 public:
 	static void add_CORS_headers(http_response& res);
 

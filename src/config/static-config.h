@@ -24,8 +24,8 @@
 
 #include <cstddef>
 
-namespace sh {
-
+namespace sh
+{
 /** If verbose CURL debug request log should be printed. */
 #define DEBUG_CURL_REQUESTS 0
 

@@ -48,7 +48,7 @@ public:
 	void log_submit(const VideoFrame frame, bool submit_result);
 
 	/** Logs the provided query as a whole. */
-	void log_query(const Query& query,const std::vector<VideoFrame>* p_targets) const;
+	void log_query(const Query& query, const std::vector<VideoFrame>* p_targets) const;
 	void log_canvas_query(const std::vector<TemporalQuery>& temp_queries, const std::vector<VideoFrame>* p_targets);
 
 	/** Called whenever we rescore. */
@@ -58,7 +58,6 @@ public:
 	                 const size_t topn_frames_per_shot);
 
 	void log_text_query_change(const std::string& query_sentence);
-
 
 	void log_like(const DatasetFrames& _dataset_frames, const std::set<FrameId>& likes, DisplayType disp_type,
 	              FrameId frame_ID);
@@ -92,11 +91,8 @@ public:
 
 private:
 	LogHash gen_action_hash(UnixTimestamp ts);
-	LogHash push_action(
-		const std::string& action_name,
-		const std::string& cat, 
-		const std::string& type, 
-		const std::string& value, std::initializer_list<std::string> summary_keys = {"value"});
+	LogHash push_action(const std::string& action_name, const std::string& cat, const std::string& type,
+	                    const std::string& value, std::initializer_list<std::string> summary_keys = { "value" });
 
 	/** Writes the log into the local file. */
 	void write_result(const nlohmann::json& action_log)
@@ -111,15 +107,17 @@ private:
 	}
 
 	/** Writes the log into the local file. */
-	void write_summary(const nlohmann::json& log, const std::string& action_name, std::initializer_list<std::string> keys = {})
+	void write_summary(const nlohmann::json& log, const std::string& action_name,
+	                   std::initializer_list<std::string> keys = {})
 	{
-		auto ts{log["timestamp"].get<UnixTimestamp>()};
-		auto hash{log["hash"].get<std::string>()};
+		auto ts{ log["timestamp"].get<UnixTimestamp>() };
+		auto hash{ log["hash"].get<std::string>() };
 
-		_summary_log_stream << utils::get_formated_timestamp("%H:%M:%S", ts) << "\t" << hash << "\t" << action_name << "\t";
+		_summary_log_stream << utils::get_formated_timestamp("%H:%M:%S", ts) << "\t" << hash << "\t" << action_name
+		                    << "\t";
 
 		for (auto& [key, value] : log.items()) {
-			if (std::find(keys.begin(), keys.end(), key) == keys.end()){
+			if (std::find(keys.begin(), keys.end(), key) == keys.end()) {
 				continue;
 			}
 			_summary_log_stream << key << "=" << value << "\t";

@@ -25,15 +25,16 @@
 // ---
 #include <nlohmann/json.hpp>
 // ---
-#include "settings.h"
 #include "http.h"
+#include "settings.h"
 
-namespace sh {
-
+namespace sh
+{
 struct VideoFrame;
 
 /** Unified interface for all remote evaluation servers. */
-class IServerClient {
+class IServerClient
+{
 	// *** METHODS ***
 public:
 	IServerClient(const EvalServerSettings& settings)
@@ -44,13 +45,12 @@ public:
 	virtual bool submit(const VideoFrame& frame) = 0;
 	virtual bool send_results_log(const nlohmann::json& log_JSON) = 0;
 
-	
-
 	virtual UnixTimestamp get_server_ts() = 0;
 	virtual nlohmann::json get_current_task() = 0;
 
 	virtual bool is_logged_in() const { return !_username.empty(); }
-	virtual const std::string& get_user_token() const {
+	virtual const std::string& get_user_token() const
+	{
 		if (_username.empty() && _do_requests) {
 			std::string msg{ "User token is not valid" };
 			SHLOG_E(msg);
@@ -62,7 +62,8 @@ public:
 	virtual bool get_do_requests() const { return _do_requests; };
 
 protected:
-	virtual void set_user_token(const std::string& val) {
+	virtual void set_user_token(const std::string& val)
+	{
 		SHLOG_D("Setting `_user_token` to " << val);
 		_username = val;
 	};
@@ -80,7 +81,8 @@ protected:
  *
  * https://github.com/dres-dev/DRES
  */
-class ClientDres final : public IServerClient {
+class ClientDres final : public IServerClient
+{
 	// *** METHODS ***
 public:
 	ClientDres(const EvalServerSettings& settings);
@@ -96,7 +98,8 @@ public:
 
 private:
 	enum class LogType { LOGIN, LOGOUT, SUBMIT, RESULT, INTERACTION };
-	std::string log_type_to_str(LogType t) const {
+	std::string log_type_to_str(LogType t) const
+	{
 		switch (t) {
 			case LogType::LOGIN:
 				return "login";
@@ -119,18 +122,18 @@ private:
 				break;
 
 			default:
-				std::string msg{"Unknown log type!"};
-				throw std::runtime_error{msg};
+				std::string msg{ "Unknown log type!" };
+				throw std::runtime_error{ msg };
 				break;
 		}
 	}
-		
+
 	void write_log(LogType type, UnixTimestamp ts, const nlohmann::json& req, ReqCode code, nlohmann::json& res) const;
 
 	// *** MEMBER VARIABLES ***
 protected:
-	const std::chrono::milliseconds _sync_period{5000ms};
-	
+	const std::chrono::milliseconds _sync_period{ 5000ms };
+
 	ServerConfigDres _settings;
 	std::thread _t_sync_worker;
 

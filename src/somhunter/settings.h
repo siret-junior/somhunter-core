@@ -9,8 +9,8 @@
 
 #include "json11.hpp"
 
-namespace sh {
-
+namespace sh
+{
 struct VideoFilenameOffsets {
 	size_t vid_ID_off;
 	size_t vid_ID_len;

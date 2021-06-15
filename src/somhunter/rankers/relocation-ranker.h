@@ -33,15 +33,18 @@
 
 #include "dataset-frames.h"
 #include "embedding-ranker.h"
+#include "query-types.h"
 #include "scores.h"
 #include "settings.h"
-#include "query-types.h"
 #include "utils.hpp"
 
-namespace sh {
-class RelocationRanker : public EmbeddingRanker {
+namespace sh
+{
+class RelocationRanker : public EmbeddingRanker
+{
 public:
-	void score(const RelocationQuery&, ScoreModel& model, size_t temporal, const DatasetFeatures& _dataset_features) const;
+	void score(const RelocationQuery&, ScoreModel& model, size_t temporal,
+	           const DatasetFeatures& _dataset_features) const;
 };
 }  // namespace sh
 

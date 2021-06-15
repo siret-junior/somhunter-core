@@ -24,8 +24,8 @@
 
 // *** CONFIGS ***
 
-#include "static-config.h"
 #include "intrinsics.h"
+#include "static-config.h"
 
 // *** TYPES ***
 
