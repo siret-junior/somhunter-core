@@ -285,11 +285,12 @@ void ClientDres::write_log(LogType type, UnixTimestamp ts, const nlohmann::json&
 		SHLOG_E("Could not write a log file '" << log_filepath << "'!");
 	}
 
-	nlohmann::json log{
-		{ "timestamp", ts },       { "datetime", utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S", ts) },
-		{ "type", "logout" },      { "request", req },
-		{ "response_code", code }, { "response", res }
-	};
+	nlohmann::json log{ { "timestamp", ts },
+		                { "datetime", utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S", ts) },
+		                { "type", log_type_to_str(type) },
+		                { "request", req },
+		                { "response_code", code },
+		                { "response", res } };
 
 	ofs << log.dump(4);
 }

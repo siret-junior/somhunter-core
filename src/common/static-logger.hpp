@@ -169,8 +169,8 @@ static inline std::string_view view_tail(const std::string& str, size_t len)
 
 #endif  // LOGAPI
 
-namespace sh {
-
+namespace sh
+{
 /** Assert execuded at all times. */
 template <typename T>
 inline void do_assert(T&& assertion, const std::string_view msg = {}, const char* file = __FILE__,
@@ -188,7 +188,8 @@ inline void do_assert(T&& assertion, const std::string_view msg = {}, const char
  */
 template <typename T1, typename T2>
 inline void do_assert_equals(const T1& a, const T2& b, const std::string_view msg = {}, const char* file = __FILE__,
-                             const int line = __LINE__) {
+                             const int line = __LINE__)
+{
 	do_assert(a == b, msg, file, line);
 }
 

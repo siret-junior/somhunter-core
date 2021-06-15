@@ -493,6 +493,7 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 
 	/* ***
 	 * Augment the log with extra data */
+	log_JSON["actionName"] = action_name;
 	log_JSON["hash"] = hash;
 	log_JSON["serverTimestamp"] = _p_eval_server->get_server_ts();
 	log_JSON["userToken"] = _p_eval_server->get_user_token();

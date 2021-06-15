@@ -163,7 +163,7 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 
 	// Insecurity
 	if (allow_insecure) {
-		//SHLOG_W("Doing insecure connection!");
+		// SHLOG_W("Doing insecure connection!");
 		// Add `--insecure` option
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 	}
