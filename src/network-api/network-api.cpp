@@ -1122,7 +1122,7 @@ RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body)
 	 */
 	size_t src_ctx_ID{ static_cast<size_t>(body[U("srcSearchCtxId")].as_integer()) };
 	std::string screenshot_data{ to_utf8string(body[U("screenshotData")].as_string()) };
-	std::string _user_token{ "matfyz" };
+	std::string _username{ "matfyz" };
 
 	/*
 	 * Process it
@@ -1134,7 +1134,7 @@ RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body)
 	std::string time_label{ utils::get_formated_timestamp("%H:%M:%S") };
 
 	RescoreMetadata md;
-	md._user_token = _user_token;
+	md._username = _username;
 	md.screenshot_filepath = _p_core->store_rescore_screenshot(screenshot_data);
 	md.srd_search_ctx_ID = src_ctx_ID;
 	md.time_label = time_label;

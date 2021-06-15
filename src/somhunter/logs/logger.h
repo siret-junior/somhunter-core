@@ -3,16 +3,15 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
+#include <filesystem>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <thread>
 #include <vector>
-
-#include <filesystem>
-#include <fstream>
-
+// ---
 #include <json11.hpp>
-
+// ---
 #include "canvas-query-ranker.h"
 #include "common.h"
 #include "dataset-frames.h"
@@ -22,33 +21,37 @@
 
 using namespace json11;
 
-namespace sh {
-
+namespace sh
+{
+using ImageKeywords = KeywordRanker;
 class EvalServerClient;
 class UserContext;
-using ImageKeywords = KeywordRanker;
 
-class Logger {
+/**
+ * Class responsible for all the logging for the given user (each user have it's own `Logger`.)
+ *
+ * \see class UserContext
+ */
+class Logger
+{
 	// *** METHODS ***
 public:
 	Logger() = delete;
-	Logger(const SubmitterConfig& settings, const UserContext* p_user_ctx, EvalServerClient* p_eval_server);
-
-	// waits until the last thread submits
+	Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx, EvalServerClient* p_eval_server);
 	~Logger() noexcept;
+	// ---
 
-	// checks for terminated threads and logging timeout (call on each
-	// frame)
+	/** Does periodic cleanup & log flush. */
 	void poll();
 
-	/** Called whenever we want to log submit frame/shot into the server */
-	void log_submit(const UserContext& user_ctx, const VideoFrame frame);
+	/** Called whenever we want to log submit frame/shot into the server. */
+	void log_submit(const VideoFrame frame);
 
-	/** Called whenever we rescore (Bayes/LD) */
-	void submit_and_log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores,
-	                            const std::set<FrameId>& likes, const UsedTools& used_tools, DisplayType disp_type,
-	                            const std::vector<FrameId>& topn_imgs, const std::string& sentence_query,
-	                            const size_t topn_frames_per_video, const size_t topn_frames_per_shot);
+	/** Called whenever we rescore. */
+	void log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
+	                 const UsedTools& used_tools, DisplayType disp_type, const std::vector<FrameId>& topn_imgs,
+	                 const std::string& sentence_query, const size_t topn_frames_per_video,
+	                 const size_t topn_frames_per_shot);
 
 	void log_text_query_change(const std::string& query_sentence);
 
@@ -81,34 +84,35 @@ public:
 
 	void log_reset_search();
 
+	/** Sends the accumulated logs to the evaluation server (through `_p_eval_server`). */
+	void submit_interaction_logs_buffer();
+
 private:
-	/** @mk We won't be callling this explicitly from the outside, will we?
-	 */
-	void send_backlog_only();
-
-	/** Called by @ref submit_and_log_rescore */
-	void log_rerank(const DatasetFrames& _dataset_frames, DisplayType from_disp_type,
-	                const std::vector<FrameId>& topn_imgs);
-
 	void push_event(const std::string& cat, const std::string& type, const std::string& value);
+
+	/** Just a shortcut so we have the unified log prefix. */
+	auto& summary_log_stream()
+	{
+		return _summary_log_stream << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t";
+	}
+
+	/** Just a shortcut so we have the unified log prefix. */
+	auto& debug_log_stream()
+	{
+		return _debug_log_stream << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t";
+	}
 
 	// *** MEMBER VARIABLES ***
 private:
-	const SubmitterConfig cfg;
+	const EvalServerSettings _logger_settings;
 	const UserContext* _p_user_ctx;
 	EvalServerClient* _p_eval_server;
 
-	std::vector<Json> backlog;
-	std::int64_t last_submit_timestamp;
+	std::vector<Json> _interactions_buffer;
+	UnixTimestamp _last_interactions_submit_ts;
 
-
-	std::ofstream act_log;
-	/** Just a shortcut so we have the unified log prefix. */
-	auto& alog() { return act_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
-
-	std::ofstream req_log;
-	/** Just a shortcut so we have the unified log prefix. */
-	auto& rlog() { return req_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
+	std::ofstream _summary_log_stream;
+	std::ofstream _debug_log_stream;
 };
 
 };  // namespace sh

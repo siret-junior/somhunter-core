@@ -67,12 +67,12 @@ void TESTER_Somhunter::run_all_tests(const std::string &cfg_fpth) {
 	SHLOG("====================================================");
 }
 
-void TESTER_Somhunter::TEST_collage_queries(Somhunter &core, Settings &cfg) {
+void TESTER_Somhunter::TEST_collage_queries(Somhunter &core, Settings &_logger_settings) {
 	SHLOG("\t Testing `Somhunter::rescore` method with collage queries...");
 	core.reset_search_session();
 
 	auto canvQuery = CanvasQuery::parse_json(
-	    (fs::path(cfg.test_data_root) / "collages/test_collage/query-info25-05-2021_22-06-33.json").string());
+	    (fs::path(_logger_settings.test_data_root) / "collages/test_collage/query-info25-05-2021_22-06-33.json").string());
 	Query q(std::move(canvQuery));
 	core.rescore(q);
 

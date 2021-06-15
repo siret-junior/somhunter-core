@@ -34,34 +34,34 @@
 
 using namespace sh;
 
-Logger::Logger(const SubmitterConfig& settings, const UserContext* p_user_ctx, EvalServerClient* p_eval_server)
-    : cfg{ settings },
+Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx, EvalServerClient* p_eval_server)
+    : _logger_settings{ settings },
       _p_user_ctx{ p_user_ctx },
       _p_eval_server{ p_eval_server },
-      last_submit_timestamp{ utils::timestamp() }
+      _last_interactions_submit_ts{ utils::timestamp() }
 {
 	// Make sure the directory exists
-	if (!(std::filesystem::exists(cfg.log_dir_user_actions))) {
-		std::filesystem::create_directories(cfg.log_dir_user_actions);
+	if (!(std::filesystem::exists(_logger_settings.log_dir_user_actions))) {
+		std::filesystem::create_directories(_logger_settings.log_dir_user_actions);
 	}
 
-	std::string filepath{ cfg.log_dir_user_actions + "/actions_" + utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
-		                  ".log" };
+	std::string filepath{ _logger_settings.log_dir_user_actions + "/actions_" +
+		                  utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
 
-	act_log.open(filepath, std::ios::out);
-	if (!act_log.is_open()) {
+	_summary_log_stream.open(filepath, std::ios::out);
+	if (!_summary_log_stream.is_open()) {
 		std::string msg{ "Error openning file: " + filepath };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
 	// Enable automatic flushing
-	act_log << std::unitbuf;
+	_summary_log_stream << std::unitbuf;
 }
 
-Logger::~Logger() { send_backlog_only(); }
+Logger::~Logger() { submit_interaction_logs_buffer(); }
 
-void Logger::log_submit(const UserContext& /*user_ctx*/, const VideoFrame frame)
+void Logger::log_submit(const VideoFrame frame)
 {
 	//// clang-format off
 	// nlohmann::json body{
@@ -76,34 +76,27 @@ void Logger::log_submit(const UserContext& /*user_ctx*/, const VideoFrame frame)
 	       << "disp_type=" << disp_type_to_str(disp_type) << std::endl;*/
 }
 
-void Logger::log_rerank(const DatasetFrames& /*frames*/, DisplayType /*from_disp_type*/,
-                        const std::vector<FrameId>& /*topn_imgs*/)
-{
-	// @todo we can log them for our purporses
-}
 
-void Logger::send_backlog_only()
+void Logger::submit_interaction_logs_buffer()
 {
 	// Send interaction logs
-	if (!backlog.empty()) {
+	if (!_interactions_buffer.empty()) {
 		Json a = Json::object{ { "timestamp", double(utils::timestamp()) },
-			                   { "events", std::move(backlog) },
+			                   { "events", std::move(_interactions_buffer) },
 			                   { "type", "interaction" },
-			                   { "teamId", int(cfg.team_ID) },
-			                   { "memberId", int(cfg.member_ID) } };
-		backlog.clear();
-		// start_poster(_p_eval_server->get_interaction_URL(), ""s, a.dump());
+			                   { "teamId", int(_logger_settings.team_ID) },
+			                   { "memberId", int(_logger_settings.member_ID) } };
+		_interactions_buffer.clear();
 	}
 
 	// We always reset timer
-	last_submit_timestamp = utils::timestamp();
+	_last_interactions_submit_ts = utils::timestamp();
 }
 
-void Logger::submit_and_log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores,
-                                    const std::set<FrameId>& likes, const UsedTools& used_tools,
-                                    DisplayType /*disp_type*/, const std::vector<FrameId>& topn_imgs,
-                                    const std::string& sentence_query, const size_t topn_frames_per_video,
-                                    const size_t topn_frames_per_shot)
+void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores,
+                         const std::set<FrameId>&  likes, const UsedTools& used_tools, DisplayType /*disp_type*/,
+                         const std::vector<FrameId>& topn_imgs, const std::string& sentence_query,
+                         const size_t topn_frames_per_video, const size_t topn_frames_per_shot)
 {
 	std::vector<Json> results;
 	results.reserve(topn_imgs.size());
@@ -112,23 +105,22 @@ void Logger::submit_and_log_rescore(const DatasetFrames& _dataset_frames, const 
 		size_t i{ 0 };
 		for (auto&& img_ID : topn_imgs) {
 			auto vf = _dataset_frames.get_frame(img_ID);
-			// LSC submit
-#ifdef SUBMIT_FILENAME_ID
 
-			results.push_back(Json::object{ { "video", vf.LSC_id },
-			                                { "frame", int(vf.frame_number) },
-			                                { "score", double(scores[img_ID]) },
-			                                { "rank", int(i) } });
+			// If LSC type of submit
+			if (_logger_settings.submit_LSC_IDs) {
+				results.push_back(Json::object{ { "video", vf.LSC_id },
+				                                { "frame", int(vf.frame_number) },
+				                                { "score", double(scores[img_ID]) },
+				                                { "rank", int(i) } });
 
+			}
 			// Non-LSC submit
-#else
-
-			results.push_back(Json::object{ { "video", std::to_string(vf.video_ID + 1) },
-			                                { "frame", int(vf.frame_number) },
-			                                { "score", double(scores[img_ID]) },
-			                                { "rank", int(i) } });
-
-#endif  // SUBMIT_FILENAME_ID
+			else {
+				results.push_back(Json::object{ { "video", std::to_string(vf.video_ID + 1) },
+				                                { "frame", int(vf.frame_number) },
+				                                { "score", double(scores[img_ID]) },
+				                                { "rank", int(i) } });
+			}
 
 			++i;
 		}
@@ -202,8 +194,8 @@ void Logger::submit_and_log_rescore(const DatasetFrames& _dataset_frames, const 
 
 	Json values_arr = Json::array(values);
 
-	Json top = Json::object{ { "teamId", int(cfg.team_ID) },
-		                     { "memberId", int(cfg.member_ID) },
+	Json top = Json::object{ { "teamId", int(_logger_settings.team_ID) },
+		                     { "memberId", int(_logger_settings.member_ID) },
 		                     { "timestamp", double(utils::timestamp()) },
 		                     { "usedCategories", used_cats },
 		                     { "usedTypes", used_types },
@@ -213,13 +205,9 @@ void Logger::submit_and_log_rescore(const DatasetFrames& _dataset_frames, const 
 		                     { "values", values_arr },
 		                     { "results", std::move(result_json_arr) } };
 
-	// start_poster(_p_eval_server->get_rerank_URL(), "", top.dump());
-
-#ifdef LOG_LOGS
-
 	// KNN is not rescore, so we ignore it
 	if (!used_tools.topknn_used) {
-		auto& ss{ alog() };
+		auto& ss{ summary_log_stream() };
 
 		ss << "rescore\t"
 		   << "text_query=\"" << sentence_query << "\"\t"
@@ -237,8 +225,6 @@ void Logger::submit_and_log_rescore(const DatasetFrames& _dataset_frames, const 
 
 		ss << "]\t" << std::endl;
 	}
-
-#endif  // LOG_LOGS
 }
 
 void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/,
@@ -246,7 +232,7 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
 {
 	if (temp_queries.empty()) return;
 
-	auto path{ cfg.log_dir_user_actions_summary + "/"s + std::to_string(utils::timestamp()) + "/"s };
+	auto path{ _logger_settings.log_dir_user_actions_summary + "/"s + std::to_string(utils::timestamp()) + "/"s };
 
 	if (temp_queries[0].canvas.is_save) {
 		path = "saved-queries/"s + std::to_string(utils::timestamp()) + "/"s;
@@ -311,17 +297,13 @@ void Logger::log_text_query_change(const std::string& text_query)
 	static int64_t last_logged{ 0 };
 
 	// If timeout should be handled here
-	if (cfg.apply_log_action_timeout) {
+	if (_logger_settings.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_logged + cfg.log_action_timeout > size_t(utils::timestamp())) return;
+		if (last_logged + _logger_settings.log_action_timeout > size_t(utils::timestamp())) return;
 	}
 
-#ifdef LOG_LOGS
-
-	alog() << "text_query\t"
+	summary_log_stream() << "text_query\t"
 	       << "text_query=\"" << text_query << "\"" << std::endl;
-
-#endif  // LOG_LOGS
 
 	push_event("text", "jointEmbedding", text_query);
 }
@@ -330,13 +312,9 @@ void Logger::log_like(const DatasetFrames& _dataset_frames, const std::set<Frame
 {
 	auto vf = _dataset_frames.get_frame(frame_ID);
 
-#ifdef LOG_LOGS
-
-	alog() << "like\t"
+	summary_log_stream() << "like\t"
 	       << "frame_ID=" << frame_ID << "\t"
 	       << "liked=" << (likes.count(frame_ID) == 1 ? "true" : "false") << "\t" << std::endl;
-
-#endif  // LOG_LOGS
 
 	std::stringstream data_ss;
 	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";like;";
@@ -349,13 +327,9 @@ void Logger::log_unlike(const DatasetFrames& _dataset_frames, const std::set<Fra
 {
 	auto vf = _dataset_frames.get_frame(frame_ID);
 
-#ifdef LOG_LOGS
-
-	alog() << "unlike\t"
+	summary_log_stream() << "unlike\t"
 	       << "frame_ID=" << frame_ID << "\t"
 	       << "liked=" << (likes.count(frame_ID) == 1 ? "true" : "false") << "\t" << std::endl;
-
-#endif  // LOG_LOGS
 
 	std::stringstream data_ss;
 	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";unlike;";
@@ -367,55 +341,35 @@ void Logger::log_show_random_display(const DatasetFrames& /*frames*/, const std:
 {
 	push_event("browsing", "randomSelection", "random_display;");
 
-#ifdef LOG_LOGS
-
-	alog() << "show_random_display\t" << std::endl;
-
-#endif  // LOG_LOGS
+	summary_log_stream() << "show_random_display\t" << std::endl;
 }
 
 void Logger::log_show_som_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
 	push_event("browsing", "exploration", "som_display");
 
-#ifdef LOG_LOGS
-
-	alog() << "show_SOM_display\t" << std::endl;
-
-#endif  // LOG_LOGS
+	summary_log_stream() << "show_SOM_display\t" << std::endl;
 }
 
 void Logger::log_show_som_relocation_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
 	push_event("browsing", "exploration", "som_relocation_display");
 
-#ifdef LOG_LOGS
-
-	alog() << "show_SOM_relocation_display\t" << std::endl;
-
-#endif  // LOG_LOGS
+	summary_log_stream() << "show_SOM_relocation_display\t" << std::endl;
 }
 
 void Logger::log_show_topn_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
 	push_event("browsing", "rankedList", "topn_display");
 
-#ifdef LOG_LOGS
-
-	alog() << "show_topN_display\t" << std::endl;
-
-#endif  // LOG_LOGS
+	summary_log_stream() << "show_topN_display\t" << std::endl;
 }
 
 void Logger::log_show_topn_context_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
 	push_event("browsing", "rankedList", "topn_context_display;");
 
-#ifdef LOG_LOGS
-
-	alog() << "show_topN_context_display\t" << std::endl;
-
-#endif  // LOG_LOGS
+	summary_log_stream() << "show_topN_context_display\t" << std::endl;
 }
 
 void Logger::log_show_topknn_display(const DatasetFrames& _dataset_frames, FrameId frame_ID,
@@ -428,12 +382,8 @@ void Logger::log_show_topknn_display(const DatasetFrames& _dataset_frames, Frame
 
 	push_event("image", "globalFeatures", data_ss.str());
 
-#ifdef LOG_LOGS
-
-	alog() << "show_topKNN_display\t"
+	summary_log_stream() << "show_topKNN_display\t"
 	       << "frame_ID=" << frame_ID << std::endl;
-
-#endif  // LOG_LOGS
 }
 
 void Logger::log_show_detail_display(const DatasetFrames& _dataset_frames, FrameId frame_ID)
@@ -445,12 +395,8 @@ void Logger::log_show_detail_display(const DatasetFrames& _dataset_frames, Frame
 
 	push_event("browsing", "videoSummary", data_ss.str());
 
-#ifdef LOG_LOGS
-
-	alog() << "show_detail_display\t"
+	summary_log_stream() << "show_detail_display\t"
 	       << "frame_ID=" << frame_ID << std::endl;
-
-#endif  // LOG_LOGS
 }
 
 void Logger::log_show_video_replay(const DatasetFrames& _dataset_frames, FrameId frame_ID, float delta)
@@ -459,9 +405,10 @@ void Logger::log_show_video_replay(const DatasetFrames& _dataset_frames, FrameId
 	static FrameId last_frame_ID = IMAGE_ID_ERR_VAL;
 
 	// If timeout should be handled here
-	if (cfg.apply_log_action_timeout) {
+	if (_logger_settings.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_replay_submit + cfg.log_action_timeout > size_t(utils::timestamp()) && frame_ID == last_frame_ID)
+		if (last_replay_submit + _logger_settings.log_action_timeout > size_t(utils::timestamp()) &&
+		    frame_ID == last_frame_ID)
 			return;
 	}
 
@@ -475,14 +422,10 @@ void Logger::log_show_video_replay(const DatasetFrames& _dataset_frames, FrameId
 
 	push_event("browsing", "temporalContext", data_ss.str());
 
-#ifdef LOG_LOGS
-
-	alog() << "replay_video\t"
+	summary_log_stream() << "replay_video\t"
 	       << "frame_ID=" << frame_ID << "\t"
 	       << "video_ID=" << vf.video_ID << "\t"
 	       << "dir=" << (delta > 0.0F ? "forward" : "backwards") << std::endl;
-
-#endif  // LOG_LOGS
 }
 
 void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_type, float dirY)
@@ -520,9 +463,10 @@ void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_t
 	static DisplayType last_disp_type = DisplayType::DNull;
 
 	// If timeout should be handled here
-	if (cfg.apply_log_action_timeout) {
+	if (_logger_settings.apply_log_action_timeout) {
 		// If no need to log now
-		if (last_logged + cfg.log_action_timeout > size_t(utils::timestamp()) && from_disp_type == last_disp_type)
+		if (last_logged + _logger_settings.log_action_timeout > size_t(utils::timestamp()) &&
+		    from_disp_type == last_disp_type)
 			return;
 	}
 
@@ -534,29 +478,22 @@ void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_t
 
 	push_event("browsing", ev_type, data_ss.str());
 
-#ifdef LOG_LOGS
-
-	alog() << "mouse_scroll\t"
+	summary_log_stream() << "mouse_scroll\t"
 	       << "dir=" << (dirY > 0 ? "up" : "down") << "\t"
 	       << "disp_type=" << disp_type << std::endl;
-
-#endif  // LOG_LOGS
 }
 
 void Logger::log_reset_search()
 {
 	push_event("browsing", "resetAll", "");
 
-#ifdef LOG_LOGS
-
-	alog() << "reset_all\t" << std::endl;
-
-#endif  // LOG_LOGS
+	summary_log_stream() << "reset_all\t" << std::endl;
 }
 
 void Logger::poll()
 {
-	if (last_submit_timestamp + cfg.send_logs_to_server_period < size_t(utils::timestamp())) send_backlog_only();
+	if (_last_interactions_submit_ts + _logger_settings.send_logs_to_server_period < size_t(utils::timestamp()))
+		submit_interaction_logs_buffer();
 }
 
 void Logger::push_event(const std::string& cat, const std::string& type, const std::string& value)
@@ -568,5 +505,5 @@ void Logger::push_event(const std::string& cat, const std::string& type, const s
 		{ "timestamp", double(utils::timestamp()) }, { "category", cat }, { "type", types_arr }, { "value", value }
 	};
 
-	backlog.emplace_back(std::move(a));
+	_interactions_buffer.emplace_back(std::move(a));
 }

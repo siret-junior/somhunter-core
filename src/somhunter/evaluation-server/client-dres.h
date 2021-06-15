@@ -23,7 +23,6 @@
 #define CLIENT_DRES_H_
 
 #include "settings.h"
-
 #include "http.h"
 
 namespace sh {
@@ -34,20 +33,20 @@ struct VideoFrame;
 class IServerClient {
 	// *** METHODS ***
 public:
-	IServerClient(const SubmitterConfig& settings)
-	    : _eval_server_settings{ settings }, _do_requests{ false }, _http{}, _user_token{ "" } {};
+	IServerClient(const EvalServerSettings& settings)
+	    : _eval_server_settings{ settings }, _do_requests{ false }, _http{}, _username{ "" } {};
 	// ---
 	virtual bool login() = 0;
 	virtual bool logout() = 0;
 	virtual bool submit(const VideoFrame& frame) = 0;
 
-	virtual bool is_logged_in() const { return !_user_token.empty(); }
+	virtual bool is_logged_in() const { return !_username.empty(); }
 	virtual const std::string& get_user_token() const {
-		if (_user_token.empty()) {
+		if (_username.empty()) {
 			std::string msg{ "User token is not valid" };
 			throw std::runtime_error{ msg };
 		}
-		return _user_token;
+		return _username;
 	};
 	virtual void set_do_requests(bool val) { _do_requests = val; };
 	virtual bool get_do_requests() const { return _do_requests; };
@@ -55,15 +54,15 @@ public:
 protected:
 	virtual void set_user_token(const std::string& val) {
 		SHLOG_D("Setting `_user_token` to " << val);
-		_user_token = val;
+		_username = val;
 	};
 
 	// *** MEMBER VARIABLES ***
 protected:
-	SubmitterConfig _eval_server_settings;
+	EvalServerSettings _eval_server_settings;
 	bool _do_requests;
 	Http _http;
-	std::string _user_token;
+	std::string _username;
 };
 
 /**
@@ -74,7 +73,7 @@ protected:
 class ClientDres final : public IServerClient {
 	// *** METHODS ***
 public:
-	ClientDres(const SubmitterConfig& settings);
+	ClientDres(const EvalServerSettings& settings);
 	~ClientDres() noexcept;
 	// ---
 	virtual bool login() override;
@@ -112,7 +111,7 @@ private:
 		}
 	}
 
-	void write_log(LogType type, Timestamp ts, const nlohmann::json& req, ReqCode code, nlohmann::json& res) const;
+	void write_log(LogType type, UnixTimestamp ts, const nlohmann::json& req, ReqCode code, nlohmann::json& res) const;
 
 	// *** MEMBER VARIABLES ***
 protected:

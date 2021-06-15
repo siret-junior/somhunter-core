@@ -33,7 +33,7 @@ public:
 	static void run_all_tests(const std::string &cfg_fpth);
 
 private:
-	static void TEST_collage_queries(Somhunter &core, Settings &cfg);
+	static void TEST_collage_queries(Somhunter &core, Settings &_logger_settings);
 
 	static void TEST_like_frames(Somhunter &core);
 

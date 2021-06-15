@@ -20,13 +20,13 @@
  */
 
 #include "client-DRES.h"
-
+// ---
 #include "common.h"
 #include "dataset-frames.h"
 
 using namespace sh;
 
-ClientDres::ClientDres(const SubmitterConfig& eval_server_settings)
+ClientDres::ClientDres(const EvalServerSettings& eval_server_settings)
     : IServerClient{ eval_server_settings }, _settings{ std::get<ServerConfigDres>(eval_server_settings.server_cfg) }
 {
 	// Initial setup
@@ -100,7 +100,7 @@ bool ClientDres::logout()
 
 	// clang-format off
 	nlohmann::json params{ 
-		{ "session", _user_token }
+		{ "session", _username }
 	};
 	// clang-format on
 
@@ -122,7 +122,7 @@ bool ClientDres::logout()
 			}
 			// 2XX
 			else {
-				std::string msg{ "Logout request successfull, user_token: " + _user_token };
+				std::string msg{ "Logout request successfull, user_token: " + _username };
 				SHLOG_S(msg);
 
 				set_user_token("");
@@ -166,7 +166,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 
 	// clang-format off
 	nlohmann::json headers{};
-	nlohmann::json params{ { "session", _user_token }, { "item", item_ss.str() }, { "frame", frame.frame_number } };
+	nlohmann::json params{ { "session", _username }, { "item", item_ss.str() }, { "frame", frame.frame_number } };
 	// clang-format on
 
 	bool success{ false };
@@ -211,7 +211,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 	return success;
 }
 
-void ClientDres::write_log(LogType type, Timestamp ts, const nlohmann::json& req, ReqCode code,
+void ClientDres::write_log(LogType type, UnixTimestamp ts, const nlohmann::json& req, ReqCode code,
                            nlohmann::json& res) const
 {
 	std::string log_filepath = _eval_server_settings.log_dir_eval_server_requests + std::string("/") +

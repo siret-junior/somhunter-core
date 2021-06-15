@@ -27,9 +27,8 @@
 #include <memory>
 #include <optional>
 #include <vector>
-
+// ---
 #include "common.h"
-
 #include "async-som.h"
 #include "logger.h"
 #include "search-context.h"
@@ -44,8 +43,8 @@ class DatasetFeatures;
 class UserContext {
 public:
 	UserContext() = delete;
-	UserContext(const std::string& _user_token, const Settings& cfg, const DatasetFrames& _dataset_frames,
-	            const DatasetFeatures _dataset_features);
+	UserContext(const Settings& settings, const std::string& username, const DatasetFrames& dataset_frames,
+	            const DatasetFeatures& dataset_features);
 
 	bool operator==(const UserContext& other) const;
 	void reset() {
@@ -68,7 +67,7 @@ public:  //< This is temporary, until we support multiple users
 	SearchContext ctx;
 
 	// *** USER SPECIFIC ***
-	std::string _user_token;
+	std::string _username;
 	std::string _user_eval_server_token;  //< For remote auth
 	std::vector<SearchContext> _history;
 

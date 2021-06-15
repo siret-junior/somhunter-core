@@ -68,15 +68,15 @@ class AsyncSom {
 	const size_t width;
 	const size_t height;
 
-	static void async_som_worker(AsyncSom* parent, const Settings& cfg);
+	static void async_som_worker(AsyncSom* parent, const Settings& _logger_settings);
 
 public:
 	AsyncSom() = delete;
 	~AsyncSom() noexcept;
 
-	AsyncSom(AsyncSom&& cfg) = default;
+	AsyncSom(AsyncSom&& _logger_settings) = default;
 
-	AsyncSom(const Settings& cfg, size_t width, size_t height);
+	AsyncSom(const Settings& _logger_settings, size_t width, size_t height);
 
 	void start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig);
 

@@ -29,7 +29,7 @@
 
 using namespace sh;
 
-EvalServerClient::EvalServerClient(const SubmitterConfig& settings)
+EvalServerClient::EvalServerClient(const EvalServerSettings& settings)
     : _submitter_settings{ settings }, _p_client{ std::make_unique<ClientDres>(settings) }
 {
 	// Make sure that submitted logs directory exists

@@ -32,7 +32,7 @@ Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents
 	std::string msg_missing_value{ "Missing config value" };
 
 	// clang-format off
-	auto cfg = Settings{ 
+	auto _logger_settings = Settings{ 
 		// .API_config
 		Settings::parse_API_config(json["API"]),
 		// .eval_server
@@ -114,12 +114,12 @@ Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents
 	};
 	// clang-format on
 
-	return cfg;
+	return _logger_settings;
 }
 
-SubmitterConfig Settings::parse_eval_server(const json11::Json& json)
+EvalServerSettings Settings::parse_eval_server(const json11::Json& json)
 {
-	SubmitterConfig res;
+	EvalServerSettings res;
 
 	// .do_network_requests
 	res.do_network_requests = require_bool_value(json, "do_network_requests"),

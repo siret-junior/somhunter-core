@@ -26,18 +26,18 @@
 #include <string>
 #include <vector>
 // ---
-#include "settings.h"
 #include "client-dres.h"
+#include "common.h"
 
-
-namespace sh {
-
+namespace sh
+{
 struct VideoFrame;
 
-class EvalServerClient {
+class EvalServerClient
+{
 	// *** METHODS ***
 public:
-	EvalServerClient(const SubmitterConfig& settings);
+	EvalServerClient(const EvalServerSettings& settings);
 	// ---
 	bool login();
 	bool logout();
@@ -45,7 +45,7 @@ public:
 
 	// *** MEMBER VARIABLES ***
 private:
-	SubmitterConfig _submitter_settings;
+	EvalServerSettings _submitter_settings;
 	std::unique_ptr<IServerClient> _p_client;
 	std::string _dummy{ "" };
 };

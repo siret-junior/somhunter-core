@@ -101,7 +101,7 @@ inline std::string get_formated_timestamp(const std::string& fmt)
 	return ss.str();
 }
 
-inline std::string get_formated_timestamp(const std::string& fmt, Timestamp ts)
+inline std::string get_formated_timestamp(const std::string& fmt, UnixTimestamp ts)
 {
 	auto x = std::chrono::duration<std::size_t, std::milli>(ts);
 	std::chrono::time_point<std::chrono::system_clock> tp{ x };

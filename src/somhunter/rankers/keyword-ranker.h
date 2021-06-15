@@ -123,7 +123,7 @@ public:
 	KwSearchIds find(const std::string& search, size_t num_limit = 10) const;
 
 	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model, const DatasetFeatures& _dataset_features,
-	                         const Settings& cfg, size_t temporal) const;
+	                         const Settings& _logger_settings, size_t temporal) const;
 
 	// ----
 	StdVector<float> get_text_query_feature(const std::string& query);

@@ -26,23 +26,25 @@
 
 using namespace sh;
 
-UserContext::UserContext(const std::string& _user_token, const Settings& cfg, const DatasetFrames& _dataset_frames,
-                         const DatasetFeatures _dataset_features)
-    : ctx(0, cfg, _dataset_frames),
-      _user_token(_user_token),
-      _eval_server{ cfg.eval_server },
-      _logger(cfg.eval_server, this, &_eval_server),
-      _async_SOM(cfg, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT)
+UserContext::UserContext(const Settings& settings, const std::string& username, const DatasetFrames& dataset_frames,
+                         const DatasetFeatures& dataset_features)
+    : ctx(0, settings, dataset_frames),
+      _username(username),
+      _eval_server{ settings.eval_server },
+      _logger(settings.eval_server, this, &_eval_server),
+      _async_SOM(settings, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT)
 {
 	SHLOG_D("Triggering main SOM worker");
-	_async_SOM.start_work(_dataset_features, ctx.scores, ctx.scores.v());
+	_async_SOM.start_work(dataset_features, ctx.scores, ctx.scores.v());
+
+	// Temporal query SOMs
 	for (size_t i = 0; i < MAX_NUM_TEMP_QUERIES; ++i) {
 		SHLOG_D("Triggering " << i << " SOM worker");
-		_temp_async_SOM.push_back(std::make_unique<AsyncSom>(cfg, RELOCATION_GRID_WIDTH, RELOCATION_GRID_HEIGHT));
-		_temp_async_SOM[i]->start_work(_dataset_features, ctx.scores, ctx.scores.temp(i));
+		_temp_async_SOM.push_back(std::make_unique<AsyncSom>(settings, RELOCATION_GRID_WIDTH, RELOCATION_GRID_HEIGHT));
+		_temp_async_SOM[i]->start_work(dataset_features, ctx.scores, ctx.scores.temp(i));
 	}
 
-	/*
+	/* ***
 	 * Store this initial state into the history
 	 */
 	ctx.screenshot_fpth = "";
@@ -51,5 +53,5 @@ UserContext::UserContext(const std::string& _user_token, const Settings& cfg, co
 
 bool UserContext::operator==(const UserContext& other) const
 {
-	return (ctx == other.ctx && _user_token == other._user_token && _history == other._history);
+	return (ctx == other.ctx && _username == other._username && _history == other._history);
 }

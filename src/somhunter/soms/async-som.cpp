@@ -32,7 +32,7 @@
 
 using namespace sh;
 
-void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& cfg)
+void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settings)
 {
 	std::random_device rd;
 	std::mt19937 rng(rd());
@@ -80,7 +80,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& cfg)
 
 		if (parent->new_data || parent->terminate) continue;
 
-		std::vector<float> koho(width * height * cfg.features_dim, 0);
+		std::vector<float> koho(width * height * _logger_settings.features_dim, 0);
 		float negAlpha = -0.01f;
 		float negRadius = 1.1f;
 		float alphasA[2] = { 0.3f, 0.1f };
@@ -89,7 +89,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& cfg)
 		float radiiB[2] = { negRadius * radiiA[0], negRadius * radiiA[1] };
 
 		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
-		fit_SOM(n, width * height, cfg.features_dim, SOM_ITERS, points, koho, nhbrdist, alphasA, radiiA, alphasB,
+		fit_SOM(n, width * height, _logger_settings.features_dim, SOM_ITERS, points, koho, nhbrdist, alphasA, radiiA, alphasB,
 		        radiiB, scores, present_mask, rng);
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 		SHLOG_D("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
@@ -105,7 +105,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& cfg)
 			auto worker = [&](size_t id) {
 				size_t start = id * n / n_threads;
 				size_t end = (id + 1) * n / n_threads;
-				map_points_to_kohos(start, end, width * height, cfg.features_dim, points, koho, point_to_koho,
+				map_points_to_kohos(start, end, width * height, _logger_settings.features_dim, points, koho, point_to_koho,
 				                    present_mask);
 			};
 
@@ -137,10 +137,10 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& cfg)
 	SHLOG_D("SOM worker finished.");
 }
 
-AsyncSom::AsyncSom(const Settings& cfg, size_t w, size_t h) : width(w), height(h)
+AsyncSom::AsyncSom(const Settings& _logger_settings, size_t w, size_t h) : width(w), height(h)
 {
 	new_data = m_ready = terminate = false;
-	worker = std::thread(async_som_worker, this, cfg);
+	worker = std::thread(async_som_worker, this, _logger_settings);
 }
 
 AsyncSom::~AsyncSom()

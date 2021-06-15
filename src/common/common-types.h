@@ -30,7 +30,7 @@
 
 namespace sh {
 
-using Timestamp = std::int64_t;
+using UnixTimestamp = std::int64_t;
 
 // some types
 using KeywordId = size_t;

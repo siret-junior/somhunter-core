@@ -89,7 +89,7 @@ public:
 	      _dataset_features(_dataset_frames, settings),
 	      _keyword_ranker(settings, _dataset_frames),
 	      _collage_ranker(settings, &_keyword_ranker),
-	      _user_context(/* \todo Do users! */ "admin", settings, _dataset_frames, _dataset_features),
+	      _user_context(settings,/* \todo */"admin", _dataset_frames, _dataset_features),
 	      _relocation_ranker{} {
 		generate_new_targets();
 	}

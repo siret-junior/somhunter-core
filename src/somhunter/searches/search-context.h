@@ -46,7 +46,7 @@ class DatasetFeatures;
  */
 struct SearchContext {
 	SearchContext() = delete;
-	SearchContext(size_t ID, const Settings& cfg, const DatasetFrames& _dataset_frames);
+	SearchContext(size_t ID, const Settings& _logger_settings, const DatasetFrames& _dataset_frames);
 
 	bool operator==(const SearchContext& other) const;
 
