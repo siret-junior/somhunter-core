@@ -13,47 +13,36 @@
 
 #include <json11.hpp>
 
-#include "common.h"
-#include "utils.hpp"
-#include "dataset-frames.h"
-#include "scores.h"
 #include "canvas-query-ranker.h"
+#include "common.h"
+#include "dataset-frames.h"
 #include "keyword-ranker.h"
+#include "scores.h"
+#include "utils.hpp"
 
 using namespace json11;
 
 namespace sh {
 
-
 class EvalServerClient;
+class UserContext;
 using ImageKeywords = KeywordRanker;
 
 class Logger {
-
-	
 	EvalServerClient* _p_eval_server;
 
 	std::vector<Json> backlog;
 	std::int64_t last_submit_timestamp;
-	
 
 	const SubmitterConfig cfg;
-
-#ifdef LOG_LOGS
 
 	std::ofstream act_log;
 	/** Just a shortcut so we have the unified log prefix. */
 	auto& alog() { return act_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
 
-#endif  // LOG_LOGS
-
-#ifdef LOG_CURL_REQUESTS
-
 	std::ofstream req_log;
 	/** Just a shortcut so we have the unified log prefix. */
 	auto& rlog() { return req_log << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t"; }
-
-#endif  // LOG_CURL_REQUESTS
 
 public:
 	Logger() = delete;
@@ -66,12 +55,12 @@ public:
 	// frame)
 	void poll();
 
-	/** Called whenever we want to submit frame/shot into the server */
-	bool submit_and_log_submit(const DatasetFrames& _dataset_frames, DisplayType disp_type, FrameId frame_ID);
+	/** Called whenever we want to log submit frame/shot into the server */
+	void log_submit(const UserContext& user_ctx, const VideoFrame frame);
 
 	/** Called whenever we rescore (Bayes/LD) */
-	void submit_and_log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
-	                            const UsedTools& used_tools, DisplayType disp_type,
+	void submit_and_log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores,
+	                            const std::set<FrameId>& likes, const UsedTools& used_tools, DisplayType disp_type,
 	                            const std::vector<FrameId>& topn_imgs, const std::string& sentence_query,
 	                            const size_t topn_frames_per_video, const size_t topn_frames_per_shot);
 
@@ -79,7 +68,8 @@ public:
 
 	void log_canvas_query(const std::vector<TemporalQuery>& temp_queries, const std::vector<VideoFrame>* p_targets);
 
-	void log_like(const DatasetFrames& _dataset_frames, const std::set<FrameId>& likes, DisplayType disp_type, FrameId frame_ID);
+	void log_like(const DatasetFrames& _dataset_frames, const std::set<FrameId>& likes, DisplayType disp_type,
+	              FrameId frame_ID);
 
 	void log_unlike(const DatasetFrames& _dataset_frames, const std::set<FrameId>& likes, DisplayType disp_type,
 	                FrameId frame_ID);
@@ -94,7 +84,8 @@ public:
 
 	void log_show_topn_context_display(const DatasetFrames& _dataset_frames, const std::vector<FrameId>& imgs);
 
-	void log_show_topknn_display(const DatasetFrames& _dataset_frames, FrameId frame_ID, const std::vector<FrameId>& imgs);
+	void log_show_topknn_display(const DatasetFrames& _dataset_frames, FrameId frame_ID,
+	                             const std::vector<FrameId>& imgs);
 
 	void log_show_detail_display(const DatasetFrames& _dataset_frames, FrameId frame_ID);
 
@@ -109,15 +100,15 @@ private:
 	 */
 	void send_backlog_only();
 
-	/** Called by @ref submit_and_log_submit */
-	void log_submit(const DatasetFrames& _dataset_frames, DisplayType disp_type, FrameId frame_ID);
+	
 
 	/** Called by @ref submit_and_log_rescore */
-	void log_rerank(const DatasetFrames& _dataset_frames, DisplayType from_disp_type, const std::vector<FrameId>& topn_imgs);
+	void log_rerank(const DatasetFrames& _dataset_frames, DisplayType from_disp_type,
+	                const std::vector<FrameId>& topn_imgs);
 
 	void push_event(const std::string& cat, const std::string& type, const std::string& value);
 };
 
 };  // namespace sh
 
-#endif // LOGGER_H_
+#endif  // LOGGER_H_

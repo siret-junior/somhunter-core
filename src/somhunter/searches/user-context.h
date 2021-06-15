@@ -72,8 +72,12 @@ public:  //< This is temporary, until we support multiple users
 	std::string _user_eval_server_token;  //< For remote auth
 	std::vector<SearchContext> _history;
 
+	/** Inteface for communicating with the evaluation server */
 	EvalServerClient _eval_server;
+
+	/** Does all the system logs. */
 	Logger _logger;
+
 	AsyncSom _async_SOM;
 	std::vector<std::unique_ptr<AsyncSom>> _temp_async_SOM;
 

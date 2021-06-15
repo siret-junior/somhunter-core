@@ -340,8 +340,15 @@ bool Somhunter::som_ready(size_t temp_id) const { return _user_context._temp_asy
 bool Somhunter::login_to_eval_server() { return _user_context._eval_server.login(); }
 bool Somhunter::logout_from_eval_server() { return _user_context._eval_server.logout(); }
 
-bool Somhunter::submit_to_eval_server(FrameId frame_id) {
-	return _user_context._logger.submit_and_log_submit(_dataset_frames, _user_context.ctx.curr_disp_type, frame_id);
+bool Somhunter::submit_to_eval_server(FrameId frame_ID) {
+	// Submit
+	auto vf = _dataset_frames.get_frame(frame_ID);
+	bool submit_res{ _user_context._eval_server.submit(vf) };
+
+	// Log it
+	_user_context._logger.log_submit(_user_context, vf);
+
+	return submit_res;
 }
 
 void Somhunter::reset_search_session() {
@@ -527,7 +534,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 	std::string filename{ "canvas_benchmark_" + std::to_string(utils::timestamp()) + ".txt" };
 	auto out_filepath{ std::filesystem::path{ out_dir } / filename };
 
-	std::ofstream ofs{out_filepath.string()};
+	std::ofstream ofs{ out_filepath.string() };
 	if (!ofs.is_open()) {
 		throw std::runtime_error{ "Unable to open file for writing: "s + out_filepath.string() };
 	}

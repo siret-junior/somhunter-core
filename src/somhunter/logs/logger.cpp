@@ -30,82 +30,48 @@
 #include "http.h"
 #include "image-processor.h"
 #include "query-types.h"
+#include "user-context.h"
 
 using namespace sh;
 
 Logger::Logger(const SubmitterConfig& settings, EvalServerClient* p_eval_server)
-    : _p_eval_server{ p_eval_server },
-      last_submit_timestamp(utils::timestamp()),
-      cfg(settings){
-
-#ifdef LOG_LOGS
-	      { // Make sure the directory exists
-	        if (!(std::filesystem::exists(cfg.log_actions_dir))){
-	            std::filesystem::create_directories(cfg.log_actions_dir);
-}
-
-std::string filepath{ cfg.log_actions_dir + "/actions_" + utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") + ".log" };
-
-act_log.open(filepath, std::ios::out);
-if (!act_log.is_open()) {
-	std::string msg{ "Error openning file: " + filepath };
-	SHLOG_E(msg);
-	throw std::runtime_error(msg);
-}
-
-// Enable automatic flushing
-act_log << std::unitbuf;
-}
-
-#endif  // LOG_LOGS
-
-#ifdef LOG_CURL_REQUESTS
-{
+    : _p_eval_server{ p_eval_server }, last_submit_timestamp(utils::timestamp()), cfg(settings) {
 	// Make sure the directory exists
-	if (!(std::filesystem::exists(cfg.log_requests_dir))) {
-		std::filesystem::create_directories(cfg.log_requests_dir);
+	if (!(std::filesystem::exists(cfg.log_actions_dir))) {
+		std::filesystem::create_directories(cfg.log_actions_dir);
 	}
 
-	std::string filepath{ cfg.log_requests_dir + "/requests_" + utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
+	std::string filepath{ cfg.log_actions_dir + "/actions_" + utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S") +
 		                  ".log" };
 
-	req_log.open(filepath, std::ios::out);
-	if (!req_log.is_open()) {
+	act_log.open(filepath, std::ios::out);
+	if (!act_log.is_open()) {
 		std::string msg{ "Error openning file: " + filepath };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
 	// Enable automatic flushing
-	req_log << std::unitbuf;
-}
-
-#endif  // LOG_CURL_REQUESTS
+	act_log << std::unitbuf;
 }
 
 Logger::~Logger() { send_backlog_only(); }
 
-bool Logger::submit_and_log_submit(const DatasetFrames& _dataset_frames, DisplayType disp_type, FrameId frame_ID) {
-	log_submit(_dataset_frames, disp_type, frame_ID);
+void Logger::log_submit(const UserContext& /*user_ctx*/, const VideoFrame frame) {
 
-	auto vf = _dataset_frames.get_frame(frame_ID);
+	//// clang-format off
+	//nlohmann::json body{ 
+	//	{ "username", _settings.username }, 
+	//	{ "password", _settings.password } 
+	//};
+	//// clang-format on
 
-	bool res{ _p_eval_server->submit(vf) };
-
-	send_backlog_only();
-
-	return res;
-}
-
-void Logger::log_submit(const DatasetFrames& /*frames*/, DisplayType disp_type, FrameId frame_ID) {
-#ifdef LOG_LOGS
-
-	alog() << "submit_frame\t"
+	/*alog() << "submit_frame\t"
 	       << "\t"
-	       << "frame_ID=" << frame_ID << "\t"
-	       << "disp_type=" << disp_type_to_str(disp_type) << std::endl;
+	       << "frame_ID=" << frame.frame_ID << "\t"
+	       << "disp_type=" << disp_type_to_str(disp_type) << std::endl;*/
 
-#endif  // LOG_LOGS
+
 }
 
 void Logger::log_rerank(const DatasetFrames& /*frames*/, DisplayType /*from_disp_type*/,
