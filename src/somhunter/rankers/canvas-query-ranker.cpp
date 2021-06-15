@@ -29,7 +29,8 @@
 using namespace sh;
 
 CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p_core)
-    : _p_core{ p_core }, _loaded{ false } {
+    : _p_core{ p_core }, _loaded{ false }
+{
 	SHLOG_D("Initializing CanvasQueryRanker...");
 
 	// Check if we have subregions data
@@ -127,7 +128,8 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 }
 
 void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model, size_t temporal,
-                              const DatasetFeatures& /*features*/, const DatasetFrames& /*_dataset_frames*/) {
+                              const DatasetFeatures& /*features*/, const DatasetFrames& /*_dataset_frames*/)
+{
 	if (!_loaded) {
 		SHLOG_W("Called CanvasQueryRanker::score without available subregion data. Leaving the scores intact.");
 		return;
@@ -149,8 +151,8 @@ void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model
 
 		auto final_score = average_scores(scores);
 		auto sorted_results{ ScoreModel::sort_by_score(final_score) };
-		
-		//KeywordRanker::report_results(sorted_results, _dataset_frames);
+
+		// KeywordRanker::report_results(sorted_results, _dataset_frames);
 
 		// Update the model
 		for (size_t i = 0; i < final_score.size(); ++i) {
@@ -160,7 +162,8 @@ void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model
 }
 
 // in 1st dim
-at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const {
+at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const
+{
 	at::Tensor norm = torch::zeros({ data.sizes()[0], 1 });
 
 	for (int64_t i = 0; i < data.sizes()[0]; i++) norm[i] = torch::sqrt(torch::sum(data[i] * data[i]));
@@ -169,7 +172,8 @@ at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const {
 }
 
 // returns 2048 dim normed vector for each image in collage
-at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage) {
+at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage)
+{
 	SHLOG_D("Extracting features\n");
 
 	std::vector<torch::Tensor> tensors;
@@ -279,13 +283,15 @@ at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage) {
 	return result_features;
 }
 
-std::vector<std::size_t> CanvasQueryRanker::get_RoIs(const CanvasQuery& collage) const {
+std::vector<std::size_t> CanvasQueryRanker::get_RoIs(const CanvasQuery& collage) const
+{
 	std::vector<std::size_t> regions;
 	for (std::size_t i = 0; i < collage.size(); i++) regions.push_back(get_RoI(collage[i]));
 	return regions;
 }
 
-std::size_t CanvasQueryRanker::get_RoI(const CanvasSubquery& image) const {
+std::size_t CanvasQueryRanker::get_RoI(const CanvasSubquery& image) const
+{
 	RelativeRect rect{ std::visit(
 		overloaded{
 		    [](auto sq) { return sq.rect(); },
@@ -310,14 +316,16 @@ std::size_t CanvasQueryRanker::get_RoI(const CanvasSubquery& image) const {
 	return std::distance(iou.begin(), std::max_element(iou.begin(), iou.end()));
 }
 
-std::vector<float> CanvasQueryRanker::score_image(const std::vector<float>& feature, std::size_t region) const {
+std::vector<float> CanvasQueryRanker::score_image(const std::vector<float>& feature, std::size_t region) const
+{
 	std::vector<float> score;
 	for (size_t i = 0; i < region_data[region].size(); i++)
 		score.push_back(utils::d_cos_normalized(feature, region_data[region][i]) / 2);
 	return score;
 }
 
-std::vector<float> CanvasQueryRanker::average_scores(const std::vector<std::vector<float>>& scores) const {
+std::vector<float> CanvasQueryRanker::average_scores(const std::vector<std::vector<float>>& scores) const
+{
 	size_t count = scores.size();
 	std::vector<float> result;
 

@@ -10,12 +10,14 @@ using namespace sh;
  *
  * That means basically what we have in config.h now (paths etc.)
  */
-Settings Settings::parse_JSON_config(const std::string& filepath) {
+Settings Settings::parse_JSON_config(const std::string& filepath)
+{
 	std::string cfg_file_contents(utils::read_whole_file(filepath));
 	return parse_JSON_config_string(cfg_file_contents);
 }
 
-Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents) {
+Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents)
+{
 	std::string err;
 	auto json_all{ json11::Json::parse(cfg_file_contents, err) };
 
@@ -115,7 +117,8 @@ Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents
 	return cfg;
 }
 
-SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
+SubmitterConfig Settings::parse_eval_server(const json11::Json& json)
+{
 	SubmitterConfig res;
 
 	// .do_network_requests
@@ -159,7 +162,8 @@ SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
 	return res;
 }
 
-ApiConfig Settings::parse_API_config(const json11::Json& json) {
+ApiConfig Settings::parse_API_config(const json11::Json& json)
+{
 	auto docs_dir{ require_string_value(json, "docs_dir") };
 
 	if (docs_dir.back() != '/') {
@@ -167,21 +171,22 @@ ApiConfig Settings::parse_API_config(const json11::Json& json) {
 		SHLOG_W("Appending '/' to the `docs_dir` value - '" << docs_dir << "'.");
 	}
 
-	return ApiConfig{ 
-		// .local_only
-		require_bool_value(json, "local_only"),
+	return ApiConfig{ // .local_only
+		              require_bool_value(json, "local_only"),
 
-		// .port
-		require_int_value<std::size_t>(json, "port"),
-		
-		// .config_filepath
-		require_string_value(json, "config_filepath"),
-		
-		// .docs_dir
-		docs_dir };
+		              // .port
+		              require_int_value<std::size_t>(json, "port"),
+
+		              // .config_filepath
+		              require_string_value(json, "config_filepath"),
+
+		              // .docs_dir
+		              docs_dir
+	};
 }
 
-ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {
+ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json)
+{
 	return ServerConfigVbs{ // .submit_URL
 		                    json["submit_URL"].string_value(),
 		                    // .submit_rerank_URL
@@ -191,7 +196,8 @@ ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {
 	};
 }
 
-ServerConfigDres Settings::parse_dres_config(const json11::Json& json) {
+ServerConfigDres Settings::parse_dres_config(const json11::Json& json)
+{
 	return ServerConfigDres{ // .cookie_file
 		                     json["cookie_file"].string_value(),
 		                     // .username

@@ -7,7 +7,8 @@
 
 using namespace std;
 
-int main(int /*argc*/, char** /*argv*/) {
+int main(int /*argc*/, char** /*argv*/)
+{
 	auto path = std::filesystem::current_path();
 	std::filesystem::current_path(path.parent_path());
 	std::cout << "CD:" << path.string() << std::endl;

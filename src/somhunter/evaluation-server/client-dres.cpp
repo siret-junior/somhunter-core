@@ -27,7 +27,8 @@
 using namespace sh;
 
 ClientDres::ClientDres(const SubmitterConfig& eval_server_settings)
-    : IServerClient{ eval_server_settings }, _settings{ std::get<ServerConfigDres>(eval_server_settings.server_cfg) } {
+    : IServerClient{ eval_server_settings }, _settings{ std::get<ServerConfigDres>(eval_server_settings.server_cfg) }
+{
 	// Initial setup
 	set_do_requests(eval_server_settings.do_network_requests);
 
@@ -37,7 +38,8 @@ ClientDres::ClientDres(const SubmitterConfig& eval_server_settings)
 
 sh::ClientDres::~ClientDres() noexcept { logout(); }
 
-bool ClientDres::login() {
+bool ClientDres::login()
+{
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
@@ -90,7 +92,8 @@ bool ClientDres::login() {
 	return success;
 }
 
-bool ClientDres::logout() {
+bool ClientDres::logout()
+{
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
@@ -140,7 +143,8 @@ bool ClientDres::logout() {
 	return success;
 }
 
-bool sh::ClientDres::submit(const VideoFrame& frame) {
+bool sh::ClientDres::submit(const VideoFrame& frame)
+{
 	// Login check
 	if (!is_logged_in()) {
 		SHLOG_E("Not logged in! User token empty!");
@@ -208,9 +212,11 @@ bool sh::ClientDres::submit(const VideoFrame& frame) {
 }
 
 void ClientDres::write_log(LogType type, Timestamp ts, const nlohmann::json& req, ReqCode code,
-                           nlohmann::json& res) const {
-	std::string log_filepath = _eval_server_settings.log_dir_eval_server_requests + std::string("/") + std::to_string(ts) +
-	                           std::string("__") + log_type_to_str(type) + _eval_server_settings.log_file_suffix;
+                           nlohmann::json& res) const
+{
+	std::string log_filepath = _eval_server_settings.log_dir_eval_server_requests + std::string("/") +
+	                           std::to_string(ts) + std::string("__") + log_type_to_str(type) +
+	                           _eval_server_settings.log_file_suffix;
 
 	std::ofstream ofs(log_filepath, std::ios::app);
 	if (!ofs) {

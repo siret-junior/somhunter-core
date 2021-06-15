@@ -49,7 +49,8 @@
 /** If `true` the assertions will be executed */
 constexpr bool RUN_ASSERTS = true;
 
-namespace TermColor {
+namespace TermColor
+{
 enum Code {
 	FG_RED = 31,
 	FG_GREEN = 32,
@@ -69,7 +70,8 @@ enum Code {
 	BG_GREY = 100,
 	BG_DEFAULT = 49
 };
-class Modifier {
+class Modifier
+{
 	Code code;
 
 public:
@@ -99,7 +101,8 @@ static Modifier defbg{ TermColor::Code::BG_DEFAULT };
 /**
  * Returns a view pointing to at most `len` long tail of the `str`.
  */
-static inline std::string_view view_tail(const std::string& str, size_t len) {
+static inline std::string_view view_tail(const std::string& str, size_t len)
+{
 	return std::string_view{ str.data() + std::max<size_t>(0, str.length() - len) };
 }
 
@@ -166,20 +169,22 @@ static inline std::string_view view_tail(const std::string& str, size_t len) {
 
 #endif  // LOGAPI
 
-namespace sh {
-
+namespace sh
+{
 /** Assert on equals execuded at all times.
  */
 template <typename T1, typename T2>
 inline void do_assert_equals(const T1& a, const T2& b, const std::string_view msg = {}, const char* file = __FILE__,
-                             const int line = __LINE__) {
+                             const int line = __LINE__)
+{
 	do_assert(a == b, msg, file, line);
 }
 
 /** Assert execuded at all times. */
 template <typename T>
 inline void do_assert(T&& assertion, const std::string_view msg = {}, const char* file = __FILE__,
-                      const int line = __LINE__) {
+                      const int line = __LINE__)
+{
 	if (!assertion) {
 		std::cerr << "ASSERTION FAILED: " << msg << "\n\t"
 		          << "."
@@ -191,7 +196,8 @@ inline void do_assert(T&& assertion, const std::string_view msg = {}, const char
 /** Assert execuded only if `RUN_ASSERTS` is true. */
 template <typename T>
 inline void do_assert_debug(T&& assertion, const std::string_view msg = {}, const char* file = __FILE__,
-                            const int line = __LINE__) {
+                            const int line = __LINE__)
+{
 	if constexpr (RUN_ASSERTS) {
 		do_assert(assertion, msg, file, line);
 	}

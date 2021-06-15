@@ -30,9 +30,10 @@ UserContext::UserContext(const std::string& _user_token, const Settings& cfg, co
                          const DatasetFeatures _dataset_features)
     : ctx(0, cfg, _dataset_frames),
       _user_token(_user_token),
-      _eval_server{cfg.eval_server},
+      _eval_server{ cfg.eval_server },
       _logger(cfg.eval_server, this, &_eval_server),
-      _async_SOM(cfg, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT) {
+      _async_SOM(cfg, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT)
+{
 	SHLOG_D("Triggering main SOM worker");
 	_async_SOM.start_work(_dataset_features, ctx.scores, ctx.scores.v());
 	for (size_t i = 0; i < MAX_NUM_TEMP_QUERIES; ++i) {
@@ -48,6 +49,7 @@ UserContext::UserContext(const std::string& _user_token, const Settings& cfg, co
 	_history.emplace_back(ctx);
 }
 
-bool UserContext::operator==(const UserContext& other) const {
+bool UserContext::operator==(const UserContext& other) const
+{
 	return (ctx == other.ctx && _user_token == other._user_token && _history == other._history);
 }

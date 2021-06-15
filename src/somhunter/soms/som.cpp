@@ -26,8 +26,8 @@
 #include "common.h"
 #include "distances.hpp"
 
-namespace sh {
-
+namespace sh
+{
 // uncomment to get euclidean distances
 #define EUCL
 
@@ -63,7 +63,8 @@ struct dist_id {
 	size_t id;
 };
 
-static inline void hswap(dist_id& a, dist_id& b) {
+static inline void hswap(dist_id& a, dist_id& b)
+{
 	dist_id c = a;
 	a = b;
 	b = c;
@@ -104,7 +105,8 @@ heap_down(dist_id *heap, size_t start, size_t lim)
 void fit_SOM(size_t /*n*/, size_t k, size_t dim, size_t niter, const std::vector<float>& points,
              std::vector<float>& koho, const std::vector<float>& nhbrdist, const float alphasA[2],
              const float radiiA[2], const float alphasB[2], const float radiiB[2], const std::vector<float>& scores,
-             const std::vector<bool>& /*present_mask*/, std::mt19937& rng) {
+             const std::vector<bool>& /*present_mask*/, std::mt19937& rng)
+{
 	SHLOG_D("SOM fitting...");
 	std::discrete_distribution<size_t> random(scores.begin(), scores.end());
 
@@ -158,7 +160,8 @@ void fit_SOM(size_t /*n*/, size_t k, size_t dim, size_t niter, const std::vector
 /* this serves for classification into small clusters */
 void map_points_to_kohos(size_t start, size_t end, size_t k, size_t dim, const std::vector<float>& points,
                          const std::vector<float>& koho, std::vector<size_t>& mapping,
-                         const std::vector<bool>& present_mask) {
+                         const std::vector<bool>& present_mask)
+{
 	for (size_t point = start; point < end; ++point) {
 		if (present_mask[point]) {
 			size_t nearest = 0;
