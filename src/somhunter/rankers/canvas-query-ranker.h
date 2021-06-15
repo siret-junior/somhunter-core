@@ -21,6 +21,12 @@
 #ifndef COLLAGE_RANKER_H_
 #define COLLAGE_RANKER_H_
 
+#include <cereal/types/complex.hpp>
+#include <torch/torch.h>
+#include <torch/script.h>
+#include <cereal/types/string.hpp>
+#include <cereal/types/vector.hpp>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -28,12 +34,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <torch/script.h>
-#include <torch/torch.h>
-#include <cereal/types/complex.hpp>
-#include <cereal/types/string.hpp>
-#include <cereal/types/vector.hpp>
 
 #include "common.h"
 
