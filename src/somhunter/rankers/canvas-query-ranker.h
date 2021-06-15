@@ -21,9 +21,9 @@
 #ifndef COLLAGE_RANKER_H_
 #define COLLAGE_RANKER_H_
 
-#include <cereal/types/complex.hpp>
 #include <torch/torch.h>
 #include <torch/script.h>
+#include <cereal/types/complex.hpp>
 #include <cereal/types/string.hpp>
 #include <cereal/types/vector.hpp>
 
