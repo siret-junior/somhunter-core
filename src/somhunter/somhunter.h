@@ -22,13 +22,14 @@
 #ifndef SOMHUNTER_H_
 #define SOMHUNTER_H_
 
+#include "canvas-query-ranker.h"
+
 #include <array>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "async-som.h"
-#include "canvas-query-ranker.h"
 #include "dataset-features.h"
 #include "dataset-frames.h"
 #include "image-processor.h"

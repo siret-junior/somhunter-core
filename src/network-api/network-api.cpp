@@ -21,9 +21,9 @@
 
 #include "network-api.h"
 
-#include <algorithm>
-
 #include "somhunter.h"
+
+#include <algorithm>
 
 using namespace utility::conversions;  //< cpprest
 
@@ -641,7 +641,7 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 		auto res = ep_listener.open().wait();
 
 		// Check if failed
-		if (res != Concurrency::completed) {
+		if (res != pplx::completed) {
 			std::string msg{ "Unable to set the HTTP listener for '" + path + ".!" };
 
 			SHLOG_E(msg);
