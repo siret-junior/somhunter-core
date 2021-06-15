@@ -22,6 +22,8 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
+#include <cstddef>
+
 namespace sh {
 
 /** If verbose CURL debug request log should be printed. */
@@ -39,7 +41,6 @@ namespace sh {
  * Text query settings
  */
 
-#define MAX_NUM_TEMP_QUERIES 2
 #define KW_TEMPORAL_SPAN 5  // frames
 
 /*

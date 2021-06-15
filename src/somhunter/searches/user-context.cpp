@@ -38,7 +38,7 @@ UserContext::UserContext(const Settings& settings, const std::string& username, 
 	_async_SOM.start_work(dataset_features, ctx.scores, ctx.scores.v());
 
 	// Temporal query SOMs
-	for (size_t i = 0; i < MAX_NUM_TEMP_QUERIES; ++i) {
+	for (size_t i = 0; i < MAX_TEMPORAL_SIZE; ++i) {
 		SHLOG_D("Triggering " << i << " SOM worker");
 		_temp_async_SOM.push_back(std::make_unique<AsyncSom>(settings, RELOCATION_GRID_WIDTH, RELOCATION_GRID_HEIGHT));
 		_temp_async_SOM[i]->start_work(dataset_features, ctx.scores, ctx.scores.temp(i));

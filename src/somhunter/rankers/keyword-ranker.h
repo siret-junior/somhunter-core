@@ -131,24 +131,6 @@ public:
 	std::vector<KeywordId> decode_keywords(const std::vector<std::string>& query) const;
 
 	// -----
-
-private:
-#ifdef TO_DELETE
-	static void apply_temp_queries(std::vector<std::vector<float>>& dist_cache, ImageId img_ID,
-	                               const FeatureMatrix& queries, size_t query_idx, float& result_dist,
-	                               const DatasetFeatures& features, const DatasetFrames& frames);
-#endif
-
-#ifdef TO_DELETE
-	/**
-	 * Sorts all images based on provided query and retrieves vector
-	 * of image IDs with their distance from the query.
-	 *
-	 */
-	std::vector<std::pair<ImageId, float>> get_sorted_frames(const std::vector<KeywordId>& positive,
-	                                                         const DatasetFeatures& features,
-	                                                         const DatasetFrames& frames, const Settings& cfg) const;
-#endif
 };
 };  // namespace sh
 

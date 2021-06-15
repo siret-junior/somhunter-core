@@ -19,7 +19,7 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "client-DRES.h"
+#include "client-dres.h"
 // ---
 #include "common.h"
 #include "dataset-frames.h"

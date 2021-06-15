@@ -324,68 +324,6 @@ void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, S
 	}
 }
 
-#ifdef TO_DELETE
-void KeywordRanker::apply_temp_queries(std::vector<std::vector<float>>& dist_cache, ImageId img_ID,
-                                       const FeatureMatrix& queries, size_t query_idx, float& result_dist,
-                                       const DatasetFeatures& features, const DatasetFrames& frames)
-{
-	// If no queries left
-	if (query_idx >= queries.size()) return;
-
-	// To avoid getting stuck in loooooong computation
-	if (query_idx > MAX_NUM_TEMP_QUERIES) return;
-
-	float local_min_dist = 1.0f;
-
-	auto img_it = frames.get_frame_it(img_ID);
-	VideoId vid_ID = img_it->video_ID;
-
-	// Iterate over successor frames
-	for (size_t i_succ = 0; i_succ < KW_TEMPORAL_SPAN; ++i_succ) {
-		++img_it;
-		if (img_it == frames.end() || img_it->video_ID != vid_ID) break;
-
-		// Compute self distance
-		// Get cosine distance and scale it to [0.0f, 1.0f]
-		float dist_i_succ = dist_cache[query_idx][img_it->frame_ID];
-		// If not yet cached
-		if (std::isnan(dist_i_succ)) {
-			dist_i_succ =
-			    utils::d_cos_normalized(queries[query_idx], features.fv(img_it->frame_ID), queries[query_idx].size()) /
-			    2.0f;
-			dist_cache[query_idx][img_it->frame_ID] = dist_i_succ;
-		}
-
-		// Recurse on next queries, this call wil adjust `dist_i_succ`
-		apply_temp_queries(dist_cache, img_it->frame_ID, queries, query_idx + 1, dist_i_succ, features, frames);
-
-		// Update minimum
-		local_min_dist = std::min(local_min_dist, dist_i_succ);
-	}
-
-	// Write new dist to the parameter value
-	result_dist = result_dist * local_min_dist;
-}
-#endif
-
-#ifdef TO_DELETE
-std::vector<std::pair<ImageId, float>> KeywordRanker::get_sorted_frames(const std::vector<KeywordId>& kws,
-                                                                        const DatasetFeatures& features,
-                                                                        const DatasetFrames& frames,
-                                                                        const Config& /*cfg*/) const
-{
-	auto query_vecs{ embedd_text_queries(kws) };
-
-	// Compute the scores for each frame for this query
-	std::vector<float> scores{ inverse_score_vector(query_vecs, features, frames) };
-
-	// Get sorted results
-	auto id_scores{ ScoreModel::sort_by_score(scores) };
-
-	return id_scores;
-}
-#endif
-
 StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& kws) const
 {
 	// Initialize zero vector

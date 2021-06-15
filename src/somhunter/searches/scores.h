@@ -94,7 +94,7 @@ public:
 	void apply_temporals(size_t depth, const DatasetFrames& _dataset_frames);
 
 	/** Normalizes the score distribution. */
-	void normalize(size_t depth = MAX_NUM_TEMP_QUERIES);
+	void normalize(size_t depth = MAX_TEMPORAL_SIZE);
 	void normalize(float* scores, size_t size);
 
 	void invalidate_cache() {

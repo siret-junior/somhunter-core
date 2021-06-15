@@ -367,7 +367,7 @@ void Somhunter::reset_search_session()
 	reset_scores();
 
 	_user_context._logger.log_reset_search();
-	som_start(MAX_NUM_TEMP_QUERIES);
+	som_start(MAX_TEMPORAL_SIZE);
 
 	// Reset UserContext
 	_user_context.reset();
