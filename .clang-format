@@ -11,4 +11,5 @@ IndentPPDirectives: AfterHash
 IncludeBlocks: Preserve
 Cpp11BracedListStyle: false
 AlwaysBreakAfterDefinitionReturnType: None
+BreakBeforeBraces: Linux
 ...

@@ -28,7 +28,8 @@
 
 using namespace sh;
 
-std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath) {
+std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_file(const std::string& filepath)
+{
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
 
 	SHLOG_D("Loading top image keywords from '" << filepath << "'...");
@@ -73,7 +74,8 @@ std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_f
 	return result_vec;
 }
 
-DatasetFrames::DatasetFrames(const Settings& config) {
+DatasetFrames::DatasetFrames(const Settings& config)
+{
 	// Save the config values
 	frames_dir = config.frames_dir;
 	thumbs_dir = config.thumbs_dir;
@@ -175,7 +177,8 @@ DatasetFrames::DatasetFrames(const Settings& config) {
 	}
 }
 
-VideoFrame DatasetFrames::parse_video_filename(std::string&& filename) {
+VideoFrame DatasetFrames::parse_video_filename(std::string&& filename)
+{
 	// Extract string representing video ID
 	std::string videoIdString(filename.data() + offs.vid_ID_off, offs.vid_ID_len);
 
@@ -189,7 +192,8 @@ VideoFrame DatasetFrames::parse_video_filename(std::string&& filename) {
 	                  utils::str_to_int(frameNumberString), 0);
 }
 
-std::tuple<Weekday, Hour, LscId> DatasetFrames::parse_metadata_line(const std::string& line) {
+std::tuple<Weekday, Hour, LscId> DatasetFrames::parse_metadata_line(const std::string& line)
+{
 	// !!! Beware that the data MUST NOT contain the separator char
 	// TODO: Use propper CSV parser
 	auto tokens{ utils::split(line, ';') };
@@ -204,7 +208,8 @@ std::tuple<Weekday, Hour, LscId> DatasetFrames::parse_metadata_line(const std::s
 	return std::tuple{ wd, h, LSC_id };
 }
 
-std::vector<VideoFramePointer> DatasetFrames::ids_to_video_frame(const std::vector<FrameId>& ids) const {
+std::vector<VideoFramePointer> DatasetFrames::ids_to_video_frame(const std::vector<FrameId>& ids) const
+{
 	std::vector<VideoFramePointer> res;
 	res.reserve(ids.size());
 	for (FrameId i : ids) {
@@ -219,7 +224,8 @@ std::vector<VideoFramePointer> DatasetFrames::ids_to_video_frame(const std::vect
 	return res;
 }
 
-std::vector<VideoFramePointer> DatasetFrames::range_to_video_frame(const FrameRange& ids) {
+std::vector<VideoFramePointer> DatasetFrames::range_to_video_frame(const FrameRange& ids)
+{
 	std::vector<VideoFramePointer> res;
 	res.reserve(ids.size());
 	for (auto iter = ids.begin(); iter != ids.end(); ++iter) {

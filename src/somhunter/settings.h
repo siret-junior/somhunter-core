@@ -65,7 +65,7 @@ using ServerConfig = std::variant<ServerConfigVbs, ServerConfigDres>;
  * \see ServerConfigVbs
  * \see ServerConfigDres
  */
-struct SubmitterConfig {
+struct EvalServerSettings {
 	ServerConfig server_cfg;
 
 	bool do_network_requests;
@@ -75,10 +75,10 @@ struct SubmitterConfig {
 	size_t team_ID;
 	size_t member_ID;
 
-	std::string log_submitted_dir;
-	std::string log_actions_dir;
-	std::string log_queries_dir;
-	std::string log_requests_dir;
+	std::string log_dir_eval_server_requests;
+	std::string log_dir_user_actions;
+	std::string log_dir_user_actions_summary;
+	std::string log_dir_debug;
 	std::string log_file_suffix;
 	bool extra_verbose_log;
 
@@ -93,7 +93,7 @@ struct SubmitterConfig {
  */
 struct Settings {
 	ApiConfig API_config;
-	SubmitterConfig eval_server;
+	EvalServerSettings eval_server;
 
 	VideoFilenameOffsets filename_offsets;
 
@@ -134,7 +134,7 @@ struct Settings {
 	static Settings parse_JSON_config_string(const std::string& cfg_file_contents);
 
 private:
-	static SubmitterConfig parse_eval_server(const json11::Json& json);
+	static EvalServerSettings parse_eval_server(const json11::Json& json);
 	static ApiConfig parse_API_config(const json11::Json& json);
 	static ServerConfigVbs parse_vbs_config(const json11::Json& json);
 	static ServerConfigDres parse_dres_config(const json11::Json& json);

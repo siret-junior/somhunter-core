@@ -30,7 +30,8 @@
 
 #	ifdef _MSC_VER
 template <unsigned i>
-constexpr inline float get(__m128 V) {
+constexpr inline float get(__m128 V)
+{
 	union {
 		__m128 v;
 		float a[4];
@@ -40,7 +41,8 @@ constexpr inline float get(__m128 V) {
 }
 #	else
 template <unsigned i>
-constexpr inline float get(__m128 V) {
+constexpr inline float get(__m128 V)
+{
 	return V[i];
 }
 #	endif
@@ -48,7 +50,8 @@ constexpr inline float get(__m128 V) {
 
 static inline float sqrf(float n) { return n * n; }
 
-inline static float d_sqeucl(const float* p1, const float* p2, const size_t dim) {
+inline static float d_sqeucl(const float* p1, const float* p2, const size_t dim)
+{
 #ifndef USE_INTRINS
 	float sqdist = 0;
 	for (size_t i = 0; i < dim; ++i) {
@@ -74,14 +77,16 @@ inline static float d_sqeucl(const float* p1, const float* p2, const size_t dim)
 }
 
 #ifdef USE_INTRINS
-inline static __m128 abs_mask(void) {
+inline static __m128 abs_mask(void)
+{
 	__m128i minus1 = _mm_set1_epi32(-1);
 	return _mm_castsi128_ps(_mm_srli_epi32(minus1, 1));
 }
 inline static __m128 vec_abs(__m128 v) { return _mm_and_ps(abs_mask(), v); }
 #endif
 
-inline static float d_manhattan(const float* p1, const float* p2, const size_t dim) {
+inline static float d_manhattan(const float* p1, const float* p2, const size_t dim)
+{
 #ifndef USE_INTRINS
 	float mdist = 0;
 	for (size_t i = 0; i < dim; ++i) {
@@ -103,7 +108,8 @@ inline static float d_manhattan(const float* p1, const float* p2, const size_t d
 #endif
 }
 
-inline static float d_dot(const float* p1, const float* p2, const size_t dim) {
+inline static float d_dot(const float* p1, const float* p2, const size_t dim)
+{
 #ifndef USE_INTRINS
 	float mdist = 0;
 	for (size_t i = 0; i < dim; ++i) {

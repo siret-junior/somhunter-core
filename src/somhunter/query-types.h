@@ -82,7 +82,7 @@ struct Filters {
 };
 
 struct RescoreMetadata {
-	std::string _user_token;
+	std::string _username;
 	std::string screenshot_filepath;
 	size_t srd_search_ctx_ID;
 	std::string time_label;

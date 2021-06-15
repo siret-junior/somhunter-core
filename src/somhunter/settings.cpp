@@ -10,12 +10,14 @@ using namespace sh;
  *
  * That means basically what we have in config.h now (paths etc.)
  */
-Settings Settings::parse_JSON_config(const std::string& filepath) {
+Settings Settings::parse_JSON_config(const std::string& filepath)
+{
 	std::string cfg_file_contents(utils::read_whole_file(filepath));
 	return parse_JSON_config_string(cfg_file_contents);
 }
 
-Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents) {
+Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents)
+{
 	std::string err;
 	auto json_all{ json11::Json::parse(cfg_file_contents, err) };
 
@@ -30,7 +32,7 @@ Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents
 	std::string msg_missing_value{ "Missing config value" };
 
 	// clang-format off
-	auto cfg = Settings{ 
+	auto _logger_settings = Settings{ 
 		// .API_config
 		Settings::parse_API_config(json["API"]),
 		// .eval_server
@@ -112,11 +114,12 @@ Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents
 	};
 	// clang-format on
 
-	return cfg;
+	return _logger_settings;
 }
 
-SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
-	SubmitterConfig res;
+EvalServerSettings Settings::parse_eval_server(const json11::Json& json)
+{
+	EvalServerSettings res;
 
 	// .do_network_requests
 	res.do_network_requests = require_bool_value(json, "do_network_requests"),
@@ -128,16 +131,16 @@ SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
 	res.team_ID = size_t(json["team_ID"].int_value());
 	res.member_ID = size_t(json["member_ID"].int_value());
 
-	res.log_submitted_dir = json["log_submitted_dir"].string_value();
-	res.log_actions_dir = json["log_actions_dir"].string_value();
-	res.log_queries_dir = json["log_queries_dir"].string_value();
-	res.log_requests_dir = json["log_requests_dir"].string_value();
+	res.log_dir_eval_server_requests = json["log_dir_eval_server_requests"].string_value();
+	res.log_dir_user_actions = json["log_dir_user_actions"].string_value();
+	res.log_dir_user_actions_summary = json["log_dir_user_actions_summary"].string_value();
+	res.log_dir_debug = json["log_dir_debug"].string_value();
 	res.log_file_suffix = json["log_file_suffix"].string_value();
 	res.extra_verbose_log = json["extra_verbose_log"].bool_value();
 
 	res.send_logs_to_server_period = size_t(json["send_logs_to_server_period"].int_value());
 
-	res.apply_log_action_timeout = json["apply_log_action_timeout_in_core"].bool_value();
+	res.apply_log_action_timeout = json[""].bool_value();
 	res.log_action_timeout = size_t(json["log_action_timeout"].int_value());
 
 	// Parse a type of the submit server
@@ -159,7 +162,8 @@ SubmitterConfig Settings::parse_eval_server(const json11::Json& json) {
 	return res;
 }
 
-ApiConfig Settings::parse_API_config(const json11::Json& json) {
+ApiConfig Settings::parse_API_config(const json11::Json& json)
+{
 	auto docs_dir{ require_string_value(json, "docs_dir") };
 
 	if (docs_dir.back() != '/') {
@@ -167,21 +171,22 @@ ApiConfig Settings::parse_API_config(const json11::Json& json) {
 		SHLOG_W("Appending '/' to the `docs_dir` value - '" << docs_dir << "'.");
 	}
 
-	return ApiConfig{ 
-		// .local_only
-		require_bool_value(json, "local_only"),
+	return ApiConfig{ // .local_only
+		              require_bool_value(json, "local_only"),
 
-		// .port
-		require_int_value<std::size_t>(json, "port"),
-		
-		// .config_filepath
-		require_string_value(json, "config_filepath"),
-		
-		// .docs_dir
-		docs_dir };
+		              // .port
+		              require_int_value<std::size_t>(json, "port"),
+
+		              // .config_filepath
+		              require_string_value(json, "config_filepath"),
+
+		              // .docs_dir
+		              docs_dir
+	};
 }
 
-ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {
+ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json)
+{
 	return ServerConfigVbs{ // .submit_URL
 		                    json["submit_URL"].string_value(),
 		                    // .submit_rerank_URL
@@ -191,7 +196,8 @@ ServerConfigVbs Settings::parse_vbs_config(const json11::Json& json) {
 	};
 }
 
-ServerConfigDres Settings::parse_dres_config(const json11::Json& json) {
+ServerConfigDres Settings::parse_dres_config(const json11::Json& json)
+{
 	return ServerConfigDres{ // .cookie_file
 		                     json["cookie_file"].string_value(),
 		                     // .username

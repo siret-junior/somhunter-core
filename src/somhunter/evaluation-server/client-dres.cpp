@@ -20,14 +20,15 @@
  */
 
 #include "client-DRES.h"
-
+// ---
 #include "common.h"
 #include "dataset-frames.h"
 
 using namespace sh;
 
-ClientDres::ClientDres(const SubmitterConfig& eval_server_settings)
-    : IServerClient{ eval_server_settings }, _settings{ std::get<ServerConfigDres>(eval_server_settings.server_cfg) } {
+ClientDres::ClientDres(const EvalServerSettings& eval_server_settings)
+    : IServerClient{ eval_server_settings }, _settings{ std::get<ServerConfigDres>(eval_server_settings.server_cfg) }
+{
 	// Initial setup
 	set_do_requests(eval_server_settings.do_network_requests);
 
@@ -37,7 +38,8 @@ ClientDres::ClientDres(const SubmitterConfig& eval_server_settings)
 
 sh::ClientDres::~ClientDres() noexcept { logout(); }
 
-bool ClientDres::login() {
+bool ClientDres::login()
+{
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
@@ -90,14 +92,15 @@ bool ClientDres::login() {
 	return success;
 }
 
-bool ClientDres::logout() {
+bool ClientDres::logout()
+{
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
 
 	// clang-format off
 	nlohmann::json params{ 
-		{ "session", _user_token }
+		{ "session", _username }
 	};
 	// clang-format on
 
@@ -119,7 +122,7 @@ bool ClientDres::logout() {
 			}
 			// 2XX
 			else {
-				std::string msg{ "Logout request successfull, user_token: " + _user_token };
+				std::string msg{ "Logout request successfull, user_token: " + _username };
 				SHLOG_S(msg);
 
 				set_user_token("");
@@ -140,7 +143,8 @@ bool ClientDres::logout() {
 	return success;
 }
 
-bool sh::ClientDres::submit(const VideoFrame& frame) {
+bool sh::ClientDres::submit(const VideoFrame& frame)
+{
 	// Login check
 	if (!is_logged_in()) {
 		SHLOG_E("Not logged in! User token empty!");
@@ -162,7 +166,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame) {
 
 	// clang-format off
 	nlohmann::json headers{};
-	nlohmann::json params{ { "session", _user_token }, { "item", item_ss.str() }, { "frame", frame.frame_number } };
+	nlohmann::json params{ { "session", _username }, { "item", item_ss.str() }, { "frame", frame.frame_number } };
 	// clang-format on
 
 	bool success{ false };
@@ -207,10 +211,33 @@ bool sh::ClientDres::submit(const VideoFrame& frame) {
 	return success;
 }
 
-void ClientDres::write_log(LogType type, Timestamp ts, const nlohmann::json& req, ReqCode code,
-                           nlohmann::json& res) const {
-	std::string log_filepath = _eval_server_settings.log_submitted_dir + std::string("/") + std::to_string(ts) +
-	                           std::string("__") + log_type_to_str(type) + _eval_server_settings.log_file_suffix;
+UnixTimestamp ClientDres::get_server_ts()
+{
+	// \todo Implement...
+	return 123456;
+}
+
+nlohmann::json ClientDres::get_current_task()
+{
+	// \todo Implement...
+	// clang-format off
+	nlohmann::json task_JSON{
+		{ "id", "pxodifhfh" },
+		{ "name", "abrakadabra"},
+		{ "taskGroup", "taskgrupdabra" },
+		{ "remainingTime", 98 }
+	};
+	// clang-format on
+
+	return task_JSON;
+}
+
+void ClientDres::write_log(LogType type, UnixTimestamp ts, const nlohmann::json& req, ReqCode code,
+                           nlohmann::json& res) const
+{
+	std::string log_filepath = _eval_server_settings.log_dir_eval_server_requests + std::string("/") +
+	                           std::to_string(ts) + std::string("__") + log_type_to_str(type) +
+	                           _eval_server_settings.log_file_suffix;
 
 	std::ofstream ofs(log_filepath, std::ios::app);
 	if (!ofs) {

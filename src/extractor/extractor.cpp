@@ -12,7 +12,8 @@ namespace fs = std::filesystem;
 #include "Extractor.h"
 using namespace sh;
 
-std::vector<float> parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0) {
+std::vector<float> parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0)
+{
 	// Open file for reading as binary from the end side
 	std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
 
@@ -65,7 +66,8 @@ std::vector<float> parse_float_vector(const std::string& filepath, size_t dim, s
 	return features_vector;
 }
 
-std::vector<cv::Rect> get_RoIs(int width, int height) {
+std::vector<cv::Rect> get_RoIs(int width, int height)
+{
 	std::vector<std::vector<float>> RoIs = {
 		{ 0.0, 0.0, 1.0, 1.0 }, { 0.1, 0.2, 0.4, 0.6 }, { 0.3, 0.2, 0.4, 0.6 }, { 0.5, 0.2, 0.4, 0.6 },
 
@@ -83,7 +85,8 @@ std::vector<cv::Rect> get_RoIs(int width, int height) {
 
 torch::Tensor get_features(cv::Mat image, torch::jit::script::Module resnext101, torch::jit::script::Module resnet152,
                            torch::Tensor weights, torch::Tensor bias, torch::Tensor kw_pca_mat,
-                           torch::Tensor kw_pca_mean_vec) {
+                           torch::Tensor kw_pca_mean_vec)
+{
 	cv::Size s = image.size();
 
 	std::vector<cv::Rect> RoIs = get_RoIs(s.width, s.height);
@@ -140,7 +143,8 @@ torch::Tensor get_features(cv::Mat image, torch::jit::script::Module resnext101,
 	return feature;
 }
 
-Extractor::Extractor() {
+Extractor::Extractor()
+{
 	try {
 		resnet152 = torch::jit::load("data/nn_models/traced_Resnet152.pt");
 	} catch (const c10::Error& e) {
@@ -166,7 +170,8 @@ Extractor::Extractor() {
 	kw_pca_mean_vec = torch::tensor(parse_float_vector("data/ITEC_w2vv/ITEC_20200411.w2vv.pca.mean.bin", 2048));
 }
 
-void Extractor::run() {
+void Extractor::run()
+{
 	std::vector<std::fstream> datafiles;
 	for (int i = 0; i < 12; i++) {
 		datafiles.push_back(

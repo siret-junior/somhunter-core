@@ -30,7 +30,8 @@
 using namespace sh;
 
 std::vector<uint8_t> ImageManipulator::resize(const std::vector<std::uint8_t>& in, size_t /*orig_w*/, size_t orig_h,
-                                              size_t new_w, size_t new_h, size_t num_channels) {
+                                              size_t new_w, size_t new_h, size_t num_channels)
+{
 	std::vector<uint8_t> out(new_w * new_h * num_channels, 0);
 
 	cv::Mat bitmap_cv_RGB{ in };
@@ -50,7 +51,8 @@ std::vector<uint8_t> ImageManipulator::resize(const std::vector<std::uint8_t>& i
 	return out;
 }
 
-std::vector<float> sh::ImageManipulator::to_float32(const std::vector<std::uint8_t>& in) {
+std::vector<float> sh::ImageManipulator::to_float32(const std::vector<std::uint8_t>& in)
+{
 	std::vector<float> out;
 	out.reserve(in.size());
 
@@ -59,7 +61,8 @@ std::vector<float> sh::ImageManipulator::to_float32(const std::vector<std::uint8
 	return out;
 }
 
-std::vector<std::uint8_t> sh::ImageManipulator::to_uint8(const std::vector<float>& in) {
+std::vector<std::uint8_t> sh::ImageManipulator::to_uint8(const std::vector<float>& in)
+{
 	std::vector<std::uint8_t> out;
 	out.reserve(in.size());
 
@@ -69,14 +72,16 @@ std::vector<std::uint8_t> sh::ImageManipulator::to_uint8(const std::vector<float
 }
 
 template <>
-cv::Mat ImageManipulator::load_image<cv::Mat>(const std::string& filepath) {
+cv::Mat ImageManipulator::load_image<cv::Mat>(const std::string& filepath)
+{
 	using namespace cv;
 	Mat image = imread(filepath, IMREAD_COLOR);
 	return image;
 }
 
 template <>
-BitmapImage<float> ImageManipulator::load_image<BitmapImage<float>>(const std::string& filepath) {
+BitmapImage<float> ImageManipulator::load_image<BitmapImage<float>>(const std::string& filepath)
+{
 	cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(filepath) };
 
 	// Convert to float32 matrix
@@ -96,7 +101,8 @@ BitmapImage<float> ImageManipulator::load_image<BitmapImage<float>>(const std::s
 }
 
 template <>
-BitmapImage<uint8_t> ImageManipulator::load_image<BitmapImage<uint8_t>>(const std::string& filepath) {
+BitmapImage<uint8_t> ImageManipulator::load_image<BitmapImage<uint8_t>>(const std::string& filepath)
+{
 	cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(filepath) };
 
 	// Convert to uint8_t matrix
@@ -115,7 +121,8 @@ BitmapImage<uint8_t> ImageManipulator::load_image<BitmapImage<uint8_t>>(const st
 }
 
 void ImageManipulator::store_JPEG(const std::string& filepath, const std::vector<std::uint8_t>& in, size_t w, size_t h,
-                                  size_t quality, size_t num_channels) {
+                                  size_t quality, size_t num_channels)
+{
 	std::vector<uint8_t> raw_data;
 	raw_data.reserve(in.size());
 

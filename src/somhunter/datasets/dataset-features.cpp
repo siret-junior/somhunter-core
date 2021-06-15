@@ -29,7 +29,8 @@
 using namespace sh;
 
 DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Settings& config)
-    : n(p.size()), features_dim(config.features_dim) {
+    : n(p.size()), features_dim(config.features_dim)
+{
 	SHLOG_D("Loading dataset features from '" << config.features_file << "'...");
 
 	data.resize(features_dim * n);

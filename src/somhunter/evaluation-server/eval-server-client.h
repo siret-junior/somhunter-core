@@ -26,26 +26,31 @@
 #include <string>
 #include <vector>
 // ---
-#include "settings.h"
+#include <nlohmann/json.hpp>
+// ---
 #include "client-dres.h"
+#include "common.h"
 
-
-namespace sh {
-
+namespace sh
+{
 struct VideoFrame;
 
-class EvalServerClient {
+class EvalServerClient
+{
 	// *** METHODS ***
 public:
-	EvalServerClient(const SubmitterConfig& settings);
+	EvalServerClient(const EvalServerSettings& settings);
 	// ---
 	bool login();
 	bool logout();
 	bool submit(const VideoFrame& frame);
+	UnixTimestamp get_server_ts();
+	nlohmann::json get_current_task();
+	const std::string& get_user_token() const;
 
 	// *** MEMBER VARIABLES ***
 private:
-	SubmitterConfig _submitter_settings;
+	EvalServerSettings _submitter_settings;
 	std::unique_ptr<IServerClient> _p_client;
 	std::string _dummy{ "" };
 };

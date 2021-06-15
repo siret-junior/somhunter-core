@@ -42,15 +42,16 @@
 
 using namespace sh;
 
-namespace sh {
-
+namespace sh
+{
 /**
  * Does the global application initialization.
  */
 static void initialize_aplication();
 };  // namespace sh
 
-int main() {
+int main()
+{
 	initialize_aplication();
 
 	const std::string cfg_fpth{ "config/config-core.json" };
@@ -183,7 +184,8 @@ int main() {
 	return 0;
 }
 
-static void sh::initialize_aplication() {
+static void sh::initialize_aplication()
+{
 	// Enable ANSII colored output if not enabled by default
 #if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 	// From: https://superuser.com/a/1529908

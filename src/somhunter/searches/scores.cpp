@@ -40,13 +40,15 @@ struct FrameScoreIdPair {
 
 	inline bool operator==(const FrameScoreIdPair& a) const { return score == a.score && id == a.id; }
 
-	inline bool operator<(const FrameScoreIdPair& a) const {
+	inline bool operator<(const FrameScoreIdPair& a) const
+	{
 		if (score < a.score) return true;
 		if (score > a.score) return false;
 		return id < a.id;
 	}
 
-	inline bool operator>(const FrameScoreIdPair& a) const {
+	inline bool operator>(const FrameScoreIdPair& a) const
+	{
 		if (score > a.score) return true;
 		if (score < a.score) return false;
 		return id > a.id;
@@ -56,7 +58,8 @@ struct FrameScoreIdPair {
 // the dank C++ standard is still missing adjust_heap!
 // (this is maximum heap w.r.t. the supplied `less`)
 template <typename T, typename C>
-static void heap_down(T* heap, size_t start, size_t lim, C less = std::less<T>()) {
+static void heap_down(T* heap, size_t start, size_t lim, C less = std::less<T>())
+{
 	for (;;) {
 		size_t L = 2 * start + 1;
 		size_t R = L + 1;
@@ -84,7 +87,8 @@ static void heap_down(T* heap, size_t start, size_t lim, C less = std::less<T>()
 
 bool ScoreModel::operator==(const ScoreModel& other) const { return (_scores == other._scores); }
 
-void ScoreModel::reset(float val) {
+void ScoreModel::reset(float val)
+{
 	invalidate_cache();
 
 	for (auto& i : _scores) i = val;
@@ -93,26 +97,30 @@ void ScoreModel::reset(float val) {
 	}
 }
 
-float ScoreModel::adjust(FrameId i, float prob) {
+float ScoreModel::adjust(FrameId i, float prob)
+{
 	invalidate_cache();
 
 	return _scores[i] *= prob;
 }
 
-float ScoreModel::adjust(size_t temp, FrameId i, float prob) {
+float ScoreModel::adjust(size_t temp, FrameId i, float prob)
+{
 	invalidate_cache();
 
 	return _temporal_scores[temp][i] *= prob;
 }
 
-float ScoreModel::set(FrameId i, float prob) {
+float ScoreModel::set(FrameId i, float prob)
+{
 	invalidate_cache();
 
 	return _scores[i] = prob;
 }
 
 std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _dataset_frames, size_t n,
-                                                    size_t from_vid_limit, size_t from_shot_limit) const {
+                                                    size_t from_vid_limit, size_t from_shot_limit) const
+{
 	// Is this cached
 	// !! We assume that vid/shot limits do not change during the runtime.
 	if (!_cache_ctx_dirty) {
@@ -143,7 +151,8 @@ std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 }
 
 std::vector<FrameId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
-                                       size_t from_shot_limit) const {
+                                       size_t from_shot_limit) const
+{
 	// Is this cached
 	// !! We assume that vid/shot limits do not change during the runtime.
 	if (!_cache_dirty) {
@@ -192,7 +201,8 @@ std::vector<FrameId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, siz
 	return _topn_cache;
 }
 
-std::vector<FrameId> ScoreModel::weighted_sample(size_t k, float pow) const {
+std::vector<FrameId> ScoreModel::weighted_sample(size_t k, float pow) const
+{
 	size_t n = _scores.size();
 
 	assert(n >= 2);
@@ -253,7 +263,8 @@ std::vector<FrameId> ScoreModel::weighted_sample(size_t k, float pow) const {
 	return res;
 }
 
-FrameId ScoreModel::weighted_example(const std::vector<FrameId>& subset) const {
+FrameId ScoreModel::weighted_example(const std::vector<FrameId>& subset) const
+{
 	std::vector<float> fs(subset.size());
 	for (size_t i = 0; i < subset.size(); ++i) fs[i] = _scores[subset[i]];
 
@@ -264,7 +275,8 @@ FrameId ScoreModel::weighted_example(const std::vector<FrameId>& subset) const {
 }
 
 void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen,
-                             const DatasetFeatures& _dataset_features) {
+                             const DatasetFeatures& _dataset_features)
+{
 	if (likes.empty()) return;
 
 	invalidate_cache();
@@ -323,7 +335,8 @@ void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& s
 	normalize();
 }
 
-void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& _dataset_frames) {
+void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& _dataset_frames)
+{
 	if (depth == 0) return;
 
 	depth = std::min(depth, _temporal_scores.size());
@@ -363,14 +376,16 @@ void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& _dataset_fra
 	}
 }
 
-void ScoreModel::normalize(size_t depth) {
+void ScoreModel::normalize(size_t depth)
+{
 	depth = std::min<size_t>(depth, MAX_TEMPORAL_SIZE);
 
 	normalize(_scores.data(), _scores.size());
 	for (size_t i = 0; i < depth; ++i) normalize(_temporal_scores[i].data(), _temporal_scores[i].size());
 }
 
-void ScoreModel::normalize(float* scores, size_t size) {
+void ScoreModel::normalize(float* scores, size_t size)
+{
 	float smax = 0;
 
 	for (FrameId ii = 0; ii < size; ++ii)
@@ -390,7 +405,8 @@ void ScoreModel::normalize(float* scores, size_t size) {
 	}
 }
 
-size_t ScoreModel::frame_rank(FrameId i) const {
+size_t ScoreModel::frame_rank(FrameId i) const
+{
 	size_t rank{ 0 };
 	float tar_score = _scores[i];
 	for (float s : _scores) {
@@ -399,7 +415,8 @@ size_t ScoreModel::frame_rank(FrameId i) const {
 	return rank;
 }
 
-std::vector<std::pair<FrameId, float>> ScoreModel::sort_by_score(const StdVector<float>& scores) {
+std::vector<std::pair<FrameId, float>> ScoreModel::sort_by_score(const StdVector<float>& scores)
+{
 	// Zip scores with frame IDs
 	std::vector<std::pair<FrameId, float>> id_scores;
 	id_scores.reserve(scores.size());
