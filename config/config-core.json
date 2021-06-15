@@ -85,7 +85,7 @@
 			"log_dir_eval_server_requests": "logs/eval-server-requests/",
 			"log_dir_user_actions": "logs/user-actions/",
 			"log_dir_user_actions_summary": "logs/user-actions-summary/",
-			"log_dir_debug": "logs/debug/",
+			"log_dir_results": "logs/debug/",
 			"log_file_suffix": ".json",
 			"extra_verbose_log": false,
 		
