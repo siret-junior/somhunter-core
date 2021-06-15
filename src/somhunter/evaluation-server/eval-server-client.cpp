@@ -41,3 +41,9 @@ bool EvalServerClient::login() { return _p_client->login(); }
 bool EvalServerClient::logout() { return _p_client->logout(); }
 
 bool EvalServerClient::submit(const VideoFrame& frame) { return _p_client->submit(frame); }
+
+UnixTimestamp EvalServerClient::get_server_ts() { return _p_client->get_server_ts(); }
+
+const std::string& EvalServerClient::get_user_token() const { return _p_client->get_user_token(); }
+
+nlohmann::json EvalServerClient::get_current_task() { return nlohmann::json(); }

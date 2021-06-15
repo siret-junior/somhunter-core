@@ -22,6 +22,9 @@
 #ifndef CLIENT_DRES_H_
 #define CLIENT_DRES_H_
 
+// ---
+#include <nlohmann/json.hpp>
+// ---
 #include "settings.h"
 #include "http.h"
 
@@ -34,16 +37,20 @@ class IServerClient {
 	// *** METHODS ***
 public:
 	IServerClient(const EvalServerSettings& settings)
-	    : _eval_server_settings{ settings }, _do_requests{ false }, _http{}, _username{ "" } {};
+	    : _eval_server_settings{ settings }, _do_requests{ false }, _http{}, _username{ "not-doing-requests" } {};
 	// ---
 	virtual bool login() = 0;
 	virtual bool logout() = 0;
 	virtual bool submit(const VideoFrame& frame) = 0;
 
+	virtual UnixTimestamp get_server_ts() = 0;
+	virtual nlohmann::json get_current_task() = 0;
+
 	virtual bool is_logged_in() const { return !_username.empty(); }
 	virtual const std::string& get_user_token() const {
-		if (_username.empty()) {
+		if (_username.empty() && _do_requests) {
 			std::string msg{ "User token is not valid" };
+			SHLOG_E(msg);
 			throw std::runtime_error{ msg };
 		}
 		return _username;
@@ -79,6 +86,9 @@ public:
 	virtual bool login() override;
 	virtual bool logout() override;
 	virtual bool submit(const VideoFrame& frame) override;
+
+	virtual UnixTimestamp get_server_ts() override;
+	virtual nlohmann::json get_current_task() override;
 
 private:
 	enum class LogType { LOGIN, LOGOUT, SUBMIT, RESULT, INTERACTION };

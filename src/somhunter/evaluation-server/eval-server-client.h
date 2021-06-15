@@ -26,6 +26,8 @@
 #include <string>
 #include <vector>
 // ---
+#include <nlohmann/json.hpp>
+// ---
 #include "client-dres.h"
 #include "common.h"
 
@@ -42,6 +44,9 @@ public:
 	bool login();
 	bool logout();
 	bool submit(const VideoFrame& frame);
+	UnixTimestamp get_server_ts();
+	nlohmann::json get_current_task();
+	const std::string& get_user_token() const;
 
 	// *** MEMBER VARIABLES ***
 private:

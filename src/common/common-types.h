@@ -33,6 +33,7 @@ namespace sh {
 using UnixTimestamp = std::int64_t;
 
 // some types
+using LogHash = std::string;
 using KeywordId = size_t;
 using KeywordIds = std::vector<KeywordId>;
 using KwSearchId = std::pair<KeywordId, size_t>;

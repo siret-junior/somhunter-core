@@ -28,26 +28,29 @@
 #include <optional>
 #include <vector>
 // ---
-#include "common.h"
 #include "async-som.h"
+#include "common.h"
+#include "eval-server-client.h"
 #include "logger.h"
 #include "search-context.h"
-#include "eval-server-client.h"
 
-namespace sh {
-
+namespace sh
+{
 class DatasetFrames;
 class DatasetFeatures;
 
 /** Represents exactly one state of ONE user that uses this core. */
-class UserContext {
+class UserContext
+{
 public:
 	UserContext() = delete;
 	UserContext(const Settings& settings, const std::string& username, const DatasetFrames& dataset_frames,
 	            const DatasetFeatures& dataset_features);
 
 	bool operator==(const UserContext& other) const;
-	void reset() {
+	const std::string& get_username() const { return _username; };
+	void reset()
+	{
 		// Reset SearchContext
 		ctx.reset();
 		// Make sure we're not pushing in any old screenshot
@@ -61,7 +64,6 @@ public:
 		_history.emplace_back(ctx);
 	}
 
-	
 public:  //< This is temporary, until we support multiple users
 	// *** SEARCH CONTEXT ***
 	SearchContext ctx;

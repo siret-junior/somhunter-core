@@ -10,7 +10,7 @@
 #include <thread>
 #include <vector>
 // ---
-#include <json11.hpp>
+#include <nlohmann/json.hpp>
 // ---
 #include "canvas-query-ranker.h"
 #include "common.h"
@@ -45,7 +45,11 @@ public:
 	void poll();
 
 	/** Called whenever we want to log submit frame/shot into the server. */
-	void log_submit(const VideoFrame frame);
+	void log_submit(const VideoFrame frame, bool submit_result);
+
+	/** Logs the provided query as a whole. */
+	void log_query(const Query& query,const std::vector<VideoFrame>* p_targets) const;
+	void log_canvas_query(const std::vector<TemporalQuery>& temp_queries, const std::vector<VideoFrame>* p_targets);
 
 	/** Called whenever we rescore. */
 	void log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
@@ -55,7 +59,6 @@ public:
 
 	void log_text_query_change(const std::string& query_sentence);
 
-	void log_canvas_query(const std::vector<TemporalQuery>& temp_queries, const std::vector<VideoFrame>* p_targets);
 
 	void log_like(const DatasetFrames& _dataset_frames, const std::set<FrameId>& likes, DisplayType disp_type,
 	              FrameId frame_ID);
@@ -88,19 +91,39 @@ public:
 	void submit_interaction_logs_buffer();
 
 private:
-	void push_event(const std::string& cat, const std::string& type, const std::string& value);
+	LogHash gen_action_hash(UnixTimestamp ts);
+	LogHash push_action(
+		const std::string& action_name,
+		const std::string& cat, 
+		const std::string& type, 
+		const std::string& value, std::initializer_list<std::string> summary_keys = {"value"});
 
-	/** Just a shortcut so we have the unified log prefix. */
-	auto& summary_log_stream()
+	/** Writes the log into the local file. */
+	void write_action(const nlohmann::json& action_log)
 	{
-		return _summary_log_stream << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t";
+		_actions_log_stream << action_log.dump(4) << "," << std::endl;
 	}
 
-	/** Just a shortcut so we have the unified log prefix. */
-	auto& debug_log_stream()
+	/** Writes the log into the local file. */
+	void write_summary(const nlohmann::json& log, const std::string& action_name, std::initializer_list<std::string> keys = {})
 	{
-		return _debug_log_stream << utils::get_formated_timestamp("%H:%M:%S") << "\t" << utils::timestamp() << "\t";
+		auto ts{log["timestamp"].get<UnixTimestamp>()};
+		auto hash{log["hash"].get<std::string>()};
+
+		_summary_log_stream << utils::get_formated_timestamp("%H:%M:%S", ts) << "\t" << hash << "\t" << action_name << "\t";
+
+		for (auto& [key, value] : log.items()) {
+			if (std::find(keys.begin(), keys.end(), key) == keys.end()){
+				continue;
+			}
+			_summary_log_stream << key << "=" << value << "\t";
+		}
+		_summary_log_stream << std::endl;
 	}
+
+	std::string get_actions_log_filepath() const;
+
+	std::string get_summary_log_filepath() const;
 
 	// *** MEMBER VARIABLES ***
 private:
@@ -108,11 +131,11 @@ private:
 	const UserContext* _p_user_ctx;
 	EvalServerClient* _p_eval_server;
 
-	std::vector<Json> _interactions_buffer;
+	std::vector<nlohmann::json> _interactions_buffer;
 	UnixTimestamp _last_interactions_submit_ts;
 
 	std::ofstream _summary_log_stream;
-	std::ofstream _debug_log_stream;
+	std::ofstream _actions_log_stream;
 };
 
 };  // namespace sh

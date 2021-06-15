@@ -202,15 +202,13 @@ void Somhunter::apply_filters()
 
 RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
 {
-	return rescore(query.temporal_queries, query.relevance_feeedback, &query.filters, query.metadata.srd_search_ctx_ID,
-	               query.metadata.screenshot_filepath, query.metadata.time_label, benchmark_run);
-}
+	const std::vector<TemporalQuery>& temporal_query{ query.temporal_queries };
+	const RelevanceFeedbackQuery& rfQuery{ query.relevance_feeedback };
+	const Filters* p_filters{ &query.filters };
+	size_t src_search_ctx_ID{ query.metadata.srd_search_ctx_ID };
+	const std::string& screenshot_fpth{ query.metadata.screenshot_filepath };
+	const std::string& label{ query.metadata.time_label };
 
-RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_query,
-                                 const RelevanceFeedbackQuery& rfQuery, const Filters* p_filters,
-                                 size_t src_search_ctx_ID, const std::string& screenshot_fpth, const std::string& label,
-                                 bool benchmark_run)
-{
 	/* ***
 	 * Set the filters to the context
 	 */
@@ -247,14 +245,13 @@ RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 	// Store likes for the logging purposees
 	auto old_likes{ rfQuery };
 
+	_user_context._logger.log_query(query,
+	                                &_user_context.ctx.curr_targets);  // < This triggers log into the /logs/collage/
+
 	// Check if temporal queries has changed
 	if (_user_context.ctx.last_temporal_queries != temporal_query) {
 		reset_scores();
 		size_t moment = 0;
-
-		_user_context._logger.log_canvas_query(
-		    temporal_query,
-		    &_user_context.ctx.curr_targets);  // < This triggers log into the /logs/collage/
 
 		for (size_t mi = 0; mi < temporal_query.size(); ++mi) {
 			auto&& moment_query = temporal_query[mi];
@@ -322,9 +319,9 @@ RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 
 		// Log this rescore result
 		_user_context._logger.log_rescore(_dataset_frames, _user_context.ctx.scores, old_likes,
-		                                             _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type,
-		                                             top_n, "TODO add text query logging",
-		                                             _settings.topn_frames_per_video, _settings.topn_frames_per_shot);
+		                                  _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
+		                                  "TODO add text query logging", _settings.topn_frames_per_video,
+		                                  _settings.topn_frames_per_shot);
 
 		const auto& targets{ _user_context.ctx.curr_targets };
 
@@ -354,7 +351,7 @@ bool Somhunter::submit_to_eval_server(FrameId frame_ID)
 	bool submit_res{ _user_context._eval_server.submit(vf) };
 
 	// Log it
-	_user_context._logger.log_submit(vf);
+	_user_context._logger.log_submit(vf, submit_res);
 
 	return submit_res;
 }
@@ -930,9 +927,9 @@ FramePointerRange Somhunter::get_topKNN_display(FrameId selected_image, PageId p
 		UsedTools ut;
 		ut.topknn_used = true;
 
-		_user_context._logger.log_rescore(
-		    _dataset_frames, _user_context.ctx.scores, _user_context.ctx.likes, ut, _user_context.ctx.curr_disp_type,
-		    ids, "TODO add text query logging", _settings.topn_frames_per_video, _settings.topn_frames_per_shot);
+		_user_context._logger.log_rescore(_dataset_frames, _user_context.ctx.scores, _user_context.ctx.likes, ut,
+		                                  _user_context.ctx.curr_disp_type, ids, "TODO add text query logging",
+		                                  _settings.topn_frames_per_video, _settings.topn_frames_per_shot);
 	}
 
 	return get_page_from_last(page);

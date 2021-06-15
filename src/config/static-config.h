@@ -35,9 +35,6 @@ namespace sh {
 
 #define MINIMAL_SCORE 1e-18f
 
-/** For the LSC submits */
-#define SUBMIT_FILENAME_ID
-
 /*
  * Text query settings
  */

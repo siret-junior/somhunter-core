@@ -211,6 +211,27 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 	return success;
 }
 
+UnixTimestamp ClientDres::get_server_ts()
+{
+	// \todo Implement...
+	return 123456;
+}
+
+nlohmann::json ClientDres::get_current_task()
+{
+	// \todo Implement...
+	// clang-format off
+	nlohmann::json task_JSON{
+		{ "id", "pxodifhfh" },
+		{ "name", "abrakadabra"},
+		{ "taskGroup", "taskgrupdabra" },
+		{ "remainingTime", 98 }
+	};
+	// clang-format on
+
+	return task_JSON;
+}
+
 void ClientDres::write_log(LogType type, UnixTimestamp ts, const nlohmann::json& req, ReqCode code,
                            nlohmann::json& res) const
 {
