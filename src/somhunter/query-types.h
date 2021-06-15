@@ -359,6 +359,31 @@ public:
 		}
 	}
 	// ---
+	std::string get_plain_text_query() const {
+		std::string text2;
+
+		for (auto&& tq : temporal_queries) {
+			TextualQuery new_query;
+
+			const auto& sqs{ tq.canvas.subqueries() };
+			std::string text;	
+			for (size_t idx{ 0 }; idx < sqs.size(); ++idx) {
+				const auto& sq{ sqs[idx] };
+
+				if (!std::holds_alternative<CanvasSubqueryText>(sq)) {
+					continue;
+				}
+
+				const CanvasSubqueryText& s{ std::get<CanvasSubqueryText>(sq) };
+				text.append(s.query()).append(" ");
+			}
+			if (!text.empty()) {
+				text2.append(" >> ").append(text);
+			}
+		}
+
+		return text2;
+	}
 
 	void transform_to_no_pos_queries() {
 		for (auto&& tq : temporal_queries) {

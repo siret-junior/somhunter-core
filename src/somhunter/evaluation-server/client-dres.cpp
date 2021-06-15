@@ -252,6 +252,18 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 	return success;
 }
 
+bool ClientDres::send_results_log(const nlohmann::json& log_JSON)
+{
+	bool result{ true };
+	auto ts{ utils::timestamp() };
+	ReqCode code{ 0 };
+	nlohmann::json res{};
+
+	write_log(LogType::RESULT, ts, log_JSON, code, res);
+
+	return result;
+}
+
 UnixTimestamp ClientDres::get_server_ts()
 {
 	// Shift the timestamp to the server

@@ -42,6 +42,9 @@ public:
 	virtual bool login() = 0;
 	virtual bool logout() = 0;
 	virtual bool submit(const VideoFrame& frame) = 0;
+	virtual bool send_results_log(const nlohmann::json& log_JSON) = 0;
+
+	
 
 	virtual UnixTimestamp get_server_ts() = 0;
 	virtual nlohmann::json get_current_task() = 0;
@@ -86,6 +89,7 @@ public:
 	virtual bool login() override;
 	virtual bool logout() override;
 	virtual bool submit(const VideoFrame& frame) override;
+	virtual bool send_results_log(const nlohmann::json& log_JSON) override;
 
 	virtual UnixTimestamp get_server_ts() override;
 	virtual nlohmann::json get_current_task() override;
@@ -120,7 +124,7 @@ private:
 				break;
 		}
 	}
-
+		
 	void write_log(LogType type, UnixTimestamp ts, const nlohmann::json& req, ReqCode code, nlohmann::json& res) const;
 
 	// *** MEMBER VARIABLES ***

@@ -99,6 +99,12 @@ private:
 		const std::string& value, std::initializer_list<std::string> summary_keys = {"value"});
 
 	/** Writes the log into the local file. */
+	void write_result(const nlohmann::json& action_log)
+	{
+		_results_log_stream << action_log.dump(4) << "," << std::endl;
+	}
+
+	/** Writes the log into the local file. */
 	void write_action(const nlohmann::json& action_log)
 	{
 		_actions_log_stream << action_log.dump(4) << "," << std::endl;
@@ -121,8 +127,8 @@ private:
 		_summary_log_stream << std::endl;
 	}
 
+	std::string get_results_log_filepath() const;
 	std::string get_actions_log_filepath() const;
-
 	std::string get_summary_log_filepath() const;
 
 	// *** MEMBER VARIABLES ***
@@ -134,6 +140,7 @@ private:
 	std::vector<nlohmann::json> _interactions_buffer;
 	UnixTimestamp _last_interactions_submit_ts;
 
+	std::ofstream _results_log_stream;
 	std::ofstream _summary_log_stream;
 	std::ofstream _actions_log_stream;
 };

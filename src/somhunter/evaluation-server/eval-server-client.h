@@ -44,6 +44,8 @@ public:
 	bool login();
 	bool logout();
 	bool submit(const VideoFrame& frame);
+	bool send_results_log(const nlohmann::json& log_JSON);
+
 	UnixTimestamp get_server_ts();
 	nlohmann::json get_current_task();
 	const std::string& get_user_token() const;

@@ -41,16 +41,19 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
       _last_interactions_submit_ts{ utils::timestamp() }
 {
 	// Make sure that log directories exist
-	if (!utils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
+	if (!utils::dir_create(_logger_settings.log_dir_results + "/" + _p_user_ctx->get_username()) ||
+		!utils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
 	    !utils::dir_create(_logger_settings.log_dir_user_actions_summary + "/" + _p_user_ctx->get_username())) {
 		std::string msg{ "Unable to create log directories!" };
 		SHLOG_E(msg);
 		throw std::runtime_error{ msg };
 	}
 
+	std::string filepath_results{ get_results_log_filepath() };
 	std::string filepath_actions{ get_actions_log_filepath() };
 	std::string filepath_summary{ get_summary_log_filepath() };
 
+	_results_log_stream.open(filepath_results);
 	_actions_log_stream.open(filepath_actions);
 	_summary_log_stream.open(filepath_summary);
 
@@ -61,6 +64,7 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
 	}
 
 	// Enable automatic flushing
+	_results_log_stream << std::unitbuf << "[" << std::endl;
 	_summary_log_stream << std::unitbuf << "[" << std::endl;
 	_actions_log_stream << std::unitbuf << "[" << std::endl;
 }
@@ -68,6 +72,7 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
 Logger::~Logger()
 {
 	submit_interaction_logs_buffer();
+	_results_log_stream << "]" << std::endl;
 	_summary_log_stream << "]" << std::endl;
 	_actions_log_stream << "]" << std::endl;
 }
@@ -216,6 +221,9 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 		                                 { "values", values_arr },
 		                                 { "results", std::move(result_json_arr) } };
 
+	// Send it to the eval server
+	_p_eval_server->send_results_log(top);
+	
 	/* ***
 	 * Augment the log with extra data */
 	top["hash"] = hash;
@@ -223,6 +231,8 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 	top["userToken"] = _p_eval_server->get_user_token();
 	// top["currentTask"] = _p_eval_server->get_current_task();
 	top["likes"] = likes;
+
+	write_result(top);
 
 	// Write summary only when non-KNN "rescore"
 	if (!used_tools.topknn_used) {
@@ -505,11 +515,20 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	return hash;
 }
 
+std::string Logger::get_results_log_filepath() const
+{
+	std::filesystem::path p{ _logger_settings.log_dir_results + "/" + _p_user_ctx->get_username() };
+	p = p / ("results." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." + _p_user_ctx->get_username() +
+	         ".json");
+
+	return p.string();
+}
+
 std::string Logger::get_actions_log_filepath() const
 {
 	std::filesystem::path p{ _logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username() };
 	p = p / ("user-actions." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." + _p_user_ctx->get_username() +
-	         ".log");
+	         ".json");
 
 	return p.string();
 }

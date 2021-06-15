@@ -469,7 +469,7 @@ void TESTER_Config::TEST_parse_JSON_config(const Settings &c) {
 	do_assert(sbc.log_dir_eval_server_requests == "logs/submitted_logs/", "Incorrect parse.");
 	do_assert(sbc.log_dir_user_actions == "logs/actions/", "Incorrect parse.");
 	do_assert(sbc.log_dir_user_actions_summary == "logs/collages/", "Incorrect parse.");
-	do_assert(sbc.log_dir_debug == "logs/requests/", "Incorrect parse.");
+	do_assert(sbc.log_dir_results == "logs/requests/", "Incorrect parse.");
 	do_assert(sbc.log_file_suffix == ".json", "Incorrect parse.");
 	do_assert(sbc.extra_verbose_log == false, "Incorrect parse.");
 	do_assert(sbc.send_logs_to_server_period == 10000_z, "Incorrect parse.");

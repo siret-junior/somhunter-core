@@ -33,6 +33,8 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 {
 	_user_context._logger.poll();
 
+	auto prev_display{ _user_context.ctx.curr_disp_type };
+
 	FramePointerRange frs{};
 
 	switch (d_type) {
@@ -69,6 +71,31 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 			SHLOG_E(msg);
 			throw std::runtime_error(msg);
 			break;
+	}
+
+	auto curr_display{ _user_context.ctx.curr_disp_type };
+
+	/* If we're going back from the nearest neighbours display, we log the results
+
+	    Trigger combos are:
+	    - KNN -> TopN
+	    - KNN -> TopNContext
+	    - KNN -> DRand
+	    - KNN -> DSom
+
+	    The rest are popups.
+	 */
+	if (prev_display == DisplayType::DTopKNN &&
+	    (curr_display == DisplayType::DTopN || curr_display == DisplayType::DTopNContext ||
+	     curr_display == DisplayType::DRand || curr_display == DisplayType::DSom)) {
+		
+		auto top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
+		                                            _settings.topn_frames_per_shot);
+
+		_user_context._logger.log_rescore(_dataset_frames, _user_context.ctx.scores, _prev_query.relevance_feeedback,
+		                                  _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
+		                                  _prev_query.get_plain_text_query(), _settings.topn_frames_per_video,
+		                                  _settings.topn_frames_per_shot);
 	}
 
 	return GetDisplayResult{ frs, _user_context.ctx.likes, _user_context._bookmarks };
@@ -320,7 +347,7 @@ RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
 		// Log this rescore result
 		_user_context._logger.log_rescore(_dataset_frames, _user_context.ctx.scores, old_likes,
 		                                  _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
-		                                  "TODO add text query logging", _settings.topn_frames_per_video,
+		                                  query.get_plain_text_query(), _settings.topn_frames_per_video,
 		                                  _settings.topn_frames_per_shot);
 
 		const auto& targets{ _user_context.ctx.curr_targets };
@@ -333,6 +360,9 @@ RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
 
 		SHLOG_S("Target position is " << tar_pos << ".");
 	}
+
+	// Store this query
+	_prev_query = query;
 
 	return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets, tar_pos };
 }
@@ -928,7 +958,7 @@ FramePointerRange Somhunter::get_topKNN_display(FrameId selected_image, PageId p
 		ut.topknn_used = true;
 
 		_user_context._logger.log_rescore(_dataset_frames, _user_context.ctx.scores, _user_context.ctx.likes, ut,
-		                                  _user_context.ctx.curr_disp_type, ids, "TODO add text query logging",
+		                                  _user_context.ctx.curr_disp_type, ids, "",
 		                                  _settings.topn_frames_per_video, _settings.topn_frames_per_shot);
 	}
 
