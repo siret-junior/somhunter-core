@@ -720,9 +720,9 @@ void Somhunter::generate_new_targets() {
 
 		// Done!
 		for (std::size_t i{ 0 }; i < num_seq; ++i) {
-			const auto& f{ _dataset_frames.get_frame(target_ID + i) };
+			const auto& fr{ _dataset_frames.get_frame(target_ID + i) };
 
-			targets.emplace_back(f);
+			targets.emplace_back(fr);
 		}
 		break;
 	}

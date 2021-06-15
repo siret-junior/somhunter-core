@@ -104,6 +104,11 @@ private:
 			case LogType::INTERACTION:
 				return "interaction";
 				break;
+
+			default:
+				std::string msg{"Unknown log type!"};
+				throw std::runtime_error{msg};
+				break;
 		}
 	}
 
