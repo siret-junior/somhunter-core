@@ -221,7 +221,7 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 	top["hash"] = hash;
 	top["serverTimestamp"] = _p_eval_server->get_server_ts();
 	top["userToken"] = _p_eval_server->get_user_token();
-	top["currentTask"] = _p_eval_server->get_current_task();
+	// top["currentTask"] = _p_eval_server->get_current_task();
 	top["likes"] = likes;
 
 	// Write summary only when non-KNN "rescore"
@@ -427,6 +427,11 @@ void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_t
 			disp_type = "video_detail";
 			break;
 
+		case DisplayType::DVideoReplay:
+			ev_type = "videoSummary";
+			disp_type = "video_replay";
+			break;
+
 		default:
 			return;
 			break;
@@ -491,7 +496,7 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	log_JSON["hash"] = hash;
 	log_JSON["serverTimestamp"] = _p_eval_server->get_server_ts();
 	log_JSON["userToken"] = _p_eval_server->get_user_token();
-	log_JSON["currentTask"] = _p_eval_server->get_current_task();
+	// log_JSON["currentTask"] = _p_eval_server->get_current_task();
 
 	write_action(log_JSON);
 	write_summary(log_JSON, action_name, summary_keys);

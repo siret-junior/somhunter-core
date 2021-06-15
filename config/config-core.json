@@ -75,7 +75,7 @@
 				}
 			},
 		
-			"do_network_requests": false,
+			"do_network_requests": true,
 			"submit_LSC_IDs": false,
 			"allow_insecure": true,
 

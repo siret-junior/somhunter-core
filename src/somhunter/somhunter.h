@@ -22,14 +22,13 @@
 #ifndef SOMHUNTER_H_
 #define SOMHUNTER_H_
 
-
 #include <array>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "canvas-query-ranker.h"
 #include "async-som.h"
+#include "canvas-query-ranker.h"
 #include "dataset-features.h"
 #include "dataset-frames.h"
 #include "image-processor.h"
@@ -42,9 +41,10 @@
 #include "user-context.h"
 #include "utils.hpp"
 
-namespace sh {
-
-namespace tests {
+namespace sh
+{
+namespace tests
+{
 class TESTER_Somhunter;
 }  // namespace tests
 
@@ -53,7 +53,8 @@ class TESTER_Somhunter;
  *
  * \todo Export for a library compilation.
  */
-class Somhunter {
+class Somhunter
+{
 	// ********************************
 	// Loaded dataset
 	//		(shared for all the users)
@@ -90,8 +91,9 @@ public:
 	      _dataset_features(_dataset_frames, settings),
 	      _keyword_ranker(settings, _dataset_frames),
 	      _collage_ranker(settings, &_keyword_ranker),
-	      _user_context(settings,/* \todo */"admin", _dataset_frames, _dataset_features),
-	      _relocation_ranker{} {
+	      _user_context(settings, /* \todo */ "admin", _dataset_frames, _dataset_features),
+	      _relocation_ranker{}
+	{
 		generate_new_targets();
 	}
 
@@ -160,7 +162,8 @@ public:
 
 	const VideoFrame& get_frame(FrameId ID) const { return _dataset_frames.get_frame(ID); }
 
-	VideoFramePointer get_frame_ptr(FrameId img) const {
+	VideoFramePointer get_frame_ptr(FrameId img) const
+	{
 		if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
 		return nullptr;
 	}
@@ -262,7 +265,8 @@ private:
 
 	/** Adds currently active search context to the history and starts a new
 	 * context (with next contiguous ID number) */
-	void push_search_ctx() {
+	void push_search_ctx()
+	{
 		// Make sure we're not pushing in any old screenshot
 		_user_context.ctx.screenshot_fpth = "";
 

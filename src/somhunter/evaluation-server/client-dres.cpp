@@ -27,19 +27,56 @@
 using namespace sh;
 
 ClientDres::ClientDres(const EvalServerSettings& eval_server_settings)
-    : IServerClient{ eval_server_settings }, _settings{ std::get<ServerConfigDres>(eval_server_settings.server_cfg) }
+    : IServerClient{ eval_server_settings },
+      _settings{ std::get<ServerConfigDres>(eval_server_settings.server_cfg) },
+      _synced{ false }
 {
 	// Initial setup
 	set_do_requests(eval_server_settings.do_network_requests);
 
 	// If we should accept insecure connections
 	_http.set_allow_insecure(eval_server_settings.allow_insecure);
+
+	// Do login
+	login();
+
+	_t_sync_worker = std::thread{ [this]() {
+		if (!_do_requests) {
+			return;
+		}
+
+		while (true) {
+			auto ts_our_pre{ utils::timestamp() };
+			auto res{ _http.do_GET_sync(_settings.server_time_URL, {}) };
+			auto ts_our_post{ utils::timestamp() };
+
+			if (res.first != 200) {
+				SHLOG_W("Evaluation server at '" << _settings.server_time_URL << "' is unavailable! Unable to sync.");
+				_synced = false;
+			} else {
+				auto ts{ res.second["timeStamp"].get<UnixTimestamp>() };
+
+				std::ptrdiff_t half_trip{ (ts_our_post - ts_our_pre) / 2 };
+				_diff = ((ts - half_trip) - ts_our_pre);
+
+				SHLOG_D("Synced with diff " << _diff << ", half_trip = " << half_trip);
+				_synced = true;
+			}
+			std::this_thread::sleep_for(_sync_period);
+		}
+	} };
+
+	_t_sync_worker.detach();
 }
 
 sh::ClientDres::~ClientDres() noexcept { logout(); }
 
 bool ClientDres::login()
 {
+	if (!_do_requests) {
+		return true;
+	}
+
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
@@ -94,6 +131,10 @@ bool ClientDres::login()
 
 bool ClientDres::logout()
 {
+	if (_do_requests) {
+		return true;
+	}
+
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
@@ -213,8 +254,8 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 
 UnixTimestamp ClientDres::get_server_ts()
 {
-	// \todo Implement...
-	return 123456;
+	// Shift the timestamp to the server
+	return utils::timestamp() + _diff;
 }
 
 nlohmann::json ClientDres::get_current_task()
@@ -222,10 +263,10 @@ nlohmann::json ClientDres::get_current_task()
 	// \todo Implement...
 	// clang-format off
 	nlohmann::json task_JSON{
-		{ "id", "pxodifhfh" },
-		{ "name", "abrakadabra"},
-		{ "taskGroup", "taskgrupdabra" },
-		{ "remainingTime", 98 }
+		{ "id", "taskid" },
+		{ "name", "taskname"},
+		{ "taskGroup", "taskgroup" },
+		{ "remainingTime", 123 }
 	};
 	// clang-format on
 

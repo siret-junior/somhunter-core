@@ -46,4 +46,4 @@ UnixTimestamp EvalServerClient::get_server_ts() { return _p_client->get_server_t
 
 const std::string& EvalServerClient::get_user_token() const { return _p_client->get_user_token(); }
 
-nlohmann::json EvalServerClient::get_current_task() { return nlohmann::json(); }
+nlohmann::json EvalServerClient::get_current_task() { return _p_client->get_current_task(); }

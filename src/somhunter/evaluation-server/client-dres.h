@@ -125,7 +125,14 @@ private:
 
 	// *** MEMBER VARIABLES ***
 protected:
+	const std::chrono::milliseconds _sync_period{5000ms};
+	
 	ServerConfigDres _settings;
+	std::thread _t_pinger;
+
+	bool _synced;
+	std::ptrdiff_t _diff;
+	nlohmann::json _current_task;
 };
 
 };  // namespace sh
