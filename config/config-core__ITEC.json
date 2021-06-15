@@ -44,7 +44,7 @@
 
 	"core": {
 		"API": {
-			"local_only": false,
+			"local_only": true,
             "port": 8888,
             "config_filepath": "config/config-api.json",
             "docs_dir": "docs/api/"

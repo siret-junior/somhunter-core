@@ -123,12 +123,12 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
-	RescoreResult rescore(const Query& query, bool run_SOM = true);
+	RescoreResult rescore(const Query& query, bool benchmark_run = false);
 
 	RescoreResult rescore(const std::vector<TemporalQuery>& temporal_query, const RelevanceFeedbackQuery& rfQuery,
 	                      const Filters* p_filters = nullptr, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
 	                      const std::string& screenshot_fpth = ""s, const std::string& label = ""s,
-	                      bool run_SOM = true);
+	                      bool benchmark_run = false);
 
 	/** Switches the search context for the user to the provided index in
 	 *  the history and returns reference to it.

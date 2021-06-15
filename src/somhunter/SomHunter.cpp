@@ -195,15 +195,15 @@ void Somhunter::apply_filters() {
 	}
 }
 
-RescoreResult Somhunter::rescore(const Query& query, bool run_SOM) {
+RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run) {
 	return rescore(query.temporal_queries, query.relevance_feeedback, &query.filters, query.metadata.srd_search_ctx_ID,
-	               query.metadata.screenshot_filepath, query.metadata.time_label, run_SOM);
+	               query.metadata.screenshot_filepath, query.metadata.time_label, benchmark_run);
 }
 
 RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_query,
                                  const RelevanceFeedbackQuery& rfQuery, const Filters* p_filters,
                                  size_t src_search_ctx_ID, const std::string& screenshot_fpth, const std::string& label,
-                                 bool run_SOM) {
+                                 bool benchmark_run) {
 	/* ***
 	 * Set the filters to the context
 	 */
@@ -223,13 +223,15 @@ RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 	/* ***
 	 * Save provided screenshot filepath if needed
 	 */
-	if (_user_context._history.size() <= src_search_ctx_ID) {
-		return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets };
-	}
+	if (!benchmark_run) {
+		if (_user_context._history.size() <= src_search_ctx_ID) {
+			return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets };
+		}
 
-	if (src_search_ctx_ID != SIZE_T_ERR_VAL && _user_context._history[src_search_ctx_ID].screenshot_fpth.empty()) {
-		_user_context._history[src_search_ctx_ID].label = label;
-		_user_context._history[src_search_ctx_ID].screenshot_fpth = screenshot_fpth;
+		if (src_search_ctx_ID != SIZE_T_ERR_VAL && _user_context._history[src_search_ctx_ID].screenshot_fpth.empty()) {
+			_user_context._history[src_search_ctx_ID].label = label;
+			_user_context._history[src_search_ctx_ID].screenshot_fpth = screenshot_fpth;
+		}
 	}
 
 	/* ***
@@ -285,7 +287,7 @@ RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 	rescore_feedback();
 
 	// If SOM required
-	if (run_SOM) {
+	if (!benchmark_run) {
 		// Notify the SOM worker thread
 		som_start(_user_context.ctx.temporal_size);
 	}
@@ -297,32 +299,36 @@ RescoreResult Somhunter::rescore(const std::vector<TemporalQuery>& temporal_quer
 	_user_context.ctx.likes.clear();
 
 	// Start the new search context
-	push_search_ctx();
+	if (!benchmark_run) {
+		push_search_ctx();
+	}
 
 	/* ***
 	 * Logging
 	 */
-	// Flush the backlog
-	_user_context._logger.poll();
-	auto top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
-	                                            _settings.topn_frames_per_shot);
-
-	// Log this rescore result
-	_user_context._logger.submit_and_log_rescore(_dataset_frames, _user_context.ctx.scores, old_likes,
-	                                             _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
-	                                             "TODO add text query logging", _settings.topn_frames_per_video,
-	                                             _settings.topn_frames_per_shot);
-
-	const auto& targets{ _user_context.ctx.curr_targets };
-
 	size_t tar_pos{ _dataset_frames.size() };
-	for (auto&& t : targets) {
-		size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
+	if (!benchmark_run) {
+		// Flush the backlog
+		_user_context._logger.poll();
+		auto top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
+		                                            _settings.topn_frames_per_shot);
 
-		tar_pos = std::min(r, tar_pos);
+		// Log this rescore result
+		_user_context._logger.submit_and_log_rescore(_dataset_frames, _user_context.ctx.scores, old_likes,
+		                                             _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type,
+		                                             top_n, "TODO add text query logging",
+		                                             _settings.topn_frames_per_video, _settings.topn_frames_per_shot);
+
+		const auto& targets{ _user_context.ctx.curr_targets };
+
+		for (auto&& t : targets) {
+			size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
+
+			tar_pos = std::min(r, tar_pos);
+		}
+
+		SHLOG_S("Target position is " << tar_pos << ".");
 	}
-
-	SHLOG_S("Target position is " << tar_pos << ".");
 
 	return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets, tar_pos };
 }
@@ -458,7 +464,7 @@ void Somhunter::benchmark_native_text_queries(const std::string& queries_filepat
 
 		reset_scores();
 		Query q{ bq.text_query };
-		rescore(q, false);
+		rescore(q, true);
 
 		auto& IDs{ query_results_IDs.emplace_back(get_top_scored()) };
 		query_results.emplace_back(get_top_scored_scores(IDs));
@@ -508,12 +514,24 @@ void Somhunter::benchmark_native_text_queries(const std::string& queries_filepat
 	}
 
 	for (size_t i = 0; i < hist.size(); i++) {
-		std::cout << i << "," << hist[i] << std::endl;
+		SHLOG(i << "," << hist[i]);
 	}
 }
 
-void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const std::string& /*out_dir*/) {
+void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir) {
 	using directory_iterator = std::filesystem::directory_iterator;
+
+	// ***
+	// Prepare output
+	utils::dir_create(out_dir);
+	std::string filename{ "canvas_benchmark_" + std::to_string(utils::timestamp()) + ".txt" };
+	auto out_filepath{ std::filesystem::path{ out_dir } / filename };
+
+	std::ofstream ofs{out_filepath.string()};
+	if (!ofs.is_open()) {
+		throw std::runtime_error{ "Unable to open file for writing: "s + out_filepath.string() };
+	}
+	SHLOG("Results will be printed to '" << out_filepath << "'...");
 
 	std::vector<std::size_t> ranks_positioned;
 	std::vector<std::size_t> ranks_unpositioned;
@@ -524,9 +542,9 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 	std::vector<std::string> serialized_queries;
 	std::vector<std::string> serialized_queries_infos;
 
-	std::cout << "Loading queries from the directory '" << queries_dir << "'..." << std::endl;
+	SHLOG("Loading queries from the directory '" << queries_dir << "'...");
 	for (const auto& dir_entry : directory_iterator(queries_dir)) {
-		std::cout << "\t - " << dir_entry << std::endl;
+		SHLOG("\t - " << dir_entry);
 
 		for (const auto& file : std::filesystem::directory_iterator(dir_entry)) {
 			std::string filepath{ file.path().string() };
@@ -540,7 +558,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 				serialized_queries_infos.emplace_back(filepath);
 			}
 
-			std::cout << "\t" << file << std::endl;
+			SHLOG("\t" << file);
 		}
 		do_assert_equals(serialized_queries.size(), serialized_queries_infos.size(),
 		                 "There must be the same number of infos & bin files.");
@@ -552,7 +570,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 		size_t q_idx{ 0 };
 		for (auto&& f : serialized_queries) {
 			using namespace nlohmann;
-			std::cout << "Running query from '" << f << "' file..." << std::endl;
+			SHLOG("Running query from '" << f << "' file...");
 
 			const auto& f_info{ serialized_queries_infos[q_idx] };
 			std::ifstream ifs_info(f_info);
@@ -565,7 +583,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 			// ***
 			// POSITIONAL
 			{
-				rescore(q, false);
+				rescore(q, true);
 				auto disp = get_top_scored();
 
 				size_t i{ 0 };
@@ -595,7 +613,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 			// ***
 			// UNPOSITIONAL
 			{
-				rescore(qq, false);
+				rescore(qq, true);
 				auto disp = get_top_scored();
 
 				size_t i{ 0 };
@@ -611,11 +629,16 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 			do_assert_equals(ranks_positioned.size(), ranks_unpositioned.size(), "Numbers must match!");
 			do_assert_equals(queries.size(), ranks_unpositioned.size(), "Numbers must match!");
 
-			std::cout << "\t RANKS: " << ranks_positioned[q_idx] << ranks_unpositioned[q_idx] << std::endl;
+			SHLOG("\t RANKS: " << ranks_positioned[q_idx] << ", " << ranks_unpositioned[q_idx]);
 			++q_idx;
 		}
 	}
 	// #####################################
+
+	ofs << "query_idx;positioned;unpositioned;query" << std::endl;
+	for (size_t i = 0; i < ranks_positioned.size(); i++) {
+		ofs << i << ";" << ranks_positioned[i] << ";" << ranks_unpositioned[i] << ";" << queries[i] << std::endl;
+	}
 
 	// print it
 	// std::sort(ranks.begin(), ranks.end());
@@ -653,7 +676,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 	{
 		{
 			size_t i{ 0 };
-			for (auto&& r : ranks_positioned) {
+			for (auto&& r : ranks_unpositioned) {
 				size_t scaled_rank{ static_cast<size_t>(r * scale) };
 				++hist_unpositioned[scaled_rank];
 
@@ -669,9 +692,9 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 		}
 	}
 
-	std::cout << "tick;positioned;unpositioned;query" << std::endl;
+	ofs << "tick;positioned;unpositioned;query" << std::endl;
 	for (size_t i = 0; i < hist_positioned.size(); i++) {
-		std::cout << i << ";" << hist_positioned[i] << ";" << hist_unpositioned[i] << queries[i] << std::endl;
+		ofs << i << ";" << hist_positioned[i] << ";" << hist_unpositioned[i] << std::endl;
 	}
 }
 
