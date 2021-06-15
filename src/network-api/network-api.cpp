@@ -19,8 +19,10 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// !!!
 // This include has to be first
-// otherwise Torch will to build
+// otherwise Torch will not build
+// !!!
 #include "somhunter.h"
 
 #include "network-api.h"
