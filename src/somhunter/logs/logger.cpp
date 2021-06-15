@@ -42,7 +42,7 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
 {
 	// Make sure that log directories exist
 	if (!utils::dir_create(_logger_settings.log_dir_results + "/" + _p_user_ctx->get_username()) ||
-		!utils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
+	    !utils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
 	    !utils::dir_create(_logger_settings.log_dir_user_actions_summary + "/" + _p_user_ctx->get_username())) {
 		std::string msg{ "Unable to create log directories!" };
 		SHLOG_E(msg);
@@ -121,21 +121,24 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 		size_t i{ 0 };
 		for (auto&& img_ID : topn_imgs) {
 			auto vf = _dataset_frames.get_frame(img_ID);
+			std::stringstream item_ss;
 
 			// If LSC type of submit
 			if (_logger_settings.submit_LSC_IDs) {
-				results.push_back(nlohmann::json{ { "video", vf.LSC_id },
-				                                  { "frame", int(vf.frame_number) },
-				                                  { "score", double(scores[img_ID]) },
-				                                  { "rank", int(i) } });
+				item_ss << vf.LSC_id;
+				/* !!!
+				  We use "rank" field as our internal frame ID */
+				results.push_back(nlohmann::json{ { "item", item_ss.str() }, { "rank", int(vf.frame_ID) } });
 
 			}
 			// Non-LSC submit
 			else {
-				results.push_back(nlohmann::json{ { "video", std::to_string(vf.video_ID + 1) },
-				                                  { "frame", int(vf.frame_number) },
-				                                  { "score", double(scores[img_ID]) },
-				                                  { "rank", int(i) } });
+				item_ss << std::setfill('0') << std::setw(5) << (vf.video_ID + 1);  //< !! VBS videos start from 1
+
+				/* !!!
+				  We use "rank" field as our internal frame ID */
+				results.push_back(nlohmann::json{
+				    { "item", item_ss.str() }, { "frame", int(vf.frame_number) }, { "rank", int(vf.frame_ID) } });
 			}
 
 			++i;
@@ -210,20 +213,21 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 
 	nlohmann::json values_arr = nlohmann::json(values);
 
-	nlohmann::json top = nlohmann::json{ { "teamId", int(_logger_settings.team_ID) },
-		                                 { "memberId", int(_logger_settings.member_ID) },
-		                                 { "timestamp", double(utils::timestamp()) },
-		                                 { "usedCategories", used_cats },
-		                                 { "usedTypes", used_types },
-		                                 { "sortType", sort_types },
-		                                 { "resultSetAvailability", "top" },
-		                                 { "type", "result" },
-		                                 { "values", values_arr },
-		                                 { "results", std::move(result_json_arr) } };
+	nlohmann::json top = nlohmann::json{
+		{ "timestamp", utils::timestamp() },
+		{ "sortType", sort_types },
+		{ "resultSetAvailability", "top" },
+		{ "results", std::move(result_json_arr) },
+		{ "events", nlohmann::json::array() },
+		// ---
+		{ "usedCategories", used_cats },
+		{ "usedTypes", used_types },
+		{ "values", values_arr },
+	};
 
 	// Send it to the eval server
 	_p_eval_server->send_results_log(top);
-	
+
 	/* ***
 	 * Augment the log with extra data */
 	top["hash"] = hash;
@@ -518,8 +522,8 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 std::string Logger::get_results_log_filepath() const
 {
 	std::filesystem::path p{ _logger_settings.log_dir_results + "/" + _p_user_ctx->get_username() };
-	p = p / ("results." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." + _p_user_ctx->get_username() +
-	         ".json");
+	p = p /
+	    ("results." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." + _p_user_ctx->get_username() + ".json");
 
 	return p.string();
 }
