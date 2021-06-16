@@ -77,8 +77,19 @@ Logger::~Logger()
 
 void Logger::log_submit(const VideoFrame frame, bool submit_result)
 {
+	nlohmann::json log{ frame.to_JSON() };
+
+	// clang-format off
+	nlohmann::json log_JSON{
+		{ "submit_result", submit_result }
+	};
+	// clang-format on
+
+	log_JSON.insert(log.begin(), log.end());
+
 	// Create the log
-	push_action("submit", "OTHER", "submit", (submit_result ? "true" : "false"));
+	push_action("submit", "OTHER", "submit", (submit_result ? "true" : "false"), std::move(log_JSON),
+	            { "video_ID", "frame_number", "frame_ID" });
 }
 
 void Logger::log_query(const Query& /*query*/, const std::vector<VideoFrame>* /*p_targets*/) const
@@ -341,7 +352,7 @@ void Logger::log_unlike(const DatasetFrames& _dataset_frames, const std::set<Fra
 	std::stringstream data_ss;
 	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";unlike;";
 
-	push_action("unline", "IMAGE", "feedbackModel", data_ss.str());
+	push_action("unline", "IMAGE", "feedbackModel", data_ss.str(), {}, { "" });
 }
 
 void Logger::log_show_random_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
@@ -468,7 +479,15 @@ void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_t
 	std::stringstream data_ss;
 	data_ss << "scroll" << (dirY > 0 ? "Up" : "Down") << ";" << dirY << ";" << disp_type << ";";
 
-	push_action("mouse_scroll", "BROWSING", ev_type, data_ss.str());
+	// clang-format off
+	nlohmann::json log_JSON{
+		{ "display_type", disp_type },
+		{ "direction", (dirY > 0 ? "up" : "down") },
+		{ "delta", dirY }
+	};
+	// clang-format on
+
+	push_action("scroll", "BROWSING", ev_type, data_ss.str(), std::move(log_JSON), { "display_type", "direction" });
 }
 
 void Logger::log_reset_search() { push_action("reset_all", "BROWSING", "resetAll", ""); }
@@ -509,7 +528,7 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	/* ***
 	 * Construct our log (use server if none specified). */
 	nlohmann::json our_log_JSON;
-	if (our_log_JSON.is_null()) {
+	if (our.is_null()) {
 		our_log_JSON = log_JSON;
 	} else {
 		our_log_JSON = our;
@@ -519,6 +538,7 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	 * Augment the log with extra data */
 	our_log_JSON["actionName"] = action_name;
 	our_log_JSON["hash"] = hash;
+	our_log_JSON["timestamp"] = ts;
 	our_log_JSON["serverTimestamp"] = _p_eval_server->get_server_ts();
 	our_log_JSON["userToken"] = _p_eval_server->get_user_token();
 

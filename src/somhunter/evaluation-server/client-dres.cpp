@@ -131,7 +131,7 @@ bool ClientDres::login()
 
 bool ClientDres::logout()
 {
-	if (_do_requests) {
+	if (!_do_requests) {
 		return true;
 	}
 
