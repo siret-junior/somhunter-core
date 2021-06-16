@@ -194,7 +194,7 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	if (res == CURLE_OK) {
 		SHLOG_D("HTTP request OK: '" << url << "'");
 
-		nlohmann::json json_data{ nlohmann::json::parse(res_buffer) };
+		nlohmann::json json_data(nlohmann::json::parse(res_buffer));
 
 		// Call the success
 		cb_succ(static_cast<ReqCode>(res_code), json_data);
