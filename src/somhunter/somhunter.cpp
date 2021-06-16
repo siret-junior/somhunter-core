@@ -232,7 +232,11 @@ void Somhunter::apply_filters()
 RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 {
 	const std::vector<TemporalQuery>& temporal_query{ query.temporal_queries };
-	const RelevanceFeedbackQuery& rel_feedback_query{ query.relevance_feeedback };
+
+	// Add the internal state likes to it
+	RelevanceFeedbackQuery& rel_feedback_query{ query.relevance_feeedback };
+	rel_feedback_query.insert(_user_context.ctx.likes.begin(), _user_context.ctx.likes.end());
+
 	const Filters* p_filters{ &query.filters };
 	size_t src_search_ctx_ID{ query.metadata.srd_search_ctx_ID };
 	const std::string& screenshot_fpth{ query.metadata.screenshot_filepath };

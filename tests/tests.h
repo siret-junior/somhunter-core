@@ -34,17 +34,21 @@ public:
 	static void run_all_tests(const std::string &cfg_fpth);
 
 private:
-	static void TEST_collage_queries(Somhunter &core, Settings &_logger_settings);
-
 	static void TEST_like_frames(Somhunter &core);
-
 	static void TEST_bookmark_frames(Somhunter &core);
-
 	static void TEST_autocomplete_keywords(Somhunter &core);
-
 	static void TEST_rescore(Somhunter &core);
-
 	static void TEST_rescore_filters(Somhunter &core);
+	static void TEST_canvas_queries(Somhunter &core, Settings &_logger_settings);
+};
+
+class TESTER_Logger
+{
+public:
+	static void run_all_tests(const std::string &cfg_fpth);
+
+private:
+	static void TEST_log_results(Somhunter &core);
 };
 
 class TESTER_Config

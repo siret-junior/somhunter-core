@@ -2,12 +2,8 @@
 #ifndef CONFIG_TESTS_H_
 #define CONFIG_TESTS_H_
 
-//#define TEST_COLLAGE_QUERIES
-
 #include <string>
 #include <vector>
-
-#define DO_TESTS
 
 /*
  * What dataset are we testing?

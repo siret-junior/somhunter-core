@@ -56,7 +56,7 @@ void TESTER_Somhunter::run_all_tests(const std::string &cfg_fpth) {
 	TEST_bookmark_frames(core);
 	TEST_autocomplete_keywords(core);
 	TEST_rescore(core);
-	TEST_collage_queries(core, config);
+	TEST_canvas_queries(core, config);
 
 #ifdef TEST_FILTERS
 	TEST_rescore_filters(core);
@@ -67,21 +67,12 @@ void TESTER_Somhunter::run_all_tests(const std::string &cfg_fpth) {
 	SHLOG("====================================================");
 }
 
-void TESTER_Somhunter::TEST_collage_queries(Somhunter &core, Settings &_logger_settings) {
+void TESTER_Somhunter::TEST_canvas_queries(Somhunter &core, Settings &_logger_settings) {
 	SHLOG("\t Testing `Somhunter::rescore` method with collage queries...");
 	core.reset_search_session();
 
-	auto canvQuery = CanvasQuery::parse_json(
-	    (fs::path(_logger_settings.test_data_root) / "collages/test_collage/query-info25-05-2021_22-06-33.json").string());
-	Query q(std::move(canvQuery));
-	core.rescore(q);
+	// \todo Add tests ...
 
-#ifdef TESTING_ITEC_DATASET
-	auto disp = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
-	do_assert_equals(disp[0]->frame_ID, 602U, "Incorrect frame in the display.");
-	do_assert_equals(disp[1]->frame_ID, 433U, "Incorrect frame in the display.");
-
-#endif
 	SHLOG("\t Testing `Somhunter::rescore` method with collage queries finished.");
 }
 
@@ -239,11 +230,12 @@ void TESTER_Somhunter::TEST_rescore(Somhunter &core) {
 
 #ifdef TESTING_ITEC_DATASET
 	disp = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
-	do_assert_equals(disp[0]->frame_ID, 74U, "Incorrect frame in the display.");
-	do_assert_equals(disp[1]->frame_ID, 224U, "Incorrect frame in the display.");
 
-	do_assert_equals(disp[7]->frame_ID, 109U, "Incorrect frame in the display.");
-	do_assert_equals(disp[8]->frame_ID, 35U, "Incorrect frame in the display.");
+	do_assert_equals(disp[0]->frame_ID, 224U, "Incorrect frame in the display.");
+	do_assert_equals(disp[1]->frame_ID, 125U, "Incorrect frame in the display.");
+
+	do_assert_equals(disp[7]->frame_ID, 331U, "Incorrect frame in the display.");
+	do_assert_equals(disp[8]->frame_ID, 140U, "Incorrect frame in the display.");
 #endif
 
 	/*
@@ -260,11 +252,12 @@ void TESTER_Somhunter::TEST_rescore(Somhunter &core) {
 
 #ifdef TESTING_ITEC_DATASET
 	disp = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
+	
 	do_assert_equals(disp[0]->frame_ID, 489U, "Incorrect frame in the display.");
-	do_assert_equals(disp[1]->frame_ID, 221U, "Incorrect frame in the display.");
+	do_assert_equals(disp[1]->frame_ID, 475U, "Incorrect frame in the display.");
 
-	do_assert_equals(disp[7]->frame_ID, 372U, "Incorrect frame in the display.");
-	do_assert_equals(disp[8]->frame_ID, 267U, "Incorrect frame in the display.");
+	do_assert_equals(disp[7]->frame_ID, 589U, "Incorrect frame in the display.");
+	do_assert_equals(disp[8]->frame_ID, 308U, "Incorrect frame in the display.");
 #endif
 
 	/*
@@ -274,6 +267,7 @@ void TESTER_Somhunter::TEST_rescore(Somhunter &core) {
 	do_assert(state1 == core._user_context.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 	disp = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
+	
 	do_assert_equals(disp[0]->frame_ID, 80U, "Incorrect frame in the display.");
 	do_assert_equals(disp[1]->frame_ID, 130U, "Incorrect frame in the display.");
 #endif
@@ -282,22 +276,24 @@ void TESTER_Somhunter::TEST_rescore(Somhunter &core) {
 	do_assert(state2 == core._user_context.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 	disp = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
-	do_assert_equals(disp[0]->frame_ID, 74U, "Incorrect frame in the display.");
-	do_assert_equals(disp[1]->frame_ID, 224U, "Incorrect frame in the display.");
 
-	do_assert_equals(disp[7]->frame_ID, 109U, "Incorrect frame in the display.");
-	do_assert_equals(disp[8]->frame_ID, 35U, "Incorrect frame in the display.");
+	do_assert_equals(disp[0]->frame_ID, 224U, "Incorrect frame in the display.");
+	do_assert_equals(disp[1]->frame_ID, 125U, "Incorrect frame in the display.");
+
+	do_assert_equals(disp[7]->frame_ID, 331U, "Incorrect frame in the display.");
+	do_assert_equals(disp[8]->frame_ID, 140U, "Incorrect frame in the display.");
 #endif
 
 	core.switch_search_context(3);
 	do_assert(state3 == core._user_context.ctx, "State SHOULD BE equal.");
 #ifdef TESTING_ITEC_DATASET
 	disp = core.get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
-	do_assert_equals(disp[0]->frame_ID, 489U, "Incorrect frame in the display.");
-	do_assert_equals(disp[1]->frame_ID, 221U, "Incorrect frame in the display.");
 
-	do_assert_equals(disp[7]->frame_ID, 372U, "Incorrect frame in the display.");
-	do_assert_equals(disp[8]->frame_ID, 267U, "Incorrect frame in the display.");
+	do_assert_equals(disp[0]->frame_ID, 489U, "Incorrect frame in the display.");
+	do_assert_equals(disp[1]->frame_ID, 475U, "Incorrect frame in the display.");
+
+	do_assert_equals(disp[7]->frame_ID, 589U, "Incorrect frame in the display.");
+	do_assert_equals(disp[8]->frame_ID, 308U, "Incorrect frame in the display.");
 #endif
 
 	SHLOG("\t Testing `Somhunter::TEST_rescore` finished.");
@@ -361,6 +357,41 @@ void TESTER_Somhunter::TEST_rescore_filters(Somhunter &core) {
 
 	SHLOG("\t Testing `Somhunter::TEST_rescore` score filter finished...");
 }
+
+void TESTER_Logger::run_all_tests(const std::string &cfg_fpth) {
+	SHLOG("====================================================");
+	SHLOG("\tInitializing the `Tester` class tests...");
+	SHLOG("====================================================");
+
+	// Parse config file
+	auto config = Settings::parse_JSON_config(cfg_fpth);
+
+	// Make sure that values are right for these tests
+	config.topn_frames_per_video = 3;
+	config.topn_frames_per_shot = 1;
+
+	// Instantiate the SOMHunter
+	Somhunter core{ config, cfg_fpth };
+
+	SHLOG("Running all the Somhunter class tests...");
+
+	TEST_log_results(core);
+
+#ifdef TEST_FILTERS
+	TEST_rescore_filters(core);
+#endif
+
+	SHLOG("====================================================");
+	SHLOG("\tIf you got here, all `Tester` tests were OK...");
+	SHLOG("====================================================");
+}
+
+void TESTER_Logger::TEST_log_results(Somhunter &core) {
+
+	
+
+}
+
 
 const char *json_contents = R"(
 { "core": {
