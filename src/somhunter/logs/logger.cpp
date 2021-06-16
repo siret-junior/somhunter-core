@@ -41,7 +41,8 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
       _last_interactions_submit_ts{ utils::timestamp() }
 {
 	// Make sure that log directories exist
-	if (!utils::dir_create(_logger_settings.log_dir_results + "/" + _p_user_ctx->get_username()) ||
+	if (!utils::dir_create(get_log_dir_queries()) ||
+	    !utils::dir_create(_logger_settings.log_dir_results + "/" + _p_user_ctx->get_username()) ||
 	    !utils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
 	    !utils::dir_create(_logger_settings.log_dir_user_actions_summary + "/" + _p_user_ctx->get_username())) {
 		std::string msg{ "Unable to create log directories!" };
@@ -92,9 +93,18 @@ void Logger::log_submit(const VideoFrame frame, bool submit_result)
 	            { "videoId", "frameNumber", "frameId" });
 }
 
-void Logger::log_query(const Query& /*query*/, const std::vector<VideoFrame>* /*p_targets*/) const
+void Logger::log_query(const LogHash& hash, const Query& query) const
 {
+	auto dir{ get_log_dir_queries() };
+
+	auto filepath_bin{ dir + "/" + hash + ".bin" };
+	auto filepath_JSON{ dir + "/" + hash + ".json" };
+
 	// \todo Implement...
+	SHLOG_I("Writing the query to '" + filepath_bin + "'...");
+	SHLOG_I("Writing the query to '" + filepath_JSON + "'...");
+
+	utils::serialize_to_file<Query>(query, filepath_bin);
 }
 
 void Logger::submit_interaction_logs_buffer()
@@ -259,10 +269,6 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
 
 	auto path{ _logger_settings.log_dir_user_actions_summary + "/"s + std::to_string(utils::timestamp()) + "/"s };
 
-	if (temp_queries[0].canvas.is_save) {
-		path = "saved-queries/"s + std::to_string(utils::timestamp()) + "/"s;
-	}
-
 	// One directory for each query
 	std::filesystem::create_directories(path);
 
@@ -318,9 +324,11 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
 	o << obj.pretty_print(pretty_print_opts);
 }
 
-void sh::Logger::log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>& targets)
+void sh::Logger::log_rescore(const Query& prev_query, const Query& new_query)
 {
-	push_action("rescore", "OTHER ", "rescore", "");
+	// Log query
+	auto h{ push_action("rescore", "OTHER ", "rescore", "") };
+	log_query(h, new_query);
 }
 
 void Logger::log_text_query_change(const std::string& text_query)
@@ -565,6 +573,11 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	write_summary(our_log_JSON, action_name, summary_keys);
 
 	return hash;
+}
+
+std::string Logger::get_log_dir_queries() const
+{
+	return _logger_settings.log_dir_queries + "/" + _p_user_ctx->get_username();
 }
 
 std::string Logger::get_results_log_filepath() const

@@ -1190,8 +1190,6 @@ std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body
 		return { DEFAULT_COLLAGE };
 	}
 
-	bool is_save{ body[U("is_save")].as_bool() };
-
 	/*
 	 * Process it
 	 */
@@ -1252,8 +1250,6 @@ std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body
 		}
 	}
 
-	for (CanvasQuery& q : canvas_query) q.is_save = is_save;
-
 	return canvas_query;
 }
 
@@ -1307,6 +1303,9 @@ void NetworkApi::handle__search__rescore__POST(http_request req)
 
 		// Canvas queries
 		std::vector<CanvasQuery> canvas_query{ extract_canvas_query(body) };
+
+		bool is_save{ body[U("is_save")].as_bool() };
+		query.is_save = is_save;
 
 		// Is the query non-empty?
 		if (textual_query.empty() && relevance_query.empty() && canvas_query.empty()) {

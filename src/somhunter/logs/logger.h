@@ -50,10 +50,10 @@ public:
 	void log_submit(const VideoFrame frame, bool submit_result);
 
 	/** Logs the provided query as a whole. */
-	void log_query(const Query& query, const std::vector<VideoFrame>* p_targets) const;
+	void log_query(const LogHash& hash, const Query& query) const;
 	void log_canvas_query(const std::vector<TemporalQuery>& temp_queries, const std::vector<VideoFrame>* p_targets);
 
-	void log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>& p_targets);
+	void log_rescore(const Query& prev_query, const Query& new_query);
 
 	/** Called whenever we rescore. */
 	void log_results(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
@@ -142,7 +142,7 @@ private:
 		}
 		_summary_log_stream << std::endl;
 	}
-
+	std::string get_log_dir_queries() const;
 	std::string get_results_log_filepath() const;
 	std::string get_actions_log_filepath() const;
 	std::string get_summary_log_filepath() const;

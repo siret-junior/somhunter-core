@@ -44,11 +44,7 @@ public:
 
 using UnixTimestamp = std::int64_t;
 
-enum class SubmitResult {
-	CORRECT,
-	INCORRECT,
-	NOT_LOGGED_IN
-};
+enum class SubmitResult { CORRECT, INCORRECT, NOT_LOGGED_IN };
 
 // some types
 using LogHash = std::string;

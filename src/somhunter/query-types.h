@@ -27,6 +27,8 @@
 #include <sstream>
 #include <variant>
 
+#include <cereal/types/array.hpp>
+#include <cereal/types/set.hpp>
 #include <cereal/types/variant.hpp>
 #include <json11.hpp>
 
@@ -60,6 +62,12 @@ public:
 	bool& operator[](size_t i) { return _days[i]; }
 
 	bool operator==(const WeekDaysFilter& other) const { return (_days == other._days); }
+
+	template <class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(_days);
+	}
 };
 
 /** Container for information about time filtering */
@@ -72,6 +80,12 @@ struct TimeFilter {
 	TimeFilter(Hour from, Hour to) : from(from), to(to){};
 
 	bool operator==(const TimeFilter& other) const { return (from == other.from && to == other.to); }
+
+	template <class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(from, to);
+	}
 };
 
 /** Container for all the available filters for the rescore */
@@ -81,13 +95,26 @@ struct Filters {
 
 	bool operator==(const Filters& other) const { return (time == other.time && days == other.days); }
 	bool is_default() const { return time == TimeFilter{} && days == WeekDaysFilter{}; }
+
+	template <class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(time, days);
+	}
 };
 
 struct RescoreMetadata {
 	std::string _username;
 	std::string screenshot_filepath;
-	size_t srd_search_ctx_ID;
+	size_t srd_search_ctx_ID{ 0 };
 	std::string time_label;
+
+	template <class Archive>
+	void serialize(Archive& archive)
+	{
+		// Some of these dont matter in the future
+		archive(_username);
+	}
 };
 
 using RelevanceFeedbackQuery = LikesCont;
@@ -297,8 +324,6 @@ public:
 	CanvasSubquery& operator[](size_t idx) { return _subqueries[idx]; }
 	const CanvasSubquery& operator[](size_t idx) const { return _subqueries[idx]; }
 
-	bool is_save{ false };
-
 	/** Parses JSON file created by to_JSON */
 	static std::vector<CanvasQuery> parse_json(const std::string& filepath);
 
@@ -384,6 +409,15 @@ public:
 		}
 	}
 	// ---
+
+	void set_targets(const std::vector<VideoFrame>& ts)
+	{
+		targets.clear();
+		for (auto&& t : ts) {
+			targets.emplace_back(t.frame_ID);
+		}
+	}
+
 	std::string get_plain_text_query() const
 	{
 		std::string text2;
@@ -438,12 +472,23 @@ public:
 		}
 	}
 
+	nlohmann::json to_JSON() const;
+
+	template <class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(metadata, filters, relevance_feeedback, temporal_queries, targets, is_save);
+	}
+
 	// *** MEMBER VARIABLES ***
 public:
 	RescoreMetadata metadata;
 	Filters filters;
 	RelevanceFeedbackQuery relevance_feeedback;
 	std::vector<TemporalQuery> temporal_queries;
+	std::vector<FrameId> targets;
+
+	bool is_save{ false };
 };
 
 struct BaseBenchmarkQuery {

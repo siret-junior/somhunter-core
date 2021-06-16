@@ -228,7 +228,7 @@ void Somhunter::apply_filters()
 	}
 }
 
-RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
+RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 {
 	const std::vector<TemporalQuery>& temporal_query{ query.temporal_queries };
 	const RelevanceFeedbackQuery& rfQuery{ query.relevance_feeedback };
@@ -272,9 +272,6 @@ RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
 	 */
 	// Store likes for the logging purposees
 	auto old_likes{ rfQuery };
-
-	_user_context._logger.log_query(query,
-	                                &_user_context.ctx.curr_targets);  // < This triggers log into the /logs/collage/
 
 	// Check if temporal queries has changed
 	if (_user_context.ctx.last_temporal_queries != temporal_query) {
@@ -353,7 +350,13 @@ RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
 
 		// Flush the backlog
 		_user_context._logger.poll();
-		_user_context._logger.log_rescore(_user_context.ctx._prev_query, query, targets);
+
+		// Add debug targets if saving the one
+		if (query.is_save) {
+			query.set_targets(targets);
+		}
+
+		_user_context._logger.log_rescore(_user_context.ctx._prev_query, query);
 
 		auto top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
 		                                            _settings.topn_frames_per_shot);
@@ -578,8 +581,9 @@ void Somhunter::benchmark_native_text_queries(const std::string& queries_filepat
 	}
 }
 
-void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir)
+void Somhunter::benchmark_canvas_queries(const std::string& /*queries_dir*/, const std::string& /*out_dir*/)
 {
+#if 0  // Rewite
 	using directory_iterator = std::filesystem::directory_iterator;
 
 	// ***
@@ -757,6 +761,8 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 	for (size_t i = 0; i < hist_positioned.size(); i++) {
 		ofs << i << ";" << hist_positioned[i] << ";" << hist_unpositioned[i] << std::endl;
 	}
+
+#endif
 }
 
 void Somhunter::generate_new_targets()

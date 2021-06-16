@@ -23,10 +23,10 @@
 #define SOMHUNTER_H_
 
 #include <array>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
-#include <optional>
 // ---
 
 #include "async-som.h"
@@ -128,7 +128,7 @@ public:
 	 * Returns references to existing history states that we can go back to
 	 * (including the current one).
 	 */
-	RescoreResult rescore(const Query& query, bool benchmark_run = false);
+	RescoreResult rescore(Query& query, bool benchmark_run = false);
 
 	RescoreResult rescore(const std::vector<TemporalQuery>& temporal_query, const RelevanceFeedbackQuery& rfQuery,
 	                      const Filters* p_filters = nullptr, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,

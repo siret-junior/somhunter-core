@@ -79,6 +79,7 @@ struct EvalServerSettings {
 	std::string log_dir_user_actions;
 	std::string log_dir_user_actions_summary;
 	std::string log_dir_results;
+	std::string log_dir_queries;
 	std::string log_file_suffix;
 	bool extra_verbose_log;
 
