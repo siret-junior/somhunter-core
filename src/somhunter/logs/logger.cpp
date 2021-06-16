@@ -367,12 +367,11 @@ void Logger::log_show_topn_context_display(const DatasetFrames& /*frames*/, cons
 void Logger::log_show_topknn_display(const DatasetFrames& _dataset_frames, FrameId frame_ID,
                                      const std::vector<FrameId>& /*imgs*/)
 {
-	auto vf = _dataset_frames.get_frame(frame_ID);
+	auto frame = _dataset_frames.get_frame(frame_ID);
 
-	std::stringstream data_ss;
-	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";topknn_display;";
+	nlohmann::json log{ frame.to_JSON() };
 
-	push_action("show_nearest_neighbours_display", "IMAGE", "globalFeatures", data_ss.str());
+	push_action("showNearestNeighboursDisplay", "IMAGE", "globalFeatures", log.dump(4), std::move(log), { "frameId" });
 }
 
 void Logger::log_show_detail_display(const DatasetFrames& _dataset_frames, FrameId frame_ID)
@@ -502,9 +501,6 @@ void Logger::log_bothlike(FrameId frame_ID, const std::string& type)
 	auto f_JSON{ vf.to_JSON() };
 
 	// clang-format off
-		nlohmann::json serve_JSON{
-			{"action", type }
-		};
 		nlohmann::json log_JSON{
 			{ "likes", _p_user_ctx->ctx.likes },
 			{ "dispType", disp_type_to_str(_p_user_ctx->ctx.curr_disp_type) },
@@ -512,9 +508,8 @@ void Logger::log_bothlike(FrameId frame_ID, const std::string& type)
 	// clang-format on
 
 	log_JSON.insert(f_JSON.begin(), f_JSON.end());
-	serve_JSON.insert(f_JSON.begin(), f_JSON.end());
 
-	push_action(type, "IMAGE", "feedbackModel", serve_JSON.dump(4), std::move(log_JSON), { "frameId" });
+	push_action(type, "IMAGE", "feedbackModel", f_JSON.dump(4), std::move(log_JSON), { "frameId" });
 }
 
 LogHash Logger::gen_action_hash(UnixTimestamp ts)
@@ -532,34 +527,39 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	/* ***
 	 * Prepare the log compatible with the eval server. */
 	UnixTimestamp ts{ utils::timestamp() };
+	UnixTimestamp server_ts{ _p_eval_server->get_server_ts() };
 	auto hash{ gen_action_hash(ts) };
+
+	std::string vval{ "|" + action_name + "|" };
 
 	// clang-format off
 	nlohmann::json log_JSON{
 		{ "timestamp", ts }, 
 		{ "category", cat }, 
 		{ "type",  type }, 
-		{ "value", value }
+		{ "value", vval + value }
 	};
 	// clang-format on
 	_interactions_buffer.emplace_back(log_JSON);
 
 	/* ***
 	 * Construct our log (use server if none specified). */
-	nlohmann::json our_log_JSON;
-	if (our.is_null()) {
-		our_log_JSON = log_JSON;
-	} else {
-		our_log_JSON = our;
-	}
+	nlohmann::json our_log_JSON{ our };
 
 	/* ***
 	 * Augment the log with extra data */
+
+	// clang-format off
+	nlohmann::json meta_JSON{
+		{ "hash", hash },
+		{ "serverTimestamp", server_ts },
+		{ "userToken", _p_eval_server->get_user_token() },
+	};
+	// clang-format on
+	meta_JSON.insert(log_JSON.begin(), log_JSON.end());
+
+	our_log_JSON["metadata"] = meta_JSON;
 	our_log_JSON["actionName"] = action_name;
-	our_log_JSON["hash"] = hash;
-	our_log_JSON["timestamp"] = ts;
-	our_log_JSON["serverTimestamp"] = _p_eval_server->get_server_ts();
-	our_log_JSON["userToken"] = _p_eval_server->get_user_token();
 
 	write_action(our_log_JSON);
 	write_summary(our_log_JSON, action_name, summary_keys);

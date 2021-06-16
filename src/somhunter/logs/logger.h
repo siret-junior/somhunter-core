@@ -128,8 +128,8 @@ private:
 	void write_summary(const nlohmann::json& log, const std::string& action_name,
 	                   std::initializer_list<std::string> keys = {})
 	{
-		auto ts{ log["timestamp"].get<UnixTimestamp>() };
-		auto hash{ log["hash"].get<std::string>() };
+		auto ts{ log["metadata"]["timestamp"].get<UnixTimestamp>() };
+		auto hash{ log["metadata"]["hash"].get<std::string>() };
 
 		_summary_log_stream << utils::get_formated_timestamp("%H:%M:%S", ts) << "\t" << hash << "\t" << action_name
 		                    << "\t";
