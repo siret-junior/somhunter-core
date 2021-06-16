@@ -10,6 +10,9 @@ project(somhunter)
 set(BUILD_PLUGINS_STATIC ON
     CACHE BOOL "prevent problems with dynamic builds")
 
+set(IS_CI OFF
+    CACHE BOOL "If ON, no models ")
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Specify build targets
@@ -61,10 +64,15 @@ endif()
 message("Platform is '${PLATFORM}'...")
 
 if (WITH_CUDA)
-    set(CUDA_SCRIPT_OPT "--cuda")
+    set(CUDA_SCRIPT_OPT "--cuda=true")
 else ()
 endif ()
 
+
+if (IS_CI)
+    set(IS_CI_OPT "--no-models=true")
+else ()
+endif ()
 
 
 
@@ -95,6 +103,7 @@ execute_process (
             ${THIRD_PARTY_DIR}                          # Third-party dir
             "${CMAKE_BUILD_TYPE}"                       # Build type \in { Release, Debug }
             ${CUDA_SCRIPT_OPT}
+            ${IS_CI_OPT}
         WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
         RESULTS_VARIABLE conf_res
 )

@@ -172,36 +172,28 @@ static inline std::string_view view_tail(const std::string& str, size_t len)
 namespace sh
 {
 /** Assert execuded at all times. */
-template <typename T>
-inline void do_assert(T&& assertion, const std::string_view msg = {}, const char* file = __FILE__,
-                      const int line = __LINE__)
-{
-	if (!assertion) {
-		std::cerr << "ASSERTION FAILED: " << msg << "\n\t"
-		          << "."
-		          << "() in " << view_tail(file, FILE_NAME_TAIL_LEN) << " :" << line << "" << std::endl;
-		throw std::runtime_error("ASSERTION FAILED!");
-	}
-}
 
-/** Assert on equals execuded at all times.
- */
-template <typename T1, typename T2>
-inline void do_assert_equals(const T1& a, const T2& b, const std::string_view msg = {}, const char* file = __FILE__,
-                             const int line = __LINE__)
-{
-	do_assert(a == b, msg, file, line);
-}
+#define do_assert(assertion, msg)                                                                                    \
+	do {                                                                                                             \
+		if (!(assertion)) {                                                                                            \
+			std::cerr << "ASSERTION FAILED: " << msg << "\n\t"                                                       \
+			          << "."                                                                                         \
+			          << "() in " << view_tail(__FILE__, FILE_NAME_TAIL_LEN) << " :" << __LINE__ << "" << std::endl; \
+			throw std::runtime_error("ASSERTION FAILED!");                                                           \
+		}                                                                                                            \
+	} while (0)
+
+/** Assert on equals execuded at all times. */
+#define do_assert_equals(a, b, msg) do_assert(a == b, msg);
 
 /** Assert execuded only if `RUN_ASSERTS` is true. */
-template <typename T>
-inline void do_assert_debug(T&& assertion, const std::string_view msg = {}, const char* file = __FILE__,
-                            const int line = __LINE__)
-{
-	if constexpr (RUN_ASSERTS) {
-		do_assert(assertion, msg, file, line);
-	}
-}
+
+#define do_assert_debug(assertion, msg) \
+	do {                                \
+		if constexpr (RUN_ASSERTS) {    \
+			do_assert(assertion, msg);  \
+		}                               \
+	} while (0)
 
 };  // namespace sh
 

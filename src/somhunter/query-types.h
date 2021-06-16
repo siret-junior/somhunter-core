@@ -128,13 +128,13 @@ struct RelativeRect {
 
 	float width_norm() const
 	{
-		do_assert_debug(right >= right);
+		do_assert_debug(right >= right, "");
 		return right - left;
 	};
 
 	float height_norm() const
 	{
-		do_assert_debug(bottom >= top);
+		do_assert_debug(bottom >= top, "");
 		return bottom - top;
 	};
 

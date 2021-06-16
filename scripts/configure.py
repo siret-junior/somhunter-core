@@ -36,6 +36,7 @@ parser.add_argument('third_party_dir',
                     help='Directory where third-party deps are placed.')
 parser.add_argument('build_type', type=str, help='Build type wanted.')
 parser.add_argument('--cuda', type=bool, default=False, help='With CUDA?.')
+parser.add_argument('--no-models', type=bool, default=False, help='Download models?.')
 
 
 def install_models(args):
@@ -160,6 +161,9 @@ if __name__ == '__main__':
     print("This script is running from the '{}' directory...".format(cwd))
     print("(!!!)")
 
-    install_models(args)
+    if (not args.no_models):
+        install_models(args)
+    else:
+        print("Skipping model download...")
     install_libtorch.main(args)
     sys.exit(0)
