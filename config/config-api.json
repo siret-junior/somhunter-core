@@ -423,6 +423,9 @@
                             "application/json": {}
                         }
                     },
+                    "401": {
+                        "description": "Not logged in."
+                    },
                     "500": {
                         "description": "Error"
                     }

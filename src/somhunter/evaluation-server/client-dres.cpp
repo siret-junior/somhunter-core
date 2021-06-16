@@ -180,8 +180,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 {
 	// Login check
 	if (!is_logged_in()) {
-		SHLOG_E("Not logged in! User token empty!");
-		return false;
+		throw NotLoggedInEx("You must be logged in to the evaluation server to submit.");
 	}
 
 	auto ts{ utils::timestamp() };

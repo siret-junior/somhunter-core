@@ -26,6 +26,8 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <optional>
+// ---
 
 #include "async-som.h"
 #include "canvas-query-ranker.h"
@@ -188,7 +190,7 @@ public:
 	bool logout_from_eval_server();
 
 	/** Sumbits frame with given id to VBS server */
-	bool submit_to_eval_server(FrameId frame_id);
+	SubmitResult submit_to_eval_server(FrameId frame_id);
 
 	// ********************************
 	// Logging calls

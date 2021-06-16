@@ -52,11 +52,6 @@ public:
 	virtual bool is_logged_in() const { return !_username.empty(); }
 	virtual const std::string& get_user_token() const
 	{
-		if (_username.empty() && _do_requests) {
-			std::string msg{ "User token is not valid" };
-			SHLOG_E(msg);
-			throw std::runtime_error{ msg };
-		}
 		return _username;
 	};
 	virtual void set_do_requests(bool val) { _do_requests = val; };

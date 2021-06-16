@@ -25,12 +25,30 @@
 #include <cstdint>
 #include <limits>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace sh
 {
+/* ***
+ *  Custom exceptions
+ */
+class NotLoggedInEx : public std::runtime_error
+{
+public:
+	NotLoggedInEx(const std::string& msg) : std::runtime_error{ msg } {}
+};
+
+// ---
+
 using UnixTimestamp = std::int64_t;
+
+enum class SubmitResult {
+	CORRECT,
+	INCORRECT,
+	NOT_LOGGED_IN
+};
 
 // some types
 using LogHash = std::string;

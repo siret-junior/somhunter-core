@@ -374,16 +374,20 @@ bool Somhunter::som_ready(size_t temp_id) const { return _user_context._temp_asy
 bool Somhunter::login_to_eval_server() { return _user_context._eval_server.login(); }
 bool Somhunter::logout_from_eval_server() { return _user_context._eval_server.logout(); }
 
-bool Somhunter::submit_to_eval_server(FrameId frame_ID)
+SubmitResult Somhunter::submit_to_eval_server(FrameId frame_ID)
 {
 	// Submit
 	auto vf = _dataset_frames.get_frame(frame_ID);
-	bool submit_res{ _user_context._eval_server.submit(vf) };
+	try {
+		bool submit_res{ _user_context._eval_server.submit(vf) };
 
-	// Log it
-	_user_context._logger.log_submit(vf, submit_res);
-
-	return submit_res;
+		// Log it
+		_user_context._logger.log_submit(vf, submit_res);
+		return (submit_res ? SubmitResult::CORRECT : SubmitResult::INCORRECT);
+	} catch (const NotLoggedInEx& ex) {
+		SHLOG_W("Not logged in...");
+		return SubmitResult::NOT_LOGGED_IN;
+	}
 }
 
 void Somhunter::reset_search_session()
