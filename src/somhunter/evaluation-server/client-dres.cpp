@@ -73,10 +73,6 @@ sh::ClientDres::~ClientDres() noexcept { logout(); }
 
 bool ClientDres::login()
 {
-	if (!_do_requests) {
-		return true;
-	}
-
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
@@ -131,10 +127,6 @@ bool ClientDres::login()
 
 bool ClientDres::logout()
 {
-	if (!_do_requests) {
-		return true;
-	}
-
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
