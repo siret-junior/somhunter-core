@@ -377,7 +377,7 @@
                     "Evaluation server"
                 ],
                 "summary": "Submits the specified frame ID to the evaluation server.",
-                "operationId": "NetworkApi::handle__submit_frame__POST",
+                "operationId": "eval_server_submit",
                 "requestBody": {
                     "description": "...",
                     "required": true,
