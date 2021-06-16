@@ -435,7 +435,7 @@
                     "Evaluation server"
                 ],
                 "summary": "TODO",
-                "operationId": "NetworkApi::handle__login_to_dres__POST",
+                "operationId": "login_to_eval_server",
                 "requestBody": {
                     "description": "...",
                     "required": true,
