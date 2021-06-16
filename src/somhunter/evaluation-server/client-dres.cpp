@@ -75,7 +75,7 @@ bool ClientDres::login()
 {
 	auto ts{ utils::timestamp() };
 
-	nlohmann::json headers{};
+	nlohmann::json headers;
 
 	// clang-format off
 	nlohmann::json body{ 
@@ -129,7 +129,7 @@ bool ClientDres::logout()
 {
 	auto ts{ utils::timestamp() };
 
-	nlohmann::json headers{};
+	nlohmann::json headers;
 
 	// clang-format off
 	nlohmann::json params{ 
@@ -199,7 +199,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 	}
 
 	// clang-format off
-	nlohmann::json headers{};
+	nlohmann::json headers;
 	nlohmann::json params{ { "session", _username }, { "item", item_ss.str() }, { "frame", frame.frame_number } };
 	// clang-format on
 
@@ -252,7 +252,7 @@ bool ClientDres::send_results_log(const nlohmann::json& log_JSON)
 	bool result{ true };
 	auto ts{ utils::timestamp() };
 	ReqCode code{ 0 };
-	nlohmann::json res{};
+	nlohmann::json res;
 
 	write_log(LogType::RESULT, ts, log_JSON, code, res);
 
@@ -266,7 +266,7 @@ bool ClientDres::send_interactions_log(const nlohmann::json& log_JSON)
 	bool result{ true };
 	auto ts{ utils::timestamp() };
 	ReqCode code{ 0 };
-	nlohmann::json res{};
+	nlohmann::json res;
 
 	write_log(LogType::INTERACTION, ts, log_JSON, code, res);
 

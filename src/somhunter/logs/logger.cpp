@@ -78,7 +78,7 @@ Logger::~Logger()
 
 void Logger::log_submit(const VideoFrame frame, bool submit_result)
 {
-	nlohmann::json log{ frame.to_JSON() };
+	nlohmann::json log( frame.to_JSON() );
 
 	// clang-format off
 	nlohmann::json log_JSON{
@@ -381,7 +381,7 @@ void Logger::log_show_topknn_display(const DatasetFrames& _dataset_frames, Frame
 {
 	auto frame = _dataset_frames.get_frame(frame_ID);
 
-	nlohmann::json log{ frame.to_JSON() };
+	nlohmann::json log( frame.to_JSON() );
 
 	push_action("showNearestNeighboursDisplay", "IMAGE", "globalFeatures", log.dump(4), std::move(log), { "frameId" });
 }
@@ -510,7 +510,7 @@ void Logger::log_search_context_switch(std::size_t dest_context_ID, size_t src_c
 void Logger::log_bothlike(FrameId frame_ID, const std::string& type)
 {
 	auto vf = _p_user_ctx->get_frames()->get_frame(frame_ID);
-	auto f_JSON{ vf.to_JSON() };
+	auto f_JSON( vf.to_JSON() );
 
 	// clang-format off
 		nlohmann::json log_JSON{
@@ -556,7 +556,7 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 
 	/* ***
 	 * Construct our log (use server if none specified). */
-	nlohmann::json our_log_JSON{ our };
+	nlohmann::json our_log_JSON( our );
 
 	/* ***
 	 * Augment the log with extra data */
