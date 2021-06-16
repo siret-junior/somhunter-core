@@ -254,6 +254,8 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 
 bool ClientDres::send_results_log(const nlohmann::json& log_JSON)
 {
+	// \todo Actually send the log to the server.
+
 	bool result{ true };
 	auto ts{ utils::timestamp() };
 	ReqCode code{ 0 };

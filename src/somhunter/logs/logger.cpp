@@ -83,7 +83,7 @@ void Logger::log_submit(const VideoFrame frame, bool submit_result)
 	push_action("submit", "OTHER", "submit", (submit_result ? "true" : "false"));
 }
 
-void Logger::log_query(const Query& query, const std::vector<VideoFrame>* p_targets) const
+void Logger::log_query(const Query& /*query*/, const std::vector<VideoFrame>* /*p_targets*/) const
 {
 	// \todo Implement...
 }
