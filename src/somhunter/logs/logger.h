@@ -51,8 +51,10 @@ public:
 	void log_query(const Query& query, const std::vector<VideoFrame>* p_targets) const;
 	void log_canvas_query(const std::vector<TemporalQuery>& temp_queries, const std::vector<VideoFrame>* p_targets);
 
+	void log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>* p_targets);
+
 	/** Called whenever we rescore. */
-	void log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
+	void log_results(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
 	                 const UsedTools& used_tools, DisplayType disp_type, const std::vector<FrameId>& topn_imgs,
 	                 const std::string& sentence_query, const size_t topn_frames_per_video,
 	                 const size_t topn_frames_per_shot);

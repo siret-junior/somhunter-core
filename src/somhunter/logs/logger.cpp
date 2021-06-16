@@ -97,6 +97,7 @@ void Logger::submit_interaction_logs_buffer()
 			                               { "type", "interaction" },
 			                               { "teamId", int(_logger_settings.team_ID) },
 			                               { "memberId", int(_logger_settings.member_ID) } };
+		_p_eval_server->send_interactions_log(a);
 		_interactions_buffer.clear();
 	}
 
@@ -104,7 +105,7 @@ void Logger::submit_interaction_logs_buffer()
 	_last_interactions_submit_ts = utils::timestamp();
 }
 
-void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
+void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
                          const UsedTools& used_tools, DisplayType /*disp_type*/, const std::vector<FrameId>& topn_imgs,
                          const std::string& sentence_query, const size_t topn_frames_per_video,
                          const size_t topn_frames_per_shot)
@@ -237,11 +238,7 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 	top["likes"] = likes;
 
 	write_result(top);
-
-	// Write summary only when non-KNN "rescore"
-	if (!used_tools.topknn_used) {
-		write_summary(top, "rescore", { "likes" });
-	}
+	write_summary(top, "results", { "likes" });
 }
 
 void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/,
@@ -308,6 +305,11 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
 	pretty_print_opts.indent_increment = 4;
 	// o << obj.dump();
 	o << obj.pretty_print(pretty_print_opts);
+}
+
+void sh::Logger::log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>* p_targets)
+{
+	push_action("rescore", "OTHER ", "rescore", "");
 }
 
 void Logger::log_text_query_change(const std::string& text_query)

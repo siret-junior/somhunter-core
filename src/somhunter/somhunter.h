@@ -79,7 +79,6 @@ class Somhunter
 	KeywordRanker _keyword_ranker;
 	CanvasQueryRanker _collage_ranker;
 	const RelocationRanker _relocation_ranker;
-	Query _prev_query;
 
 public:
 	Somhunter() = delete;
@@ -93,8 +92,7 @@ public:
 	      _keyword_ranker(settings, _dataset_frames),
 	      _collage_ranker(settings, &_keyword_ranker),
 	      _user_context(settings, /* \todo */ "admin", &_dataset_frames, &_dataset_features),
-	      _relocation_ranker{},
-	      _prev_query{}
+	      _relocation_ranker{}
 	{
 		generate_new_targets();
 	}

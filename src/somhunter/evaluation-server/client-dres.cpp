@@ -266,6 +266,20 @@ bool ClientDres::send_results_log(const nlohmann::json& log_JSON)
 	return result;
 }
 
+bool ClientDres::send_interactions_log(const nlohmann::json& log_JSON)
+{
+	// \todo Actually send the log to the server.
+
+	bool result{ true };
+	auto ts{ utils::timestamp() };
+	ReqCode code{ 0 };
+	nlohmann::json res{};
+
+	write_log(LogType::INTERACTION, ts, log_JSON, code, res);
+
+	return result;
+}
+
 UnixTimestamp ClientDres::get_server_ts()
 {
 	// Shift the timestamp to the server

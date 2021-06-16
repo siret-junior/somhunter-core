@@ -90,6 +90,8 @@ struct SearchContext {
 
 	/** Target we were looking for. (Data collection.) */
 	std::vector<VideoFrame> curr_targets;
+
+	Query _prev_query;
 };
 
 };  // namespace sh
