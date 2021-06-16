@@ -51,7 +51,7 @@ public:
 	void log_query(const Query& query, const std::vector<VideoFrame>* p_targets) const;
 	void log_canvas_query(const std::vector<TemporalQuery>& temp_queries, const std::vector<VideoFrame>* p_targets);
 
-	void log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>* p_targets);
+	void log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>& p_targets);
 
 	/** Called whenever we rescore. */
 	void log_results(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
@@ -61,11 +61,9 @@ public:
 
 	void log_text_query_change(const std::string& query_sentence);
 
-	void log_like(const DatasetFrames& _dataset_frames, const std::set<FrameId>& likes, DisplayType disp_type,
-	              FrameId frame_ID);
+	void log_like(FrameId frame_ID);
 
-	void log_unlike(const DatasetFrames& _dataset_frames, const std::set<FrameId>& likes, DisplayType disp_type,
-	                FrameId frame_ID);
+	void log_unlike(FrameId frame_ID);
 
 	void log_show_som_display(const DatasetFrames& _dataset_frames, const std::vector<FrameId>& imgs);
 
@@ -92,10 +90,12 @@ public:
 	void submit_interaction_logs_buffer();
 
 private:
+	void log_bothlike(FrameId frame_ID, const std::string& type);
+
 	LogHash gen_action_hash(UnixTimestamp ts);
 	LogHash push_action(const std::string& action_name, const std::string& cat, const std::string& type,
 	                    const std::string& value, nlohmann::json&& our_log_JSON = {},
-	                    std::initializer_list<std::string> summary_keys = { "value" });
+	                    std::initializer_list<std::string> summary_keys = {});
 
 	/** Writes the log into the local file. */
 	void write_result(const nlohmann::json& action_log)

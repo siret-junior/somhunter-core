@@ -73,10 +73,6 @@ sh::ClientDres::~ClientDres() noexcept { logout(); }
 
 bool ClientDres::login()
 {
-	if (!_do_requests) {
-		return true;
-	}
-
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
@@ -131,10 +127,6 @@ bool ClientDres::login()
 
 bool ClientDres::logout()
 {
-	if (_do_requests) {
-		return true;
-	}
-
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers{};
@@ -188,8 +180,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 {
 	// Login check
 	if (!is_logged_in()) {
-		SHLOG_E("Not logged in! User token empty!");
-		return false;
+		throw NotLoggedInEx("You must be logged in to the evaluation server to submit.");
 	}
 
 	auto ts{ utils::timestamp() };

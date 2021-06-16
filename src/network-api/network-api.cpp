@@ -1058,10 +1058,19 @@ void NetworkApi::handle__eval_server__submit__POST(http_request req)
 	}
 
 	// Submit it!
-	bool correct{ _p_core->submit_to_eval_server(frame_ID) };
+	SubmitResult correct{ _p_core->submit_to_eval_server(frame_ID) };
+
+	// 401 for Unauthorized
+	if (correct != SubmitResult::CORRECT && correct != SubmitResult::INCORRECT) {
+		http_response res{ construct_error_res(status_codes::Unauthorized,
+			                                   "You are not logged in to the evaluation server.") };
+		NetworkApi::add_CORS_headers(res);
+		req.reply(res);
+		return;
+	}
 
 	auto res_obj{ json::value::object() };
-	res_obj[U("result")] = json::value::boolean(correct);
+	res_obj[U("result")] = json::value::boolean(correct == SubmitResult::CORRECT ? true : false);
 
 	// Construct the response
 	http_response res(status_codes::OK);

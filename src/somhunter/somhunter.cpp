@@ -119,8 +119,7 @@ std::vector<bool> Somhunter::like_frames(const std::vector<FrameId>& new_likes)
 			_user_context.ctx.likes.insert(fr_ID);
 			res.emplace_back(true);
 
-			_user_context._logger.log_like(_dataset_frames, _user_context.ctx.likes, _user_context.ctx.curr_disp_type,
-			                               fr_ID);
+			_user_context._logger.log_like(fr_ID);
 		}
 		// If the item is present (LIKED)
 		else {
@@ -128,8 +127,7 @@ std::vector<bool> Somhunter::like_frames(const std::vector<FrameId>& new_likes)
 			_user_context.ctx.likes.erase(fr_ID);
 			res.emplace_back(false);
 
-			_user_context._logger.log_unlike(_dataset_frames, _user_context.ctx.likes, _user_context.ctx.curr_disp_type,
-			                                 fr_ID);
+			_user_context._logger.log_unlike(fr_ID);
 		}
 	}
 
@@ -313,6 +311,9 @@ RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
 		_user_context.ctx.scores.normalize(_user_context.ctx.temporal_size);
 	}
 
+	// Cancel the effect of returning from KNN
+	_user_context.ctx.curr_disp_type = DisplayType::DTopN;
+
 	apply_filters();
 	// Apply feedback and normalize
 	rescore_feedback();
@@ -339,8 +340,18 @@ RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
 	 */
 	size_t tar_pos{ _dataset_frames.size() };
 	if (!benchmark_run) {
+		const auto& targets{ _user_context.ctx.curr_targets };
+
+		for (auto&& t : targets) {
+			size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
+
+			tar_pos = std::min(r, tar_pos);
+		}
+
 		// Flush the backlog
 		_user_context._logger.poll();
+		_user_context._logger.log_rescore(_user_context.ctx._prev_query, query, targets);
+
 		auto top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
 		                                            _settings.topn_frames_per_shot);
 
@@ -349,14 +360,6 @@ RescoreResult Somhunter::rescore(const Query& query, bool benchmark_run)
 		                                  _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
 		                                  query.get_plain_text_query(), _settings.topn_frames_per_video,
 		                                  _settings.topn_frames_per_shot);
-
-		const auto& targets{ _user_context.ctx.curr_targets };
-
-		for (auto&& t : targets) {
-			size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
-
-			tar_pos = std::min(r, tar_pos);
-		}
 
 		SHLOG_S("Target position is " << tar_pos << ".");
 	}
@@ -374,16 +377,20 @@ bool Somhunter::som_ready(size_t temp_id) const { return _user_context._temp_asy
 bool Somhunter::login_to_eval_server() { return _user_context._eval_server.login(); }
 bool Somhunter::logout_from_eval_server() { return _user_context._eval_server.logout(); }
 
-bool Somhunter::submit_to_eval_server(FrameId frame_ID)
+SubmitResult Somhunter::submit_to_eval_server(FrameId frame_ID)
 {
 	// Submit
 	auto vf = _dataset_frames.get_frame(frame_ID);
-	bool submit_res{ _user_context._eval_server.submit(vf) };
+	try {
+		bool submit_res{ _user_context._eval_server.submit(vf) };
 
-	// Log it
-	_user_context._logger.log_submit(vf, submit_res);
-
-	return submit_res;
+		// Log it
+		_user_context._logger.log_submit(vf, submit_res);
+		return (submit_res ? SubmitResult::CORRECT : SubmitResult::INCORRECT);
+	} catch (const NotLoggedInEx& ex) {
+		SHLOG_W("Not logged in...");
+		return SubmitResult::NOT_LOGGED_IN;
+	}
 }
 
 void Somhunter::reset_search_session()

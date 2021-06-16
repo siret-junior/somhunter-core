@@ -27,7 +27,9 @@
 #include <cstring>
 #include <string>
 #include <vector>
-
+// ---
+#include <nlohmann/json.hpp>
+// ---
 #include "common.h"
 #include "utils.hpp"
 
@@ -50,6 +52,19 @@ struct VideoFrame {
 	      weekday{ weekday },
 	      hour{ hour }
 	{
+	}
+
+	nlohmann::json to_JSON() const
+	{
+		// clang-format off
+		return nlohmann::json{
+			{ "videoId", video_ID }, 
+			{ "shotId",  shot_ID }, 
+			{ "frameNumber", frame_number }, 
+			{ "frameId", frame_ID },
+			{ "filename", filename }
+		};
+		// clang-format on
 	}
 
 	std::string filename;
