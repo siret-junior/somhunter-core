@@ -24,60 +24,35 @@
 
 #include <cstddef>
 
-namespace sh {
-
+namespace sh
+{
+/**
+ * Internal logger lever.
+ *
+ * 4 = +debug, 3 = +info, 2 = +warnings, 1 = +errors 0 = none
+ */
+#define LOGLEVEL 4
 /** If verbose CURL debug request log should be printed. */
 #define DEBUG_CURL_REQUESTS 0
 
 /** If 1, each call to Core API will be logged. */
 #define LOG_API_CALLS 1
 
-// ----------------------------------------
-// Old
+/** How many following frames we inspect during the ranking. */
+#define KW_TEMPORAL_SPAN 5
 
+/** Zero scores will be substituted with this value. */
 #define MINIMAL_SCORE 1e-18f
 
-/*
- * Text query settings
- */
-
-#define KW_TEMPORAL_SPAN 5  // frames
+// ----------------------------------------
+// Old
 
 /*
  * Scoring/SOM stuff
  */
-/*
-#define TOPN_PER_VIDEO_NUM_FRAMES_LIMIT 3
-#define TOPKNN_PER_VIDEO_NUM_FRAMES_LIMIT 3
-#define PER_VIDEO_NUM_FROM_SHOT_LIMIT 1
-*/
 #define TOPN_LIMIT 20000
-constexpr size_t DISP_TOPN_CTX_RESULT_LIMIT = 10000;
 #define TOPKNN_LIMIT 10000
 #define SOM_ITERS 30000
-
-/*
- * Misc
- */
-
-#define DEFAULT_RESCORE 0  // 0=bayes, 1=LD
-
-#define FADE_ON_HOVER 0
-#define DRAW_FRAME_INFO 0
-#define DRAW_FRAME_SCORES 0
-
-#define ALLOW_DEBUG_WINDOW 1
-/*
- * Logging
- */
-
-#define LOGLEVEL 4  // 4 = +debug, 3 = +info, 2 = +warnings, 1 = +errors 0 = none
-
-#define LD_SHLOG_DIR "./logs/"
-#define LD_LOG_FILENAME "ld"
-#define FIRST_SHOWN_LOG_FILENAME "first_shown"
-
-#define GLOBAL_LOG_FILE "somhunter.log"
 
 /** Pop-up window image grid width */
 #define DISPLAY_GRID_WIDTH 6

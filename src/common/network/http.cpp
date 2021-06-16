@@ -163,7 +163,7 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 
 	// Insecurity
 	if (allow_insecure) {
-		//SHLOG_W("Doing insecure connection!");
+		// SHLOG_W("Doing insecure connection!");
 		// Add `--insecure` option
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
 	}
@@ -192,7 +192,7 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res_code);
 
 	if (res == CURLE_OK) {
-		SHLOG_I("POST request OK: '" << url << "'");
+		SHLOG_D("HTTP request OK: '" << url << "'");
 
 		nlohmann::json json_data{ nlohmann::json::parse(res_buffer) };
 

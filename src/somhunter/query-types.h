@@ -35,10 +35,11 @@
 #include "dataset-frames.h"
 #include "utils.hpp"
 
-namespace sh {
-
+namespace sh
+{
 /** Container for information about days filtering */
-class WeekDaysFilter {
+class WeekDaysFilter
+{
 	std::array<bool, 7> _days;
 
 public:
@@ -46,7 +47,8 @@ public:
 	WeekDaysFilter() { _days.fill(true); }
 
 	/** Construct from the bit mask */
-	WeekDaysFilter(uint8_t mask) {
+	WeekDaysFilter(uint8_t mask)
+	{
 		// Set the according days, ignore the last 2 bits
 		for (size_t i{ 0 }; i < 7; ++i) {
 			_days[i] = utils::is_set(mask, i);
@@ -97,27 +99,32 @@ using RelocationQuery = FrameId;
 struct RelativeRect {
 	float left, top, right, bottom;
 
-	float width_norm() const {
+	float width_norm() const
+	{
 		do_assert_debug(right >= right);
 		return right - left;
 	};
 
-	float height_norm() const {
+	float height_norm() const
+	{
 		do_assert_debug(bottom >= top);
 		return bottom - top;
 	};
 
 	template <class Archive>
-	void serialize(Archive& archive) {
+	void serialize(Archive& archive)
+	{
 		archive(left, top, right, bottom);
 	}
 
-	bool operator==(const RelativeRect& b) const {
+	bool operator==(const RelativeRect& b) const
+	{
 		return left == b.left && top == b.top && right == b.right && bottom == b.bottom;
 	}
 };
 
-class CanvasSubqueryBase {
+class CanvasSubqueryBase
+{
 protected:
 	RelativeRect _rect;
 
@@ -127,7 +134,8 @@ public:
 	const RelativeRect& rect() const { return _rect; };
 };
 
-class CanvasSubqueryBitmap : public CanvasSubqueryBase {
+class CanvasSubqueryBitmap : public CanvasSubqueryBase
+{
 	size_t _num_channels;
 	size_t _width;
 	size_t _height;
@@ -160,12 +168,14 @@ public:
 
 	bool operator!=(const CanvasSubqueryBitmap& b) const { return !((*this) == b); }
 
-	bool operator==(const CanvasSubqueryBitmap& b) const {
+	bool operator==(const CanvasSubqueryBitmap& b) const
+	{
 		return _num_channels == b._num_channels && _width == b._width && _height == b._height &&
 		       _data_int == b._data_int && _rect == b._rect;
 	}
 
-	json11::Json to_JSON() const {
+	json11::Json to_JSON() const
+	{
 		json11::Json::object res{ { "rect", json11::Json::array{ _rect.left, _rect.top, _rect.right, _rect.bottom } },
 			                      { "bitmap_filename", jpeg_filename },
 			                      { "width_pixels", static_cast<int>(_width) },
@@ -175,14 +185,16 @@ public:
 	}
 
 	template <class Archive>
-	void serialize(Archive& archive) {
+	void serialize(Archive& archive)
+	{
 		archive(_rect, _num_channels, _width, _height, _data_int);
 	}
 
 	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x);
 };
 
-inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x) {
+inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x)
+{
 	os << "---------------------------------" << std::endl;
 	os << "CanvasSubqueryBitmap: " << std::endl;
 	os << "---" << std::endl;
@@ -198,24 +210,29 @@ inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x) {
 	return os;
 }
 
-class CanvasSubqueryText : public CanvasSubqueryBase {
+class CanvasSubqueryText : public CanvasSubqueryBase
+{
 	TextualQuery _text_query;
 
 public:
 	CanvasSubqueryText() = default;
 	CanvasSubqueryText(const RelativeRect& rect, const TextualQuery query)
-	    : CanvasSubqueryBase{ rect }, _text_query{ query } {}
+	    : CanvasSubqueryBase{ rect }, _text_query{ query }
+	{
+	}
 
 	const TextualQuery& query() const { return _text_query; };
 
-	json11::Json to_JSON() const {
+	json11::Json to_JSON() const
+	{
 		json11::Json::object res{ { "rect", json11::Json::array{ _rect.left, _rect.top, _rect.right, _rect.bottom } },
 			                      { "text_query", _text_query } };
 
 		return res;
 	}
 	template <class Archive>
-	void serialize(Archive& archive) {
+	void serialize(Archive& archive)
+	{
 		archive(_rect, _text_query);
 	}
 
@@ -226,7 +243,8 @@ public:
 	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x);
 };
 
-inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x) {
+inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x)
+{
 	os << "---------------------------------" << std::endl;
 	os << "CanvasSubqueryText: " << std::endl;
 	os << "---" << std::endl;
@@ -245,7 +263,8 @@ using CanvasSubquery = std::variant<CanvasSubqueryBitmap, CanvasSubqueryText>;
 /**
  * Type representing query related to the canvas (atm text & bitmap) rectangles.
  */
-class CanvasQuery {
+class CanvasQuery
+{
 	// *** METHODS ***
 public:
 	/** Emplace new subregion TEXT query. */
@@ -268,7 +287,8 @@ public:
 	 * https://uscilab.github.io/cereal/stl_support.html
 	 */
 	template <class Archive>
-	void serialize(Archive& archive) {
+	void serialize(Archive& archive)
+	{
 		archive(_subqueries);
 	}
 
@@ -286,7 +306,8 @@ public:
 	static std::vector<CanvasQuery> parse_json_contents(const std::string& contents,
 	                                                    const std::filesystem::path parentPath);
 
-	bool operator==(const CanvasQuery& b) const {
+	bool operator==(const CanvasQuery& b) const
+	{
 		if (b.size() != size()) return false;
 
 		for (size_t i = 0; i < size(); ++i) {
@@ -322,8 +343,9 @@ public:
 	TemporalQuery(TextualQuery tq) : textual{ tq }, canvas{}, relocation{ ERR_VAL<FrameId>() } {}
 	TemporalQuery(CanvasQuery cq) : textual{}, canvas{ cq }, relocation{ ERR_VAL<FrameId>() } {}
 	TemporalQuery(RelocationQuery rq) : textual{}, canvas{}, relocation{ rq } {}
-	TemporalQuery(TextualQuery tq, CanvasQuery cq, RelocationQuery rq)
-	    : textual{ tq }, canvas{ cq }, relocation{ rq } {}
+	TemporalQuery(TextualQuery tq, CanvasQuery cq, RelocationQuery rq) : textual{ tq }, canvas{ cq }, relocation{ rq }
+	{
+	}
 	// ---
 	const bool is_relocation() const { return relocation != ERR_VAL<FrameId>(); }
 	const bool is_canvas() const { return !canvas.empty(); }
@@ -331,12 +353,14 @@ public:
 	const bool empty() const { return !is_relocation() && !is_canvas() && !is_text(); }
 
 	template <class Archive>
-	void serialize(Archive& archive) {
+	void serialize(Archive& archive)
+	{
 		archive(textual, canvas, relocation);
 	}
 	// ---
 	bool operator!=(const TemporalQuery& b) const { return !((*this) == b); }
-	bool operator==(const TemporalQuery& b) const {
+	bool operator==(const TemporalQuery& b) const
+	{
 		return textual == b.textual && canvas == b.canvas && relocation == b.relocation;
 	}
 
@@ -353,14 +377,49 @@ struct Query {
 public:
 	Query() = default;
 	template <typename Q>
-	Query(const std::vector<Q>& temp_queries) : metadata{}, filters{}, relevance_feeedback{} {
+	Query(const std::vector<Q>& temp_queries) : metadata{}, filters{}, relevance_feeedback{}
+	{
 		for (auto&& q : temp_queries) {
 			temporal_queries.emplace_back(q);
 		}
 	}
 	// ---
+	std::string get_plain_text_query() const
+	{
+		std::string text2;
 
-	void transform_to_no_pos_queries() {
+		for (auto&& tq : temporal_queries) {
+			TextualQuery new_query;
+
+			const auto& sqs{ tq.canvas.subqueries() };
+			std::string text{ tq.textual };
+			for (size_t idx{ 0 }; idx < sqs.size(); ++idx) {
+				const auto& sq{ sqs[idx] };
+
+				if (!std::holds_alternative<CanvasSubqueryText>(sq)) {
+					continue;
+				}
+
+				const CanvasSubqueryText& s{ std::get<CanvasSubqueryText>(sq) };
+				text.append(" [").append(s.query()).append("] ");
+			}
+			if (!text.empty()) {
+				text2.append(text).append(" >> ");
+			}
+		}
+
+		if (text2.length() > 0) {
+			text2.pop_back();
+			text2.pop_back();
+			text2.pop_back();
+			text2.pop_back();
+		}
+
+		return text2;
+	}
+
+	void transform_to_no_pos_queries()
+	{
 		for (auto&& tq : temporal_queries) {
 			TextualQuery new_query;
 

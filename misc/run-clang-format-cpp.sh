@@ -6,10 +6,10 @@ cd $ABSOLUTE_PATH # CD to script dir
 echo "Running the script from ${ABSOLUTE_PATH}..." 
 
 echo "Formatting `src` directory recursively..."
-find ../src/ -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' -exec clang-format -verbose -style=file -i {} \;
+find ../src/ -regex '.*\.\(h\|cpp\|hpp\|cc\|cxx\)' -exec clang-format -verbose -style=file -i {} \;
 
 echo "Formatting `tests` directory recursively..."
-find ../tests/ -regex '.*\.\(cpp\|hpp\|cc\|cxx\)' -exec clang-format -verbose -style=file -i {} \;
+find ../tests/ -regex '.*\.\(h\|cpp\|hpp\|cc\|cxx\)' -exec clang-format -verbose -style=file -i {} \;
 
 echo "Done."
 

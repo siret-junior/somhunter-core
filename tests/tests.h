@@ -21,14 +21,15 @@
 
 #include "config-tests.h"
 
-namespace sh {
-
+namespace sh
+{
 class Somhunter;
 struct Settings;
 
-namespace tests {
-
-class TESTER_Somhunter {
+namespace tests
+{
+class TESTER_Somhunter
+{
 public:
 	static void run_all_tests(const std::string &cfg_fpth);
 
@@ -46,7 +47,8 @@ private:
 	static void TEST_rescore_filters(Somhunter &core);
 };
 
-class TESTER_Config {
+class TESTER_Config
+{
 public:
 	static void run_all_tests(const std::string & /*cfg_fpth*/);
 

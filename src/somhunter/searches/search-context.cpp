@@ -27,7 +27,7 @@
 using namespace sh;
 
 SearchContext::SearchContext(size_t ID, const Settings& /*settings*/, const DatasetFrames& _dataset_frames)
-    : ID(ID), scores(_dataset_frames)
+    : ID(ID), scores(_dataset_frames), _prev_query{}
 {
 }
 

@@ -25,8 +25,8 @@
 #include <random>
 #include <vector>
 
-namespace sh {
-
+namespace sh
+{
 void fit_SOM(size_t n, size_t k, size_t dim, size_t niter, const std::vector<float>& points, std::vector<float>& koho,
              const std::vector<float>& nhbrdist, const float alphasA[2], const float radiiA[2], const float alphasB[2],
              const float radiiB[2], const std::vector<float>& scores, const std::vector<bool>& present_mask,

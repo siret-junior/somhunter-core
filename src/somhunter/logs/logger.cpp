@@ -41,16 +41,19 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
       _last_interactions_submit_ts{ utils::timestamp() }
 {
 	// Make sure that log directories exist
-	if (!utils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
+	if (!utils::dir_create(_logger_settings.log_dir_results + "/" + _p_user_ctx->get_username()) ||
+	    !utils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
 	    !utils::dir_create(_logger_settings.log_dir_user_actions_summary + "/" + _p_user_ctx->get_username())) {
 		std::string msg{ "Unable to create log directories!" };
 		SHLOG_E(msg);
 		throw std::runtime_error{ msg };
 	}
 
+	std::string filepath_results{ get_results_log_filepath() };
 	std::string filepath_actions{ get_actions_log_filepath() };
 	std::string filepath_summary{ get_summary_log_filepath() };
 
+	_results_log_stream.open(filepath_results);
 	_actions_log_stream.open(filepath_actions);
 	_summary_log_stream.open(filepath_summary);
 
@@ -61,14 +64,14 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
 	}
 
 	// Enable automatic flushing
-	_summary_log_stream << std::unitbuf << "[" << std::endl;
+	_results_log_stream << std::unitbuf << "[" << std::endl;
 	_actions_log_stream << std::unitbuf << "[" << std::endl;
 }
 
 Logger::~Logger()
 {
 	submit_interaction_logs_buffer();
-	_summary_log_stream << "]" << std::endl;
+	_results_log_stream << "]" << std::endl;
 	_actions_log_stream << "]" << std::endl;
 }
 
@@ -78,7 +81,7 @@ void Logger::log_submit(const VideoFrame frame, bool submit_result)
 	push_action("submit", "OTHER", "submit", (submit_result ? "true" : "false"));
 }
 
-void Logger::log_query(const Query& query, const std::vector<VideoFrame>* p_targets) const
+void Logger::log_query(const Query& /*query*/, const std::vector<VideoFrame>* /*p_targets*/) const
 {
 	// \todo Implement...
 }
@@ -92,6 +95,7 @@ void Logger::submit_interaction_logs_buffer()
 			                               { "type", "interaction" },
 			                               { "teamId", int(_logger_settings.team_ID) },
 			                               { "memberId", int(_logger_settings.member_ID) } };
+		_p_eval_server->send_interactions_log(a);
 		_interactions_buffer.clear();
 	}
 
@@ -99,7 +103,7 @@ void Logger::submit_interaction_logs_buffer()
 	_last_interactions_submit_ts = utils::timestamp();
 }
 
-void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
+void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
                          const UsedTools& used_tools, DisplayType /*disp_type*/, const std::vector<FrameId>& topn_imgs,
                          const std::string& sentence_query, const size_t topn_frames_per_video,
                          const size_t topn_frames_per_shot)
@@ -116,21 +120,24 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 		size_t i{ 0 };
 		for (auto&& img_ID : topn_imgs) {
 			auto vf = _dataset_frames.get_frame(img_ID);
+			std::stringstream item_ss;
 
 			// If LSC type of submit
 			if (_logger_settings.submit_LSC_IDs) {
-				results.push_back(nlohmann::json{ { "video", vf.LSC_id },
-				                                  { "frame", int(vf.frame_number) },
-				                                  { "score", double(scores[img_ID]) },
-				                                  { "rank", int(i) } });
+				item_ss << vf.LSC_id;
+				/* !!!
+				  We use "rank" field as our internal frame ID */
+				results.push_back(nlohmann::json{ { "item", item_ss.str() }, { "rank", int(vf.frame_ID) } });
 
 			}
 			// Non-LSC submit
 			else {
-				results.push_back(nlohmann::json{ { "video", std::to_string(vf.video_ID + 1) },
-				                                  { "frame", int(vf.frame_number) },
-				                                  { "score", double(scores[img_ID]) },
-				                                  { "rank", int(i) } });
+				item_ss << std::setfill('0') << std::setw(5) << (vf.video_ID + 1);  //< !! VBS videos start from 1
+
+				/* !!!
+				  We use "rank" field as our internal frame ID */
+				results.push_back(nlohmann::json{
+				    { "item", item_ss.str() }, { "frame", int(vf.frame_number) }, { "rank", int(vf.frame_ID) } });
 			}
 
 			++i;
@@ -205,16 +212,20 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 
 	nlohmann::json values_arr = nlohmann::json(values);
 
-	nlohmann::json top = nlohmann::json{ { "teamId", int(_logger_settings.team_ID) },
-		                                 { "memberId", int(_logger_settings.member_ID) },
-		                                 { "timestamp", double(utils::timestamp()) },
-		                                 { "usedCategories", used_cats },
-		                                 { "usedTypes", used_types },
-		                                 { "sortType", sort_types },
-		                                 { "resultSetAvailability", "top" },
-		                                 { "type", "result" },
-		                                 { "values", values_arr },
-		                                 { "results", std::move(result_json_arr) } };
+	nlohmann::json top = nlohmann::json{
+		{ "timestamp", utils::timestamp() },
+		{ "sortType", sort_types },
+		{ "resultSetAvailability", "top" },
+		{ "results", std::move(result_json_arr) },
+		{ "events", nlohmann::json::array() },
+		// ---
+		{ "usedCategories", used_cats },
+		{ "usedTypes", used_types },
+		{ "values", values_arr },
+	};
+
+	// Send it to the eval server
+	_p_eval_server->send_results_log(top);
 
 	/* ***
 	 * Augment the log with extra data */
@@ -224,10 +235,8 @@ void Logger::log_rescore(const DatasetFrames& _dataset_frames, const ScoreModel&
 	// top["currentTask"] = _p_eval_server->get_current_task();
 	top["likes"] = likes;
 
-	// Write summary only when non-KNN "rescore"
-	if (!used_tools.topknn_used) {
-		write_summary(top, "rescore", { "likes" });
-	}
+	write_result(top);
+	write_summary(top, "results", { "likes" });
 }
 
 void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/,
@@ -294,6 +303,11 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
 	pretty_print_opts.indent_increment = 4;
 	// o << obj.dump();
 	o << obj.pretty_print(pretty_print_opts);
+}
+
+void sh::Logger::log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>* p_targets)
+{
+	push_action("rescore", "OTHER ", "rescore", "");
 }
 
 void Logger::log_text_query_change(const std::string& text_query)
@@ -474,7 +488,8 @@ LogHash Logger::gen_action_hash(UnixTimestamp ts)
 }
 
 LogHash Logger::push_action(const std::string& action_name, const std::string& cat, const std::string& type,
-                            const std::string& value, std::initializer_list<std::string> summary_keys)
+                            const std::string& value, nlohmann::json&& our,
+                            std::initializer_list<std::string> summary_keys)
 {
 	/* ***
 	 * Prepare the log compatible with the eval server. */
@@ -492,23 +507,41 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	_interactions_buffer.emplace_back(log_JSON);
 
 	/* ***
-	 * Augment the log with extra data */
-	log_JSON["hash"] = hash;
-	log_JSON["serverTimestamp"] = _p_eval_server->get_server_ts();
-	log_JSON["userToken"] = _p_eval_server->get_user_token();
-	// log_JSON["currentTask"] = _p_eval_server->get_current_task();
+	 * Construct our log (use server if none specified). */
+	nlohmann::json our_log_JSON;
+	if (our_log_JSON.is_null()) {
+		our_log_JSON = log_JSON;
+	} else {
+		our_log_JSON = our;
+	}
 
-	write_action(log_JSON);
-	write_summary(log_JSON, action_name, summary_keys);
+	/* ***
+	 * Augment the log with extra data */
+	our_log_JSON["actionName"] = action_name;
+	our_log_JSON["hash"] = hash;
+	our_log_JSON["serverTimestamp"] = _p_eval_server->get_server_ts();
+	our_log_JSON["userToken"] = _p_eval_server->get_user_token();
+
+	write_action(our_log_JSON);
+	write_summary(our_log_JSON, action_name, summary_keys);
 
 	return hash;
+}
+
+std::string Logger::get_results_log_filepath() const
+{
+	std::filesystem::path p{ _logger_settings.log_dir_results + "/" + _p_user_ctx->get_username() };
+	p = p /
+	    ("results." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." + _p_user_ctx->get_username() + ".json");
+
+	return p.string();
 }
 
 std::string Logger::get_actions_log_filepath() const
 {
 	std::filesystem::path p{ _logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username() };
 	p = p / ("user-actions." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." + _p_user_ctx->get_username() +
-	         ".log");
+	         ".json");
 
 	return p.string();
 }

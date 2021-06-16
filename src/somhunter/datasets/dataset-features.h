@@ -32,9 +32,10 @@
 
 #include "distances.hpp"
 
-namespace sh {
-
-class DatasetFeatures {
+namespace sh
+{
+class DatasetFeatures
+{
 	size_t n, features_dim;
 	std::vector<float> data;
 
@@ -47,14 +48,16 @@ public:
 	inline const float* fv(size_t i) const { return data.data() + features_dim * i; }
 
 	std::vector<FrameId> get_top_knn(const DatasetFrames& _dataset_frames, FrameId id, size_t per_vid_limit = 0,
-	                                 size_t from_shot_limit = 0) const {
+	                                 size_t from_shot_limit = 0) const
+	{
 		return get_top_knn(
 		    _dataset_frames, id, [](FrameId /*frame_ID*/) { return true; }, per_vid_limit, from_shot_limit);
 	}
 
 	inline std::vector<FrameId> get_top_knn(const DatasetFrames& _dataset_frames, FrameId id,
 	                                        std::function<bool(FrameId ID)> pred, size_t per_vid_limit = 0,
-	                                        size_t from_shot_limit = 0) const {
+	                                        size_t from_shot_limit = 0) const
+	{
 		if (per_vid_limit == 0) per_vid_limit = _dataset_frames.size();
 
 		if (from_shot_limit == 0) from_shot_limit = _dataset_frames.size();
@@ -111,7 +114,8 @@ public:
 
 	inline float d_dot(size_t i, size_t j) const { return 1 - ::d_dot(fv(i), fv(j), features_dim); }
 
-	inline float d_cos(size_t i, size_t j) const {
+	inline float d_cos(size_t i, size_t j) const
+	{
 		float s = 0, w1 = 0, w2 = 0;
 		const float *iv = fv(i), *jv = fv(j);
 		for (size_t d = 0; d < features_dim; ++d) {

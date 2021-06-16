@@ -71,6 +71,7 @@ int main()
 	NetworkApi api{ config.API_config, &core };
 	api.run();
 
+#if 0
 	/* ***
 	 * Test features here...
 	 */
@@ -180,6 +181,7 @@ int main()
 	SHLOG_S("this is a success log");
 	SHLOG_D("this is a debug log");
 	SHLOG_REQ("123.0.0.1", "this is an API request");
+#endif
 
 	return 0;
 }

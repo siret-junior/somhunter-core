@@ -28,8 +28,8 @@
 #include <string>
 #include <vector>
 
-namespace sh {
-
+namespace sh
+{
 using UnixTimestamp = std::int64_t;
 
 // some types
@@ -70,7 +70,8 @@ using ShownFramesCont = std::set<FrameId>;
 
 /** Value indicating error/invalid/"NULL" value for the given type. */
 template <typename T>
-constexpr T ERR_VAL() {
+constexpr T ERR_VAL()
+{
 	return std::numeric_limits<T>::max();
 }
 
@@ -89,7 +90,8 @@ enum class DisplayType {
 	NumItems
 };
 
-inline DisplayType str_to_disp_type(const std::string& type_str) {
+inline DisplayType str_to_disp_type(const std::string& type_str)
+{
 	/* !!! THIS MUST MATCH WITH `config/config-core.json` FILE !!!
 	        strings->displayTypes
 	*/
@@ -103,7 +105,8 @@ inline DisplayType str_to_disp_type(const std::string& type_str) {
 	return DisplayType::NumItems;
 }
 
-inline std::string disp_type_to_str(DisplayType type) {
+inline std::string disp_type_to_str(DisplayType type)
+{
 	/* !!! THIS MUST MATCH WITH `config/config-core.json` FILE !!!
 	        strings->displayTypes
 	*/
@@ -148,12 +151,14 @@ constexpr size_t operator""_z(unsigned long long int x) { return static_cast<siz
 struct Filters;
 
 struct UsedTools {
-	bool operator==(const UsedTools& other) const {
+	bool operator==(const UsedTools& other) const
+	{
 		return (KWs_used == other.KWs_used && bayes_used == other.bayes_used && topknn_used == other.topknn_used);
 	}
 	UsedTools() : KWs_used(false), bayes_used(false), topknn_used(false), filters(nullptr) {}
 
-	void reset() {
+	void reset()
+	{
 		KWs_used = false;
 		bayes_used = false;
 		topknn_used = false;
@@ -168,13 +173,10 @@ struct UsedTools {
 };
 
 struct SubmitData {
-	SubmitData()
-	    : want_submit(false),
-	      frame_ID(IMAGE_ID_ERR_VAL)
+	SubmitData() : want_submit(false), frame_ID(IMAGE_ID_ERR_VAL) {}
 
-	{}
-
-	bool push_submit(FrameId fr_ID) {
+	bool push_submit(FrameId fr_ID)
+	{
 		// If we're busy, notify caller
 		if (want_submit) return false;
 
@@ -183,7 +185,8 @@ struct SubmitData {
 		return true;
 	}
 
-	FrameId get_and_pop_submit() {
+	FrameId get_and_pop_submit()
+	{
 		want_submit = false;
 		return frame_ID;
 	}

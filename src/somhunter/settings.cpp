@@ -134,7 +134,7 @@ EvalServerSettings Settings::parse_eval_server(const json11::Json& json)
 	res.log_dir_eval_server_requests = json["log_dir_eval_server_requests"].string_value();
 	res.log_dir_user_actions = json["log_dir_user_actions"].string_value();
 	res.log_dir_user_actions_summary = json["log_dir_user_actions_summary"].string_value();
-	res.log_dir_debug = json["log_dir_debug"].string_value();
+	res.log_dir_results = json["log_dir_results"].string_value();
 	res.log_file_suffix = json["log_file_suffix"].string_value();
 	res.extra_verbose_log = json["extra_verbose_log"].bool_value();
 

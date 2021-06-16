@@ -31,9 +31,10 @@
 #include "dataset-frames.h"
 #include "scores.h"
 
-namespace sh {
-
-class AsyncSom {
+namespace sh
+{
+class AsyncSom
+{
 	std::thread worker;
 
 	size_t features_dim{};
@@ -82,7 +83,8 @@ public:
 
 	std::vector<FrameId> get_display(ScoreModel scores) const;
 
-	bool map_ready() const {
+	bool map_ready() const
+	{
 		bool t = m_ready;
 		std::atomic_thread_fence(std::memory_order_acquire);
 		return t;
@@ -91,7 +93,8 @@ public:
 
 	const float* get_koho(size_t i) const { return koho.data() + i * features_dim; }
 
-	size_t nearest_cluster_with_atleast(const float* vec, const std::vector<size_t>& stolen_count) const {
+	size_t nearest_cluster_with_atleast(const float* vec, const std::vector<size_t>& stolen_count) const
+	{
 		float min = std::numeric_limits<float>::max();
 		size_t res = 0;
 		for (size_t i = 0; i < mapping.size(); ++i) {

@@ -252,6 +252,34 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 	return success;
 }
 
+bool ClientDres::send_results_log(const nlohmann::json& log_JSON)
+{
+	// \todo Actually send the log to the server.
+
+	bool result{ true };
+	auto ts{ utils::timestamp() };
+	ReqCode code{ 0 };
+	nlohmann::json res{};
+
+	write_log(LogType::RESULT, ts, log_JSON, code, res);
+
+	return result;
+}
+
+bool ClientDres::send_interactions_log(const nlohmann::json& log_JSON)
+{
+	// \todo Actually send the log to the server.
+
+	bool result{ true };
+	auto ts{ utils::timestamp() };
+	ReqCode code{ 0 };
+	nlohmann::json res{};
+
+	write_log(LogType::INTERACTION, ts, log_JSON, code, res);
+
+	return result;
+}
+
 UnixTimestamp ClientDres::get_server_ts()
 {
 	// Shift the timestamp to the server
@@ -285,11 +313,12 @@ void ClientDres::write_log(LogType type, UnixTimestamp ts, const nlohmann::json&
 		SHLOG_E("Could not write a log file '" << log_filepath << "'!");
 	}
 
-	nlohmann::json log{
-		{ "timestamp", ts },       { "datetime", utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S", ts) },
-		{ "type", "logout" },      { "request", req },
-		{ "response_code", code }, { "response", res }
-	};
+	nlohmann::json log{ { "timestamp", ts },
+		                { "datetime", utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S", ts) },
+		                { "type", log_type_to_str(type) },
+		                { "request", req },
+		                { "response_code", code },
+		                { "response", res } };
 
 	ofs << log.dump(4);
 }

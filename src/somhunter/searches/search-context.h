@@ -31,11 +31,11 @@
 #include "utils.hpp"
 
 #include "dataset-frames.h"
-#include "scores.h"
 #include "query-types.h"
+#include "scores.h"
 
-namespace sh {
-
+namespace sh
+{
 class DatasetFrames;
 class DatasetFeatures;
 
@@ -50,7 +50,8 @@ struct SearchContext {
 
 	bool operator==(const SearchContext& other) const;
 
-	void reset() {
+	void reset()
+	{
 		scores.reset_mask();
 		reset_filters();
 	}
@@ -89,6 +90,8 @@ struct SearchContext {
 
 	/** Target we were looking for. (Data collection.) */
 	std::vector<VideoFrame> curr_targets;
+
+	Query _prev_query;
 };
 
 };  // namespace sh
