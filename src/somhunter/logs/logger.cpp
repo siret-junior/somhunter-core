@@ -65,7 +65,6 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
 
 	// Enable automatic flushing
 	_results_log_stream << std::unitbuf << "[" << std::endl;
-	_summary_log_stream << std::unitbuf << "[" << std::endl;
 	_actions_log_stream << std::unitbuf << "[" << std::endl;
 }
 
@@ -73,7 +72,6 @@ Logger::~Logger()
 {
 	submit_interaction_logs_buffer();
 	_results_log_stream << "]" << std::endl;
-	_summary_log_stream << "]" << std::endl;
 	_actions_log_stream << "]" << std::endl;
 }
 
@@ -490,7 +488,8 @@ LogHash Logger::gen_action_hash(UnixTimestamp ts)
 }
 
 LogHash Logger::push_action(const std::string& action_name, const std::string& cat, const std::string& type,
-                            const std::string& value, std::initializer_list<std::string> summary_keys)
+                            const std::string& value, nlohmann::json&& our,
+                            std::initializer_list<std::string> summary_keys)
 {
 	/* ***
 	 * Prepare the log compatible with the eval server. */
@@ -508,15 +507,23 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	_interactions_buffer.emplace_back(log_JSON);
 
 	/* ***
-	 * Augment the log with extra data */
-	log_JSON["actionName"] = action_name;
-	log_JSON["hash"] = hash;
-	log_JSON["serverTimestamp"] = _p_eval_server->get_server_ts();
-	log_JSON["userToken"] = _p_eval_server->get_user_token();
-	// log_JSON["currentTask"] = _p_eval_server->get_current_task();
+	 * Construct our log (use server if none specified). */
+	nlohmann::json our_log_JSON;
+	if (our_log_JSON.is_null()) {
+		our_log_JSON = log_JSON;
+	} else {
+		our_log_JSON = our;
+	}
 
-	write_action(log_JSON);
-	write_summary(log_JSON, action_name, summary_keys);
+	/* ***
+	 * Augment the log with extra data */
+	our_log_JSON["actionName"] = action_name;
+	our_log_JSON["hash"] = hash;
+	our_log_JSON["serverTimestamp"] = _p_eval_server->get_server_ts();
+	our_log_JSON["userToken"] = _p_eval_server->get_user_token();
+
+	write_action(our_log_JSON);
+	write_summary(our_log_JSON, action_name, summary_keys);
 
 	return hash;
 }

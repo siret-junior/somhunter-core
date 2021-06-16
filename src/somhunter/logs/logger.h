@@ -94,7 +94,8 @@ public:
 private:
 	LogHash gen_action_hash(UnixTimestamp ts);
 	LogHash push_action(const std::string& action_name, const std::string& cat, const std::string& type,
-	                    const std::string& value, std::initializer_list<std::string> summary_keys = { "value" });
+	                    const std::string& value, nlohmann::json&& our_log_JSON = {},
+	                    std::initializer_list<std::string> summary_keys = { "value" });
 
 	/** Writes the log into the local file. */
 	void write_result(const nlohmann::json& action_log)
