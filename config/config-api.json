@@ -371,6 +371,39 @@
                 }
             }
         },
+        "/log/canvas-query-change": {
+            "get": {
+                "tags": [
+                    "Logs"
+                ],
+                "summary": "Notifies the core about thhis event.",
+                "operationId": "log_canvas_query_change",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Current text of the query."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                }
+            }
+        },
         "/eval-server/submit": {
             "post": {
                 "tags": [
