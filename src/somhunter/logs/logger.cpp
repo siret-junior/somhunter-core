@@ -347,6 +347,10 @@ void Logger::log_like(FrameId frame_ID) { log_bothlike(frame_ID, "like"); }
 
 void Logger::log_unlike(FrameId frame_ID) { log_bothlike(frame_ID, "unlike"); }
 
+void Logger::log_bookmark(FrameId frame_ID) { log_bothlike(frame_ID, "bookmark"); }
+
+void Logger::log_unbookmark(FrameId frame_ID) { log_bothlike(frame_ID, "unbookmark"); }
+
 void Logger::log_show_random_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
 	push_action("showRandomDisplay", "BROWSING", "randomSelection", "randomDisplay;");

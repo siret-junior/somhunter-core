@@ -153,13 +153,14 @@ std::vector<bool> Somhunter::bookmark_frames(const std::vector<FrameId>& new_boo
 		if (count == 0) {
 			_user_context._bookmarks.insert(fr_ID);
 			res.emplace_back(true);
-
+			_user_context._logger.log_bookmark(fr_ID);
 			// \todo Log it?
 		}
 		// If the item is present (LIKED) -> unbookmark it
 		else {
 			_user_context._bookmarks.erase(fr_ID);
 			res.emplace_back(false);
+			_user_context._logger.log_unbookmark(fr_ID);
 
 			// \todo Log it?
 		}

@@ -64,8 +64,10 @@ public:
 	void log_text_query_change(const std::string& query_sentence);
 
 	void log_like(FrameId frame_ID);
-
 	void log_unlike(FrameId frame_ID);
+
+	void log_bookmark(FrameId frame_ID);
+	void log_unbookmark(FrameId frame_ID);
 
 	void log_show_som_display(const DatasetFrames& _dataset_frames, const std::vector<FrameId>& imgs);
 
@@ -115,8 +117,8 @@ private:
 	void write_action(const nlohmann::json& action_log)
 	{
 		// If first time output
-		if (_first_result) {
-			_first_result = false;
+		if (_first_actions) {
+			_first_actions = false;
 		} else {
 			_actions_log_stream << "," << std::endl;
 		}
