@@ -127,7 +127,7 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 	SHLOG_S("CanvasQueryRanker initialized.");
 }
 
-void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model, size_t temporal,
+void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model, size_t temporal, UsedTools& used_tools,
                               const DatasetFeatures& /*features*/, const DatasetFrames& /*_dataset_frames*/)
 {
 	if (!_loaded) {
@@ -136,7 +136,7 @@ void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model
 	}
 
 	if (canvas_query.size() > 0) {
-		at::Tensor tensor_features = get_features(canvas_query);
+		at::Tensor tensor_features = get_features(canvas_query, used_tools);
 
 		// Convert tensor to STD containered matrix
 		auto collage_vectors{ to_std_matrix<float>(tensor_features) };
@@ -172,7 +172,7 @@ at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const
 }
 
 // returns 2048 dim normed vector for each image in collage
-at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage)
+at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage,UsedTools& used_tools)
 {
 	SHLOG_D("Extracting features\n");
 
@@ -192,6 +192,9 @@ at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage)
 
 		// If bitmap
 		if (std::holds_alternative<CanvasSubqueryBitmap>(subquery)) {
+			// Set used tool
+			used_tools.canvas_bitmap_used = true;
+
 			CanvasSubqueryBitmap& subquery_bitmap{ std::get<CanvasSubqueryBitmap>(subquery) };
 			auto scaled_bitmap{ subquery_bitmap.get_scaled_bitmap(224, 224) };
 
@@ -218,6 +221,9 @@ at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage)
 		}
 		// Else text
 		else {
+			// Set used tool
+			used_tools.canvas_text_used = true;
+
 			CanvasSubqueryText subquery_text{ std::get<CanvasSubqueryText>(subquery) };
 			auto fea{ _p_core->get_text_query_feature(subquery_text.query()) };
 			tensors_text.emplace_back(to_tensor<at::kFloat, float>(fea));

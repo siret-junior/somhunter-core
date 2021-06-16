@@ -169,19 +169,34 @@ struct UsedTools {
 	{
 		return (KWs_used == other.KWs_used && bayes_used == other.bayes_used && topknn_used == other.topknn_used);
 	}
-	UsedTools() : KWs_used(false), bayes_used(false), topknn_used(false), filters(nullptr) {}
+	UsedTools()
+	    : KWs_used(false),
+	      bayes_used(false),
+	      topknn_used(false),
+	      canvas_bitmap_used{ false },
+	      canvas_text_used{ false },
+	      relocation_used{ false },
+	      filters(nullptr)
+	{
+	}
 
 	void reset()
 	{
 		KWs_used = false;
 		bayes_used = false;
 		topknn_used = false;
+		canvas_bitmap_used = false;
+		canvas_text_used = false;
+		relocation_used = false;
 		filters = nullptr;
 	}
 
 	bool KWs_used;
 	bool bayes_used;
 	bool topknn_used;
+	bool canvas_bitmap_used;
+	bool canvas_text_used;
+	bool relocation_used;
 
 	const Filters* filters;
 };

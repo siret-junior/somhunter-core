@@ -232,7 +232,7 @@ void Somhunter::apply_filters()
 RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 {
 	const std::vector<TemporalQuery>& temporal_query{ query.temporal_queries };
-	const RelevanceFeedbackQuery& rfQuery{ query.relevance_feeedback };
+	const RelevanceFeedbackQuery& rel_feedback_query{ query.relevance_feeedback };
 	const Filters* p_filters{ &query.filters };
 	size_t src_search_ctx_ID{ query.metadata.srd_search_ctx_ID };
 	const std::string& screenshot_fpth{ query.metadata.screenshot_filepath };
@@ -272,29 +272,40 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	 * Do all the needed rescore steps
 	 */
 	// Store likes for the logging purposees
-	auto old_likes{ rfQuery };
+	auto old_likes{ rel_feedback_query };
 
 	// Check if temporal queries has changed
 	if (_user_context.ctx.last_temporal_queries != temporal_query) {
-		reset_scores();
+		reset_scores(); //< Resets scores & used tools
 		size_t moment = 0;
 
 		for (size_t mi = 0; mi < temporal_query.size(); ++mi) {
 			auto&& moment_query = temporal_query[mi];
+			
 			if (moment_query.empty()) continue;
 
-			// auto&& last_moment_query = user.ctx.last_temporal_queries[mi];
-
+			// ***
+			// Relocation
 			if (moment_query.is_relocation()) {
 				SHLOG_D("Running the relocation query model...");
-				_relocation_ranker.score(moment_query.relocation, _user_context.ctx.scores, moment, _dataset_features);
-			} else if (moment_query.is_canvas()) {
-				SHLOG_D("Running the canvas query model...");
-				// canvas_query.set_targets(user.ctx.curr_targets);
-				_collage_ranker.score(moment_query.canvas, _user_context.ctx.scores, moment, _dataset_features,
-				                      _dataset_frames);
+				
+				// Set used tool
+				_user_context.ctx.used_tools.relocation_used = true;
 
-			} else if (moment_query.is_text()) {
+				_relocation_ranker.score(moment_query.relocation, _user_context.ctx.scores, moment, _dataset_features);
+			} 
+			// ***
+			// Canvas
+			else if (moment_query.is_canvas()) {
+				SHLOG_D("Running the canvas query model...");
+
+				_collage_ranker.score(moment_query.canvas, _user_context.ctx.scores, moment,
+				                      _user_context.ctx.used_tools, _dataset_features, _dataset_frames);
+
+			} 
+			// ***
+			// Plain text
+			else if (moment_query.is_text()) {
 				SHLOG_D("Running plain texual model...");
 				rescore_keywords(moment_query.textual, moment);
 			}

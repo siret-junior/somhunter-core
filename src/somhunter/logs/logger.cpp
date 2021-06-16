@@ -165,9 +165,9 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 		}
 	}
 
-	std::vector<nlohmann::json> used_cats;
-	std::vector<nlohmann::json> used_types;
-	std::vector<nlohmann::json> sort_types;
+	std::set<nlohmann::json> used_cats;
+	std::set<nlohmann::json> used_types;
+	std::set<nlohmann::json> sort_types;
 
 	std::string query_val(sentence_query + ";");
 	std::stringstream filters_val_ss;
@@ -175,38 +175,56 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 	// If Top KNN request
 	if (used_tools.topknn_used) {
 		// Mark this as KNN request
-		query_val += "show_knn;";
+		query_val += "showNearestNeighboursDisplay;";
 
-		used_cats.push_back("image");
-		used_types.push_back("globalFeatures");
-		sort_types.push_back("globalFeatures");
+		used_cats.insert("image");
+		used_types.insert("globalFeatures");
+		sort_types.insert("globalFeatures");
 	}
 	// Else normal rescore
 	else {
 		// Just mark that this was NOT KNN request
-		query_val += "normal_rescore;";
+		query_val += "rescore;";
 
 		if (used_tools.KWs_used) {
-			used_cats.push_back("text");
-			used_types.push_back("jointEmbedding");
-			sort_types.push_back("jointEmbedding");
+			used_cats.insert("text");
+			used_types.insert("jointEmbedding");
+			sort_types.insert("jointEmbedding");
+		}
+
+		if (used_tools.canvas_bitmap_used) {
+			used_cats.insert("image");
+			used_types.insert("localizedObjectBitmap");
+			sort_types.insert("localizedObjectBitmap");
+		}
+
+		if (used_tools.canvas_text_used) {
+			used_cats.insert("text");
+			used_types.insert("localizedObjectText");
+			sort_types.insert("localizedObjectText");
+		}
+
+		if (used_tools.relocation_used) {
+			used_cats.insert("image");
+			used_types.insert("textQueryRelocation");
+			sort_types.insert("textQueryRelocation");
 		}
 
 		if (used_tools.bayes_used) {
-			used_cats.push_back("image");
-			used_types.push_back("feedbackModel");
-			sort_types.push_back("feedbackModel");
+			used_cats.insert("image");
+			used_types.insert("feedbackModel");
+			sort_types.insert("feedbackModel");
 		}
 
 		if (used_tools.filters != nullptr) {
-			used_cats.push_back("filter");
-			used_types.push_back("lifelog");
+			used_cats.insert("filter");
+			used_types.insert("lifelog");
 
 			const Filters* fs{ used_tools.filters };
 
 			// Write values value
-			filters_val_ss << "h_from=" << size_t(fs->time.from) << ";"
-			               << "h_to=" << size_t(fs->time.to) << ";"
+			filters_val_ss << "hFrom=" << size_t(fs->time.from) << ";"
+			               << "hTo=" << size_t(fs->time.to) << ";"
 			               << "days=";
 
 			for (size_t i{ 0 }; i < 7; ++i) {
@@ -217,9 +235,9 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 		}
 	}
 
-	query_val += "from_video_limit=";
+	query_val += "fromVideoLimit=";
 	query_val += std::to_string(topn_frames_per_video);
-	query_val += ";from_shot_limit=";
+	query_val += ";fromShotLimit=";
 	query_val += std::to_string(topn_frames_per_shot);
 
 	nlohmann::json result_json_arr = nlohmann::json(results);
@@ -254,7 +272,7 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 	top["serverTimestamp"] = _p_eval_server->get_server_ts();
 	top["userToken"] = _p_eval_server->get_user_token();
 	// top["currentTask"] = _p_eval_server->get_current_task();
-	top["likes"] = likes;
+	//top["likes"] = likes;
 
 	// Write separate result log
 	write_result(top);
