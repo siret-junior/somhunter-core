@@ -58,10 +58,10 @@ struct VideoFrame {
 	{
 		// clang-format off
 		return nlohmann::json{
-			{ "video_ID", video_ID }, 
-			{ "shot_ID",  shot_ID }, 
-			{ "frame_number", frame_number }, 
-			{ "frame_ID", frame_ID },
+			{ "videoId", video_ID }, 
+			{ "shotId",  shot_ID }, 
+			{ "frameNumber", frame_number }, 
+			{ "frameId", frame_ID },
 			{ "filename", filename }
 		};
 		// clang-format on

@@ -89,7 +89,7 @@ void Logger::log_submit(const VideoFrame frame, bool submit_result)
 
 	// Create the log
 	push_action("submit", "OTHER", "submit", (submit_result ? "true" : "false"), std::move(log_JSON),
-	            { "video_ID", "frame_number", "frame_ID" });
+	            { "videoId", "frameNumber", "frameId" });
 }
 
 void Logger::log_query(const Query& /*query*/, const std::vector<VideoFrame>* /*p_targets*/) const
@@ -246,8 +246,10 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 	// top["currentTask"] = _p_eval_server->get_current_task();
 	top["likes"] = likes;
 
+	// Write separate result log
 	write_result(top);
-	write_summary(top, "results", { "likes" });
+	// Write the action
+	push_action("results", "OTHER", "results", "");
 }
 
 void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/,
@@ -316,7 +318,7 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
 	o << obj.pretty_print(pretty_print_opts);
 }
 
-void sh::Logger::log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>* p_targets)
+void sh::Logger::log_rescore(const Query& prev_query, const Query& new_query, const std::vector<VideoFrame>& targets)
 {
 	push_action("rescore", "OTHER ", "rescore", "");
 }
@@ -331,53 +333,35 @@ void Logger::log_text_query_change(const std::string& text_query)
 		if (last_logged + _logger_settings.log_action_timeout > size_t(utils::timestamp())) return;
 	}
 
-	push_action("text_query_change", "TEXT", "jointEmbedding", text_query);
+	push_action("textQueryChange", "TEXT", "jointEmbedding", text_query);
 }
-void Logger::log_like(const DatasetFrames& _dataset_frames, const std::set<FrameId>& /*likes*/,
-                      DisplayType /*disp_type*/, FrameId frame_ID)
-{
-	auto vf = _dataset_frames.get_frame(frame_ID);
+void Logger::log_like(FrameId frame_ID) { log_bothlike(frame_ID, "like"); }
 
-	std::stringstream data_ss;
-	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";like;";
-
-	push_action("like", "IMAGE", "feedbackModel", data_ss.str());
-}
-
-void Logger::log_unlike(const DatasetFrames& _dataset_frames, const std::set<FrameId>& /*likes*/,
-                        DisplayType /*disp_type*/, FrameId frame_ID)
-{
-	auto vf = _dataset_frames.get_frame(frame_ID);
-
-	std::stringstream data_ss;
-	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";unlike;";
-
-	push_action("unline", "IMAGE", "feedbackModel", data_ss.str(), {}, { "" });
-}
+void Logger::log_unlike(FrameId frame_ID) { log_bothlike(frame_ID, "unlike"); }
 
 void Logger::log_show_random_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
-	push_action("show_random_display", "BROWSING", "randomSelection", "random_display;");
+	push_action("showRandomDisplay", "BROWSING", "randomSelection", "randomDisplay;");
 }
 
 void Logger::log_show_som_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
-	push_action("show_SOM_display", "BROWSING", "exploration", "som_display");
+	push_action("showSomDisplay", "BROWSING", "exploration", "somDisplay");
 }
 
 void Logger::log_show_som_relocation_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
-	push_action("show_SOM_relocation_display", "BROWSING", "exploration", "som_relocation_display");
+	push_action("showSomRelocationDisplay", "BROWSING", "exploration", "somRelocationDisplay");
 }
 
 void Logger::log_show_topn_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
-	push_action("show_top_scored_display", "BROWSING", "rankedList", "topn_display");
+	push_action("showTopScoredDisplay", "BROWSING", "rankedList", "topnDisplay");
 }
 
 void Logger::log_show_topn_context_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
 {
-	push_action("show_top_scored_context_display", "BROWSING", "rankedList", "topn_context_display;");
+	push_action("showTopScoredContextDisplay", "BROWSING", "rankedList", "topnContextDisplay;");
 }
 
 void Logger::log_show_topknn_display(const DatasetFrames& _dataset_frames, FrameId frame_ID,
@@ -398,7 +382,7 @@ void Logger::log_show_detail_display(const DatasetFrames& _dataset_frames, Frame
 	std::stringstream data_ss;
 	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";video_detail;";
 
-	push_action("show_detail_display", "BROWSING", "videoSummary", data_ss.str());
+	push_action("showDetailDisplay", "BROWSING", "videoSummary", data_ss.str());
 }
 
 void Logger::log_show_video_replay(const DatasetFrames& _dataset_frames, FrameId frame_ID, float delta)
@@ -423,7 +407,7 @@ void Logger::log_show_video_replay(const DatasetFrames& _dataset_frames, FrameId
 	data_ss << "VId" << (vf.video_ID + 1) << ",FN" << vf.frame_number << ";FId" << frame_ID << ";delta=" << delta
 	        << ";replay;";
 
-	push_action("replay_video", "BROWSING", "temporalContext", data_ss.str());
+	push_action("replayVideo", "BROWSING", "temporalContext", data_ss.str());
 }
 
 void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_type, float dirY)
@@ -434,27 +418,27 @@ void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_t
 	switch (from_disp_type) {
 		case DisplayType::DTopN:
 			ev_type = "rankedList";
-			disp_type = "topn_display";
+			disp_type = "topnDisplay";
 			break;
 
 		case DisplayType::DTopNContext:
 			ev_type = "rankedList";
-			disp_type = "topn_display_with_context";
+			disp_type = "topnDisplayWithContext";
 			break;
 
 		case DisplayType::DTopKNN:
 			ev_type = "rankedList";
-			disp_type = "topknn_display";
+			disp_type = "topknnDisplay";
 			break;
 
 		case DisplayType::DVideoDetail:
 			ev_type = "videoSummary";
-			disp_type = "video_detail";
+			disp_type = "videoDetail";
 			break;
 
 		case DisplayType::DVideoReplay:
 			ev_type = "videoSummary";
-			disp_type = "video_replay";
+			disp_type = "videoReplay";
 			break;
 
 		default:
@@ -477,25 +461,46 @@ void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_t
 	last_disp_type = from_disp_type;
 
 	std::stringstream data_ss;
-	data_ss << "scroll" << (dirY > 0 ? "Up" : "Down") << ";" << dirY << ";" << disp_type << ";";
+	data_ss << "scroll" << (dirY > 0 ? "up" : "down") << ";" << dirY << ";" << disp_type << ";";
 
 	// clang-format off
 	nlohmann::json log_JSON{
-		{ "display_type", disp_type },
+		{ "displayType", disp_type },
 		{ "direction", (dirY > 0 ? "up" : "down") },
 		{ "delta", dirY }
 	};
 	// clang-format on
 
-	push_action("scroll", "BROWSING", ev_type, data_ss.str(), std::move(log_JSON), { "display_type", "direction" });
+	push_action("scroll", "BROWSING", ev_type, data_ss.str(), std::move(log_JSON), { "displayType", "direction" });
 }
 
-void Logger::log_reset_search() { push_action("reset_all", "BROWSING", "resetAll", ""); }
+void Logger::log_reset_search() { push_action("resetAll", "BROWSING", "resetAll", ""); }
 
 void Logger::poll()
 {
 	if (_last_interactions_submit_ts + _logger_settings.send_logs_to_server_period < size_t(utils::timestamp()))
 		submit_interaction_logs_buffer();
+}
+
+void Logger::log_bothlike(FrameId frame_ID, const std::string& type)
+{
+	auto vf = _p_user_ctx->get_frames()->get_frame(frame_ID);
+	auto f_JSON{ vf.to_JSON() };
+
+	// clang-format off
+		nlohmann::json serve_JSON{
+			{"action", type }
+		};
+		nlohmann::json log_JSON{
+			{ "likes", _p_user_ctx->ctx.likes },
+			{ "dispType", disp_type_to_str(_p_user_ctx->ctx.curr_disp_type) },
+		};
+	// clang-format on
+
+	log_JSON.insert(f_JSON.begin(), f_JSON.end());
+	serve_JSON.insert(f_JSON.begin(), f_JSON.end());
+
+	push_action(type, "IMAGE", "feedbackModel", serve_JSON.dump(4), std::move(log_JSON), { "frameId" });
 }
 
 LogHash Logger::gen_action_hash(UnixTimestamp ts)

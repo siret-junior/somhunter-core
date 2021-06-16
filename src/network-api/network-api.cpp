@@ -1062,7 +1062,8 @@ void NetworkApi::handle__eval_server__submit__POST(http_request req)
 
 	// 401 for Unauthorized
 	if (correct != SubmitResult::CORRECT && correct != SubmitResult::INCORRECT) {
-		http_response res{ construct_error_res(status_codes::Unauthorized, "Invalid `frameId` parameter.") };
+		http_response res{ construct_error_res(status_codes::Unauthorized,
+			                                   "You are not logged in to the evaluation server.") };
 		NetworkApi::add_CORS_headers(res);
 		req.reply(res);
 		return;
