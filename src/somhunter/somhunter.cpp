@@ -85,11 +85,14 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 
 	    The rest are popups.
 	 */
-	if (prev_display == DisplayType::DTopKNN &&
-	    (curr_display == DisplayType::DTopN || curr_display == DisplayType::DTopNContext ||
-	     curr_display == DisplayType::DRand || curr_display == DisplayType::DSom)) {
+	if ((_user_context._force_result_log) ||
+	    (prev_display == DisplayType::DTopKNN &&
+	     (curr_display == DisplayType::DTopN || curr_display == DisplayType::DTopNContext ||
+	      curr_display == DisplayType::DRand || curr_display == DisplayType::DSom))) {
 		auto top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
 		                                            _settings.topn_frames_per_shot);
+
+		_user_context._force_result_log = false;
 
 		_user_context._logger.log_results(_dataset_frames, _user_context.ctx.scores,
 		                                  _user_context.ctx._prev_query.relevance_feeedback,
@@ -1016,6 +1019,7 @@ const UserContext& Somhunter::switch_search_context(size_t index, size_t src_sea
 	}
 
 	SHLOG_I("Switching to context '" << index << "'...");
+	_user_context._logger.log_search_context_switch(index, src_search_ctx_ID);
 
 	// SOM must stop first
 	while (!_user_context._async_SOM.map_ready()) {
@@ -1030,6 +1034,9 @@ const UserContext& Somhunter::switch_search_context(size_t index, size_t src_sea
 
 	// Kick-off the SOM for the old-new state
 	som_start(_user_context.ctx.temporal_size);
+
+	// This action forces the result log to be send again
+	_user_context._force_result_log = true;
 
 	// Returnp ptr to it
 	return _user_context;

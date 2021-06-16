@@ -44,6 +44,9 @@ public:
 	/** Does periodic cleanup & log flush. */
 	void poll();
 
+	
+	void log_search_context_switch(std::size_t dest_context_ID, size_t src_context_ID);
+
 	/** Called whenever we want to log submit frame/shot into the server. */
 	void log_submit(const VideoFrame frame, bool submit_result);
 
@@ -59,6 +62,7 @@ public:
 	                 const std::string& sentence_query, const size_t topn_frames_per_video,
 	                 const size_t topn_frames_per_shot);
 
+	
 	void log_text_query_change(const std::string& query_sentence);
 
 	void log_like(FrameId frame_ID);

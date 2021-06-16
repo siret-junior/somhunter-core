@@ -249,7 +249,7 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 	// Write separate result log
 	write_result(top);
 	// Write the action
-	push_action("results", "OTHER", "results", "");
+	push_action("reportResults", "OTHER", "reportResults", "");
 }
 
 void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/,
@@ -480,6 +480,20 @@ void Logger::poll()
 {
 	if (_last_interactions_submit_ts + _logger_settings.send_logs_to_server_period < size_t(utils::timestamp()))
 		submit_interaction_logs_buffer();
+}
+
+void Logger::log_search_context_switch(std::size_t dest_context_ID, size_t src_context_ID)
+{
+	// clang-format off
+	nlohmann::json log{ 
+		{"sourceContextId", src_context_ID},
+		{"destinationContextId", dest_context_ID}
+	};
+	// clang-format on
+
+	// Create the log
+	push_action("searchContextSwitch", "OTHER", "searchContextSwitch", log.dump(4), std::move(log),
+	            { "sourceContextId", "destinationContextId" });
 }
 
 void Logger::log_bothlike(FrameId frame_ID, const std::string& type)
