@@ -44,6 +44,8 @@ public:
 	/** Does periodic cleanup & log flush. */
 	void poll();
 
+	void log_search_context_switch(std::size_t dest_context_ID, size_t src_context_ID);
+
 	/** Called whenever we want to log submit frame/shot into the server. */
 	void log_submit(const VideoFrame frame, bool submit_result);
 
@@ -100,21 +102,34 @@ private:
 	/** Writes the log into the local file. */
 	void write_result(const nlohmann::json& action_log)
 	{
-		_results_log_stream << action_log.dump(4) << "," << std::endl;
+		// If first time output
+		if (_first_result) {
+			_first_result = false;
+		} else {
+			_results_log_stream << "," << std::endl;
+		}
+		_results_log_stream << action_log.dump(4);
 	}
 
 	/** Writes the log into the local file. */
 	void write_action(const nlohmann::json& action_log)
 	{
-		_actions_log_stream << action_log.dump(4) << "," << std::endl;
+		// If first time output
+		if (_first_result) {
+			_first_result = false;
+		} else {
+			_actions_log_stream << "," << std::endl;
+		}
+
+		_actions_log_stream << action_log.dump(4);
 	}
 
 	/** Writes the log into the local file. */
 	void write_summary(const nlohmann::json& log, const std::string& action_name,
 	                   std::initializer_list<std::string> keys = {})
 	{
-		auto ts{ log["timestamp"].get<UnixTimestamp>() };
-		auto hash{ log["hash"].get<std::string>() };
+		auto ts{ log["metadata"]["timestamp"].get<UnixTimestamp>() };
+		auto hash{ log["metadata"]["hash"].get<std::string>() };
 
 		_summary_log_stream << utils::get_formated_timestamp("%H:%M:%S", ts) << "\t" << hash << "\t" << action_name
 		                    << "\t";
@@ -142,8 +157,10 @@ private:
 	UnixTimestamp _last_interactions_submit_ts;
 
 	std::ofstream _results_log_stream;
+	bool _first_result{ true };
 	std::ofstream _summary_log_stream;
 	std::ofstream _actions_log_stream;
+	bool _first_actions{ true };
 };
 
 };  // namespace sh

@@ -92,6 +92,7 @@ public:  //< This is temporary, until we support multiple users
 
 	/** Frames selected as important. */
 	BookmarksCont _bookmarks;
+	bool _force_result_log;
 };
 
 /** Result type `get_display` returns */

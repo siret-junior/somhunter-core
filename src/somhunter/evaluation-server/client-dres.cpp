@@ -172,6 +172,8 @@ bool ClientDres::logout()
 		success = true;
 	}
 
+	_username = "";
+
 	write_log(LogType::LOGOUT, ts, params, code, res);
 	return success;
 }
@@ -273,6 +275,10 @@ bool ClientDres::send_interactions_log(const nlohmann::json& log_JSON)
 
 UnixTimestamp ClientDres::get_server_ts()
 {
+	if (!_synced) {
+		return 0;
+	}
+
 	// Shift the timestamp to the server
 	return utils::timestamp() + _diff;
 }
