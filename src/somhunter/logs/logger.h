@@ -44,7 +44,6 @@ public:
 	/** Does periodic cleanup & log flush. */
 	void poll();
 
-	
 	void log_search_context_switch(std::size_t dest_context_ID, size_t src_context_ID);
 
 	/** Called whenever we want to log submit frame/shot into the server. */
@@ -62,7 +61,6 @@ public:
 	                 const std::string& sentence_query, const size_t topn_frames_per_video,
 	                 const size_t topn_frames_per_shot);
 
-	
 	void log_text_query_change(const std::string& query_sentence);
 
 	void log_like(FrameId frame_ID);
@@ -104,13 +102,26 @@ private:
 	/** Writes the log into the local file. */
 	void write_result(const nlohmann::json& action_log)
 	{
-		_results_log_stream << action_log.dump(4) << "," << std::endl;
+		// If first time output
+		if (_first_result) {
+			_first_result = false;
+		} else {
+			_results_log_stream << "," << std::endl;
+		}
+		_results_log_stream << action_log.dump(4);
 	}
 
 	/** Writes the log into the local file. */
 	void write_action(const nlohmann::json& action_log)
 	{
-		_actions_log_stream << action_log.dump(4) << "," << std::endl;
+		// If first time output
+		if (_first_result) {
+			_first_result = false;
+		} else {
+			_actions_log_stream << "," << std::endl;
+		}
+
+		_actions_log_stream << action_log.dump(4);
 	}
 
 	/** Writes the log into the local file. */
@@ -146,8 +157,10 @@ private:
 	UnixTimestamp _last_interactions_submit_ts;
 
 	std::ofstream _results_log_stream;
+	bool _first_result{ true };
 	std::ofstream _summary_log_stream;
 	std::ofstream _actions_log_stream;
+	bool _first_actions{ true };
 };
 
 };  // namespace sh
