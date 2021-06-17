@@ -106,8 +106,8 @@
 
 		},
 		"display_page_size": 128,
-		"topn_frames_per_video": 0,
-		"topn_frames_per_shot": 0,
+		"topn_frames_per_video": 3,
+		"topn_frames_per_shot": 1,
 		
 		"model_W2VV_img_bias": "data/nn_models/w2vv-img_bias-2048floats.bin",
 		"model_W2VV_img_weigths": "data/nn_models/w2vv-img_weight-2048x4096floats.bin",
