@@ -133,7 +133,7 @@
 		
         "features_file_data_off": 0,
         "features_dim": 128,
-        "features_file": "data/V3C1_2021_May/W2VV_BoW/frame-features.V3C1.W2VV-BoW.1154020x128.float32.bin",
+        "features_file": "data/V3C1_2021_May/W2VV_BoW/frame-features.V3C1.W2VV-BoW.1154039x128.float32.bin",
 		"collage_regions": 12,
 		"collage_region_file_prefix": "data/V3C1_2021_May/W2VV_BoW/subframes/region_",
 
