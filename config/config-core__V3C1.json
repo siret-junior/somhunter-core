@@ -133,18 +133,18 @@
 		
         "features_file_data_off": 0,
         "features_dim": 128,
-        "features_file": "data/V3C1_2021_May/W2VV_BoW/frame-features.V3C1.W2VV-BoW.1154039x128.float32.bin",
+        "features_file": "data/V3C1_2021_June/W2VV_BoW/frame-features.V3C1.W2VV-BoW.1154039x128.float32.bin",
 		"collage_regions": 12,
-		"collage_region_file_prefix": "data/V3C1_2021_May/W2VV_BoW/subframes/region_",
+		"collage_region_file_prefix": "data/V3C1_2021_June/W2VV_BoW/subframes/region_",
 
-        "kws_file": "data/V3C1_2021_May/W2VV_BoW/keyword-to-ID.W2VV-BoW.csv",
-        "kw_bias_vec_file": "data/V3C1_2021_May/W2VV_BoW/keyword-dense-bias.W2VV-BoW.2048.float32.bin",
-        "kw_scores_mat_file": "data/V3C1_2021_May/W2VV_BoW/keyword-dense-weigths.W2VV-BoW.11147x2048.float32.bin",
+        "kws_file": "data/V3C1_2021_June/W2VV_BoW/keyword-to-ID.W2VV-BoW.csv",
+        "kw_bias_vec_file": "data/V3C1_2021_June/W2VV_BoW/keyword-dense-bias.W2VV-BoW.2048.float32.bin",
+        "kw_scores_mat_file": "data/V3C1_2021_June/W2VV_BoW/keyword-dense-weigths.W2VV-BoW.11147x2048.float32.bin",
 		
         "kw_PCA_mat_dim": 128,
         "pre_PCA_features_dim": 2048,
-        "kw_PCA_mean_vec_file": "data/V3C1_2021_May/W2VV_BoW/PCA-mean.V3C1.W2VV-BoW.2048.float32.bin",
-        "kw_PCA_mat_file": "data/V3C1_2021_May/W2VV_BoW/PCA-matrix.V3C1.W2VV-BoW.2048x128.float32.bin",
+        "kw_PCA_mean_vec_file": "data/V3C1_2021_June/W2VV_BoW/PCA-mean.V3C1.W2VV-BoW.2048.float32.bin",
+        "kw_PCA_mat_file": "data/V3C1_2021_June/W2VV_BoW/PCA-matrix.V3C1.W2VV-BoW.2048x128.float32.bin",
 			
 		"LSC_metadata_file": "",
 

@@ -32,6 +32,11 @@
 
 using namespace sh;
 
+#ifdef SHLOG_D  // Turn off `SHLOG_D` in this TU
+#	undef SHLOG_D
+#	define SHLOG_D(x) _dont_write_log_err
+#endif
+
 void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settings)
 {
 	std::random_device rd;

@@ -23,11 +23,10 @@
       SNIPPETS
    ---------------
 
-// Turn of the logging locally
-//#if LOGLEVEL > 3
-//#	undef SHLOG_D
-//#	define SHLOG_D(x) _dont_write_log_err
-//#endif
+#ifdef SHLOG_D  // Turn off `SHLOG_D` in this TU
+#	undef SHLOG_D
+#	define SHLOG_D(x) _dont_write_log_err
+#endif
 
   ***************************************** */
 
@@ -175,7 +174,7 @@ namespace sh
 
 #define do_assert(assertion, msg)                                                                                    \
 	do {                                                                                                             \
-		if (!(assertion)) {                                                                                            \
+		if (!(assertion)) {                                                                                          \
 			std::cerr << "ASSERTION FAILED: " << msg << "\n\t"                                                       \
 			          << "."                                                                                         \
 			          << "() in " << view_tail(__FILE__, FILE_NAME_TAIL_LEN) << " :" << __LINE__ << "" << std::endl; \

@@ -597,9 +597,9 @@ void Somhunter::benchmark_native_text_queries(const std::string& queries_filepat
 	}
 }
 
-void Somhunter::benchmark_canvas_queries(const std::string& /*queries_dir*/, const std::string& /*out_dir*/)
+void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir)
 {
-#if 0  // Rewite
+#if 1  // Rewite
 	using directory_iterator = std::filesystem::directory_iterator;
 
 	// ***
@@ -620,7 +620,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& /*queries_dir*/, con
 
 	// ***
 	// Load the filenames from the directory
-	std::vector<std::string> serialized_queries;
+	std::vector<std::string> serialized_queries;	
 	std::vector<std::string> serialized_queries_infos;
 
 	SHLOG("Loading queries from the directory '" << queries_dir << "'...");
@@ -658,8 +658,11 @@ void Somhunter::benchmark_canvas_queries(const std::string& /*queries_dir*/, con
 			json info_json;
 			ifs_info >> info_json;
 
-			std::vector<TemporalQuery> q{ utils::deserialize_from_file<std::vector<TemporalQuery>>(f) };
+			std::vector<TemporalQuery> qs{ utils::deserialize_from_file<std::vector<TemporalQuery>>(f) };
 			auto targets = info_json["targets"].get<std::vector<std::size_t>>();
+
+			Query q;
+			q.temporal_queries = qs;
 
 			// ***
 			// POSITIONAL
@@ -679,8 +682,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& /*queries_dir*/, con
 
 			// ***
 			// Decay to unpositioned
-			Query qq;
-			qq.temporal_queries = q;
+			Query qq{q};
 			qq.transform_to_no_pos_queries();
 
 			std::string this_query;

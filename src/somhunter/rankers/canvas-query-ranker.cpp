@@ -28,11 +28,16 @@
 
 using namespace sh;
 
+#ifdef SHLOG_D  // Turn off `SHLOG_D` in this TU
+#	undef SHLOG_D
+#	define SHLOG_D(x) _dont_write_log_err
+#endif
+
 CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p_core)
     : _p_core{ p_core }, _loaded{ false }
 {
 	SHLOG_D("Initializing CanvasQueryRanker...");
-
+	
 	// Check if we have subregions data
 	if (_settings.collage_region_file_prefix.empty()) {
 		SHLOG_W("No subregion features! Running without canvas queries.");
@@ -127,8 +132,9 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 	SHLOG_S("CanvasQueryRanker initialized.");
 }
 
-void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model, size_t temporal, UsedTools& used_tools,
-                              const DatasetFeatures& /*features*/, const DatasetFrames& /*_dataset_frames*/)
+void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model, size_t temporal,
+                              UsedTools& used_tools, const DatasetFeatures& /*features*/,
+                              const DatasetFrames& /*_dataset_frames*/)
 {
 	if (!_loaded) {
 		SHLOG_W("Called CanvasQueryRanker::score without available subregion data. Leaving the scores intact.");
@@ -172,9 +178,9 @@ at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const
 }
 
 // returns 2048 dim normed vector for each image in collage
-at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage,UsedTools& used_tools)
+at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage, UsedTools& used_tools)
 {
-	SHLOG_D("Extracting features\n");
+	SHLOG_D("Extracting features");
 
 	std::vector<torch::Tensor> tensors;
 	std::vector<torch::Tensor> tensors_bitmap_norm;
