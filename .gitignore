@@ -13,6 +13,7 @@ cookie.txt
 saved-queries
 config/config-core__asi_v3c1-first100.json
 config/_config-core.json
+config/config-core.json
 bench-out/
 data/nn_models/traced_Resnet152.pt
 data/nn_models/traced_Resnext101.pt

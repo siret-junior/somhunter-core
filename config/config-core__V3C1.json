@@ -53,7 +53,7 @@
 
 	"core": {
 		"API": {
-			"local_only": true,
+			"local_only": false,
             "port": 8888,
             "config_filepath": "config/config-api.json",
             "docs_dir": "docs/api/"
@@ -84,7 +84,7 @@
 				}
 			},
 		
-			"do_network_requests": false,
+			"do_network_requests": true,
 			"submit_LSC_IDs": false,
 			"allow_insecure": true,
 
