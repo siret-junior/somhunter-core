@@ -78,6 +78,53 @@ constexpr size_t RELOCATION_GRID_HEIGHT = 5;
 /** Maximal size of temporal query */
 constexpr int MAX_TEMPORAL_SIZE = 2;
 
+/* ***********************************
+ * Logging names
+ * *********************************** */
+namespace LOGGING_STRINGS
+{
+namespace STD_CATEGORIES
+{
+constexpr char* BROWSING = "BROWSING";
+constexpr char* IMAGE = "IMAGE";
+constexpr char* TEXT = "TEXT";
+};  // namespace STD_CATEGORIES
+
+namespace STD_TYPES
+{
+constexpr char* EXPLORATION = "exploration";
+constexpr char* RANKED_LIST = "rankedList";
+constexpr char* RANDOM_SELECTION = "randomSelection";
+};  // namespace STD_TYPES
+
+namespace STD_VALUES
+{
+constexpr char* RANDOM_DISPLAY = "randomDisplay";
+constexpr char* SOM_DISPLAY = "somDisplay";
+
+constexpr char* TOP_SCORED_DISPLAY = "topScoredDisplay";
+constexpr char* SOM_RELOC_DISPLAY = "somRelocationDisplay";
+constexpr char* TOP_SCORED_CONTEXT_DISPLAY = "topnContextDisplay";
+};  // namespace STD_VALUES
+
+namespace STD_KEYS
+{
+constexpr char* ACTION_NAME = "actionName";
+};
+
+namespace ACTION_NAMES
+{
+constexpr char* SHOW_RANDOM_DISPLAY = "showRandomDisplay";
+constexpr char* SHOW_SOM_DISPLAY = "showSomDisplay";
+constexpr char* SHOW_SOM_RELOC_DISPLAY = "showSomRelocationDisplay";
+constexpr char* SHOW_TOP_SCORED_DISPLAY = "showTopScoredDisplay";
+constexpr char* SHOW_TOP_SCORED_CONTEXT_DISPLAY = "showTopScoredContextDisplay";
+
+constexpr char* RESET_ALL = "resetAll";
+
+};  // namespace ACTION_NAMES
+};  // namespace LOGGING_STRINGS
+
 };  // namespace sh
 
 #endif  // CONFIG_H_

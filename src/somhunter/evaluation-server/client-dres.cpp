@@ -115,7 +115,7 @@ bool ClientDres::login()
 			SHLOG_W("Login request failed!" << std::endl << ex.what());
 		}
 	} else {
-		std::string msg{ "Logout request wasn't actually made. Turn it on if unintended." };
+		std::string msg{ "Login request wasn't actually made. Turn it on if unintended." };
 		SHLOG_W(msg);
 		code = 200;
 		success = true;

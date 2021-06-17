@@ -135,10 +135,10 @@
 			"fr_filename_frame_num_len": 8
 		},
 		
-		"frames_list_file": "data/V3C1_2021_May/frame-ID-to-filepath.V3C1.csv",
-        "frames_dir": "data/V3C1_2021_May/frames/",
-        "thumbs_dir": "data/V3C1_2021_May/thumbs/",
-        "data_dir": "data/V3C1_2021_May/",
+		"frames_list_file": "data/V3C1_2021_June/frame-ID-to-filepath.V3C1.csv",
+        "frames_dir": "data/V3C1_2021_June/frames/",
+        "thumbs_dir": "data/V3C1_2021_June/thumbs/",
+        "data_dir": "data/V3C1_2021_June/",
 		
         "features_file_data_off": 0,
         "features_dim": 128,

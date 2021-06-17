@@ -19,45 +19,47 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "config-tests.h"
+#ifndef TEST_UTILS_HPP_
+#define TEST_UTILS_HPP_
+
+// ---
+#include <nlohmann/json.hpp>
+// ---
+
+using json = nlohmann::json;
 
 namespace sh
 {
-class Somhunter;
-struct Settings;
-
 namespace tests
 {
-
-class TESTER_Somhunter
+inline void assert_contains_key_with_value(const json& data, const std::string& key, const json& value)
 {
-public:
-	static void run_all_tests(const std::string &cfg_fpth);
+	if (!data.is_object()) {
+		do_assert(false, "Must be an object.");
+	}
+	for (auto& [k, v] : data.items()) {
+		if (k == key) {
+			if (v == value) {
+				return;
+			}
+		}
+	}
+	do_assert(false, "Key-value " + key + " -> " + value.dump(4) + "not found.");
+}
 
-private:
-	static void TEST_like_frames(Somhunter &core);
-	static void TEST_bookmark_frames(Somhunter &core);
-	static void TEST_autocomplete_keywords(Somhunter &core);
-	static void TEST_rescore(Somhunter &core);
-	static void TEST_rescore_filters(Somhunter &core);
-	static void TEST_canvas_queries(Somhunter &core, Settings &_logger_settings);
-
-	static void TEST_log_results(Somhunter &core);
-};
-
-
-class TESTER_Config
+inline void assert_column_contains(const std::string& line, std::size_t idx, const std::string& val)
 {
-public:
-	static void run_all_tests(const std::string & /*cfg_fpth*/);
-
-private:
-	static void TEST_parse_JSON_config(const Settings &c);
-
-	static void TEST_LSC_addition(const Settings &config);
-
-	static void TEST_collage_addition(const Settings &config);
-};
+	std::stringstream ss{ line };
+	std::string tok;
+	for (size_t i = 0; i <= idx; i++) {
+		ss >> tok;
+	}
+	if (tok != val) {
+		do_assert(false, "Column " + std::to_string(idx) + " contains '" + tok + "'.");
+	}
+}
 
 };  // namespace tests
 };  // namespace sh
+
+#endif

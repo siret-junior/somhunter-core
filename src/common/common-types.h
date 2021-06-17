@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace sh
 {
@@ -41,6 +42,12 @@ public:
 };
 
 // ---
+
+struct DebugLogStreamPtrs {
+	std::stringstream& _summary;
+	std::stringstream& _actions;
+	std::stringstream& _results;
+};
 
 using UnixTimestamp = std::int64_t;
 

@@ -2,6 +2,7 @@
 set(HEADERS
 	tests.h
 	config-tests.h
+	test-utils.hpp
 )
 
 set(SOURCES 

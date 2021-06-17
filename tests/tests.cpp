@@ -25,13 +25,17 @@
 #include <map>
 #include <stack>
 #include <string>
-
+// ---
+#include <nlohmann/json.hpp>
+// ---
 #include "settings.h"
 #include "somhunter.h"
 #include "utils.hpp"
+#include "test-utils.hpp"
 
 namespace fs = std::filesystem;
 using namespace sh::tests;
+using json = nlohmann::json;
 
 // clang-format off
 
@@ -47,11 +51,13 @@ void TESTER_Somhunter::run_all_tests(const std::string &cfg_fpth) {
 	config.topn_frames_per_video = 3;
 	config.topn_frames_per_shot = 1;
 
-	// Instantiate the SOMHunter
-	Somhunter core{ config, cfg_fpth };
-
 	SHLOG("Running all the Somhunter class tests...");
 
+	{
+		Somhunter core{ config, cfg_fpth };
+		TEST_log_results(core);
+	}
+	Somhunter core{ config, cfg_fpth };
 	TEST_like_frames(core);
 	TEST_bookmark_frames(core);
 	TEST_autocomplete_keywords(core);
@@ -71,8 +77,7 @@ void TESTER_Somhunter::TEST_canvas_queries(Somhunter &core, Settings &_logger_se
 	SHLOG("\t Testing `Somhunter::rescore` method with collage queries...");
 	core.reset_search_session();
 
-	// \todo Add tests ...
-
+	
 	SHLOG("\t Testing `Somhunter::rescore` method with collage queries finished.");
 }
 
@@ -358,38 +363,60 @@ void TESTER_Somhunter::TEST_rescore_filters(Somhunter &core) {
 	SHLOG("\t Testing `Somhunter::TEST_rescore` score filter finished...");
 }
 
-void TESTER_Logger::run_all_tests(const std::string &cfg_fpth) {
-	SHLOG("====================================================");
-	SHLOG("\tInitializing the `Tester` class tests...");
-	SHLOG("====================================================");
 
-	// Parse config file
-	auto config = Settings::parse_JSON_config(cfg_fpth);
+void TESTER_Somhunter::TEST_log_results(Somhunter &core) {
+	using namespace LOGGING_STRINGS::ACTION_NAMES;
+	using namespace LOGGING_STRINGS;
 
-	// Make sure that values are right for these tests
-	config.topn_frames_per_video = 3;
-	config.topn_frames_per_shot = 1;
+	// Attach new log pipes
+	auto&& [summary, actions, results]{core._user_context._logger.get_debug_streams()};
 
-	// Instantiate the SOMHunter
-	Somhunter core{ config, cfg_fpth };
+	/* ***
+	 * BASIC
+	 */
+	{
+		// <!> ACTION: RESET_ALL
+		core.reset_search_session();
 
-	SHLOG("Running all the Somhunter class tests...");
+		json data;
+		json val(RESET_ALL);
+		actions >> data;
+		assert_contains_key_with_value(data, STD_KEYS::ACTION_NAME, val);
+		assert_column_contains(summary.str(), 2, RESET_ALL);
 
-	TEST_log_results(core);
+		actions.clear();
+		summary.clear();
+		results.clear();
 
-#ifdef TEST_FILTERS
-	TEST_rescore_filters(core);
-#endif
+		// <!> ACTION: SHOW_TOP_SCORED_DISPLAY
+		core.get_display(DisplayType::DTopN, 0, 0);
 
-	SHLOG("====================================================");
-	SHLOG("\tIf you got here, all `Tester` tests were OK...");
-	SHLOG("====================================================");
-}
+		std::cout << summary.str() << std::endl;
+		std::cout << actions.str() << std::endl;
+		std::cout << results.str() << std::endl;
 
-void TESTER_Logger::TEST_log_results(Somhunter &core) {
+		// <!> ACTION: SHOW_TOP_SCORED_CONTEXT_DISPLAY
+		core.get_display(DisplayType::DTopNContext, 0, 0);
 
+		std::cout << summary.str() << std::endl;
+		std::cout << actions.str() << std::endl;
+		std::cout << results.str() << std::endl;
+
+		// <!> ACTION: SHOW_SOM_DISPLAY
+		core.get_display(DisplayType::DSom, 0, 0);
 	
+		std::cout << summary.str() << std::endl;
+		std::cout << actions.str() << std::endl;
+		std::cout << results.str() << std::endl;
 
+	}
+
+	/* ***
+	 * BASIC
+	 */
+	{
+
+	}
 }
 
 

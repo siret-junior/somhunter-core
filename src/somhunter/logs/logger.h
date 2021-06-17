@@ -93,6 +93,20 @@ public:
 	/** Sends the accumulated logs to the evaluation server (through `_p_eval_server`). */
 	void submit_interaction_logs_buffer();
 
+	DebugLogStreamPtrs get_debug_streams()
+	{
+		return DebugLogStreamPtrs{ _summary_streams.emplace_back(std::stringstream{}),
+			                       _actions_streams.emplace_back(std::stringstream{}),
+			                       _results_streams.emplace_back(std::stringstream{}) };
+	};
+
+	void clear_debug_streams()
+	{
+		_summary_streams.clear();
+		_actions_streams.clear();
+		_results_streams.clear();
+	}
+
 private:
 	void log_bothlike(FrameId frame_ID, const std::string& type);
 
@@ -104,26 +118,40 @@ private:
 	/** Writes the log into the local file. */
 	void write_result(const nlohmann::json& action_log)
 	{
+		std::stringstream ss;
+
 		// If first time output
 		if (_first_result) {
 			_first_result = false;
 		} else {
-			_results_log_stream << "," << std::endl;
+			ss << "," << std::endl;
 		}
-		_results_log_stream << action_log.dump(4);
+		ss << action_log.dump(4);
+
+		_results_log_stream << ss.str();
+		for (auto&& s : _results_streams) {
+			s << ss.str();
+		}
 	}
 
 	/** Writes the log into the local file. */
 	void write_action(const nlohmann::json& action_log)
 	{
+		std::stringstream ss;
+
 		// If first time output
 		if (_first_actions) {
 			_first_actions = false;
 		} else {
-			_actions_log_stream << "," << std::endl;
+			ss << "," << std::endl;
 		}
 
-		_actions_log_stream << action_log.dump(4);
+		ss << action_log.dump(4);
+
+		_actions_log_stream << ss.str();
+		for (auto&& s : _actions_streams) {
+			s << ss.str();
+		}
 	}
 
 	/** Writes the log into the local file. */
@@ -133,16 +161,24 @@ private:
 		auto ts{ log["metadata"]["timestamp"].get<UnixTimestamp>() };
 		auto hash{ log["metadata"]["hash"].get<std::string>() };
 
-		_summary_log_stream << utils::get_formated_timestamp("%H:%M:%S", ts) << "\t" << hash << "\t" << action_name
-		                    << "\t";
+		std::stringstream ss;
+
+		ss << utils::get_formated_timestamp("%H:%M:%S", ts) << "\t" << hash << "\t" << action_name << "\t";
 
 		for (auto& [key, value] : log.items()) {
 			if (std::find(keys.begin(), keys.end(), key) == keys.end()) {
 				continue;
 			}
-			_summary_log_stream << key << "=" << value << "\t";
+			ss << key << "=" << value << "\t";
 		}
-		_summary_log_stream << std::endl;
+		ss << std::endl;
+
+		// Write to actual stream
+		_summary_log_stream << ss.str();
+
+		for (auto&& s : _summary_streams) {
+			s << ss.str();
+		}
 	}
 	std::string get_log_dir_queries() const;
 	std::string get_results_log_filepath() const;
@@ -159,9 +195,14 @@ private:
 	UnixTimestamp _last_interactions_submit_ts;
 
 	std::ofstream _results_log_stream;
-	bool _first_result{ true };
 	std::ofstream _summary_log_stream;
 	std::ofstream _actions_log_stream;
+
+	std::vector<std::stringstream> _summary_streams;
+	std::vector<std::stringstream> _actions_streams;
+	std::vector<std::stringstream> _results_streams;
+
+	bool _first_result{ true };
 	bool _first_actions{ true };
 };
 
