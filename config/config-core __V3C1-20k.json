@@ -2,6 +2,15 @@
 	"data_server": {},
 
 	"UI": {
+		"features": {
+			"allow_relocation": true,
+			"allow_canvas_query": true,
+			"allow_canvas_query_bitmap": true,
+			"allow_canvas_query_text": true,
+			"allow_history_switch": true,
+			"show_likes_panel": true,
+			"show_bookmarks_panel": true
+		},
 		"video_replay": {
             "slide_speed": 50,
             "thumb_width": 200
