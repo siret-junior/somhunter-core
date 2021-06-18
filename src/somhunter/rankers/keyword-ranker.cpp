@@ -56,7 +56,12 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 		FrameId vec_idx{ FrameId(synset_ID) };
 
 		// String representations
-		SynsetStrings synset_strings{ tokens[0] };
+		SynsetStrings synset_strings{ utils::trim(tokens[0]) };
+
+		do_assert(!synset_strings.empty(), "Cannot be empty!");
+		for (auto&& s : synset_strings) {
+			do_assert(s != "", "Cannot be empty string!");
+		}
 
 		// Top exmaple images
 		std::vector<const VideoFrame*> top_ex_imgs;

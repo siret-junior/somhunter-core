@@ -31,7 +31,7 @@ namespace sh
  *
  * 4 = +debug, 3 = +info, 2 = +warnings, 1 = +errors 0 = none
  */
-#define LOGLEVEL 4
+#define LOGLEVEL 3
 
 /** If verbose CURL debug request log should be printed. */
 #define DEBUG_CURL_REQUESTS 0
