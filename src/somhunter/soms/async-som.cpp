@@ -104,7 +104,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settin
 		std::vector<size_t> point_to_koho(n);
 		begin = std::chrono::high_resolution_clock::now();
 		{
-			size_t n_threads = std::thread::hardware_concurrency();
+			std::size_t n_threads = std::min<std::size_t>(MAX_NUM_TEMP_WORKERS, std::thread::hardware_concurrency());
 			std::vector<std::thread> threads(n_threads);
 
 			auto worker = [&](size_t id) {

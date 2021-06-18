@@ -23,13 +23,14 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <functional>
 #include <map>
 #include <random>
 #include <set>
 #include <thread>
 #include <vector>
-
+// ---
 #include "common.h"
 
 using namespace sh;
@@ -304,7 +305,7 @@ void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& s
 	auto start = std::chrono::high_resolution_clock::now();
 
 	{
-		size_t n_threads = std::thread::hardware_concurrency();
+		std::size_t n_threads = std::min<std::size_t>(MAX_NUM_TEMP_WORKERS, std::thread::hardware_concurrency());
 		std::vector<std::thread> threads(n_threads);
 
 		auto worker = [&](size_t threadID) {

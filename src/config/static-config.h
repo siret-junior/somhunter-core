@@ -32,6 +32,7 @@ namespace sh
  * 4 = +debug, 3 = +info, 2 = +warnings, 1 = +errors 0 = none
  */
 #define LOGLEVEL 4
+
 /** If verbose CURL debug request log should be printed. */
 #define DEBUG_CURL_REQUESTS 0
 
@@ -43,6 +44,9 @@ namespace sh
 
 /** Zero scores will be substituted with this value. */
 #define MINIMAL_SCORE 1e-18f
+
+/** Maximum number of threads to spawn for short time jobs. */
+#define MAX_NUM_TEMP_WORKERS 4
 
 // ----------------------------------------
 // Old
