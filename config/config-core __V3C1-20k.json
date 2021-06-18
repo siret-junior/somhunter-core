@@ -3,6 +3,7 @@
 
 	"UI": {
 		"features": {
+			"allow_plain_text_quey": true,
 			"allow_relocation": true,
 			"allow_canvas_query": true,
 			"allow_canvas_query_bitmap": true,
