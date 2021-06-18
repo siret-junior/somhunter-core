@@ -448,7 +448,7 @@ void Somhunter::log_text_query_change(const std::string& text_query)
 
 std::string Somhunter::store_rescore_screenshot(const std::string& /*filepath*/)
 {
-	SHLOG_W("Simulating the screenshot saving...");
+	//SHLOG_W("Simulating the screenshot saving...");
 
 	std::string UI_filepath{ "/assets/img/history_screenshot.jpg" };
 
