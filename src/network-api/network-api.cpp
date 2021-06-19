@@ -245,9 +245,9 @@ json::value canvas_to_json(const CanvasSubqueryBitmap& q)
 json::value canvas_to_json(const CanvasSubqueryText& q)
 {
 	json::value res = json::value::object();
-	res["rect"] = json::value::array({ q.rect().left, q.rect().top, q.rect().right, q.rect().bottom });
-	res["type"] = json::value::string(U("text"));
-	res[U("text_query")] = json::value::string(q.query());
+	res[U("rect")] = json::value::array({ q.rect().left, q.rect().top, q.rect().right, q.rect().bottom });
+	res[U("type")] = json::value::string(U("text"));
+	res[U("text_query")] = json::value::string(to_string_t(q.query()));
 	return res;
 }
 
@@ -309,18 +309,17 @@ json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx)
 
 		json::value value_arr{ json::value::array(2) };
 		for (std::size_t i = 0; i < 2; ++i) {
-			if (i < search_ctx.last_temporal_queries.size() && 
-				search_ctx.last_temporal_queries[i].is_canvas()) {
+			if (i < search_ctx.last_temporal_queries.size() && search_ctx.last_temporal_queries[i].is_canvas()) {
 				// Push canvas query
 				TemporalQuery& tempQ = search_ctx.last_temporal_queries[i];
 				value_arr[i] = json::value::array(tempQ.canvas.size());
 				for (std::size_t j = 0; j < tempQ.canvas.size(); ++j) {
 					// Push canvas subquery
 					value_arr[i][j] = std::visit(
-						overloaded{
-							[](auto sq) { return canvas_to_json(sq); },
-						},
-						tempQ.canvas[j]);
+					    overloaded{
+					        [](auto sq) { return canvas_to_json(sq); },
+					    },
+					    tempQ.canvas[j]);
 				}
 			} else {
 				// Create empty query
@@ -621,9 +620,16 @@ void handle_options(http_request request)
 }
 
 NetworkApi::NetworkApi(const ApiConfig& API_config, Somhunter* p_core)
-    : _API_config{ API_config },
-      _p_core{ p_core },
-      _base_addr{ (API_config.local_only ? "http://127.0.0.1:" : "http://0.0.0.0:") + std::to_string(API_config.port) }
+    : _API_config{ API_config }, _p_core{ p_core }, _base_addr
+{
+	(API_config.local_only ? "http://127.0.0.1:" :
+#ifdef WIN32  //< Windows won't accept zeroes
+	                       "http://*:"
+#else  // UNIX
+	                       "http://0.0.0.0:"
+#endif
+	 ) + std::to_string(API_config.port)
+}
 {
 }
 

@@ -88,11 +88,12 @@ bool ClientDres::login()
 
 	nlohmann::json res;
 	ReqCode code{ 0 };
+	const auto& URL{ _settings.login_URL };
 
 	if (_do_requests) {
 		try {
 			// Do the blocking request
-			std::tie(code, res) = _http.do_POST_sync(_settings.login_URL, body, headers);
+			std::tie(code, res) = _http.do_POST_sync(URL, body, headers);
 
 			// If failed
 			if (code != 200) {
@@ -121,7 +122,7 @@ bool ClientDres::login()
 		success = true;
 	}
 
-	write_log(LogType::LOGIN, ts, body, code, res);
+	write_log(LogType::LOGIN, ts, URL, body, code, res);
 	return success;
 }
 
@@ -140,6 +141,7 @@ bool ClientDres::logout()
 	bool success{ false };
 	nlohmann::json res;
 	ReqCode code{ 0 };
+	const auto& URL{ _settings.logout_URL };
 
 	if (_do_requests) {
 		try {
@@ -174,7 +176,7 @@ bool ClientDres::logout()
 
 	_username = "";
 
-	write_log(LogType::LOGOUT, ts, params, code, res);
+	write_log(LogType::LOGOUT, ts, URL, params, code, res);
 	return success;
 }
 
@@ -206,11 +208,12 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 	bool success{ false };
 	nlohmann::json res;
 	ReqCode code{ 0 };
+	const auto& URL{ _settings.submit_URL };
 
 	if (_do_requests) {
 		try {
 			// Do the blocking request
-			std::tie(code, res) = _http.do_GET_sync(_settings.submit_URL, params, headers);
+			std::tie(code, res) = _http.do_GET_sync(URL, params, headers);
 
 			// If failed
 			if (code != 200 && code != 202) {
@@ -241,7 +244,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 		code = 200;
 	}
 
-	write_log(LogType::SUBMIT, ts, params, code, res);
+	write_log(LogType::SUBMIT, ts, URL, params, code, res);
 	return success;
 }
 
@@ -252,9 +255,10 @@ bool ClientDres::send_results_log(const nlohmann::json& log_JSON)
 	bool result{ true };
 	auto ts{ utils::timestamp() };
 	ReqCode code{ 0 };
+	const auto& URL{ "nowhere" };
 	nlohmann::json res;
 
-	write_log(LogType::RESULT, ts, log_JSON, code, res);
+	write_log(LogType::RESULT, ts, URL, log_JSON, code, res);
 
 	return result;
 }
@@ -266,9 +270,11 @@ bool ClientDres::send_interactions_log(const nlohmann::json& log_JSON)
 	bool result{ true };
 	auto ts{ utils::timestamp() };
 	ReqCode code{ 0 };
+	const auto& URL{ "nowhere" };
+
 	nlohmann::json res;
 
-	write_log(LogType::INTERACTION, ts, log_JSON, code, res);
+	write_log(LogType::INTERACTION, ts, URL, log_JSON, code, res);
 
 	return result;
 }
@@ -298,8 +304,8 @@ nlohmann::json ClientDres::get_current_task()
 	return task_JSON;
 }
 
-void ClientDres::write_log(LogType type, UnixTimestamp ts, const nlohmann::json& req, ReqCode code,
-                           nlohmann::json& res) const
+void ClientDres::write_log(LogType type, UnixTimestamp ts, const std::string& URL, const nlohmann::json& req,
+                           ReqCode code, nlohmann::json& res) const
 {
 	std::string log_filepath = _eval_server_settings.log_dir_eval_server_requests + std::string("/") +
 	                           std::to_string(ts) + std::string("__") + log_type_to_str(type) +
@@ -313,6 +319,7 @@ void ClientDres::write_log(LogType type, UnixTimestamp ts, const nlohmann::json&
 	nlohmann::json log{ { "timestamp", ts },
 		                { "datetime", utils::get_formated_timestamp("%d-%m-%Y_%H-%M-%S", ts) },
 		                { "type", log_type_to_str(type) },
+		                { "URL", URL },
 		                { "request", req },
 		                { "response_code", code },
 		                { "response", res } };

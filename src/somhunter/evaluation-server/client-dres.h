@@ -122,7 +122,8 @@ private:
 		}
 	}
 
-	void write_log(LogType type, UnixTimestamp ts, const nlohmann::json& req, ReqCode code, nlohmann::json& res) const;
+	void write_log(LogType type, UnixTimestamp ts, const std::string& URL, const nlohmann::json& req, ReqCode code,
+	               nlohmann::json& res) const;
 
 	// *** MEMBER VARIABLES ***
 protected:
