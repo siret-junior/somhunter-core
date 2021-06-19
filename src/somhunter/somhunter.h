@@ -86,15 +86,18 @@ public:
 	Somhunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
 	inline Somhunter(const Settings& settings, const std::string& config_filepath)
-	    : _core_settings_filepath{ config_filepath },
+	    : _dataset_frames(settings),
+	      _dataset_features(_dataset_frames, settings),
+
+	      _user_context(settings, /* \todo */ "admin", &_dataset_frames, &_dataset_features),
+
+	      _core_settings_filepath{ config_filepath },
 	      _API_settings_filepath{ settings.API_config.config_filepath },
 	      _settings(settings),
-	      _dataset_frames(settings),
-	      _dataset_features(_dataset_frames, settings),
 	      _keyword_ranker(settings, _dataset_frames),
 	      _collage_ranker(settings, &_keyword_ranker),
-	      _user_context(settings, /* \todo */ "admin", &_dataset_frames, &_dataset_features),
 	      _relocation_ranker{}
+
 	{
 		generate_new_targets();
 

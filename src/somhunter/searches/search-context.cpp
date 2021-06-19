@@ -27,7 +27,13 @@
 using namespace sh;
 
 SearchContext::SearchContext(size_t ID, const Settings& /*settings*/, const DatasetFrames& _dataset_frames)
-    : ID(ID), scores(_dataset_frames), temporal_size{ 0 }, _prev_query{}
+    : ID{ ID },
+      current_display{},
+      last_temporal_queries{},
+      curr_targets{},
+      scores{ _dataset_frames },
+      temporal_size{ 0 },
+      _prev_query{}
 {
 }
 
