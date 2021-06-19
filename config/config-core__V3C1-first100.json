@@ -3,6 +3,7 @@
 
 	"UI": {
 		"features": {
+			"show_filters_panel": true,
 			"allow_plain_text_quey": true,
 			"allow_relocation": true,
 			"allow_canvas_query": true,
