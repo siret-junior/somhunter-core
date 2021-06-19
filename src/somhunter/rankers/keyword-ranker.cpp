@@ -298,7 +298,7 @@ std::vector<KeywordId> KeywordRanker::decode_keywords(const std::vector<std::str
 	std::vector<KeywordId> pos_one_query;
 	// Split tokens into temporal queries
 	for (const auto& kw_word : query) {
-		auto v = find(kw_word);
+		auto v = find(kw_word, 10);
 
 		if (!v.empty()) pos_one_query.emplace_back(v.front().first);
 	}

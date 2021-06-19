@@ -757,8 +757,6 @@ void NetworkApi::handle__api__GET(http_request message)
 	auto remote_addr{ to_utf8string(message.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
-	
-
 	auto paths = http::uri::split_path(http::uri::decode(message.relative_uri().path()));
 	message.relative_uri().path();
 
@@ -1343,6 +1341,7 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 	json::value weekdays_JSON{ body[U("filters")][U("weekdays")] };
 	Hour hourFrom{ static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer()) };
 	Hour hourTo{ static_cast<Hour>(body[U("filters")][U("hoursTo")].as_integer()) };
+	json::value dataset_parts_JSON{ body[U("filters")][U("datasetFilter")] };
 
 	/*
 	 * Process it
@@ -1356,7 +1355,15 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 		}
 	}
 
-	return Filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask } };
+	auto xx{ dataset_parts_JSON.as_array() };
+	std::vector<bool> dataset_parts_mask;
+	for (size_t i{ 0 }; i < xx.size(); ++i) {
+		bool flag{ xx.at(i).as_bool() };
+
+		dataset_parts_mask.emplace_back(flag);
+	}
+
+	return Filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask }, dataset_parts_mask };
 }
 
 void NetworkApi::handle__search__rescore__POST(http_request req)

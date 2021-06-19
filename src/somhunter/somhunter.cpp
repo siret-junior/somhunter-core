@@ -31,8 +31,6 @@ using namespace sh;
 
 GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_image, PageId page, bool log_it)
 {
-	
-
 	_user_context._logger.poll();
 
 	auto prev_display{ _user_context.ctx.curr_disp_type };
@@ -108,7 +106,6 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 
 std::vector<bool> Somhunter::like_frames(const std::vector<FrameId>& new_likes)
 {
-	
 	_user_context._logger.poll();
 
 	// Prepare the result flags vector
@@ -142,7 +139,6 @@ std::vector<bool> Somhunter::like_frames(const std::vector<FrameId>& new_likes)
 
 std::vector<bool> Somhunter::bookmark_frames(const std::vector<FrameId>& new_bookmarks)
 {
-	
 	_user_context._logger.poll();
 
 	// Prepare the result flags vector
@@ -175,7 +171,6 @@ std::vector<bool> Somhunter::bookmark_frames(const std::vector<FrameId>& new_boo
 
 std::vector<const Keyword*> Somhunter::autocomplete_keywords(const std::string& prefix, size_t count) const
 {
-	
 	// Trivial case
 	if (prefix.empty()) return std::vector<const Keyword*>{};
 
@@ -198,27 +193,34 @@ bool Somhunter::has_metadata() const { return !_settings.LSC_metadata_file.empty
 
 void Somhunter::apply_filters()
 {
+	const Filters& filters{ _user_context.ctx.filters };
+
 	// If no filters set up
-	if (!has_metadata()) {
+	if (!has_metadata() && (filters.dataset_parts[0] && filters.dataset_parts[1])) {
 		return;
 	}
 
 	// Make sure to reset the previous mask on the scores
 	_user_context.ctx.scores.reset_mask();
 
-	const Filters& filters{ _user_context.ctx.filters };
-
 	const auto& days{ filters.days };
 	Hour t_from{ filters.time.from };
 	Hour t_to{ filters.time.to };
 
+	auto ds_valid_interval{ filters.get_dataset_parts_valid_interval(_dataset_frames.size()) };
+
+	std::cout << "[" << ds_valid_interval.first << ", " << ds_valid_interval.second << ")" << std::endl;
+
 	// A closure that determines if the frame should be filtered out
-	auto is_out{ [&days, t_from, t_to](const VideoFrame& f) {
+	auto is_out{ [&days, t_from, t_to, &ds_valid_interval](const VideoFrame& f) {
 		// If NOT within the selected days
 		if (!days[f.weekday]) return true;
 
 		// If NOT within the hour range
 		if (t_from > f.hour || f.hour > t_to) return true;
+
+		// Dataset part filter
+		if (!(ds_valid_interval.first <= f.frame_ID && f.frame_ID < ds_valid_interval.second)) return true;
 
 		return false;
 	} };
@@ -236,7 +238,6 @@ void Somhunter::apply_filters()
 
 RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 {
-	
 	const std::vector<TemporalQuery>& temporal_query{ query.temporal_queries };
 
 	// Add the internal state likes to it
@@ -251,7 +252,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	/* ***
 	 * Set the filters to the context
 	 */
-	if (p_filters != nullptr && has_metadata()) {
+	if (p_filters != nullptr) {
 		_user_context.ctx.filters = *p_filters;
 
 		// If filters used
@@ -398,32 +399,15 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets, tar_pos };
 }
 
-bool Somhunter::som_ready() const
-{
-	
-	return _user_context._async_SOM.map_ready();
-}
+bool Somhunter::som_ready() const { return _user_context._async_SOM.map_ready(); }
 
-bool Somhunter::som_ready(size_t temp_id) const
-{
-	
-	return _user_context._temp_async_SOM[temp_id]->map_ready();
-}
+bool Somhunter::som_ready(size_t temp_id) const { return _user_context._temp_async_SOM[temp_id]->map_ready(); }
 
-bool Somhunter::login_to_eval_server()
-{
-	
-	return _user_context._eval_server.login();
-}
-bool Somhunter::logout_from_eval_server()
-{
-	
-	return _user_context._eval_server.logout();
-}
+bool Somhunter::login_to_eval_server() { return _user_context._eval_server.login(); }
+bool Somhunter::logout_from_eval_server() { return _user_context._eval_server.logout(); }
 
 SubmitResult Somhunter::submit_to_eval_server(FrameId frame_ID)
 {
-	
 	// Submit
 	auto vf = _dataset_frames.get_frame(frame_ID);
 	try {
@@ -440,7 +424,6 @@ SubmitResult Somhunter::submit_to_eval_server(FrameId frame_ID)
 
 void Somhunter::reset_search_session()
 {
-	
 	_user_context._logger.poll();
 
 	_user_context.ctx.shown_images.clear();
@@ -460,25 +443,18 @@ void Somhunter::reset_search_session()
 
 void Somhunter::log_video_replay(FrameId frame_ID, float delta_X)
 {
-	
 	_user_context._logger.log_show_video_replay(_dataset_frames, frame_ID, delta_X);
 }
 
-void Somhunter::log_scroll(DisplayType t, float dir_Y)
-{
-	
-	_user_context._logger.log_scroll(_dataset_frames, t, dir_Y);
-}
+void Somhunter::log_scroll(DisplayType t, float dir_Y) { _user_context._logger.log_scroll(_dataset_frames, t, dir_Y); }
 
 void Somhunter::log_text_query_change(const std::string& text_query)
 {
-	
 	_user_context._logger.log_text_query_change(text_query);
 }
 
 std::string Somhunter::store_rescore_screenshot(const std::string& /*filepath*/)
 {
-	
 	// SHLOG_W("Simulating the screenshot saving...");
 
 	std::string UI_filepath{ "/assets/img/history_screenshot.jpg" };
@@ -489,13 +465,11 @@ std::string Somhunter::store_rescore_screenshot(const std::string& /*filepath*/)
 
 std::vector<FrameId> Somhunter::get_top_scored(size_t max_count, size_t from_video, size_t from_shot) const
 {
-	
 	return _user_context.ctx.scores.top_n(_dataset_frames, max_count, from_video, from_shot);
 }
 
 std::vector<float> Somhunter::get_top_scored_scores(std::vector<FrameId>& top_scored_frames) const
 {
-	
 	std::vector<float> res;
 	for (auto&& frame_ID : top_scored_frames) {
 		res.emplace_back(_user_context.ctx.scores[frame_ID]);
@@ -506,7 +480,6 @@ std::vector<float> Somhunter::get_top_scored_scores(std::vector<FrameId>& top_sc
 
 size_t sh::Somhunter::find_targets(const std::vector<FrameId>& top_scored, const std::vector<FrameId>& targets) const
 {
-	
 	size_t i{ 0 };
 	for (auto it{ top_scored.begin() }; it != top_scored.end(); ++it) {
 		FrameId curr_ID{ *it };
@@ -525,7 +498,6 @@ size_t sh::Somhunter::find_targets(const std::vector<FrameId>& top_scored, const
 
 void Somhunter::benchmark_native_text_queries(const std::string& queries_filepath, const std::string& out_dir)
 {
-	
 	SHLOG_I("Running benchmark on file '" << queries_filepath << "'...");
 
 	std::ifstream ifs(queries_filepath, std::ios::in);
@@ -634,8 +606,7 @@ void Somhunter::benchmark_native_text_queries(const std::string& queries_filepat
 
 void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir)
 {
-	
-#if 1                              // Rewite
+#if 1  // Rewite
 	using directory_iterator = std::filesystem::directory_iterator;
 
 	// ***
@@ -1063,8 +1034,6 @@ void Somhunter::reset_scores(float val)
 const UserContext& Somhunter::switch_search_context(size_t index, size_t src_search_ctx_ID,
                                                     const std::string& screenshot_fpth, const std::string& label)
 {
-	
-
 	/*
 	 * Save provided screenshot filepath if needed
 	 */
@@ -1104,14 +1073,6 @@ const UserContext& Somhunter::switch_search_context(size_t index, size_t src_sea
 	return _user_context;
 }
 
-const SearchContext& Somhunter::get_search_context() const
-{
-	
-	return _user_context.ctx;
-}
+const SearchContext& Somhunter::get_search_context() const { return _user_context.ctx; }
 
-const UserContext& Somhunter::get_user_context() const
-{
-	
-	return _user_context;
-}
+const UserContext& Somhunter::get_user_context() const { return _user_context; }
