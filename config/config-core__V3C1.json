@@ -94,7 +94,7 @@
 		
 			"log_dir_eval_server_requests": "logs/eval-server-requests/",
 			"log_dir_user_actions": "logs/actions/",
-			"log_dir_user_actions_summary": "logs/queries/",
+			"log_dir_user_actions_summary": "logs/summary/",
 			"log_dir_results": "logs/results/",
 			"log_dir_queries": "logs/queries/",			
 			"log_file_suffix": ".json",
