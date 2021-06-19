@@ -59,6 +59,8 @@ endif ()
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL  "Release" AND NOT ${CMAKE_BUILD_TYPE} STREQUAL  "Debug")
     set(CMAKE_BUILD_TYPE_RED "Release")
     message("Setting reduced build type to: ${CMAKE_BUILD_TYPE_RED}")
+else ()
+    set(CMAKE_BUILD_TYPE_RED ${CMAKE_BUILD_TYPE})
 endif ()
 
 if (WIN32)
