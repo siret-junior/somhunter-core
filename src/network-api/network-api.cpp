@@ -753,6 +753,12 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
  */
 void NetworkApi::handle__api__GET(http_request message)
 {
+	auto lck{ exclusive_lock() };  //< (#)
+	auto remote_addr{ to_utf8string(message.remote_address()) };
+	SHLOG_REQ(remote_addr, __func__);
+
+	
+
 	auto paths = http::uri::split_path(http::uri::decode(message.relative_uri().path()));
 	message.relative_uri().path();
 
@@ -786,10 +792,12 @@ void NetworkApi::handle__api__GET(http_request message)
 		    }
 	    });
 
+	SHLOG_UNREQ(remote_addr, __func__);
 	return;
 }
 void NetworkApi::handle__api__config__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -811,6 +819,7 @@ void NetworkApi::handle__api__config__GET(http_request req)
 
 void NetworkApi::handle__config__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -837,6 +846,7 @@ void NetworkApi::handle__config__GET(http_request req)
 
 void NetworkApi::handle__user__context__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -860,6 +870,7 @@ void NetworkApi::handle__user__context__GET(http_request req)
 
 void NetworkApi::handle__search__get_top_display__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -889,6 +900,7 @@ void NetworkApi::handle__search__get_top_display__POST(http_request req)
 
 void NetworkApi::handle__search__get_som_display__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -919,6 +931,7 @@ void NetworkApi::handle__search__get_som_display__POST(http_request req)
 
 void NetworkApi::handle__search__get_som_relocation_display__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -948,6 +961,7 @@ void NetworkApi::handle__search__get_som_relocation_display__POST(http_request r
 
 void NetworkApi::handle__dataset__video_detail__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -990,6 +1004,7 @@ void NetworkApi::handle__dataset__video_detail__GET(http_request req)
 
 void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1026,6 +1041,7 @@ void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req)
 
 void NetworkApi::handle__log__scroll__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1078,6 +1094,7 @@ void NetworkApi::handle__log__scroll__GET(http_request req)
 
 void NetworkApi::handle__log__text_query_change__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1104,6 +1121,7 @@ void NetworkApi::handle__log__text_query_change__GET(http_request req)
 
 void NetworkApi::handle__eval_server__submit__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1142,6 +1160,7 @@ void NetworkApi::handle__eval_server__submit__POST(http_request req)
 
 void NetworkApi::handle__eval_server__login__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1159,6 +1178,7 @@ void NetworkApi::handle__eval_server__login__POST(http_request req)
 
 void NetworkApi::handle__eval_server__logout__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1176,6 +1196,7 @@ void NetworkApi::handle__eval_server__logout__POST(http_request req)
 
 void NetworkApi::handle__search__reset__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1340,6 +1361,7 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 
 void NetworkApi::handle__search__rescore__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1407,6 +1429,7 @@ void NetworkApi::handle__search__rescore__POST(http_request req)
 
 void NetworkApi::handle__search__like_frame__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1437,6 +1460,7 @@ void NetworkApi::handle__search__like_frame__POST(http_request req)
 
 void NetworkApi::handle__search__bookmark_frame__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1467,6 +1491,7 @@ void NetworkApi::handle__search__bookmark_frame__POST(http_request req)
 
 void NetworkApi::handle__search__context__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1508,6 +1533,7 @@ void NetworkApi::handle__search__context__POST(http_request req)
 
 void NetworkApi::handle__search__context__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	// Construct the response
 	http_response res(status_codes::OK);
 	NetworkApi::add_CORS_headers(res);

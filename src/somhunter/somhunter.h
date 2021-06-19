@@ -83,12 +83,6 @@ class Somhunter
 	CanvasQueryRanker _collage_ranker;
 	const RelocationRanker _relocation_ranker;
 
-	mutable std::recursive_mutex _req_mtx;
-	std::lock_guard<std::recursive_mutex> exclusive_lock() const
-	{
-		return std::lock_guard<std::recursive_mutex>{ _req_mtx };
-	};
-
 public:
 	Somhunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
@@ -219,13 +213,13 @@ public:
 
 	const VideoFrame& get_frame(FrameId ID) const
 	{
-		auto lck{ exclusive_lock() };  //< (#)
+		
 		return _dataset_frames.get_frame(ID);
 	}
 
 	VideoFramePointer get_frame_ptr(FrameId img) const
 	{
-		auto lck{ exclusive_lock() };  //< (#)
+		
 		if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
 		return nullptr;
 	}
@@ -271,7 +265,7 @@ public:
 
 	size_t get_num_frames() const
 	{
-		auto lck{ exclusive_lock() };  //< (#)
+		
 		return _dataset_frames.size();
 	}
 	std::vector<FrameId> get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
@@ -283,17 +277,17 @@ public:
 	// ********************************
 	const std::string& get_config_filepath()
 	{
-		auto lck{ exclusive_lock() };  //< (#)
+		
 		return _core_settings_filepath;
 	}
 	const std::string& get_API_config_filepath()
 	{
-		auto lck{ exclusive_lock() };  //< (#)
+		
 		return _API_settings_filepath;
 	}
 	const KeywordRanker* textual_model()
 	{
-		auto lck{ exclusive_lock() };  //< (#)
+		
 		return &_keyword_ranker;
 	};
 

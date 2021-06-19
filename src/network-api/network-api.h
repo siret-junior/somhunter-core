@@ -104,6 +104,12 @@ private:
 	Somhunter* _p_core;
 	std::string _base_addr;
 	std::vector<http_listener> _endpoints;
+
+	mutable std::mutex _req_mtx;
+	std::lock_guard<std::mutex> exclusive_lock() const
+	{
+		return std::lock_guard<std::mutex>{ _req_mtx };
+	};
 };
 
 };  // namespace sh

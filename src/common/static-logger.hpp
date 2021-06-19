@@ -164,7 +164,14 @@ static inline std::string_view view_tail(const std::string& str, size_t len)
 			          << TermColor::def;                                                                 \
 		} while (0)
 
+#	define _write_API_unlog_d(id, x)                                                                      \
+		do {                                                                                             \
+			std::cout << TermColor::blue << "<-- [ " << id << " ] " << TermColor::cyan << x << std::endl \
+			          << TermColor::def;                                                                 \
+		} while (0)
+
 #	define SHLOG_REQ(id, x) _write_API_log_d(id, x)
+#	define SHLOG_UNREQ(id, x) _write_API_unlog_d(id, x)
 
 #endif  // LOGAPI
 
