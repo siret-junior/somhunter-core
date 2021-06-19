@@ -53,7 +53,7 @@ static http_response construct_error_res(status_code code, const std::string& ms
 static size_t store_JPEG_from_base64(const std::string& /*filepath*/, const std::string& /*base64_data*/)
 {
 	// \todo
-	SHLOG_D("Simulating the JPEG screenshot write to '" << filepath << "'...");
+	SHLOG_D("Simulating the JPEG screenshot write to '" << "filepath" << "'...");
 	return 128;
 }
 
