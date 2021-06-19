@@ -428,7 +428,7 @@ json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext
 
 		size_t i{ 0 };
 		for (auto&& b : ctx._bookmarks) {
-			bookmarked_arr[i] = json::value::number(uint32_t(b));
+			bookmarked_arr[i] = to_FrameReference(p_core, p_core->get_frame_ptr(b), search_ctx.likes, _bookmarks, "");
 			++i;
 		}
 		result_obj[U("bookmarkedFrames")] = bookmarked_arr;
