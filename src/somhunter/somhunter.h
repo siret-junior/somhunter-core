@@ -211,15 +211,10 @@ public:
 	 */
 	const UserContext& get_user_context() const;
 
-	const VideoFrame& get_frame(FrameId ID) const
-	{
-		
-		return _dataset_frames.get_frame(ID);
-	}
+	const VideoFrame& get_frame(FrameId ID) const { return _dataset_frames.get_frame(ID); }
 
 	VideoFramePointer get_frame_ptr(FrameId img) const
 	{
-		
 		if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
 		return nullptr;
 	}
@@ -263,11 +258,7 @@ public:
 
 	std::string store_rescore_screenshot(const std::string& filepath);
 
-	size_t get_num_frames() const
-	{
-		
-		return _dataset_frames.size();
-	}
+	size_t get_num_frames() const { return _dataset_frames.size(); }
 	std::vector<FrameId> get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
 	std::vector<float> get_top_scored_scores(std::vector<FrameId>& top_scored_frames) const;
 	size_t find_targets(const std::vector<FrameId>& top_scored, const std::vector<FrameId>& targets) const;
@@ -275,21 +266,9 @@ public:
 	// ********************************
 	// Other
 	// ********************************
-	const std::string& get_config_filepath()
-	{
-		
-		return _core_settings_filepath;
-	}
-	const std::string& get_API_config_filepath()
-	{
-		
-		return _API_settings_filepath;
-	}
-	const KeywordRanker* textual_model()
-	{
-		
-		return &_keyword_ranker;
-	};
+	const std::string& get_config_filepath() { return _core_settings_filepath; }
+	const std::string& get_API_config_filepath() { return _API_settings_filepath; }
+	const KeywordRanker* textual_model() { return &_keyword_ranker; };
 
 	void benchmark_native_text_queries(const std::string& queries_filepath, const std::string& out_dir);
 	void benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir);

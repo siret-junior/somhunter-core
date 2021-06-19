@@ -107,15 +107,15 @@ struct Filters {
 	/** Based on `dataset_parts` it returns the allowed frame IDs. */
 	std::pair<FrameId, FrameId> get_dataset_parts_valid_interval(std::size_t num_total_frames) const
 	{
-		std::size_t num_parts { dataset_parts.size() };
+		std::size_t num_parts{ dataset_parts.size() };
 		do_assert(num_parts == 2, "Must be 2 intervals.");
 		do_assert(num_total_frames >= 2, "At least 2 frames to it.");
 
-		auto base_size{ num_total_frames / num_parts};
-		auto rem{ num_total_frames % num_parts};
+		auto base_size{ num_total_frames / num_parts };
+		auto rem{ num_total_frames % num_parts };
 
-
-		return std::pair{ (dataset_parts[0] ? 0 : base_size + rem), (dataset_parts[1] ? num_total_frames : base_size + rem) };
+		return std::pair{ (dataset_parts[0] ? 0 : base_size + rem),
+			              (dataset_parts[1] ? num_total_frames : base_size + rem) };
 	}
 
 	template <class Archive>
