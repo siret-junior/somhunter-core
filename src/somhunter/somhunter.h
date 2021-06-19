@@ -23,6 +23,7 @@
 #define SOMHUNTER_H_
 
 #include <array>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -81,6 +82,12 @@ class Somhunter
 	KeywordRanker _keyword_ranker;
 	CanvasQueryRanker _collage_ranker;
 	const RelocationRanker _relocation_ranker;
+
+	mutable std::recursive_mutex _req_mtx;
+	std::lock_guard<std::recursive_mutex> exclusive_lock() const
+	{
+		return std::lock_guard<std::recursive_mutex>{ _req_mtx };
+	};
 
 public:
 	Somhunter() = delete;
@@ -185,11 +192,6 @@ public:
 	 */
 	RescoreResult rescore(Query& query, bool benchmark_run = false);
 
-	RescoreResult rescore(const std::vector<TemporalQuery>& temporal_query, const RelevanceFeedbackQuery& rfQuery,
-	                      const Filters* p_filters = nullptr, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
-	                      const std::string& screenshot_fpth = ""s, const std::string& label = ""s,
-	                      bool benchmark_run = false);
-
 	/** Switches the search context for the user to the provided index in
 	 *  the history and returns reference to it.
 	 *
@@ -198,8 +200,6 @@ public:
 	 */
 	const UserContext& switch_search_context(size_t index, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
 	                                         const std::string& screenshot_fpth = "", const std::string& label = "");
-
-	void apply_filters();
 
 	/**
 	 * Returns a reference to the current user's search context.
@@ -217,10 +217,15 @@ public:
 	 */
 	const UserContext& get_user_context() const;
 
-	const VideoFrame& get_frame(FrameId ID) const { return _dataset_frames.get_frame(ID); }
+	const VideoFrame& get_frame(FrameId ID) const
+	{
+		auto lck{ exclusive_lock() };  //< (#)
+		return _dataset_frames.get_frame(ID);
+	}
 
 	VideoFramePointer get_frame_ptr(FrameId img) const
 	{
+		auto lck{ exclusive_lock() };  //< (#)
 		if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
 		return nullptr;
 	}
@@ -264,7 +269,11 @@ public:
 
 	std::string store_rescore_screenshot(const std::string& filepath);
 
-	size_t get_num_frames() const { return _dataset_frames.size(); }
+	size_t get_num_frames() const
+	{
+		auto lck{ exclusive_lock() };  //< (#)
+		return _dataset_frames.size();
+	}
 	std::vector<FrameId> get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
 	std::vector<float> get_top_scored_scores(std::vector<FrameId>& top_scored_frames) const;
 	size_t find_targets(const std::vector<FrameId>& top_scored, const std::vector<FrameId>& targets) const;
@@ -272,14 +281,28 @@ public:
 	// ********************************
 	// Other
 	// ********************************
-	const std::string& get_config_filepath() { return _core_settings_filepath; }
-	const std::string& get_API_config_filepath() { return _API_settings_filepath; }
-	const KeywordRanker* textual_model() { return &_keyword_ranker; };
+	const std::string& get_config_filepath()
+	{
+		auto lck{ exclusive_lock() };  //< (#)
+		return _core_settings_filepath;
+	}
+	const std::string& get_API_config_filepath()
+	{
+		auto lck{ exclusive_lock() };  //< (#)
+		return _API_settings_filepath;
+	}
+	const KeywordRanker* textual_model()
+	{
+		auto lck{ exclusive_lock() };  //< (#)
+		return &_keyword_ranker;
+	};
 
 	void benchmark_native_text_queries(const std::string& queries_filepath, const std::string& out_dir);
 	void benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir);
 
 private:
+	void apply_filters();
+
 	/**
 	 *	Generates the new debug targets.
 	 */

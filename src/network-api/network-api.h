@@ -22,6 +22,8 @@
 #ifndef NETWORK_API_H_
 #define NETWORK_API_H_
 
+#include <mutex>
+// ---
 #include <cpprest/asyncrt_utils.h>
 #include <cpprest/containerstream.h>
 #include <cpprest/filestream.h>
@@ -29,7 +31,7 @@
 #include <cpprest/json.h>
 #include <cpprest/producerconsumerstream.h>
 #include <cpprest/uri.h>
-
+// ---
 #include "common.h"
 #include "query-types.h"
 
