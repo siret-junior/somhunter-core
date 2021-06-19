@@ -176,7 +176,7 @@ public:
 
 	/** Returns the nearest supported keyword matches to the provided
 	 * prefix. */
-	std::vector<const Keyword*> autocomplete_keywords(const std::string& prefix, size_t count) const;
+	std::vector<const Keyword*> autocomplete_keywords(const std::string& prefix, size_t count = 5) const;
 
 	/**
 	 * Applies all algorithms for score computation and updates context.

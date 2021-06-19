@@ -124,7 +124,7 @@ public:
 		return _keyword_ranker[idx];
 	}
 
-	KwSearchIds find(const std::string& search, size_t num_limit = 10) const;
+	KwSearchIds find(const std::string& search, size_t num_limit) const;
 
 	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
 	                         const DatasetFeatures& _dataset_features, const Settings& _logger_settings,
