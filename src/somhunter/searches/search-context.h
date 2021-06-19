@@ -62,7 +62,7 @@ struct SearchContext {
 
 	// Current display context
 	std::vector<VideoFramePointer> current_display;
-	DisplayType curr_disp_type{ DisplayType::DNull };
+	DisplayType curr_disp_type{ DisplayType::DTopN };
 
 	// Relevance scores
 	ScoreModel scores;
