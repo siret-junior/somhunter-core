@@ -14,6 +14,6 @@ fi
 echo "Building with build type: ${BUILD_TYPE}"
 mkdir build
 cmake -B ./build -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-cmake --build ./build --config ${BUILD_TYPE}
+cmake --build ./build --config ${BUILD_TYPE} -j
 
 printf "\tDone installing 'somhunter-core'...\n"
