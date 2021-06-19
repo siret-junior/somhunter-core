@@ -358,11 +358,11 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	if (!benchmark_run) {
 		const auto& targets{ _user_context.ctx.curr_targets };
 
-		for (auto&& t : targets) {
+		/*for (auto&& t : targets) {
 			size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
 
 			tar_pos = std::min(r, tar_pos);
-		}
+		}*/
 
 		// Flush the backlog
 		_user_context._logger.poll();
@@ -383,7 +383,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		                                  query.get_plain_text_query(), _settings.topn_frames_per_video,
 		                                  _settings.topn_frames_per_shot);
 
-		SHLOG_S("Target position is " << tar_pos << ".");
+		//SHLOG_S("Target position is " << tar_pos << ".");
 	}
 
 	// Store this query
