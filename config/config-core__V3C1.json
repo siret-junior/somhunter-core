@@ -74,14 +74,14 @@
 					"username": "somhunter",
 					"password": "MSV5be4r7j3w",
 					
-					"login_URL": "https://vbs.itec.aau.at:9443/api/login",
-					"logout_URL": "https://vbs.itec.aau.at:9443/api/logout",
-					"session_URL": "https://vbs.itec.aau.at:9443/api/user/session",
-					"server_time_URL": "https://vbs.itec.aau.at:9443/api/status/time",
+					"login_URL": "https://vbs2.itec.aau.at:9443/api/login",
+					"logout_URL": "https://vbs2.itec.aau.at:9443/api/logout",
+					"session_URL": "https://vbs2.itec.aau.at:9443/api/user/session",
+					"server_time_URL": "https://vbs2.itec.aau.at:9443/api/status/time",
 
-					"submit_URL": "https://vbs.itec.aau.at:9443/submit",
-					"submit_rerank_URL": "https://vbs.itec.aau.at:9443/log/result",
-					"submit_interaction_URL": "https://vbs.itec.aau.at:9443/log/query"
+					"submit_URL": "https://vbs2.itec.aau.at:9443/submit",
+					"submit_rerank_URL": "https://vbs2.itec.aau.at:9443/log/result",
+					"submit_interaction_URL": "https://vbs2.itec.aau.at:9443/log/query"
 				}
 			},
 		

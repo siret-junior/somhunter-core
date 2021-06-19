@@ -97,7 +97,8 @@ public:
 	      _relocation_ranker{}
 	{
 		generate_new_targets();
-		return;
+
+#if 0  //< Uncomment to generate example frames for each supported word
 		std::ifstream inFile(settings.kws_file, std::ios::in);
 		std::ofstream ofs("wooooords.csv");
 
@@ -122,7 +123,7 @@ public:
 			}
 
 			SynsetId synset_ID{ utils::str2<SynsetId>(tokens[1]) };
-			FrameId vec_idx{ FrameId(synset_ID) };
+			//FrameId vec_idx{ FrameId(synset_ID) };
 
 			TemporalQuery tq;
 			tq.textual = tokens[0];
@@ -147,7 +148,7 @@ public:
 			}
 			++i;
 		}
-
+#endif
 	}
 
 	// ********************************

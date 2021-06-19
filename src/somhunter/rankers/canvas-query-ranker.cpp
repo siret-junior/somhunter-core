@@ -37,7 +37,7 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
     : _p_core{ p_core }, _loaded{ false }
 {
 	SHLOG_D("Initializing CanvasQueryRanker...");
-	
+
 	// Check if we have subregions data
 	if (_settings.collage_region_file_prefix.empty()) {
 		SHLOG_W("No subregion features! Running without canvas queries.");

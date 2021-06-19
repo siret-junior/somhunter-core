@@ -50,7 +50,7 @@ static http_response construct_error_res(status_code code, const std::string& ms
 /**
  * Writes the provided image as JPEG file placed at `filepath`, returns number of written bytes.
  */
-static size_t store_JPEG_from_base64(const std::string& filepath, const std::string& /*base64_data*/)
+static size_t store_JPEG_from_base64(const std::string& /*filepath*/, const std::string& /*base64_data*/)
 {
 	// \todo
 	SHLOG_D("Simulating the JPEG screenshot write to '" << filepath << "'...");

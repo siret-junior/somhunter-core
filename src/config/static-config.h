@@ -89,42 +89,42 @@ namespace LOGGING_STRINGS
 {
 namespace STD_CATEGORIES
 {
-constexpr char* BROWSING = "BROWSING";
-constexpr char* IMAGE = "IMAGE";
-constexpr char* TEXT = "TEXT";
+constexpr const char* BROWSING = "BROWSING";
+constexpr const char* IMAGE = "IMAGE";
+constexpr const char* TEXT = "TEXT";
 };  // namespace STD_CATEGORIES
 
 namespace STD_TYPES
 {
-constexpr char* EXPLORATION = "exploration";
-constexpr char* RANKED_LIST = "rankedList";
-constexpr char* RANDOM_SELECTION = "randomSelection";
+constexpr const char* EXPLORATION = "exploration";
+constexpr const char* RANKED_LIST = "rankedList";
+constexpr const char* RANDOM_SELECTION = "randomSelection";
 };  // namespace STD_TYPES
 
 namespace STD_VALUES
 {
-constexpr char* RANDOM_DISPLAY = "randomDisplay";
-constexpr char* SOM_DISPLAY = "somDisplay";
+constexpr const char* RANDOM_DISPLAY = "randomDisplay";
+constexpr const char* SOM_DISPLAY = "somDisplay";
 
-constexpr char* TOP_SCORED_DISPLAY = "topScoredDisplay";
-constexpr char* SOM_RELOC_DISPLAY = "somRelocationDisplay";
-constexpr char* TOP_SCORED_CONTEXT_DISPLAY = "topnContextDisplay";
+constexpr const char* TOP_SCORED_DISPLAY = "topScoredDisplay";
+constexpr const char* SOM_RELOC_DISPLAY = "somRelocationDisplay";
+constexpr const char* TOP_SCORED_CONTEXT_DISPLAY = "topnContextDisplay";
 };  // namespace STD_VALUES
 
 namespace STD_KEYS
 {
-constexpr char* ACTION_NAME = "actionName";
+constexpr const char* ACTION_NAME = "actionName";
 };
 
 namespace ACTION_NAMES
 {
-constexpr char* SHOW_RANDOM_DISPLAY = "showRandomDisplay";
-constexpr char* SHOW_SOM_DISPLAY = "showSomDisplay";
-constexpr char* SHOW_SOM_RELOC_DISPLAY = "showSomRelocationDisplay";
-constexpr char* SHOW_TOP_SCORED_DISPLAY = "showTopScoredDisplay";
-constexpr char* SHOW_TOP_SCORED_CONTEXT_DISPLAY = "showTopScoredContextDisplay";
+constexpr const char* SHOW_RANDOM_DISPLAY = "showRandomDisplay";
+constexpr const char* SHOW_SOM_DISPLAY = "showSomDisplay";
+constexpr const char* SHOW_SOM_RELOC_DISPLAY = "showSomRelocationDisplay";
+constexpr const char* SHOW_TOP_SCORED_DISPLAY = "showTopScoredDisplay";
+constexpr const char* SHOW_TOP_SCORED_CONTEXT_DISPLAY = "showTopScoredContextDisplay";
 
-constexpr char* RESET_ALL = "resetAll";
+constexpr const char* RESET_ALL = "resetAll";
 
 };  // namespace ACTION_NAMES
 };  // namespace LOGGING_STRINGS

@@ -28,7 +28,6 @@ struct Settings;
 
 namespace tests
 {
-
 class TESTER_Somhunter
 {
 public:
@@ -40,11 +39,10 @@ private:
 	static void TEST_autocomplete_keywords(Somhunter &core);
 	static void TEST_rescore(Somhunter &core);
 	static void TEST_rescore_filters(Somhunter &core);
-	static void TEST_canvas_queries(Somhunter &core, Settings &_logger_settings);
+	static void TEST_canvas_queries(Somhunter &core);
 
 	static void TEST_log_results(Somhunter &core);
 };
-
 
 class TESTER_Config
 {

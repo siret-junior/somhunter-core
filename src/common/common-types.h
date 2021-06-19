@@ -25,10 +25,10 @@
 #include <cstdint>
 #include <limits>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <sstream>
 
 namespace sh
 {

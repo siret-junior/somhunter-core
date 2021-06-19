@@ -138,10 +138,10 @@ void Logger::submit_interaction_logs_buffer()
 	_last_interactions_submit_ts = utils::timestamp();
 }
 
-void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
-                         const UsedTools& used_tools, DisplayType /*disp_type*/, const std::vector<FrameId>& topn_imgs,
-                         const std::string& sentence_query, const size_t topn_frames_per_video,
-                         const size_t topn_frames_per_shot)
+void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel& /*scores*/,
+                         const std::set<FrameId>& /*likes*/, const UsedTools& used_tools, DisplayType /*disp_type*/,
+                         const std::vector<FrameId>& topn_imgs, const std::string& sentence_query,
+                         const size_t topn_frames_per_video, const size_t topn_frames_per_shot)
 {
 	/* ***
 	 * Prepare the log compatible with the eval server. */
@@ -356,7 +356,7 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
 	o << obj.pretty_print(pretty_print_opts);
 }
 
-void sh::Logger::log_rescore(const Query& prev_query, const Query& new_query)
+void sh::Logger::log_rescore(const Query& /*prev_query*/, const Query& new_query)
 {
 	// Log query
 	auto h{ push_action("rescore", "OTHER ", "rescore", "") };

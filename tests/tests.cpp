@@ -30,8 +30,8 @@
 // ---
 #include "settings.h"
 #include "somhunter.h"
-#include "utils.hpp"
 #include "test-utils.hpp"
+#include "utils.hpp"
 
 namespace fs = std::filesystem;
 using namespace sh::tests;
@@ -62,7 +62,7 @@ void TESTER_Somhunter::run_all_tests(const std::string &cfg_fpth) {
 	TEST_bookmark_frames(core);
 	TEST_autocomplete_keywords(core);
 	TEST_rescore(core);
-	TEST_canvas_queries(core, config);
+	TEST_canvas_queries(core);
 
 #ifdef TEST_FILTERS
 	TEST_rescore_filters(core);
@@ -73,7 +73,7 @@ void TESTER_Somhunter::run_all_tests(const std::string &cfg_fpth) {
 	SHLOG("====================================================");
 }
 
-void TESTER_Somhunter::TEST_canvas_queries(Somhunter &core, Settings &_logger_settings) {
+void TESTER_Somhunter::TEST_canvas_queries(Somhunter &core) {
 	SHLOG("\t Testing `Somhunter::rescore` method with collage queries...");
 	core.reset_search_session();
 

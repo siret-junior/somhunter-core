@@ -280,24 +280,24 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 
 	// Check if temporal queries has changed
 	if (_user_context.ctx.last_temporal_queries != temporal_query) {
-		reset_scores(); //< Resets scores & used tools
+		reset_scores();  //< Resets scores & used tools
 		size_t moment = 0;
 
 		for (size_t mi = 0; mi < temporal_query.size(); ++mi) {
 			auto&& moment_query = temporal_query[mi];
-			
+
 			if (moment_query.empty()) continue;
 
 			// ***
 			// Relocation
 			if (moment_query.is_relocation()) {
 				SHLOG_D("Running the relocation query model...");
-				
+
 				// Set used tool
 				_user_context.ctx.used_tools.relocation_used = true;
 
 				_relocation_ranker.score(moment_query.relocation, _user_context.ctx.scores, moment, _dataset_features);
-			} 
+			}
 			// ***
 			// Canvas
 			else if (moment_query.is_canvas()) {
@@ -306,7 +306,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 				_collage_ranker.score(moment_query.canvas, _user_context.ctx.scores, moment,
 				                      _user_context.ctx.used_tools, _dataset_features, _dataset_frames);
 
-			} 
+			}
 			// ***
 			// Plain text
 			else if (moment_query.is_text()) {
@@ -359,9 +359,9 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		const auto& targets{ _user_context.ctx.curr_targets };
 
 		/*for (auto&& t : targets) {
-			size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
+		    size_t r{ _user_context.ctx.scores.frame_rank(t.frame_ID) + 1 };
 
-			tar_pos = std::min(r, tar_pos);
+		    tar_pos = std::min(r, tar_pos);
 		}*/
 
 		// Flush the backlog
@@ -383,7 +383,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		                                  query.get_plain_text_query(), _settings.topn_frames_per_video,
 		                                  _settings.topn_frames_per_shot);
 
-		//SHLOG_S("Target position is " << tar_pos << ".");
+		// SHLOG_S("Target position is " << tar_pos << ".");
 	}
 
 	// Store this query
@@ -448,7 +448,7 @@ void Somhunter::log_text_query_change(const std::string& text_query)
 
 std::string Somhunter::store_rescore_screenshot(const std::string& /*filepath*/)
 {
-	//SHLOG_W("Simulating the screenshot saving...");
+	// SHLOG_W("Simulating the screenshot saving...");
 
 	std::string UI_filepath{ "/assets/img/history_screenshot.jpg" };
 
@@ -620,7 +620,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 
 	// ***
 	// Load the filenames from the directory
-	std::vector<std::string> serialized_queries;	
+	std::vector<std::string> serialized_queries;
 	std::vector<std::string> serialized_queries_infos;
 
 	SHLOG("Loading queries from the directory '" << queries_dir << "'...");
@@ -682,7 +682,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 
 			// ***
 			// Decay to unpositioned
-			Query qq{q};
+			Query qq{ q };
 			qq.transform_to_no_pos_queries();
 
 			std::string this_query;
