@@ -625,7 +625,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 
 	SHLOG("Loading queries from the directory '" << queries_dir << "'...");
 	for (const auto& dir_entry : directory_iterator(queries_dir)) {
-		SHLOG("\t - " << dir_entry);
+		SHLOG("\t - " << dir_entry.path());
 
 		for (const auto& file : std::filesystem::directory_iterator(dir_entry)) {
 			std::string filepath{ file.path().string() };
@@ -639,7 +639,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 				serialized_queries_infos.emplace_back(filepath);
 			}
 
-			SHLOG("\t" << file);
+			SHLOG("\t" << file.path());
 		}
 		do_assert_equals(serialized_queries.size(), serialized_queries_infos.size(),
 		                 "There must be the same number of infos & bin files.");

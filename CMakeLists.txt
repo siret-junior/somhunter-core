@@ -29,8 +29,8 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
 set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
 
 if (MSVC)
-# Set warning level 0 to everything included with angle brackets
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP /experimental:external /external:anglebrackets /external:W0" )
+    # Set warning level 0 to everything included with angle brackets
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP /experimental:external /external:anglebrackets /external:W0" )
 
     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
         string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
@@ -40,7 +40,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /MP /experimental:external /external
     endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 else (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -frtti -D_GLIBCXX_USE_CXX11_ABI=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -frtti -D_GLIBCXX_USE_CXX11_ABI=1")
 endif (MSVC)
 
 # -march=native option
@@ -195,14 +195,14 @@ target_compile_definitions(${SOMHUNTER_TARGET_TESTS} PRIVATE TESTING)
 # SET_TARGET_PROPERTIES(${SOMHUNTER_TARGET} PROPERTIES LINK_FLAGS    "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
 # SET_TARGET_PROPERTIES(${SOMHUNTER_TARGET_TESTS} PROPERTIES LINK_FLAGS    "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
 
-target_include_directories(${SOMHUNTER_TARGET} 
-	PRIVATE
-		${CURL_INCLUDE_DIR}
+target_include_directories(${SOMHUNTER_TARGET} SYSTEM
+    PRIVATE
+        ${CURL_INCLUDE_DIR}
         ${OpenCV_INCLUDE_DIRS}
         ${cpprestsdk_INCLUDE_DIRS}
 )
-target_include_directories(${SOMHUNTER_TARGET_TESTS} 
-	PRIVATE
+target_include_directories(${SOMHUNTER_TARGET_TESTS} SYSTEM
+    PRIVATE
 		${CURL_INCLUDE_DIR}
         ${OpenCV_INCLUDE_DIRS}
         ${cpprestsdk_INCLUDE_DIRS}

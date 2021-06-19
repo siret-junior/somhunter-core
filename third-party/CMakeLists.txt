@@ -1,5 +1,5 @@
 
-target_include_directories(${SOMHUNTER_TARGET}  
+target_include_directories(${SOMHUNTER_TARGET} SYSTEM
 	PUBLIC
 		stb
 		json11
@@ -8,7 +8,7 @@ target_include_directories(${SOMHUNTER_TARGET}
 		hash-library
 )
 
-target_include_directories(${SOMHUNTER_TARGET_TESTS}  
+target_include_directories(${SOMHUNTER_TARGET_TESTS} SYSTEM
 	PUBLIC
 		stb
 		json11

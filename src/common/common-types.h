@@ -44,6 +44,10 @@ public:
 // ---
 
 struct DebugLogStreamPtrs {
+	DebugLogStreamPtrs() = delete;
+	DebugLogStreamPtrs& operator=(DebugLogStreamPtrs&) = delete;
+	DebugLogStreamPtrs& operator=(DebugLogStreamPtrs&&) = delete;
+	// ---
 	std::stringstream& _summary;
 	std::stringstream& _actions;
 	std::stringstream& _results;
@@ -155,6 +159,9 @@ inline std::string disp_type_to_str(DisplayType type)
 
 		case DisplayType::DVideoReplay:
 			disp_type = "video_replay";
+			break;
+		default:
+			throw std::runtime_error{ "Uknown dusplay!" };
 			break;
 	}
 
