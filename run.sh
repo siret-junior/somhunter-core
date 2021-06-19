@@ -10,5 +10,6 @@ if [ -f "./somhunter.exe" ]
 then
     ./somhunter.exe
 else
-    ./somhunter
+#    ./somhunter
+	supervise .
 fi
