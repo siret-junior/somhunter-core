@@ -14,11 +14,12 @@ saved-queries
 config/config-core__asi_v3c1-first100.json
 config/_config-core.json
 config/config-core.json
+config/config-auth.json
 bench-out/
 data/nn_models/traced_Resnet152.pt
 data/nn_models/traced_Resnext101.pt
 data/v3c1-first100/
 data/v3c1-20k/
 data/V3C1_2021_May/
-data/V3C1_2021_June/
+data/V3C1_2021_June
 saved-queries-out/

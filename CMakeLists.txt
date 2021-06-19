@@ -56,6 +56,11 @@ else ()
     set(CMAKE_BUILD_TYPE Debug)
 endif ()
 
+if (NOT ${CMAKE_BUILD_TYPE} STREQUAL  "Release" AND NOT ${CMAKE_BUILD_TYPE} STREQUAL  "Debug")
+    set(CMAKE_BUILD_TYPE_RED "Release")
+    message("Setting reduced build type to: ${CMAKE_BUILD_TYPE_RED}")
+endif ()
+
 if (WIN32)
     set(PLATFORM "win")
 else ()
@@ -73,7 +78,6 @@ if (IS_CI)
     set(IS_CI_OPT "--no-models=true")
 else ()
 endif ()
-
 
 
 # ####################################
@@ -101,7 +105,7 @@ execute_process (
             ${CMAKE_HOME_DIRECTORY}/config/config-auth.json # Auth config
             ${CMAKE_BINARY_DIR}                         # Build dir
             ${THIRD_PARTY_DIR}                          # Third-party dir
-            "${CMAKE_BUILD_TYPE}"                       # Build type \in { Release, Debug }
+            "${CMAKE_BUILD_TYPE_RED}"                       # Build type \in { Release, Debug }
             ${CUDA_SCRIPT_OPT}
             ${IS_CI_OPT}
         WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
@@ -119,24 +123,26 @@ endif ()
 
 find_package(cpprestsdk REQUIRED)
 
+
+
 # libTorch
-set(Torch_DIR "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch/share/cmake/Torch/")
+set(Torch_DIR "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE_RED}/libtorch/share/cmake/Torch/")
 message(${Torch_DIR})
 find_package(Torch REQUIRED) 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}") 
 if (WIN32)
     # Don't know why!
     set_target_properties(torch PROPERTIES
-        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/torch.lib"
-        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/torch.dll"
+        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE_RED}/libtorch//lib/torch.lib"
+        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE_RED}/libtorch//lib/torch.dll"
     )
     set_target_properties(torch_cpu PROPERTIES
-        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/torch_cpu.lib"
-        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/torch_cpu.dll"
+        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE_RED}/libtorch//lib/torch_cpu.lib"
+        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE_RED}/libtorch//lib/torch_cpu.dll"
     )
     set_target_properties(c10 PROPERTIES
-        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/c10.lib"
-        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE}/libtorch//lib/c10.dll"
+        IMPORTED_IMPLIB "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE_RED}/libtorch//lib/c10.lib"
+        IMPORTED_LOCATION "${THIRD_PARTY_DIR}/libtorch-${CMAKE_BUILD_TYPE_RED}/libtorch//lib/c10.dll"
     )
 endif (WIN32)
 
