@@ -37,8 +37,6 @@ ClientDres::ClientDres(const EvalServerSettings& eval_server_settings)
 	// If we should accept insecure connections
 	_http.set_allow_insecure(eval_server_settings.allow_insecure);
 
-	// Do login
-	login();
 
 	_t_sync_worker = std::thread{ [this]() {
 		if (!_do_requests) {
