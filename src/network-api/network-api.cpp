@@ -222,6 +222,35 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 	return result_obj;
 }
 
+json::value canvas_to_json(const CanvasSubqueryBitmap& q)
+{
+	json::value res = json::value::object();
+	res[U("rect")] = json::value::array({ q.rect().left, q.rect().top, q.rect().right, q.rect().bottom });
+	res[U("type")] = json::value::string(U("bitmap"));
+	res[U("width_pixels")] = json::value::number(q.width_pixels());
+	res[U("height_pixels")] = json::value::number(q.height_pixels());
+	res[U("num_channels")] = json::value::number(q.num_channels());
+
+	{  // Copy image data
+		json::value arr = json::value::array(q.data().size());
+		for (std::size_t i = 0; i < q.data().size(); ++i) {
+			arr[i] = json::value::number(q.data()[i]);
+		}
+		res[U("bitmap_data")] = arr;
+	}
+
+	return res;
+}
+
+json::value canvas_to_json(const CanvasSubqueryText& q)
+{
+	json::value res = json::value::object();
+	res["rect"] = json::value::array({ q.rect().left, q.rect().top, q.rect().right, q.rect().bottom });
+	res["type"] = json::value::string(U("text"));
+	res[U("text_query")] = json::value::string(q.query());
+	return res;
+}
+
 json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx)
 {
 	auto search_ctx{ ctx.ctx };
@@ -274,6 +303,32 @@ json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx)
 		}
 
 		result_obj[U("relocation")] = value_arr;
+	}
+
+	{ /* *** canvas *** */
+
+		json::value value_arr{ json::value::array(2) };
+		for (std::size_t i = 0; i < 2; ++i) {
+			if (i < search_ctx.last_temporal_queries.size() && 
+				search_ctx.last_temporal_queries[i].is_canvas()) {
+				// Push canvas query
+				TemporalQuery& tempQ = search_ctx.last_temporal_queries[i];
+				value_arr[i] = json::value::array(tempQ.canvas.size());
+				for (std::size_t j = 0; j < tempQ.canvas.size(); ++j) {
+					// Push canvas subquery
+					value_arr[i][j] = std::visit(
+						overloaded{
+							[](auto sq) { return canvas_to_json(sq); },
+						},
+						tempQ.canvas[j]);
+				}
+			} else {
+				// Create empty query
+				value_arr[i] = json::value::array(0);
+			}
+		}
+
+		result_obj[U("canvas")] = value_arr;
 	}
 
 	{ /* *** displayType *** */

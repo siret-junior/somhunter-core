@@ -115,8 +115,8 @@ void Logger::log_query(const LogHash& hash, const Query& query) const
 	auto filepath_JSON{ dir + "/" + hash + ".json" };
 
 	// \todo Implement...
-	SHLOG_I("Writing the query to '" + filepath_bin + "'...");
-	SHLOG_I("Writing the query to '" + filepath_JSON + "'...");
+	SHLOG_D("Writing the query to '" + filepath_bin + "'...");
+	SHLOG_D("Writing the query to '" + filepath_JSON + "'...");
 
 	utils::serialize_to_file<Query>(query, filepath_bin);
 }
