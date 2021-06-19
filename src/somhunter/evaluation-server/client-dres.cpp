@@ -111,7 +111,7 @@ bool ClientDres::login()
 				success = true;
 			}
 
-		} catch (std::exception ex) {
+		} catch (const std::exception& ex) {
 			SHLOG_W("Login request failed!" << std::endl << ex.what());
 		}
 	} else {
@@ -162,7 +162,7 @@ bool ClientDres::logout()
 				success = true;
 			}
 
-		} catch (std::exception ex) {
+		} catch (const std::exception& ex) {
 			SHLOG_W("Logout request failed!" << std::endl << ex.what());
 		}
 	} else {
@@ -231,7 +231,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 				SHLOG_S(msg);
 			}
 
-		} catch (std::exception ex) {
+		} catch (const std::exception& ex) {
 			SHLOG_W("Submit request failed!" << std::endl << ex.what());
 			return false;
 		}

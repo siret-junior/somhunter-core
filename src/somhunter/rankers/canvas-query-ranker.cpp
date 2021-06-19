@@ -114,7 +114,7 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 	                                        << _settings.pre_PCA_features_dim << ").");
 
 	try {
-		for (int i = 0; i < _settings.collage_regions; i++) {
+		for (std::size_t i = 0; i < _settings.collage_regions; i++) {
 			FeatureMatrix m = KeywordRanker::parse_float_matrix(
 			    _settings.collage_region_file_prefix + std::to_string(i) + ".bin", 128, 0);
 			region_data.push_back(m);

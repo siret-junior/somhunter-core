@@ -40,6 +40,7 @@ class EvalServerClient
 	// *** METHODS ***
 public:
 	EvalServerClient(const EvalServerSettings& settings);
+	virtual ~EvalServerClient() noexcept = default;
 	// ---
 	bool login();
 	bool logout();

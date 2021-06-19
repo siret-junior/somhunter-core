@@ -45,10 +45,12 @@ class DatasetFeatures;
  * It can be ome point in HISTORY.
  */
 struct SearchContext {
+	// *** METHODS ***
+public:
 	SearchContext() = delete;
 	SearchContext(size_t ID, const Settings& _logger_settings, const DatasetFrames& _dataset_frames);
-
 	bool operator==(const SearchContext& other) const;
+	// ---
 
 	void reset()
 	{
@@ -56,6 +58,10 @@ struct SearchContext {
 		reset_filters();
 	}
 	void reset_filters() { filters = Filters{}; }
+
+	// *** MEMBER VARIABLES ***
+public:
+	std::size_t ID;
 
 	// VBS logging
 	UsedTools used_tools;
@@ -82,8 +88,7 @@ struct SearchContext {
 	// Filepath to screenshot repesenting this screen
 	std::string screenshot_fpth{};
 
-	size_t ID;
-	std::string label{ "" };
+	std::string label;
 
 	/** Filters based on metadata (hour, weekday). */
 	Filters filters;

@@ -186,7 +186,7 @@ std::vector<FrameId> AsyncSom::get_display(ScoreModel model_scores) const
 		}
 	}
 
-	auto begin = std::chrono::steady_clock::now();
+	[[maybe_unused]] auto begin = std::chrono::steady_clock::now();
 	// Fix empty cluster
 	std::vector<size_t> stolen_count(width * height, 1);
 	for (size_t i = 0; i < width; ++i) {
@@ -221,7 +221,7 @@ std::vector<FrameId> AsyncSom::get_display(ScoreModel model_scores) const
 		}
 	}
 
-	auto end = std::chrono::steady_clock::now();
+	[[maybe_unused]] auto end = std::chrono::steady_clock::now();
 	SHLOG_D("Fixing clusters took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
 	                                << " [ms]");
 	return ids;
