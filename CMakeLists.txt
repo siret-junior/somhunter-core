@@ -81,7 +81,6 @@ if (IS_CI)
 else ()
 endif ()
 
-
 # ####################################
 # Global preprocessor defines
 # ####################################
@@ -211,7 +210,7 @@ target_include_directories(${SOMHUNTER_TARGET_TESTS} SYSTEM
 if (MSVC)
     set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprestsdk::cpprest)
 else ()
-    set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprest)
+    set(ADDITIONAL OpenSSL::SSL OpenSSL::Crypto cpprest tbb)
 endif ()
 
 target_link_libraries(${SOMHUNTER_TARGET} 
