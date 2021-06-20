@@ -547,7 +547,7 @@ json::value to_Response__GetAutocompleteResults__Get(Somhunter* /*p_core*/, cons
 			result_obj[U("description")] = json::value::string(to_string_t(p_kw->desc));
 		}
 		{ /* *** exampleFrames *** */
-			json::value examples_arr{ json::value::array(p_kw->top_ex_imgs.size()) };
+			json::value examples_arr{ json::value::array(example_count) };
 
 			size_t ii{ 0 };
 			for (auto&& p_frame : p_kw->top_ex_imgs) {
