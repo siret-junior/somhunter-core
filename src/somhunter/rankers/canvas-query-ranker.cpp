@@ -181,7 +181,8 @@ at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const
 at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage, UsedTools& used_tools)
 {
 	SHLOG_D("Extracting features");
-
+	
+	torch::NoGradGuard no_grad;
 	std::vector<torch::Tensor> tensors;
 	std::vector<torch::Tensor> tensors_bitmap_norm;
 
@@ -246,8 +247,10 @@ at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage, UsedTools
 		at::Tensor batch = torch::cat(tensors, 0);
 		at::Tensor batch_norm = torch::cat(tensors_bitmap_norm, 0);
 
-		at::Tensor resnext101_feature = resnext101.forward({ batch_norm }).toTensor();
-		at::Tensor resnet152_feature = resnet152.forward({ batch }).toTensor();
+		auto resnext101_forward = resnext101.forward({ batch_norm });
+		auto resnet125_forward = resnet152.forward({ batch });
+		at::Tensor resnext101_feature = resnext101_forward.toTensor();
+		at::Tensor resnet152_feature = resnet125_forward.toTensor();
 		features_bitmap = torch::cat({ resnext101_feature, resnet152_feature }, 1).to(torch::kFloat32).detach();
 
 		// squeeze 4096 to 2048

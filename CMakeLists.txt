@@ -40,7 +40,7 @@ if (MSVC)
     endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
 else (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -frtti -D_GLIBCXX_USE_CXX11_ABI=1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -D_GLIBCXX_USE_CXX11_ABI=1")
 endif (MSVC)
 
 # -march=native option
