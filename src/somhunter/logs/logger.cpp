@@ -392,6 +392,7 @@ void Logger::log_text_query_change(const std::string& text_query)
 	}
 
 	push_action("textQueryChange", "TEXT", "jointEmbedding", text_query);
+	last_logged = utils::timestamp();
 }
 void Logger::log_like(FrameId frame_ID) { log_bothlike(frame_ID, "like"); }
 
