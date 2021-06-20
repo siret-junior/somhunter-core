@@ -133,7 +133,7 @@ std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 	if we want to keep reporting `n` unique results. */
 	n = n * DISPLAY_GRID_WIDTH;
 
-	auto to_show = top_n(_dataset_frames, n / DISPLAY_GRID_WIDTH, from_vid_limit, from_shot_limit);
+	const auto& to_show = top_n(_dataset_frames, n / DISPLAY_GRID_WIDTH, from_vid_limit, from_shot_limit);
 
 	_topn_ctx_cache.clear();
 	_topn_ctx_cache.reserve(n);

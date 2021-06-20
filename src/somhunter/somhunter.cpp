@@ -90,7 +90,7 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 	     (curr_display == DisplayType::DTopN || curr_display == DisplayType::DTopNContext ||
 	      curr_display == DisplayType::DRand || curr_display == DisplayType::DSom))) {
 		const auto& top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
-		                                            _settings.topn_frames_per_shot);
+		                                                   _settings.topn_frames_per_shot);
 
 		_user_context._force_result_log = false;
 
@@ -342,9 +342,10 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	rescore_feedback();
 
 	// If SOM required
+	std::thread som_t;
 	if (!benchmark_run) {
 		// Notify the SOM worker thread
-		som_start(_user_context.ctx.temporal_size);
+		som_t = std::thread{ [this]() { som_start(_user_context.ctx.temporal_size); } };
 	}
 
 	// Reset the "seen frames" constext for the Bayes
@@ -381,8 +382,8 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 
 		_user_context._logger.log_rescore(_user_context.ctx._prev_query, query);
 
-		auto top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
-		                                            _settings.topn_frames_per_shot);
+		const auto& top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
+		                                                   _settings.topn_frames_per_shot);
 
 		// Log this rescore result
 		_user_context._logger.log_results(_dataset_frames, _user_context.ctx.scores, old_likes,
@@ -396,7 +397,9 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	// Store this query
 	_user_context.ctx._prev_query = query;
 
-	return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets, tar_pos };
+	auto res{ RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets, tar_pos } };
+	som_t.join();
+	return res;
 }
 
 bool Somhunter::som_ready() const { return _user_context._async_SOM.map_ready(); }
@@ -463,7 +466,7 @@ std::string Somhunter::store_rescore_screenshot(const std::string& /*filepath*/)
 	return UI_filepath;
 }
 
-std::vector<FrameId> Somhunter::get_top_scored(size_t max_count, size_t from_video, size_t from_shot) const
+const std::vector<FrameId>& Somhunter::get_top_scored(size_t max_count, size_t from_video, size_t from_shot) const
 {
 	return _user_context.ctx.scores.top_n(_dataset_frames, max_count, from_video, from_shot);
 }
@@ -869,8 +872,8 @@ FramePointerRange Somhunter::get_topn_display(PageId page)
 	if (_user_context.ctx.curr_disp_type != DisplayType::DTopN || page == 0) {
 		SHLOG_D("Loading top n display first page");
 		// Get ids
-		auto ids = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
-		                                          _settings.topn_frames_per_shot);
+		const auto& ids = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
+		                                                 _settings.topn_frames_per_shot);
 
 		// Log only if page 0
 		if (page == 0) _user_context._logger.log_show_topn_display(_dataset_frames, ids);
