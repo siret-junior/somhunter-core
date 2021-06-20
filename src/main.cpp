@@ -215,72 +215,72 @@ static void sh::initialize_aplication()
 	std::filesystem::current_path(path.parent_path());
 
 	SHLOG("ISA capibilites:");
-	
-	#if __SSE__
-		SHLOG("__SSE__: true");
-	#else
-		SHLOG("__SSE__: false");
-	#endif // __SSE__
 
-	#if __SSE2__
-		SHLOG("__SSE2__: true");
-	#else
-		SHLOG("__SSE2__: false");
-	#endif // __SSE2__
+#if __SSE__
+	SHLOG("__SSE__: true");
+#else
+	SHLOG("__SSE__: false");
+#endif  // __SSE__
 
-	#if __SSE3__
-		SHLOG("__SSE3__: true");
-	#else
-		SHLOG("__SSE3__: false");
-	#endif // __SSE3__
+#if __SSE2__
+	SHLOG("__SSE2__: true");
+#else
+	SHLOG("__SSE2__: false");
+#endif  // __SSE2__
 
-	#if __SSE4_2__ 
-		SHLOG("__SSE4_2__ : true");
-	#else
-		SHLOG("__SSE4_2__ : false");
-	#endif // __SSE4_2__ 
+#if __SSE3__
+	SHLOG("__SSE3__: true");
+#else
+	SHLOG("__SSE3__: false");
+#endif  // __SSE3__
 
-	#if __AVX__
-		SHLOG("__AVX__: true");
-	#else
-		SHLOG("__AVX__: false");
-	#endif // __AVX__
+#if __SSE4_2__
+	SHLOG("__SSE4_2__ : true");
+#else
+	SHLOG("__SSE4_2__ : false");
+#endif  // __SSE4_2__
 
-	#if __AVX2__
-		SHLOG("__AVX2__: true");
-	#else
-		SHLOG("__AVX2__: false");
-	#endif // __AVX2__
+#if __AVX__
+	SHLOG("__AVX__: true");
+#else
+	SHLOG("__AVX__: false");
+#endif  // __AVX__
 
-	#if __AVX512BW__ 
-		SHLOG("__AVX512BW__ : true");
-	#else
-		SHLOG("__AVX512BW__ : false");
-	#endif // __AVX512BW__ 
+#if __AVX2__
+	SHLOG("__AVX2__: true");
+#else
+	SHLOG("__AVX2__: false");
+#endif  // __AVX2__
 
-	#if __AVX512CD__  
-		SHLOG("__AVX512CD__  : true");
-	#else
-		SHLOG("__AVX512CD__  : false");
-	#endif // __AVX512CD__  
+#if __AVX512BW__
+	SHLOG("__AVX512BW__ : true");
+#else
+	SHLOG("__AVX512BW__ : false");
+#endif  // __AVX512BW__
 
-	#if __AVX512DQ__  
-		SHLOG("__AVX512DQ__  : true");
-	#else
-		SHLOG("__AVX512DQ__  : false");
-	#endif // __AVX512DQ__  
+#if __AVX512CD__
+	SHLOG("__AVX512CD__  : true");
+#else
+	SHLOG("__AVX512CD__  : false");
+#endif  // __AVX512CD__
 
-	#if __AVX512F__  
-		SHLOG("__AVX512F__  : true");
-	#else
-		SHLOG("__AVX512F__  : false");
-	#endif // __AVX512F__  
+#if __AVX512DQ__
+	SHLOG("__AVX512DQ__  : true");
+#else
+	SHLOG("__AVX512DQ__  : false");
+#endif  // __AVX512DQ__
 
-	#if __AVX512VL__  
-		SHLOG("__AVX512VL__  : true");
-	#else
-		SHLOG("__AVX512VL__  : false");
-	#endif // __AVX512VL__  
+#if __AVX512F__
+	SHLOG("__AVX512F__  : true");
+#else
+	SHLOG("__AVX512F__  : false");
+#endif  // __AVX512F__
+
+#if __AVX512VL__
+	SHLOG("__AVX512VL__  : true");
+#else
+	SHLOG("__AVX512VL__  : false");
+#endif  // __AVX512VL__
 
 	SHLOG_I("The binary is running from the directory " << std::filesystem::current_path() << "...");
 }

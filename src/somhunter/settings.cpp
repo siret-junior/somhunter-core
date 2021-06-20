@@ -141,7 +141,7 @@ EvalServerSettings Settings::parse_eval_server(const json11::Json& json)
 
 	res.send_logs_to_server_period = size_t(json["send_logs_to_server_period"].int_value());
 
-	res.apply_log_action_timeout = true; //< \todo
+	res.apply_log_action_timeout = true;  //< \todo
 	res.log_action_timeout = size_t(json["log_action_timeout"].int_value());
 
 	// Parse a type of the submit server
