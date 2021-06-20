@@ -318,10 +318,10 @@ void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& s
 				if (_mask[ii]) {
 					float divSum = 0;
 
-					for (FrameId oi : others) divSum += expf(-_dataset_features.d_dot(ii, oi) / Sigma);
+					for (FrameId oi : others) divSum += expf(-_dataset_features.d_dot_normalized(ii, oi) / Sigma);
 
 					for (auto&& like : likes) {
-						const float likeValTmp = expf(-_dataset_features.d_dot(ii, like) / Sigma);
+						const float likeValTmp = expf(-_dataset_features.d_dot_normalized(ii, like) / Sigma);
 						_scores[ii] *= likeValTmp / (likeValTmp + divSum);
 					}
 				}

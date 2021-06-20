@@ -238,6 +238,7 @@ void Somhunter::apply_filters()
 
 RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 {
+	auto ts_start{ std::chrono::high_resolution_clock::now() };
 	const std::vector<TemporalQuery>& temporal_query{ query.temporal_queries };
 
 	// Add the internal state likes to it
@@ -398,7 +399,16 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	_user_context.ctx._prev_query = query;
 
 	auto res{ RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets, tar_pos } };
+
+	auto ts2{ std::chrono::high_resolution_clock::now() };
 	som_t.join();
+	auto ts_end{ std::chrono::high_resolution_clock::now() };
+
+	auto d1{ std::chrono::duration_cast<std::chrono::milliseconds>(ts_end - ts2).count() };
+	auto d2{ std::chrono::duration_cast<std::chrono::milliseconds>(ts_end - ts_start).count() };
+
+	std::cout << "Blocked by `som_t` thread: " << d1 << std::endl;
+	std::cout << "`rescore()` took: " << d2 << std::endl;
 	return res;
 }
 

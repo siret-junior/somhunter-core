@@ -21,6 +21,9 @@
 
 // This particular file is relicensed, originating in EmbedSOM software.
 
+#ifndef DISTANCES_H_
+#define DISTANCES_H_
+
 #include <algorithm>
 #include <cmath>
 
@@ -108,7 +111,7 @@ inline static float d_manhattan(const float* p1, const float* p2, const size_t d
 #endif
 }
 
-inline static float d_dot(const float* p1, const float* p2, const size_t dim)
+inline static float d_dot_normalized(const float* p1, const float* p2, const size_t dim)
 {
 #ifndef USE_INTRINS
 	float mdist = 0;
@@ -130,3 +133,10 @@ inline static float d_dot(const float* p1, const float* p2, const size_t dim)
 	return mdist;
 #endif
 }
+
+inline static float d_cos_normalized(const float* p1, const float* p2, const size_t dim)
+{
+	return 1.0F - d_dot_normalized(p1, p2, dim);
+}
+
+#endif  // DISTANCES_H_

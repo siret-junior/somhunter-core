@@ -69,7 +69,7 @@ public:
 		std::priority_queue<std::pair<FrameId, float>, std::vector<std::pair<FrameId, float>>, decltype(cmp)> q3(cmp);
 
 		for (FrameId i{ 0 }; i < n; ++i) {
-			auto d = d_dot(id, i);
+			auto d = d_dot_normalized(id, i);
 			q3.emplace(i, d);
 		}
 
@@ -112,7 +112,7 @@ public:
 
 	inline float d_eucl(size_t i, size_t j) const { return sqrtf(d_sqeucl(i, j)); }
 
-	inline float d_dot(size_t i, size_t j) const { return 1 - ::d_dot(fv(i), fv(j), features_dim); }
+	inline float d_dot_normalized(size_t i, size_t j) const { return 1 - ::d_dot_normalized(fv(i), fv(j), features_dim); }
 
 	inline float d_cos(size_t i, size_t j) const
 	{
