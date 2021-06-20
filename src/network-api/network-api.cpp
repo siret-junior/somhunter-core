@@ -1021,12 +1021,13 @@ void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req)
 	}
 
 	// \todo
-	size_t count{ 10 };
+	size_t num_suggestions{ 5 };
+	size_t example_frames_count{ 5 };
 	auto record_count{ query_map.find(U("count")) };
 
 	// Fetch the data
-	auto _keyword_ranker{ _p_core->autocomplete_keywords(prefix, count) };
-	json::value res_data{ to_Response__GetAutocompleteResults__Get(_p_core, _keyword_ranker, count, "") };
+	auto _keyword_ranker{ _p_core->autocomplete_keywords(prefix, num_suggestions) };
+	json::value res_data{ to_Response__GetAutocompleteResults__Get(_p_core, _keyword_ranker, example_frames_count, "") };
 
 	// Construct the response
 	http_response res(status_codes::OK);

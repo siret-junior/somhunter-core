@@ -89,7 +89,7 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 	    (prev_display == DisplayType::DTopKNN &&
 	     (curr_display == DisplayType::DTopN || curr_display == DisplayType::DTopNContext ||
 	      curr_display == DisplayType::DRand || curr_display == DisplayType::DSom))) {
-		auto top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
+		const auto& top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
 		                                            _settings.topn_frames_per_shot);
 
 		_user_context._force_result_log = false;

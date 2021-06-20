@@ -30,6 +30,7 @@
 #include <set>
 #include <thread>
 #include <vector>
+#include <execution>
 // ---
 #include "common.h"
 
@@ -151,7 +152,7 @@ std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 	return _topn_ctx_cache;
 }
 
-std::vector<FrameId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
+const std::vector<FrameId>& ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
                                        size_t from_shot_limit) const
 {
 	// Is this cached
@@ -176,17 +177,18 @@ std::vector<FrameId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, siz
 		}
 	}
 
-	std::sort(score_ids.begin(), score_ids.end(), std::greater<FrameScoreIdPair>());
+	std::sort(std::execution::par_unseq, score_ids.begin(), score_ids.end(), std::greater<FrameScoreIdPair>());
 
-	std::map<VideoId, size_t> frames_per_vid;
-	std::map<VideoId, std::map<ShotId, size_t>> frames_per_shot;
+	std::unordered_map<VideoId, std::size_t> frames_per_vid;
+	frames_per_vid.reserve(_dataset_frames.get_num_videos());
+	std::unordered_map<VideoId, std::map<ShotId, size_t>> frames_per_shot;
 
 	_topn_cache.clear();
 	_topn_cache.reserve(n);
 	size_t t = 0;
 	for (FrameId i = 0; t < n && i < score_ids.size(); ++i) {
 		FrameId frame = score_ids[i].id;
-		auto vf = _dataset_frames.get_frame(frame);
+		const auto& vf = _dataset_frames.get_frame(frame);
 
 		// If we have already enough from this video
 		if (frames_per_vid[vf.video_ID]++ >= from_vid_limit) continue;
