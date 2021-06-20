@@ -112,7 +112,10 @@ public:
 
 	inline float d_eucl(size_t i, size_t j) const { return sqrtf(d_sqeucl(i, j)); }
 
-	inline float d_dot_normalized(size_t i, size_t j) const { return 1 - ::d_dot_normalized(fv(i), fv(j), features_dim); }
+	inline float d_dot_normalized(size_t i, size_t j) const
+	{
+		return 1 - ::d_dot_normalized(fv(i), fv(j), features_dim);
+	}
 
 	inline float d_cos(size_t i, size_t j) const
 	{

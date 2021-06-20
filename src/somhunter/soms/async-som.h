@@ -54,7 +54,7 @@ class AsyncSom
 	 */
 	bool new_data, terminate;
 
-	// Number of floats in features matrix 
+	// Number of floats in features matrix
 	std::size_t _features_data_len;
 	// Number of floats in scores vector
 	std::size_t _scores_data_len;
@@ -83,7 +83,8 @@ public:
 
 	AsyncSom(AsyncSom&& _logger_settings) = default;
 
-	AsyncSom(const Settings& _logger_settings, size_t width, size_t height,const DatasetFeatures& fs, const ScoreModel& sc);
+	AsyncSom(const Settings& _logger_settings, size_t width, size_t height, const DatasetFeatures& fs,
+	         const ScoreModel& sc);
 
 	void start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig);
 

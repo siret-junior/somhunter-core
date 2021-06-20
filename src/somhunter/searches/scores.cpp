@@ -24,13 +24,13 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <execution>
 #include <functional>
 #include <map>
 #include <random>
 #include <set>
 #include <thread>
 #include <vector>
-#include <execution>
 // ---
 #include "common.h"
 
@@ -153,7 +153,7 @@ std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 }
 
 const std::vector<FrameId>& ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
-                                       size_t from_shot_limit) const
+                                              size_t from_shot_limit) const
 {
 	// Is this cached
 	// !! We assume that vid/shot limits do not change during the runtime.
