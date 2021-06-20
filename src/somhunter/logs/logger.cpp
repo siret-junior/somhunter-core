@@ -74,6 +74,11 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
 	for (auto&& s : _actions_streams) {
 		s << "[";
 	}
+
+	_summary_log_stream << std::unitbuf << "[" << std::endl;
+	for (auto&& s : _summary_streams) {
+		s << "[";
+	}
 }
 
 Logger::~Logger()
@@ -86,6 +91,11 @@ Logger::~Logger()
 
 	_actions_log_stream << "]" << std::endl;
 	for (auto&& s : _actions_streams) {
+		s << "]";
+	}
+
+	_summary_log_stream << "]" << std::endl;
+	for (auto&& s : _summary_streams) {
 		s << "]";
 	}
 }

@@ -193,27 +193,34 @@ bool Somhunter::has_metadata() const { return !_settings.LSC_metadata_file.empty
 
 void Somhunter::apply_filters()
 {
+	const Filters& filters{ _user_context.ctx.filters };
+
 	// If no filters set up
-	if (!has_metadata()) {
+	if (!has_metadata() && (filters.dataset_parts[0] && filters.dataset_parts[1])) {
 		return;
 	}
 
 	// Make sure to reset the previous mask on the scores
 	_user_context.ctx.scores.reset_mask();
 
-	const Filters& filters{ _user_context.ctx.filters };
-
 	const auto& days{ filters.days };
 	Hour t_from{ filters.time.from };
 	Hour t_to{ filters.time.to };
 
+	auto ds_valid_interval{ filters.get_dataset_parts_valid_interval(_dataset_frames.size()) };
+
+	std::cout << "[" << ds_valid_interval.first << ", " << ds_valid_interval.second << ")" << std::endl;
+
 	// A closure that determines if the frame should be filtered out
-	auto is_out{ [&days, t_from, t_to](const VideoFrame& f) {
+	auto is_out{ [&days, t_from, t_to, &ds_valid_interval](const VideoFrame& f) {
 		// If NOT within the selected days
 		if (!days[f.weekday]) return true;
 
 		// If NOT within the hour range
 		if (t_from > f.hour || f.hour > t_to) return true;
+
+		// Dataset part filter
+		if (!(ds_valid_interval.first <= f.frame_ID && f.frame_ID < ds_valid_interval.second)) return true;
 
 		return false;
 	} };
@@ -245,7 +252,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	/* ***
 	 * Set the filters to the context
 	 */
-	if (p_filters != nullptr && has_metadata()) {
+	if (p_filters != nullptr) {
 		_user_context.ctx.filters = *p_filters;
 
 		// If filters used

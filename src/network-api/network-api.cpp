@@ -620,16 +620,16 @@ void handle_options(http_request request)
 }
 
 NetworkApi::NetworkApi(const ApiConfig& API_config, Somhunter* p_core)
-    : _API_config{ API_config }, _p_core{ p_core }, _base_addr
-{
-	(API_config.local_only ? "http://127.0.0.1:" :
+    : _API_config{ API_config },
+      _p_core{ p_core },
+      _base_addr{ (API_config.local_only ? "http://127.0.0.1:" :
 #ifdef WIN32  //< Windows won't accept zeroes
-	                       "http://*:"
+	                                     "http://*:"
 #else  // UNIX
-	                       "http://0.0.0.0:"
+	                                     "http://0.0.0.0:"
 #endif
-	 ) + std::to_string(API_config.port)
-}
+	               ) +
+	              std::to_string(API_config.port) }
 {
 }
 
@@ -753,6 +753,10 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
  */
 void NetworkApi::handle__api__GET(http_request message)
 {
+	auto lck{ exclusive_lock() };  //< (#)
+	auto remote_addr{ to_utf8string(message.remote_address()) };
+	SHLOG_REQ(remote_addr, __func__);
+
 	auto paths = http::uri::split_path(http::uri::decode(message.relative_uri().path()));
 	message.relative_uri().path();
 
@@ -786,10 +790,12 @@ void NetworkApi::handle__api__GET(http_request message)
 		    }
 	    });
 
+	SHLOG_UNREQ(remote_addr, __func__);
 	return;
 }
 void NetworkApi::handle__api__config__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -811,6 +817,7 @@ void NetworkApi::handle__api__config__GET(http_request req)
 
 void NetworkApi::handle__config__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -837,6 +844,7 @@ void NetworkApi::handle__config__GET(http_request req)
 
 void NetworkApi::handle__user__context__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -860,6 +868,7 @@ void NetworkApi::handle__user__context__GET(http_request req)
 
 void NetworkApi::handle__search__get_top_display__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -889,6 +898,7 @@ void NetworkApi::handle__search__get_top_display__POST(http_request req)
 
 void NetworkApi::handle__search__get_som_display__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -919,6 +929,7 @@ void NetworkApi::handle__search__get_som_display__POST(http_request req)
 
 void NetworkApi::handle__search__get_som_relocation_display__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -948,6 +959,7 @@ void NetworkApi::handle__search__get_som_relocation_display__POST(http_request r
 
 void NetworkApi::handle__dataset__video_detail__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -990,6 +1002,7 @@ void NetworkApi::handle__dataset__video_detail__GET(http_request req)
 
 void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1026,6 +1039,7 @@ void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req)
 
 void NetworkApi::handle__log__scroll__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1078,6 +1092,7 @@ void NetworkApi::handle__log__scroll__GET(http_request req)
 
 void NetworkApi::handle__log__text_query_change__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1104,6 +1119,7 @@ void NetworkApi::handle__log__text_query_change__GET(http_request req)
 
 void NetworkApi::handle__eval_server__submit__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1142,6 +1158,7 @@ void NetworkApi::handle__eval_server__submit__POST(http_request req)
 
 void NetworkApi::handle__eval_server__login__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1159,6 +1176,7 @@ void NetworkApi::handle__eval_server__login__POST(http_request req)
 
 void NetworkApi::handle__eval_server__logout__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1176,6 +1194,7 @@ void NetworkApi::handle__eval_server__logout__POST(http_request req)
 
 void NetworkApi::handle__search__reset__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1322,6 +1341,7 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 	json::value weekdays_JSON{ body[U("filters")][U("weekdays")] };
 	Hour hourFrom{ static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer()) };
 	Hour hourTo{ static_cast<Hour>(body[U("filters")][U("hoursTo")].as_integer()) };
+	json::value dataset_parts_JSON{ body[U("filters")][U("datasetFilter")] };
 
 	/*
 	 * Process it
@@ -1335,11 +1355,20 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 		}
 	}
 
-	return Filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask } };
+	auto xx{ dataset_parts_JSON.as_array() };
+	std::vector<bool> dataset_parts_mask;
+	for (size_t i{ 0 }; i < xx.size(); ++i) {
+		bool flag{ xx.at(i).as_bool() };
+
+		dataset_parts_mask.emplace_back(flag);
+	}
+
+	return Filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask }, dataset_parts_mask };
 }
 
 void NetworkApi::handle__search__rescore__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1407,6 +1436,7 @@ void NetworkApi::handle__search__rescore__POST(http_request req)
 
 void NetworkApi::handle__search__like_frame__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1437,6 +1467,7 @@ void NetworkApi::handle__search__like_frame__POST(http_request req)
 
 void NetworkApi::handle__search__bookmark_frame__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1467,6 +1498,7 @@ void NetworkApi::handle__search__bookmark_frame__POST(http_request req)
 
 void NetworkApi::handle__search__context__POST(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
@@ -1508,6 +1540,7 @@ void NetworkApi::handle__search__context__POST(http_request req)
 
 void NetworkApi::handle__search__context__GET(http_request req)
 {
+	auto lck{ exclusive_lock() };  //< (#)
 	// Construct the response
 	http_response res(status_codes::OK);
 	NetworkApi::add_CORS_headers(res);

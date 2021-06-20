@@ -9,7 +9,7 @@ DATETIME_STR=`date +"%d-%m-%YT%H-%M-%S"`
 LOG_FILE="../logs/somhunter-${DATETIME_STR}.stdout"
 
 if [ ! -d "../logs/" ]; then
-  mkdir logs
+  mkdir ${LOG_FILE}
 fi
 
 echo "STDOUT & STDERR is also flushed to '${LOG_FILE}'"

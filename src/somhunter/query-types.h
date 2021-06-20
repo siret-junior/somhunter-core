@@ -92,9 +92,31 @@ struct TimeFilter {
 struct Filters {
 	TimeFilter time;
 	WeekDaysFilter days;
+	std::vector<bool> dataset_parts{ true, true };
 
-	bool operator==(const Filters& other) const { return (time == other.time && days == other.days); }
-	bool is_default() const { return time == TimeFilter{} && days == WeekDaysFilter{}; }
+	bool operator==(const Filters& other) const
+	{
+		return (time == other.time && days == other.days && dataset_parts == other.dataset_parts);
+	}
+
+	bool is_default() const
+	{
+		return time == TimeFilter{} && days == WeekDaysFilter{} && dataset_parts == std::vector<bool>{ true, true };
+	}
+
+	/** Based on `dataset_parts` it returns the allowed frame IDs. */
+	std::pair<FrameId, FrameId> get_dataset_parts_valid_interval(std::size_t num_total_frames) const
+	{
+		std::size_t num_parts{ dataset_parts.size() };
+		do_assert(num_parts == 2, "Must be 2 intervals.");
+		do_assert(num_total_frames >= 2, "At least 2 frames to it.");
+
+		auto base_size{ num_total_frames / num_parts };
+		auto rem{ num_total_frames % num_parts };
+
+		return std::pair{ (dataset_parts[0] ? 0 : base_size + rem),
+			              (dataset_parts[1] ? num_total_frames : base_size + rem) };
+	}
 
 	template <class Archive>
 	void serialize(Archive& archive)

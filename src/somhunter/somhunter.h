@@ -23,6 +23,7 @@
 #define SOMHUNTER_H_
 
 #include <array>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -175,7 +176,7 @@ public:
 
 	/** Returns the nearest supported keyword matches to the provided
 	 * prefix. */
-	std::vector<const Keyword*> autocomplete_keywords(const std::string& prefix, size_t count) const;
+	std::vector<const Keyword*> autocomplete_keywords(const std::string& prefix, size_t count = 5) const;
 
 	/**
 	 * Applies all algorithms for score computation and updates context.
@@ -185,11 +186,6 @@ public:
 	 */
 	RescoreResult rescore(Query& query, bool benchmark_run = false);
 
-	RescoreResult rescore(const std::vector<TemporalQuery>& temporal_query, const RelevanceFeedbackQuery& rfQuery,
-	                      const Filters* p_filters = nullptr, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
-	                      const std::string& screenshot_fpth = ""s, const std::string& label = ""s,
-	                      bool benchmark_run = false);
-
 	/** Switches the search context for the user to the provided index in
 	 *  the history and returns reference to it.
 	 *
@@ -198,8 +194,6 @@ public:
 	 */
 	const UserContext& switch_search_context(size_t index, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
 	                                         const std::string& screenshot_fpth = "", const std::string& label = "");
-
-	void apply_filters();
 
 	/**
 	 * Returns a reference to the current user's search context.
@@ -280,6 +274,8 @@ public:
 	void benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir);
 
 private:
+	void apply_filters();
+
 	/**
 	 *	Generates the new debug targets.
 	 */

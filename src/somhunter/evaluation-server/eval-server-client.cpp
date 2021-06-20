@@ -34,6 +34,9 @@ EvalServerClient::EvalServerClient(const EvalServerSettings& settings)
 {
 	// Make sure that submitted logs directory exists
 	utils::dir_create(_submitter_settings.log_dir_eval_server_requests);
+
+	// Do login
+	login();
 }
 
 bool EvalServerClient::login() { return _p_client->login(); }
