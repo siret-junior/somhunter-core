@@ -47,9 +47,9 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settin
 	SHLOG_D("SOM worker is starting...");
 
 	while (!parent->terminate) {
-		std::vector<float> points;
-		std::vector<float> scores;
-		std::vector<bool> present_mask;
+		std::vector<float> points(parent->_features_data_len);
+		std::vector<float> scores(parent->_scores_data_len);
+		std::vector<bool> present_mask(parent->_scores_data_len);
 		size_t n;
 
 		{
@@ -142,7 +142,17 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settin
 	SHLOG_D("SOM worker finished.");
 }
 
-AsyncSom::AsyncSom(const Settings& _logger_settings, size_t w, size_t h) : width(w), height(h)
+AsyncSom::AsyncSom(const Settings& _logger_settings, size_t w, size_t h, const DatasetFeatures& fs,
+                   const ScoreModel& sc)
+    :
+
+      _features_data_len{ fs.dim() * sc.size() },
+      _scores_data_len{ sc.size() },
+      points(_features_data_len),
+      scores(_scores_data_len),
+
+      width(w),
+      height(h)
 {
 	new_data = m_ready = terminate = false;
 	worker = std::thread(async_som_worker, this, _logger_settings);
@@ -159,14 +169,23 @@ AsyncSom::~AsyncSom()
 
 void AsyncSom::start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig)
 {
-	std::unique_lock lck(worker_lock);
-	points = std::vector<float>(fs.fv(0), fs.fv(0) + fs.dim() * sc.size());
-	scores = std::vector<float>(scores_orig, scores_orig + sc.size());
-	present_mask = std::vector<bool>(sc.size(), false);
-	for (FrameId ii = 0; ii < sc.size(); ++ii) present_mask[ii] = sc.is_masked(ii);
+	{
+		std::unique_lock lck(worker_lock);
 
-	new_data = true;
-	lck.unlock();
+		// points = std::vector<float>(fs.fv(0), fs.fv(0) + fs.dim() * sc.size());
+		// scores = std::vector<float>(scores_orig, scores_orig + sc.size());
+		std::memcpy(points.data(), fs.fv(0), _features_data_len * sizeof(float));
+		std::memcpy(scores.data(), scores_orig, _scores_data_len * sizeof(float));
+
+		// present_mask = std::vector<bool>(sc.size(), false);
+		present_mask.clear();
+		present_mask.reserve(sc.size());
+		for (FrameId ii = 0; ii < sc.size(); ++ii) {
+			present_mask.emplace_back(sc.is_masked(ii));
+		}
+
+		new_data = true;
+	}
 
 	new_data_wakeup.notify_all();
 }

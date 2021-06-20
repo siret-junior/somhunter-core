@@ -131,8 +131,8 @@ public:
 	/**
 	 * Gets the images with the highest scores but respecting the provided
 	 * limits. */
-	std::vector<FrameId> top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit = 0,
-	                           size_t from_shot_limit = 0) const;
+	const std::vector<FrameId>& top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit = 0,
+	                                  size_t from_shot_limit = 0) const;
 
 	/**
 	 * Gets the images with the highest scores while respecting the

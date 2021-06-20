@@ -53,6 +53,12 @@ class AsyncSom
 	 * terminate is set when the worker should exit.
 	 */
 	bool new_data, terminate;
+
+	// Number of floats in features matrix
+	std::size_t _features_data_len;
+	// Number of floats in scores vector
+	std::size_t _scores_data_len;
+
 	std::vector<float> points, scores;
 	std::vector<bool> present_mask;
 
@@ -77,7 +83,8 @@ public:
 
 	AsyncSom(AsyncSom&& _logger_settings) = default;
 
-	AsyncSom(const Settings& _logger_settings, size_t width, size_t height);
+	AsyncSom(const Settings& _logger_settings, size_t width, size_t height, const DatasetFeatures& fs,
+	         const ScoreModel& sc);
 
 	void start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig);
 

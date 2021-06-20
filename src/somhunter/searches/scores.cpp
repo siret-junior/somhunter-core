@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <execution>
 #include <functional>
 #include <map>
 #include <random>
@@ -132,7 +133,7 @@ std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 	if we want to keep reporting `n` unique results. */
 	n = n * DISPLAY_GRID_WIDTH;
 
-	auto to_show = top_n(_dataset_frames, n / DISPLAY_GRID_WIDTH, from_vid_limit, from_shot_limit);
+	const auto& to_show = top_n(_dataset_frames, n / DISPLAY_GRID_WIDTH, from_vid_limit, from_shot_limit);
 
 	_topn_ctx_cache.clear();
 	_topn_ctx_cache.reserve(n);
@@ -151,8 +152,8 @@ std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 	return _topn_ctx_cache;
 }
 
-std::vector<FrameId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
-                                       size_t from_shot_limit) const
+const std::vector<FrameId>& ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
+                                              size_t from_shot_limit) const
 {
 	// Is this cached
 	// !! We assume that vid/shot limits do not change during the runtime.
@@ -176,17 +177,18 @@ std::vector<FrameId> ScoreModel::top_n(const DatasetFrames& _dataset_frames, siz
 		}
 	}
 
-	std::sort(score_ids.begin(), score_ids.end(), std::greater<FrameScoreIdPair>());
+	std::sort(std::execution::par_unseq, score_ids.begin(), score_ids.end(), std::greater<FrameScoreIdPair>());
 
-	std::map<VideoId, size_t> frames_per_vid;
-	std::map<VideoId, std::map<ShotId, size_t>> frames_per_shot;
+	std::unordered_map<VideoId, std::size_t> frames_per_vid;
+	frames_per_vid.reserve(_dataset_frames.get_num_videos());
+	std::unordered_map<VideoId, std::map<ShotId, size_t>> frames_per_shot;
 
 	_topn_cache.clear();
 	_topn_cache.reserve(n);
 	size_t t = 0;
 	for (FrameId i = 0; t < n && i < score_ids.size(); ++i) {
 		FrameId frame = score_ids[i].id;
-		auto vf = _dataset_frames.get_frame(frame);
+		const auto& vf = _dataset_frames.get_frame(frame);
 
 		// If we have already enough from this video
 		if (frames_per_vid[vf.video_ID]++ >= from_vid_limit) continue;
@@ -316,10 +318,10 @@ void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& s
 				if (_mask[ii]) {
 					float divSum = 0;
 
-					for (FrameId oi : others) divSum += expf(-_dataset_features.d_dot(ii, oi) / Sigma);
+					for (FrameId oi : others) divSum += expf(-_dataset_features.d_dot_normalized(ii, oi) / Sigma);
 
 					for (auto&& like : likes) {
-						const float likeValTmp = expf(-_dataset_features.d_dot(ii, like) / Sigma);
+						const float likeValTmp = expf(-_dataset_features.d_dot_normalized(ii, like) / Sigma);
 						_scores[ii] *= likeValTmp / (likeValTmp + divSum);
 					}
 				}

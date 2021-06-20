@@ -259,7 +259,7 @@ public:
 	std::string store_rescore_screenshot(const std::string& filepath);
 
 	size_t get_num_frames() const { return _dataset_frames.size(); }
-	std::vector<FrameId> get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
+	const std::vector<FrameId>& get_top_scored(size_t max_count = 0, size_t from_video = 0, size_t from_shot = 0) const;
 	std::vector<float> get_top_scored_scores(std::vector<FrameId>& top_scored_frames) const;
 	size_t find_targets(const std::vector<FrameId>& top_scored, const std::vector<FrameId>& targets) const;
 
