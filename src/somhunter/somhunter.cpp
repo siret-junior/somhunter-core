@@ -390,7 +390,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		_user_context._logger.log_results(_dataset_frames, _user_context.ctx.scores, old_likes,
 		                                  _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
 		                                  query.get_plain_text_query(), _settings.topn_frames_per_video,
-		                                  _settings.topn_frames_per_shot);
+		                                  _settings.topn_frames_per_shot, p_filters->dataset_parts);
 
 		// SHLOG_S("Target position is " << tar_pos << ".");
 	}

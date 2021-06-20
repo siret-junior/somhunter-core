@@ -59,7 +59,7 @@ public:
 	void log_results(const DatasetFrames& _dataset_frames, const ScoreModel& scores, const std::set<FrameId>& likes,
 	                 const UsedTools& used_tools, DisplayType disp_type, const std::vector<FrameId>& topn_imgs,
 	                 const std::string& sentence_query, const size_t topn_frames_per_video,
-	                 const size_t topn_frames_per_shot);
+	                 const size_t topn_frames_per_shot, const std::vector<bool>& dataset_parts_filter = {true, true});
 
 	void log_text_query_change(const std::string& query_sentence);
 

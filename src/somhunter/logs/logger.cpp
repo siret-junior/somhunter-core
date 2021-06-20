@@ -151,7 +151,7 @@ void Logger::submit_interaction_logs_buffer()
 void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel& /*scores*/,
                          const std::set<FrameId>& /*likes*/, const UsedTools& used_tools, DisplayType /*disp_type*/,
                          const std::vector<FrameId>& topn_imgs, const std::string& sentence_query,
-                         const size_t topn_frames_per_video, const size_t topn_frames_per_shot)
+                         const size_t topn_frames_per_video, const size_t topn_frames_per_shot, const std::vector<bool>& dataset_parts_filter)
 {
 	/* ***
 	 * Prepare the log compatible with the eval server. */
@@ -208,7 +208,7 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 	// Else normal rescore
 	else {
 		// Just mark that this was NOT KNN request
-		query_val += "rescore;";
+		query_val += "|results|";
 
 		if (used_tools.KWs_used) {
 			used_cats.insert("text");
@@ -263,6 +263,14 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 	query_val += std::to_string(topn_frames_per_video);
 	query_val += ";fromShotLimit=";
 	query_val += std::to_string(topn_frames_per_shot);
+
+	query_val += ";datasetPartsFilter=";
+
+	for (auto&& x : dataset_parts_filter) {
+		query_val += (x ? "true" : "false");
+	}
+	query_val += ";";
+	
 
 	nlohmann::json result_json_arr = nlohmann::json(results);
 
