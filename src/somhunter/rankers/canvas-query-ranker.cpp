@@ -46,13 +46,17 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 	}
 
 	try {
-		if (!std::filesystem::exists(_settings.model_ResNet_file)) {
-			std::string msg{ "Unable to open file '" + _settings.model_ResNext_file + "'." };
-			SHLOG_E(msg);
-			throw std::runtime_error{ msg };
+		if (!_settings.model_ResNet_file.empty()) {
+			if (!std::filesystem::exists(_settings.model_ResNet_file)) {
+				std::string msg{ "Unable to open file '" + _settings.model_ResNet_file + "'." };
+				SHLOG_E(msg);
+				throw std::runtime_error{ msg };
+			}
+			resnet152 = torch::jit::load(_settings.model_ResNet_file);
+			SHLOG_S("ResNet model loaded from  '" << _settings.model_ResNet_file << "'.");
+		} else {
+			SHLOG_W("ResNet model is ignored!");
 		}
-		resnet152 = torch::jit::load(_settings.model_ResNet_file);
-		SHLOG_S("ResNet model loaded from  '" << _settings.model_ResNet_file << "'.");
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error openning ResNet model file: " + _settings.model_ResNet_file + "\n" + e.what() };
 		msg.append(
@@ -63,16 +67,20 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 	}
 
 	try {
-		if (!std::filesystem::exists(_settings.model_ResNext_file)) {
-			std::string msg{ "Unable to open file '" + _settings.model_ResNext_file + "'." };
-			msg.append(
-			    "\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? "
-			    "Windows libtorch debug/release libs are NOT ABI compatible.");
-			SHLOG_E(msg);
-			throw std::runtime_error{ msg };
+		if (!_settings.model_ResNext_file.empty()) {
+			if (!std::filesystem::exists(_settings.model_ResNext_file)) {
+				std::string msg{ "Unable to open file '" + _settings.model_ResNext_file + "'." };
+				msg.append(
+					"\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? "
+					"Windows libtorch debug/release libs are NOT ABI compatible.");
+				SHLOG_E(msg);
+				throw std::runtime_error{ msg };
+			}
+			resnext101 = torch::jit::load(_settings.model_ResNext_file);
+			SHLOG_S("ResNext model loaded from  '" << _settings.model_ResNext_file << "'.");
+		} else {
+			SHLOG_W("ResNext model is ignored!");
 		}
-		resnext101 = torch::jit::load(_settings.model_ResNext_file);
-		SHLOG_S("ResNext model loaded from  '" << _settings.model_ResNext_file << "'.");
 	} catch (const c10::Error& e) {
 		std::string msg{ "Error openning ResNext model file: " + _settings.model_ResNext_file + "\n" + e.what() };
 		SHLOG_E(msg);
