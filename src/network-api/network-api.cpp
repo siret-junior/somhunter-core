@@ -1123,7 +1123,10 @@ void NetworkApi::handle__log__text_query_change__GET(http_request req)
 
 void NetworkApi::handle__eval_server__submit__POST(http_request req)
 {
-	auto lck{ exclusive_lock() };  //< (#)
+	// Submits should not be synchronized because
+	// eval server may cause delay and performance
+	// bottleneck.
+	// auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
