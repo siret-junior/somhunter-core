@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -185,6 +186,8 @@ private:
 	std::string get_actions_log_filepath() const;
 	std::string get_summary_log_filepath() const;
 
+	std::lock_guard<std::mutex> get_exclusive_actions_lock() const { return std::lock_guard{ _push_action_mtx }; };
+
 	// *** MEMBER VARIABLES ***
 private:
 	const EvalServerSettings _logger_settings;
@@ -204,6 +207,8 @@ private:
 
 	bool _first_result{ true };
 	bool _first_actions{ true };
+
+	mutable std::mutex _push_action_mtx;
 };
 
 };  // namespace sh

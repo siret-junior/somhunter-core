@@ -37,10 +37,11 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <string_view>
-
+// ---
 #include "common.h"
 
 #define FILE_NAME_TAIL_LEN 50
@@ -105,10 +106,22 @@ static inline std::string_view view_tail(const std::string& str, size_t len)
 	return std::string_view{ str.data() + std::max<size_t>(0, str.length() - len) };
 }
 
+/** Mutex for optional STDOUT/STDERR synchronization */
+inline std::mutex logger_mtx;
+static inline auto lock_out()
+{
+#if LOCK_STDOUT
+	return std::lock_guard<std::mutex>{ logger_mtx };
+#else
+	return 0;
+#endif
+}
+
 /** Undecorated log to the current log stream */
-#define SHLOG(x)                     \
-	do {                             \
-		std::cout << x << std::endl; \
+#define SHLOG(x)                                               \
+	do {                                                       \
+		[[maybe_unused]] auto static_logger_lck{ lock_out() }; \
+		std::cout << x << std::endl;                           \
 	} while (0)
 
 #if LOGLEVEL > 0
@@ -118,6 +131,7 @@ static inline std::string_view view_tail(const std::string& str, size_t len)
 		} while (0)
 #	define _write_log_err(level, x)                                                                         \
 		do {                                                                                                 \
+			[[maybe_unused]] auto static_logger_lck{ lock_out() };                                           \
 			std::cerr << level << x << TermColor::grey << "\n\t" << __func__ << "() in "                     \
 			          << view_tail(__FILE__, FILE_NAME_TAIL_LEN) << " :" << __LINE__ << "" << TermColor::def \
 			          << std::endl;                                                                          \
@@ -125,6 +139,7 @@ static inline std::string_view view_tail(const std::string& str, size_t len)
 
 #	define _write_log_out(level, x)                                                                         \
 		do {                                                                                                 \
+			[[maybe_unused]] auto static_logger_lck{ lock_out() };                                           \
 			std::cout << level << x << TermColor::grey << "\n\t" << __func__ << "() in "                     \
 			          << view_tail(__FILE__, FILE_NAME_TAIL_LEN) << " :" << __LINE__ << "" << TermColor::def \
 			          << std::endl;                                                                          \
@@ -158,21 +173,27 @@ static inline std::string_view view_tail(const std::string& str, size_t len)
 
 #if LOG_API_CALLS
 
-#	define _write_API_log_d(id, x)                                                                      \
-		do {                                                                                             \
-			std::cout << TermColor::blue << "--> [ " << id << " ] " << TermColor::cyan << x << std::endl \
-			          << TermColor::def;                                                                 \
+#	define _write_API_log_d(id, x)                                                                                   \
+		do {                                                                                                          \
+			[[maybe_unused]] auto static_logger_lck{ lock_out() };                                                    \
+			std::cout << TermColor::blue << "--> [ " << (utils::timestamp() / 1000) << id << " ] " << TermColor::cyan \
+			          << x << std::endl                                                                               \
+			          << TermColor::def;                                                                              \
 		} while (0)
 
-#	define _write_API_unlog_d(id, x)                                                                    \
-		do {                                                                                             \
-			std::cout << TermColor::blue << "<-- [ " << id << " ] " << TermColor::cyan << x << std::endl \
-			          << TermColor::def;                                                                 \
+#	define _write_API_unlog_d(id, x)                                                                                 \
+		do {                                                                                                          \
+			[[maybe_unused]] auto static_logger_lck{ lock_out() };                                                    \
+			std::cout << TermColor::blue << "<-- [ " << (utils::timestamp() / 1000) << id << " ] " << TermColor::cyan \
+			          << x << std::endl                                                                               \
+			          << TermColor::def;                                                                              \
 		} while (0)
 
 #	define SHLOG_REQ(id, x) _write_API_log_d(id, x)
 #	define SHLOG_UNREQ(id, x) _write_API_unlog_d(id, x)
-
+#else
+#	define SHLOG_REQ(id, x) _dont_write_log_err
+#	define SHLOG_UNREQ(id, x) _dont_write_log_err
 #endif  // LOGAPI
 
 namespace sh

@@ -71,8 +71,9 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 			if (!std::filesystem::exists(_settings.model_ResNext_file)) {
 				std::string msg{ "Unable to open file '" + _settings.model_ResNext_file + "'." };
 				msg.append(
-					"\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE value? "
-					"Windows libtorch debug/release libs are NOT ABI compatible.");
+				    "\n\nAre you on Windows? Have you forgotten to rerun CMake with appropriate CMAKE_BUILD_TYPE "
+				    "value? "
+				    "Windows libtorch debug/release libs are NOT ABI compatible.");
 				SHLOG_E(msg);
 				throw std::runtime_error{ msg };
 			}
@@ -189,7 +190,7 @@ at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const
 at::Tensor CanvasQueryRanker::get_features(const CanvasQuery& collage, UsedTools& used_tools)
 {
 	SHLOG_D("Extracting features");
-	
+
 	torch::NoGradGuard no_grad;
 	std::vector<torch::Tensor> tensors;
 	std::vector<torch::Tensor> tensors_bitmap_norm;

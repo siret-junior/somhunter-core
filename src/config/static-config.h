@@ -33,11 +33,14 @@ namespace sh
  */
 #define LOGLEVEL 3
 
+/** If STDOUT/STDERR streams should be synchronized. */
+#define LOCK_STDOUT 0
+
 /** If verbose CURL debug request log should be printed. */
 #define DEBUG_CURL_REQUESTS 0
 
 /** If 1, each call to Core API will be logged. */
-#define LOG_API_CALLS 1
+#define LOG_API_CALLS 0
 
 /** How many following frames we inspect during the ranking. */
 #define KW_TEMPORAL_SPAN 5

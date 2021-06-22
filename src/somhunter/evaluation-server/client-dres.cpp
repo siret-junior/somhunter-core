@@ -321,5 +321,5 @@ void ClientDres::write_log(LogType type, UnixTimestamp ts, const std::string& UR
 		                { "response_code", code },
 		                { "response", res } };
 
-	ofs << log.dump(4);
+	ofs << log.dump(4) << "," << std::endl;
 }

@@ -23,6 +23,7 @@
 #define EVAL_SERVER_CLIENT_H_
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 // ---

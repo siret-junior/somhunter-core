@@ -21,6 +21,7 @@
 
 #include "logger.h"
 // ---
+#include <atomic>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -382,16 +383,23 @@ void sh::Logger::log_rescore(const Query& /*prev_query*/, const Query& new_query
 
 void Logger::log_text_query_change(const std::string& text_query)
 {
-	static int64_t last_logged{ 0 };
+	static std::atomic<int64_t> last_logged{ 0 };
 
 	// If timeout should be handled here
 	if (_logger_settings.apply_log_action_timeout) {
+		auto ts{ utils::timestamp() };
 		// If no need to log now
-		if (last_logged + _logger_settings.log_action_timeout > size_t(utils::timestamp())) return;
+		int64_t prev = last_logged;
+		if (prev + _logger_settings.log_action_timeout > size_t(ts)) {
+			return;
+		} else {
+			if (!last_logged.compare_exchange_strong(prev, ts)) {
+				return;
+			}
+		}
 	}
 
 	push_action("textQueryChange", "TEXT", "jointEmbedding", text_query);
-	last_logged = utils::timestamp();
 }
 void Logger::log_like(FrameId frame_ID) { log_bothlike(frame_ID, "like"); }
 
@@ -592,6 +600,8 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
                             const std::string& value, nlohmann::json&& our,
                             std::initializer_list<std::string> summary_keys)
 {
+	auto lck{ get_exclusive_actions_lock() };  //< (#)
+
 	/* ***
 	 * Prepare the log compatible with the eval server. */
 	UnixTimestamp ts{ utils::timestamp() };
