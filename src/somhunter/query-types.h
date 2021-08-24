@@ -146,7 +146,17 @@ using TextualQuery = std::string;
 using RelocationQuery = FrameId;
 
 struct RelativeRect {
+	/** Distances from the given edge (e.g. top 0.5 means that it starts in the middle vertically) */
 	float left, top, right, bottom;
+
+	/** Set rectangle to cover everything. */
+	void to_full()
+	{
+		left = 0;
+		top = 0;
+		right = 0;
+		left = 0;
+	}
 
 	float width_norm() const
 	{
@@ -180,6 +190,10 @@ protected:
 public:
 	CanvasSubqueryBase() = default;
 	CanvasSubqueryBase(const RelativeRect& rect) : _rect{ rect } {};
+	// ---
+	/** Set canvas positioned query as if they were across the whole canvas. */
+	void unposition() { _rect.to_full(); }
+	// ---
 	const RelativeRect& rect() const { return _rect; };
 };
 
@@ -327,6 +341,7 @@ public:
 	size_t size() const { return _subqueries.size(); }
 	bool empty() const { return (size() == 0); }
 	const std::vector<CanvasSubquery>& subqueries() const { return _subqueries; };
+	std::vector<CanvasSubquery>& subqueries() { return _subqueries; };
 
 	/**
 	 * This allows portable binary serialization of Collage instances to files.
@@ -396,8 +411,22 @@ public:
 	// ---
 	const bool is_relocation() const { return relocation != ERR_VAL<FrameId>(); }
 	const bool is_canvas() const { return !canvas.empty(); }
-	const bool is_text() const { return !textual.empty(); }
+	const bool is_text() const { return !is_relocation() && !textual.empty(); }
 	const bool empty() const { return !is_relocation() && !is_canvas() && !is_text(); }
+	const bool is_bitmap_canvas() const
+	{
+		if (!is_canvas()) return false;
+
+		const auto& sqs{ canvas.subqueries() };
+		return std::holds_alternative<CanvasSubqueryBitmap>(sqs.front());
+	}
+	const bool is_text_canvas() const
+	{
+		if (!is_canvas()) return false;
+
+		const auto& sqs{ canvas.subqueries() };
+		return std::holds_alternative<CanvasSubqueryText>(sqs.front());
+	}
 
 	template <class Archive>
 	void serialize(Archive& archive)
@@ -431,6 +460,23 @@ public:
 		}
 	}
 	// ---
+
+	const bool is_relocation() const
+	{
+		for (auto&& t : temporal_queries) {
+			if (t.is_relocation()) return true;
+		}
+
+		return false;
+	}
+	const bool is_canvas() const { return temporal_queries.front().is_canvas(); }
+	const bool is_bitmap_canvas() const { return temporal_queries.front().is_bitmap_canvas(); }
+	const bool is_text_canvas() const { return temporal_queries.front().is_text_canvas(); }
+	const bool is_temporal_text() const { return is_text() && temporal_queries.size() > 1; }
+	const bool is_text() const { return temporal_queries.front().is_text(); }
+	const bool empty() const { return temporal_queries.front().empty(); }
+
+	const std::vector<TemporalQuery>& queries() const { return temporal_queries; }
 
 	void set_targets(const std::vector<VideoFrame>& ts)
 	{
@@ -476,21 +522,42 @@ public:
 
 	void transform_to_no_pos_queries()
 	{
-		for (auto&& tq : temporal_queries) {
-			TextualQuery new_query;
+		if (is_temporal_text()) {
+			std::cout << ">>> DECAY TEMPORAL TEXT: " << std::endl;
+			temporal_queries.erase(temporal_queries.begin() + 1);
+			do_assert(temporal_queries.size() == 1, "Must have 1 item.");
+		} else if (is_text_canvas()) {
+			std::cout << ">>> DECAY TEXT CANVAS: " << std::endl;
+			for (auto&& tq : temporal_queries) {
+				TextualQuery new_query;
 
-			const auto& sqs{ tq.canvas.subqueries() };
-			std::string text;
-			for (size_t idx{ 0 }; idx < sqs.size(); ++idx) {
-				const auto& sq{ sqs[idx] };
+				const auto& sqs{ tq.canvas.subqueries() };
+				std::string text;
+				for (size_t idx{ 0 }; idx < sqs.size(); ++idx) {
+					const auto& sq{ sqs[idx] };
 
-				do_assert(std::holds_alternative<CanvasSubqueryText>(sq), "Text canvases only!");
-
-				const CanvasSubqueryText& s{ std::get<CanvasSubqueryText>(sq) };
-				text.append(s.query()).append(" ");
+					const CanvasSubqueryText& s{ std::get<CanvasSubqueryText>(sq) };
+					text.append(s.query()).append(" ");
+				}
+				tq.textual = text;
+				tq.canvas = CanvasQuery{};  //< Empty canvas query
 			}
-			tq.textual = text;
-			tq.canvas = CanvasQuery{};  //< Empty canvas query
+		} else if (is_bitmap_canvas()) {
+			std::cout << ">>> DECAY BITMAP CANVAS: " << std::endl;
+			for (auto&& tq : temporal_queries) {
+				auto& sqs{ tq.canvas.subqueries() };
+				for (size_t idx{ 0 }; idx < sqs.size(); ++idx) {
+					auto& sq{ sqs[idx] };
+
+					CanvasSubqueryBitmap& s{ std::get<CanvasSubqueryBitmap>(sq) };
+					s.unposition();
+				}
+			}
+		} else if (is_relocation()) {
+			std::cout << ">>> DECAY RELOCATION: " << std::endl;
+			for (auto&& tq : temporal_queries) {
+				tq.relocation = ERR_VAL<FrameId>();
+			}
 		}
 	}
 

@@ -67,7 +67,10 @@ int main()
 	 */
 	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
 	// core.benchmark_canvas_queries("saved-queries", "saved-queries-out");
+	core.benchmark_real_queries("data-logs", "data-logs/tasks.csv", "saved-queries-out");
 
+	std::cout << "DONE!" << std::endl;
+	return 0;
 	NetworkApi api{ config.API_config, &core };
 	api.run();
 
@@ -212,6 +215,7 @@ static void sh::initialize_aplication()
 	 *  `cd ..`
 	 *	Change this accordingly. 	*/
 	auto path = std::filesystem::current_path();
+	std::cout << path << std::endl;
 	std::filesystem::current_path(path.parent_path());
 
 	SHLOG("ISA capibilites:");

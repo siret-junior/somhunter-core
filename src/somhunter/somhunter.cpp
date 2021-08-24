@@ -21,6 +21,7 @@
 
 #include <chrono>
 #include <stdexcept>
+#include <tuple>
 
 #include "somhunter.h"
 
@@ -400,15 +401,17 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 
 	auto res{ RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets, tar_pos } };
 
-	auto ts2{ std::chrono::high_resolution_clock::now() };
-	som_t.join();
-	auto ts_end{ std::chrono::high_resolution_clock::now() };
+	// auto ts2{ std::chrono::high_resolution_clock::now() };
+	if (!benchmark_run) {
+		som_t.join();
+	}
+	// auto ts_end{ std::chrono::high_resolution_clock::now() };
 
-	auto d1{ std::chrono::duration_cast<std::chrono::milliseconds>(ts_end - ts2).count() };
-	auto d2{ std::chrono::duration_cast<std::chrono::milliseconds>(ts_end - ts_start).count() };
+	// auto d1{ std::chrono::duration_cast<std::chrono::milliseconds>(ts_end - ts2).count() };
+	// auto d2{ std::chrono::duration_cast<std::chrono::milliseconds>(ts_end - ts_start).count() };
 
-	std::cout << "Blocked by `som_t` thread: " << d1 << std::endl;
-	std::cout << "`rescore()` took: " << d2 << std::endl;
+	// std::cout << "Blocked by `som_t` thread: " << d1 << std::endl;
+	// std::cout << "`rescore()` took: " << d2 << std::endl;
 	return res;
 }
 
@@ -479,6 +482,13 @@ std::string Somhunter::store_rescore_screenshot(const std::string& /*filepath*/)
 const std::vector<FrameId>& Somhunter::get_top_scored(size_t max_count, size_t from_video, size_t from_shot) const
 {
 	return _user_context.ctx.scores.top_n(_dataset_frames, max_count, from_video, from_shot);
+}
+
+std::vector<VideoFramePointer> Somhunter::get_top_scored_frames(size_t max_count, size_t from_video,
+                                                                size_t from_shot) const
+{
+	auto fs = _user_context.ctx.scores.top_n(_dataset_frames, max_count, from_video, from_shot);
+	return _dataset_frames.ids_to_video_frame(fs);
 }
 
 std::vector<float> Somhunter::get_top_scored_scores(std::vector<FrameId>& top_scored_frames) const
@@ -732,7 +742,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 			do_assert_equals(ranks_positioned.size(), ranks_unpositioned.size(), "Numbers must match!");
 			do_assert_equals(queries.size(), ranks_unpositioned.size(), "Numbers must match!");
 
-			SHLOG("\t RANKS: " << ranks_positioned[q_idx] << ", " << ranks_unpositioned[q_idx]);
+			// SHLOG("\t RANKS: " << ranks_positioned[q_idx] << ", " << ranks_unpositioned[q_idx]);
 			++q_idx;
 		}
 	}
@@ -801,6 +811,187 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 	}
 
 #endif
+}
+
+void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std::string& targets_fpth,
+                                       const std::string& out_dir)
+{
+	TaskTargetHelper tar_helper(targets_fpth);
+
+	std::array types{ "text-canvas"s, "bitmap-canvas"s, "relocation"s, "temporal-text"s };
+
+	for (auto&& type : types) {
+		using directory_iterator = std::filesystem::directory_iterator;
+
+		// ***
+		// Prepare output
+		utils::dir_create(out_dir);
+		// std::string filename{ type + "-benchmark-frame" + std::to_string(utils::timestamp()) + ".txt" };
+		std::string filename{ type + "-benchmark-frame.csv" };
+		std::string filename2{ type + "-benchmark-video.csv" };
+		auto out_filepath{ std::filesystem::path{ out_dir } / filename };
+		auto out_filepath2{ std::filesystem::path{ out_dir } / filename2 };
+
+		std::ofstream ofs{ out_filepath.string() };
+		std::ofstream ofs2{ out_filepath2.string() };
+		if (!ofs.is_open()) {
+			throw std::runtime_error{ "Unable to open file for writing: "s + out_filepath.string() };
+		}
+		if (!ofs2.is_open()) {
+			throw std::runtime_error{ "Unable to open file for writing: "s + out_filepath.string() };
+		}
+		SHLOG("Results will be printed to '" << out_filepath << "'...");
+		SHLOG("Results will be printed to '" << out_filepath2 << "'...");
+
+		std::vector<std::size_t> ranks_positioned;
+		std::vector<std::size_t> ranks_unpositioned;
+
+		std::vector<std::size_t> ranks_positioned_video;
+		std::vector<std::size_t> ranks_unpositioned_video;
+
+		std::vector<std::string> queries;
+
+		// ***
+		// Load the filenames from the directory
+		std::vector<std::string> serialized_queries;
+
+		SHLOG("Loading queries from the directory '" << queries_dir << "'...");
+		for (const auto& dir_entry : directory_iterator(queries_dir)) {
+			SHLOG("\t - " << dir_entry.path());
+
+			if (!std::filesystem::is_directory(dir_entry)) continue;
+
+			for (const auto& file : std::filesystem::directory_iterator(dir_entry)) {
+				std::string filepath{ file.path().string() };
+
+				std::string suffix{ filepath.substr(filepath.length() - 3) };
+				if (suffix == "bin") {
+					serialized_queries.emplace_back(filepath);
+				}
+
+				// SHLOG("\t" << file.path());
+			}
+		}
+
+		// ***
+		// Rank them
+		{
+			size_t q_idx{ 0 };
+			for (auto&& f : serialized_queries) {
+				using namespace nlohmann;
+
+				Query q{ utils::deserialize_from_file<Query>(f) };
+				if (!((q.is_relocation() && type == "relocation") ||
+				      (q.is_bitmap_canvas() && type == "bitmap-canvas") ||
+				      (q.is_temporal_text() && type == "temporal-text") ||
+				      (q.is_text_canvas() && type == "text-canvas"))) {
+					continue;
+				}
+				SHLOG("Running '" << type << "' query from '" << f << "' file...");
+
+				// admin#1624275276932.bin
+				auto l = f.length();
+				std::size_t timestamp = utils::str2<std::size_t>(f.substr(l - 17, l - 4));
+				// std::cout << timestamp << std::endl;
+
+				std::tuple<VideoId, FrameId, FrameId> targets;
+				try {
+					auto [v_ID, fr, to] = tar_helper.target(timestamp);
+					targets = std::tuple(v_ID, fr, to);
+				} catch (...) {
+					continue;
+				}
+
+				// ***
+				// POSITIONAL xoxo
+				{
+					rescore(q, true);
+					auto disp = get_top_scored_frames(0, 3, 1);
+
+					std::size_t v_min = 1154038;
+					std::size_t f_min = 1154038;
+
+					std::size_t i = 0;
+					for (auto&& vf : disp) {
+						++i;
+						auto v_ID = vf->video_ID;
+						auto fn = vf->frame_number;
+
+						if (v_ID == std::get<0>(targets)) {
+							v_min = std::min(i, v_min);
+							if (std::get<1>(targets) <= fn && fn <= std::get<2>(targets)) {
+								f_min = std::min(i, f_min);
+								break;
+							}
+						}
+					}
+
+					std::cout << v_min << ", " << f_min << std::endl;
+
+					ranks_positioned.emplace_back(f_min);
+					ranks_positioned_video.emplace_back(v_min);
+				}
+
+				// ***
+				// Decay to unpositioned
+				Query qq{ q };
+				qq.transform_to_no_pos_queries();
+
+				std::string this_query;
+				for (auto&& temp_q : qq.temporal_queries) {
+					this_query.append(temp_q.textual).append(" >> ");
+				}
+				for (size_t i = 0; i < 4; ++i) this_query.pop_back();
+
+				queries.emplace_back(this_query);
+
+				// ***
+				// UNPOSITIONAL
+				{
+					rescore(qq, true);
+					auto disp = get_top_scored_frames(0, 3, 1);
+
+					std::size_t v_min = 1154038;
+					std::size_t f_min = 1154038;
+
+					std::size_t i = 0;
+					for (auto&& vf : disp) {
+						++i;
+						auto v_ID = vf->video_ID;
+						auto fn = vf->frame_number;
+
+						if (v_ID == std::get<0>(targets)) {
+							v_min = std::min(i, v_min);
+							if (std::get<1>(targets) <= fn && fn <= std::get<2>(targets)) {
+								f_min = std::min(i, f_min);
+							}
+						}
+					}
+
+					std::cout << v_min << ", " << f_min << std::endl;
+					std::cout << "------------------ " << std::endl;
+
+					ranks_unpositioned.emplace_back(f_min);
+					ranks_unpositioned_video.emplace_back(v_min);
+				}
+
+				do_assert_equals(ranks_positioned.size(), ranks_unpositioned.size(), "Numbers must match!");
+				do_assert_equals(queries.size(), ranks_unpositioned.size(), "Numbers must match!");
+
+				++q_idx;
+			}
+		}
+
+		ofs << "query_idx;positioned;unpositioned;query" << std::endl;
+		ofs2 << "query_idx;positioned;unpositioned;query" << std::endl;
+		for (size_t i = 0; i < ranks_positioned.size(); i++) {
+			ofs << i << ";" << ranks_positioned[i] << ";" << ranks_unpositioned[i] << ";" << queries[i] << std::endl;
+		}
+		for (size_t i = 0; i < ranks_positioned_video.size(); i++) {
+			ofs2 << i << ";" << ranks_positioned_video[i] << ";" << ranks_unpositioned_video[i] << ";" << queries[i]
+			     << std::endl;
+		}
+	}
 }
 
 void Somhunter::generate_new_targets()

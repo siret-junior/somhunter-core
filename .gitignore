@@ -16,6 +16,7 @@ config/_config-core.json
 config/config-core.json
 config/config-auth.json
 bench-out/
+data-logs/
 data/nn_models/traced_Resnet152.pt
 data/nn_models/traced_Resnext101.pt
 data/v3c1-first100/
