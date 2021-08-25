@@ -816,182 +816,190 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std::string& targets_fpth,
                                        const std::string& out_dir)
 {
+	using directory_iterator = std::filesystem::directory_iterator;
+	using namespace nlohmann;
+
+	// Query xx = utils::deserialize_from_file<Query>(queries_dir + "/sh-patrik/admin#1624275371914.bin");
+	// Query xx = utils::deserialize_from_file<Query>(queries_dir + "/sh-patrik/admin#1624442476243.bin");
+	// Query xx = utils::deserialize_from_file<Query>(queries_dir + "/sh-patrik/admin#1624442510543.bin");
+	//std::cout << jxx.to_JSON().dump(4) << std::endl;
+
+
+	// ***
+	// Config
+	constexpr std::size_t from_video = 3;
+	constexpr std::size_t from_shot = 1;
+	constexpr std::size_t num_frames = 1154038;
+	std::array types{ "text-canvas"s, "bitmap-canvas"s, "relocation"s };
+
 	TaskTargetHelper tar_helper(targets_fpth);
 
-	std::array types{ "text-canvas"s, "bitmap-canvas"s, "relocation"s, "temporal-text"s };
+	// ***
+	// Prepare output
+	utils::dir_create(out_dir);
+	std::map<std::string, std::ofstream> ofss;
+	for (auto&& type : types) {
+		std::string filename = type + "-benchmark-frame.csv";
+		auto out_filepath{ std::filesystem::path(out_dir) / filename };
+
+		auto&& [item, ins] = ofss.emplace(type, out_filepath.string());
+		if (!(item->second)) {
+			throw std::runtime_error{ "Unable to open file for writing: "s + out_filepath.string() };
+		}
+		
+		SHLOG("Results for '" << type << "' will be printed to '" << out_filepath << "'...");
+	} 
+
+	using QueryResults = std::vector<std::tuple<std::size_t, std::size_t>>;
+
+	std::map<std::string, std::vector<std::tuple<std::string, std::string>>> query_infos;
+	std::map<std::string, QueryResults> ranks_positioned;
+	std::map<std::string, QueryResults> ranks_unpositioned;
 
 	for (auto&& type : types) {
-		using directory_iterator = std::filesystem::directory_iterator;
+		query_infos.emplace(type, std::vector<std::tuple<std::string, std::string>>());
+		ranks_positioned.emplace(type, QueryResults());
+		ranks_unpositioned.emplace(type, QueryResults());
 
-		// ***
-		// Prepare output
-		utils::dir_create(out_dir);
-		// std::string filename{ type + "-benchmark-frame" + std::to_string(utils::timestamp()) + ".txt" };
-		std::string filename{ type + "-benchmark-frame.csv" };
-		std::string filename2{ type + "-benchmark-video.csv" };
-		auto out_filepath{ std::filesystem::path{ out_dir } / filename };
-		auto out_filepath2{ std::filesystem::path{ out_dir } / filename2 };
+		ofss[type] << "ID,user,pos_video,pos_frame,unpos_video,unpos_frame" << std::endl;
+	}
 
-		std::ofstream ofs{ out_filepath.string() };
-		std::ofstream ofs2{ out_filepath2.string() };
-		if (!ofs.is_open()) {
-			throw std::runtime_error{ "Unable to open file for writing: "s + out_filepath.string() };
-		}
-		if (!ofs2.is_open()) {
-			throw std::runtime_error{ "Unable to open file for writing: "s + out_filepath.string() };
-		}
-		SHLOG("Results will be printed to '" << out_filepath << "'...");
-		SHLOG("Results will be printed to '" << out_filepath2 << "'...");
+	// ***
+	// Load the filenames from the directory
+	std::vector<std::pair<std::string, std::string>> query_filepaths;
 
-		std::vector<std::size_t> ranks_positioned;
-		std::vector<std::size_t> ranks_unpositioned;
+	// For each user
+	SHLOG("Loading queries from the directory '" << queries_dir << "'...");
+	for (const auto& dir_entry : directory_iterator(queries_dir)) {
+		SHLOG("\t USER: " << dir_entry.path());
 
-		std::vector<std::size_t> ranks_positioned_video;
-		std::vector<std::size_t> ranks_unpositioned_video;
+		// Ignore non-directories
+		if (!std::filesystem::is_directory(dir_entry)) continue;
 
-		std::vector<std::string> queries;
+		// For each query of the user
+		for (const auto& file : std::filesystem::directory_iterator(dir_entry)) {
+			std::string filepath{ file.path().string() };
 
-		// ***
-		// Load the filenames from the directory
-		std::vector<std::string> serialized_queries;
-
-		SHLOG("Loading queries from the directory '" << queries_dir << "'...");
-		for (const auto& dir_entry : directory_iterator(queries_dir)) {
-			SHLOG("\t - " << dir_entry.path());
-
-			if (!std::filesystem::is_directory(dir_entry)) continue;
-
-			for (const auto& file : std::filesystem::directory_iterator(dir_entry)) {
-				std::string filepath{ file.path().string() };
-
-				std::string suffix{ filepath.substr(filepath.length() - 3) };
-				if (suffix == "bin") {
-					serialized_queries.emplace_back(filepath);
-				}
-
-				// SHLOG("\t" << file.path());
+			std::string suffix{ filepath.substr(filepath.length() - 3) };
+			if (suffix == "bin") {
+				query_filepaths.emplace_back(dir_entry.path().filename(), filepath);
 			}
-		}
-
-		// ***
-		// Rank them
-		{
-			size_t q_idx{ 0 };
-			for (auto&& f : serialized_queries) {
-				using namespace nlohmann;
-
-				Query q{ utils::deserialize_from_file<Query>(f) };
-				if (!((q.is_relocation() && type == "relocation") ||
-				      (q.is_bitmap_canvas() && type == "bitmap-canvas") ||
-				      (q.is_temporal_text() && type == "temporal-text") ||
-				      (q.is_text_canvas() && type == "text-canvas"))) {
-					continue;
-				}
-				SHLOG("Running '" << type << "' query from '" << f << "' file...");
-
-				// admin#1624275276932.bin
-				auto l = f.length();
-				std::size_t timestamp = utils::str2<std::size_t>(f.substr(l - 17, l - 4));
-				// std::cout << timestamp << std::endl;
-
-				std::tuple<VideoId, FrameId, FrameId> targets;
-				try {
-					auto [v_ID, fr, to] = tar_helper.target(timestamp);
-					targets = std::tuple(v_ID, fr, to);
-				} catch (...) {
-					continue;
-				}
-
-				// ***
-				// POSITIONAL xoxo
-				{
-					rescore(q, true);
-					auto disp = get_top_scored_frames(0, 3, 1);
-
-					std::size_t v_min = 1154038;
-					std::size_t f_min = 1154038;
-
-					std::size_t i = 0;
-					for (auto&& vf : disp) {
-						++i;
-						auto v_ID = vf->video_ID;
-						auto fn = vf->frame_number;
-
-						if (v_ID == std::get<0>(targets)) {
-							v_min = std::min(i, v_min);
-							if (std::get<1>(targets) <= fn && fn <= std::get<2>(targets)) {
-								f_min = std::min(i, f_min);
-								break;
-							}
-						}
-					}
-
-					std::cout << v_min << ", " << f_min << std::endl;
-
-					ranks_positioned.emplace_back(f_min);
-					ranks_positioned_video.emplace_back(v_min);
-				}
-
-				// ***
-				// Decay to unpositioned
-				Query qq{ q };
-				qq.transform_to_no_pos_queries();
-
-				std::string this_query;
-				for (auto&& temp_q : qq.temporal_queries) {
-					this_query.append(temp_q.textual).append(" >> ");
-				}
-				for (size_t i = 0; i < 4; ++i) this_query.pop_back();
-
-				queries.emplace_back(this_query);
-
-				// ***
-				// UNPOSITIONAL
-				{
-					rescore(qq, true);
-					auto disp = get_top_scored_frames(0, 3, 1);
-
-					std::size_t v_min = 1154038;
-					std::size_t f_min = 1154038;
-
-					std::size_t i = 0;
-					for (auto&& vf : disp) {
-						++i;
-						auto v_ID = vf->video_ID;
-						auto fn = vf->frame_number;
-
-						if (v_ID == std::get<0>(targets)) {
-							v_min = std::min(i, v_min);
-							if (std::get<1>(targets) <= fn && fn <= std::get<2>(targets)) {
-								f_min = std::min(i, f_min);
-							}
-						}
-					}
-
-					std::cout << v_min << ", " << f_min << std::endl;
-					std::cout << "------------------ " << std::endl;
-
-					ranks_unpositioned.emplace_back(f_min);
-					ranks_unpositioned_video.emplace_back(v_min);
-				}
-
-				do_assert_equals(ranks_positioned.size(), ranks_unpositioned.size(), "Numbers must match!");
-				do_assert_equals(queries.size(), ranks_unpositioned.size(), "Numbers must match!");
-
-				++q_idx;
-			}
-		}
-
-		ofs << "query_idx;positioned;unpositioned;query" << std::endl;
-		ofs2 << "query_idx;positioned;unpositioned;query" << std::endl;
-		for (size_t i = 0; i < ranks_positioned.size(); i++) {
-			ofs << i << ";" << ranks_positioned[i] << ";" << ranks_unpositioned[i] << ";" << queries[i] << std::endl;
-		}
-		for (size_t i = 0; i < ranks_positioned_video.size(); i++) {
-			ofs2 << i << ";" << ranks_positioned_video[i] << ";" << ranks_unpositioned_video[i] << ";" << queries[i]
-			     << std::endl;
 		}
 	}
+
+	// ***
+	// Rank them
+	{
+		std::size_t q_idx = 0;
+		for (auto&& [user, f] : query_filepaths) {
+			Query q(utils::deserialize_from_file<Query>(f));
+
+			std::string type = "";
+			if (q.is_relocation()) type = "relocation";
+			else if (q.is_bitmap_canvas()) type = "bitmap-canvas";
+			else if (q.is_text_canvas()) type = "text-canvas";
+
+			// Ignore other types
+			if (type.empty()) continue;
+			SHLOG("Running '" << type << "' query from '" << f << "' file...");
+
+			std::string ID = f.substr(f.length() - 23);
+			query_infos[type].emplace_back(ID, user);
+			// Extract timestamp from the filename
+			std::size_t timestamp = ERR_VAL<std::size_t>();
+			{
+				// \todo Generalize...
+				// admin#1624275276932.bin
+				auto l = f.length();
+				timestamp = utils::str2<std::size_t>(f.substr(l - 17, l - 4));
+			}
+
+			// Get target for the task
+			std::tuple<VideoId, FrameId, FrameId> targets;
+			try {
+				auto [v_ID, fr, to] = tar_helper.target(timestamp);
+				targets = std::tuple(v_ID, fr, to);
+			} 
+			// If not inside any task
+			catch (...) {
+				continue;
+			}
+
+			// ***
+			// POSITIONAL
+			{
+				rescore(q, true);
+				auto disp = get_top_scored_frames(0, from_video, from_shot);
+
+				std::size_t v_min = num_frames;
+				std::size_t f_min = num_frames;
+
+				std::size_t i = 0;
+				for (auto&& vf : disp) {
+					++i;
+					auto v_ID = vf->video_ID;
+					auto fn = vf->frame_number;
+
+					if (v_ID == std::get<0>(targets)) {
+						v_min = std::min(i, v_min);
+						if (std::get<1>(targets) <= fn && fn <= std::get<2>(targets)) {
+							f_min = std::min(i, f_min);
+							break;
+						}
+					}
+				}
+
+				std::cout << v_min << ", " << f_min << std::endl;
+				ranks_positioned[type].emplace_back(v_min, f_min);
+			}
+
+			// ***
+			// Decay the query
+			Query qq(q);
+			qq.transform_to_no_pos_queries();
+
+			// ***
+			// UNPOSITIONAL
+			{
+				rescore(qq, true);
+				auto disp = get_top_scored_frames(0, from_video, from_shot);
+
+				std::size_t v_min = num_frames;
+				std::size_t f_min = num_frames;
+
+				std::size_t i = 0;
+				for (auto&& vf : disp) {
+					++i;
+					auto v_ID = vf->video_ID;
+					auto fn = vf->frame_number;
+
+					if (v_ID == std::get<0>(targets)) {
+						v_min = std::min(i, v_min);
+						if (std::get<1>(targets) <= fn && fn <= std::get<2>(targets)) {
+							f_min = std::min(i, f_min);
+							break;
+						}
+					}
+				}
+
+				std::cout << v_min << ", " << f_min << std::endl;
+				ranks_unpositioned[type].emplace_back(v_min, f_min);
+			}
+			std::cout << "------------------ " << std::endl;
+			++q_idx;
+		}
+	}
+
+	for (auto&& type : types) {
+		auto& ofs = ofss[type];
+		for (size_t i = 0; i < query_infos[type].size(); ++i) {
+			ofs << std::get<0>(query_infos[type][i]) << "," << std::get<1>(query_infos[type][i]) << ","
+				<< std::get<0>(ranks_positioned[type][i]) << "," << std::get<1>(ranks_positioned[type][i]) << ","
+				<< std::get<0>(ranks_unpositioned[type][i]) << "," << std::get<1>(ranks_unpositioned[type][i]) << ","	 
+			 	<< std::endl;
+		}
+	}
+
 }
 
 void Somhunter::generate_new_targets()

@@ -315,6 +315,7 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/,
                               const std::vector<VideoFrame>* p_targets)
 {
+#if 0
 	if (temp_queries.empty()) return;
 
 	auto path{ _logger_settings.log_dir_user_actions_summary + "/"s + std::to_string(utils::timestamp()) + "/"s };
@@ -372,6 +373,8 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*c
 	pretty_print_opts.indent_increment = 4;
 	// o << obj.dump();
 	o << obj.pretty_print(pretty_print_opts);
+
+#endif
 }
 
 void sh::Logger::log_rescore(const Query& /*prev_query*/, const Query& new_query)

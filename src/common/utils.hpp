@@ -565,6 +565,23 @@ void to_file(const std::vector<std::vector<DType_>>& mat, const std::string file
 	}
 }
 
+template <typename T>
+T ipow(T b, std::size_t p)
+{
+	T r = 1;
+	for (std::size_t i = 0; i < p; ++i) {
+		r = r * b;
+	}
+	return r;
+}
+
+template <typename T>
+T round_decimal(T x, std::size_t places)
+{
+	std::size_t b = ipow(10, places);
+	return static_cast<T>(std::round(b * x) / b);
+}
+
 }  // namespace utils
 }  // namespace sh
 #endif  // UTILS_H_

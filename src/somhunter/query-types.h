@@ -237,12 +237,17 @@ public:
 		       _data_int == b._data_int && _rect == b._rect;
 	}
 
-	json11::Json to_JSON() const
+	nlohmann::json to_JSON() const
 	{
-		json11::Json::object res{ { "rect", json11::Json::array{ _rect.left, _rect.top, _rect.right, _rect.bottom } },
-			                      { "bitmap_filename", jpeg_filename },
-			                      { "width_pixels", static_cast<int>(_width) },
-			                      { "height_pixels", static_cast<int>(_height) } };
+		nlohmann::json res = { { "rect",
+			                     nlohmann::json::array(
+			                         { 
+										_rect.left, _rect.top,
+			                           _rect.right, _rect.bottom
+									  }) },
+			                   { "bitmap_filename", jpeg_filename },
+			                   { "width_pixels", static_cast<int>(_width) },
+			                   { "height_pixels", static_cast<int>(_height) } };
 
 		return res;
 	}
@@ -286,10 +291,14 @@ public:
 
 	const TextualQuery& query() const { return _text_query; };
 
-	json11::Json to_JSON() const
+	nlohmann::json to_JSON() const
 	{
-		json11::Json::object res{ { "rect", json11::Json::array{ _rect.left, _rect.top, _rect.right, _rect.bottom } },
-			                      { "text_query", _text_query } };
+		nlohmann::json res = { { "rect",
+			                     nlohmann::json::array(
+			                         { _rect.left, _rect.top,
+			                           _rect.right, _rect.bottom
+			                         }) },
+			                   { "text_query", _text_query } };
 
 		return res;
 	}
@@ -356,7 +365,7 @@ public:
 		archive(_subqueries);
 	}
 
-	json11::Json to_JSON() const;
+	nlohmann::json to_JSON() const;
 
 	CanvasSubquery& operator[](size_t idx) { return _subqueries[idx]; }
 	const CanvasSubquery& operator[](size_t idx) const { return _subqueries[idx]; }
@@ -438,6 +447,22 @@ public:
 	bool operator==(const TemporalQuery& b) const
 	{
 		return textual == b.textual && canvas == b.canvas && relocation == b.relocation;
+	}
+
+	nlohmann::json to_JSON() const
+	{
+		nlohmann::json o = nlohmann::json::object();
+
+		o["textual"] = textual;
+		o["canvas"] = canvas.to_JSON();
+
+		if (relocation != ERR_VAL<RelocationQuery>()) {
+			o["relocation"] = relocation;
+		} else {
+			o["relocation"] = nullptr;
+		}
+
+		return o;
 	}
 
 	// *** MEMBER VARIABLES ***

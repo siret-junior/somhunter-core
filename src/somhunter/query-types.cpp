@@ -32,14 +32,44 @@ using namespace sh;
 
 namespace fs = std::filesystem;
 
+nlohmann::json Query::to_JSON() const
+{
+	nlohmann::json o = nlohmann::json::object();
+
+	// o["metadata"] = metadata.to_JSON();
+	// o["filters"] = filters.to_JSON();
+
+	o["is_relocation"] = (is_relocation() ? true : false);
+	o["is_canvas"] = (is_canvas() ? true : false);
+	o["is_text"] = (is_text() ? true : false);
+	o["is_bitmap_canvas"] = (is_bitmap_canvas() ? true : false);
+	o["is_text_canvas"] = (is_text_canvas() ? true : false);
+
+	// Likes
+	nlohmann::json rf_json = nlohmann::json::array();
+	for (auto&& like_frame_ID : relevance_feeedback) {
+		rf_json.emplace_back(like_frame_ID);
+	}
+	o["relevance_feeedback"] = rf_json;
+
+	// Queries
+	nlohmann::json qs_json = nlohmann::json::array();
+	for (auto&& tq : temporal_queries) {
+		qs_json.emplace_back(tq.to_JSON());
+	}
+	o["queries"] = qs_json;
+
+	return o;
+}
+
 std::vector<std::uint8_t> CanvasSubqueryBitmap::get_scaled_bitmap(size_t w, size_t h) const
 {
 	return ImageManipulator::resize(_data_int, width_pixels(), height_pixels(), w, h, _num_channels);
 }
 
-json11::Json CanvasQuery::to_JSON() const
+nlohmann::json CanvasQuery::to_JSON() const
 {
-	std::vector<json11::Json> arr_temp;
+	nlohmann::json arr_temp = nlohmann::json::array();
 	for (size_t i{ 0 }; i < _subqueries.size(); ++i) {
 		arr_temp.emplace_back(std::visit(
 		    overloaded{
@@ -47,11 +77,13 @@ json11::Json CanvasQuery::to_JSON() const
 		    },
 		    _subqueries[i]));
 	}
-	return json11::Json{ arr_temp };
+	return arr_temp;
 }
 
 std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& contents, const fs::path parentPath)
 {
+	// \todo Convert to nlohmann::json
+	throw std::runtime_error("...");
 	std::string err;
 	auto json_all{ json11::Json::parse(contents, err) };
 
@@ -92,6 +124,8 @@ std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& con
 
 std::vector<CanvasQuery> CanvasQuery::parse_json(const std::string& filepath)
 {
+	// \todo Convert to nlohmann::json
+	throw std::runtime_error("...");
 	std::string file_contents(utils::read_whole_file(filepath));
 	fs::path p(filepath);
 	return parse_json_contents(file_contents, p.parent_path());
