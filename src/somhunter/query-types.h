@@ -226,6 +226,7 @@ public:
 	size_t height_pixels() const { return _height; };
 	std::vector<uint8_t>& data() { return _data_int; };
 	const std::vector<uint8_t>& data() const { return _data_int; };
+	bool empty() const { return _data_int.empty(); }
 
 	std::vector<uint8_t> get_scaled_bitmap(size_t w, size_t h) const;
 
@@ -239,12 +240,7 @@ public:
 
 	nlohmann::json to_JSON() const
 	{
-		nlohmann::json res = { { "rect",
-			                     nlohmann::json::array(
-			                         { 
-										_rect.left, _rect.top,
-			                           _rect.right, _rect.bottom
-									  }) },
+		nlohmann::json res = { { "rect", nlohmann::json::array({ _rect.left, _rect.top, _rect.right, _rect.bottom }) },
 			                   { "bitmap_filename", jpeg_filename },
 			                   { "width_pixels", static_cast<int>(_width) },
 			                   { "height_pixels", static_cast<int>(_height) } };
@@ -285,19 +281,16 @@ class CanvasSubqueryText : public CanvasSubqueryBase
 public:
 	CanvasSubqueryText() = default;
 	CanvasSubqueryText(const RelativeRect& rect, const TextualQuery query)
-	    : CanvasSubqueryBase{ rect }, _text_query{ query }
+	    : CanvasSubqueryBase{ rect }, _text_query{ utils::trim(query) }
 	{
 	}
-
+	// ---
 	const TextualQuery& query() const { return _text_query; };
+	bool empty() const { return _text_query.empty(); }
 
 	nlohmann::json to_JSON() const
 	{
-		nlohmann::json res = { { "rect",
-			                     nlohmann::json::array(
-			                         { _rect.left, _rect.top,
-			                           _rect.right, _rect.bottom
-			                         }) },
+		nlohmann::json res = { { "rect", nlohmann::json::array({ _rect.left, _rect.top, _rect.right, _rect.bottom }) },
 			                   { "text_query", _text_query } };
 
 		return res;
@@ -348,7 +341,18 @@ public:
 	                  uint8_t* bitmap_RGBA_data);
 
 	size_t size() const { return _subqueries.size(); }
-	bool empty() const { return (size() == 0); }
+	bool empty() const
+	{
+		if (size() == 0)
+			return true;
+		else {
+			for (auto&& q : _subqueries) {
+				auto r = std::visit(overloaded{ [](auto q) { return q.empty(); } }, q);
+				if (r) return true;
+			}
+		}
+		return false;
+	}
 	const std::vector<CanvasSubquery>& subqueries() const { return _subqueries; };
 	std::vector<CanvasSubquery>& subqueries() { return _subqueries; };
 
@@ -421,7 +425,10 @@ public:
 	const bool is_relocation() const { return relocation != ERR_VAL<FrameId>(); }
 	const bool is_canvas() const { return !canvas.empty(); }
 	const bool is_text() const { return !is_relocation() && !textual.empty(); }
-	const bool empty() const { return !is_relocation() && !is_canvas() && !is_text(); }
+	const bool empty() const
+	{
+		return (relocation == ERR_VAL<RelocationQuery>()) && (utils::trim(textual).empty()) && canvas.empty();
+	}
 	const bool is_bitmap_canvas() const
 	{
 		if (!is_canvas()) return false;
@@ -497,9 +504,15 @@ public:
 	const bool is_canvas() const { return temporal_queries.front().is_canvas(); }
 	const bool is_bitmap_canvas() const { return temporal_queries.front().is_bitmap_canvas(); }
 	const bool is_text_canvas() const { return temporal_queries.front().is_text_canvas(); }
-	const bool is_temporal_text() const { return is_text() && temporal_queries.size() > 1; }
+	const bool is_temporal_text() const { return !is_relocation() && is_text() && temporal_queries.size() > 1; }
 	const bool is_text() const { return temporal_queries.front().is_text(); }
-	const bool empty() const { return temporal_queries.front().empty(); }
+	const bool empty() const
+	{
+		for (auto&& q : temporal_queries) {
+			if (q.empty()) return true;
+		}
+		return false;
+	}
 
 	const std::vector<TemporalQuery>& queries() const { return temporal_queries; }
 

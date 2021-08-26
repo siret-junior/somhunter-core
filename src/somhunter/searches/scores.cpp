@@ -281,7 +281,6 @@ void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& s
                              const DatasetFeatures& _dataset_features)
 {
 	if (likes.empty()) return;
-
 	invalidate_cache();
 
 	constexpr float Sigma = .1f;

@@ -240,11 +240,16 @@ void Somhunter::apply_filters()
 RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 {
 	auto ts_start{ std::chrono::high_resolution_clock::now() };
+
+	// If benchmarking, always reset
+	if (benchmark_run) {
+		reset_search_session();
+	}
+
 	const std::vector<TemporalQuery>& temporal_query{ query.temporal_queries };
 
 	// Add the internal state likes to it
-	RelevanceFeedbackQuery& rel_feedback_query{ query.relevance_feeedback };
-	rel_feedback_query.insert(_user_context.ctx.likes.begin(), _user_context.ctx.likes.end());
+	_user_context.ctx.likes.insert(query.relevance_feeedback.begin(), query.relevance_feeedback.end());
 
 	const Filters* p_filters{ &query.filters };
 	size_t src_search_ctx_ID{ query.metadata.srd_search_ctx_ID };
@@ -285,7 +290,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	 * Do all the needed rescore steps
 	 */
 	// Store likes for the logging purposees
-	auto old_likes{ rel_feedback_query };
+	auto old_likes{ _user_context.ctx.likes };
 
 	// Check if temporal queries has changed
 	if (_user_context.ctx.last_temporal_queries != temporal_query) {
@@ -819,11 +824,25 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 	using directory_iterator = std::filesystem::directory_iterator;
 	using namespace nlohmann;
 
-	// Query xx = utils::deserialize_from_file<Query>(queries_dir + "/sh-patrik/admin#1624275371914.bin");
-	// Query xx = utils::deserialize_from_file<Query>(queries_dir + "/sh-patrik/admin#1624442476243.bin");
-	// Query xx = utils::deserialize_from_file<Query>(queries_dir + "/sh-patrik/admin#1624442510543.bin");
-	//std::cout << jxx.to_JSON().dump(4) << std::endl;
+	// Query xx1 = utils::deserialize_from_file<Query>(queries_dir + "/sh-patrik/admin#1624280823952.bin");
+	// Query xx2 = utils::deserialize_from_file<Query>(queries_dir + "/sh-patrik/admin#1624280769587.bin");
+	// // std::cout << jxx.to_JSON().dump(4) << std::endl;
+	// rescore(xx1, true);
+	// auto disp = get_top_scored_frames(0, 3, 1);
+	// auto it = disp.begin();
+	// for (std::size_t i = 0; i < 10; ++i, ++it) {
+	// 	std::cout << (*it)->frame_ID << std::endl;
+	// 	std::cout << _user_context.ctx.scores[i] << std::endl;
+	// }
+	// std::cout << "---" << std::endl;
 
+	// rescore(xx2, true);
+	// disp = get_top_scored_frames(0, 3, 1);
+	// it = disp.begin();
+	// for (std::size_t i = 0; i < 10; ++i, ++it) {
+	// 	std::cout << (*it)->frame_ID << std::endl;
+	// 	std::cout << _user_context.ctx.scores[i] << std::endl;
+	// }
 
 	// ***
 	// Config
@@ -839,16 +858,18 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 	utils::dir_create(out_dir);
 	std::map<std::string, std::ofstream> ofss;
 	for (auto&& type : types) {
-		std::string filename = type + "-benchmark-frame.csv";
+		std::string filename = type + "-benchmark.csv";
+
+		utils::dir_create((std::filesystem::path(out_dir) / type).string());
 		auto out_filepath{ std::filesystem::path(out_dir) / filename };
 
 		auto&& [item, ins] = ofss.emplace(type, out_filepath.string());
 		if (!(item->second)) {
 			throw std::runtime_error{ "Unable to open file for writing: "s + out_filepath.string() };
 		}
-		
+
 		SHLOG("Results for '" << type << "' will be printed to '" << out_filepath << "'...");
-	} 
+	}
 
 	using QueryResults = std::vector<std::tuple<std::size_t, std::size_t>>;
 
@@ -895,16 +916,21 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 			Query q(utils::deserialize_from_file<Query>(f));
 
 			std::string type = "";
-			if (q.is_relocation()) type = "relocation";
-			else if (q.is_bitmap_canvas()) type = "bitmap-canvas";
-			else if (q.is_text_canvas()) type = "text-canvas";
+			if (q.is_relocation())
+				type = "relocation";
+			else if (q.is_bitmap_canvas())
+				type = "bitmap-canvas";
+			else if (q.is_text_canvas())
+				type = "text-canvas";
 
 			// Ignore other types
 			if (type.empty()) continue;
 			SHLOG("Running '" << type << "' query from '" << f << "' file...");
 
 			std::string ID = f.substr(f.length() - 23);
-			query_infos[type].emplace_back(ID, user);
+			auto task_dir{ std::filesystem::path(out_dir) / type / ID };
+			std::string file_base = task_dir.string();
+
 			// Extract timestamp from the filename
 			std::size_t timestamp = ERR_VAL<std::size_t>();
 			{
@@ -919,17 +945,20 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 			try {
 				auto [v_ID, fr, to] = tar_helper.target(timestamp);
 				targets = std::tuple(v_ID, fr, to);
-			} 
+			}
 			// If not inside any task
 			catch (...) {
 				continue;
 			}
+			query_infos[type].emplace_back(ID, user);
 
 			// ***
 			// POSITIONAL
 			{
+				Somhunter::write_query(file_base + ".q1.json", q);
 				rescore(q, true);
 				auto disp = get_top_scored_frames(0, from_video, from_shot);
+				Somhunter::write_resultset(file_base + ".q1.resultset.json", disp);
 
 				std::size_t v_min = num_frames;
 				std::size_t f_min = num_frames;
@@ -961,8 +990,10 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 			// ***
 			// UNPOSITIONAL
 			{
+				Somhunter::write_query(file_base + ".q2.json", qq);
 				rescore(qq, true);
 				auto disp = get_top_scored_frames(0, from_video, from_shot);
+				Somhunter::write_resultset(file_base + ".q2.resultset.json", disp);
 
 				std::size_t v_min = num_frames;
 				std::size_t f_min = num_frames;
@@ -986,6 +1017,12 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 				ranks_unpositioned[type].emplace_back(v_min, f_min);
 			}
 			std::cout << "------------------ " << std::endl;
+
+			Somhunter::write_query_info(
+			    file_base + ".info.json", ID, user, targets, std::get<0>(ranks_positioned[type].back()),
+			    std::get<1>(ranks_positioned[type].back()), std::get<0>(ranks_unpositioned[type].back()),
+			    std::get<1>(ranks_unpositioned[type].back()));
+
 			++q_idx;
 		}
 	}
@@ -994,12 +1031,11 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 		auto& ofs = ofss[type];
 		for (size_t i = 0; i < query_infos[type].size(); ++i) {
 			ofs << std::get<0>(query_infos[type][i]) << "," << std::get<1>(query_infos[type][i]) << ","
-				<< std::get<0>(ranks_positioned[type][i]) << "," << std::get<1>(ranks_positioned[type][i]) << ","
-				<< std::get<0>(ranks_unpositioned[type][i]) << "," << std::get<1>(ranks_unpositioned[type][i]) << ","	 
-			 	<< std::endl;
+			    << std::get<0>(ranks_positioned[type][i]) << "," << std::get<1>(ranks_positioned[type][i]) << ","
+			    << std::get<0>(ranks_unpositioned[type][i]) << "," << std::get<1>(ranks_unpositioned[type][i]) << ","
+			    << std::endl;
 		}
 	}
-
 }
 
 void Somhunter::generate_new_targets()
@@ -1044,7 +1080,14 @@ void Somhunter::rescore_keywords(const TextualQuery& query, size_t temporal)
 
 void Somhunter::rescore_feedback()
 {
+	std::cout << _user_context.ctx.likes.size() << std::endl;
 	if (_user_context.ctx.likes.empty()) return;
+
+	// Make sure some frames are set as seen
+	if (_user_context.ctx.shown_images.empty()) {
+		// This fills in the shown images with the first page of top-scored display
+		get_topn_display(0);
+	}
 
 	_user_context.ctx.scores.apply_bayes(_user_context.ctx.likes, _user_context.ctx.shown_images, _dataset_features);
 	_user_context.ctx.used_tools.bayes_used = true;

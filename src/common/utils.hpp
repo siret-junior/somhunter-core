@@ -565,6 +565,7 @@ void to_file(const std::vector<std::vector<DType_>>& mat, const std::string file
 	}
 }
 
+/** UInteger power function. */
 template <typename T>
 T ipow(T b, std::size_t p)
 {
@@ -575,6 +576,7 @@ T ipow(T b, std::size_t p)
 	return r;
 }
 
+/** Runds the number to the specified decimal places. */
 template <typename T>
 T round_decimal(T x, std::size_t places)
 {

@@ -397,6 +397,63 @@ public:
 	void benchmark_real_queries(const std::string& queries_dir, const std::string& targets_fpth,
 	                            const std::string& out_dir);
 
+	static void write_resultset(const std::string& file, const std::vector<VideoFramePointer>& results)
+	{
+		nlohmann::json arr = nlohmann::json::array();
+
+		std::size_t i = 0;
+		for (auto&& p_vf : results) {
+			++i;
+
+			nlohmann::json o = nlohmann::json::object();
+			o["rank"] = i;
+			o["video_ID"] = p_vf->video_ID;
+			o["frame_number"] = p_vf->frame_number;
+			o["frame_ID"] = p_vf->frame_ID;
+
+			arr.emplace_back(o);
+		}
+
+		std::ofstream ofs(file);
+		if (!ofs) {
+			throw std::runtime_error("Unable to open file for writing: "s + file);
+		}
+
+		ofs << arr.dump(4) << std::endl;
+	}
+
+	static void write_query(const std::string& file, const Query& q)
+	{
+		std::ofstream ofs(file);
+		if (!ofs) {
+			throw std::runtime_error("Unable to open file for writing: "s + file);
+		}
+
+		ofs << q.to_JSON().dump(4) << std::endl;
+	}
+
+	static void write_query_info(const std::string& file, const std::string& ID, const std::string& user,
+	                             const std::tuple<VideoId, FrameId, FrameId>& target, std::size_t pos_vid,
+	                             std::size_t pos_fr, std::size_t unpos_vid, std::size_t unpos_fr)
+	{
+		nlohmann::json o = nlohmann::json::object();
+
+		o["binary_ID"] = ID;
+		o["user"] = user;
+		o["target"] = { { "video_ID", std::get<0>(target) },
+			            { "frame_number_start", std::get<1>(target) },
+			            { "frame_number_end", std::get<2>(target) } };
+		o["positions"] = { { "original", nlohmann::json::array({ pos_vid, pos_fr }) },
+			               { "limited", nlohmann::json::array({ unpos_vid, unpos_fr }) } };
+
+		std::ofstream ofs(file);
+		if (!ofs) {
+			throw std::runtime_error("Unable to open file for writing: "s + file);
+		}
+
+		ofs << o.dump(4) << std::endl;
+	}
+
 private:
 	void apply_filters();
 
