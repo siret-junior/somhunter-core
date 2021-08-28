@@ -903,7 +903,7 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 
 			std::string suffix{ filepath.substr(filepath.length() - 3) };
 			if (suffix == "bin") {
-				query_filepaths.emplace_back(dir_entry.path().filename(), filepath);
+				query_filepaths.emplace_back(dir_entry.path().filename().string(), filepath);
 			}
 		}
 	}

@@ -22,7 +22,8 @@ data/nn_models/traced_Resnext101.pt
 data/v3c1-first100/
 data/v3c1-20k/
 data/V3C1_2021_May/
-data/V3C1_2021_June
+data/V3C1_2021_June/
+data/LSC_2021_November/
 saved-queries-out/
 supervise/
 .vscode
