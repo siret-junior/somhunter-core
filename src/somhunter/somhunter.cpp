@@ -1032,7 +1032,7 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 		for (size_t i = 0; i < query_infos[type].size(); ++i) {
 			ofs << std::get<0>(query_infos[type][i]) << "," << std::get<1>(query_infos[type][i]) << ","
 			    << std::get<0>(ranks_positioned[type][i]) << "," << std::get<1>(ranks_positioned[type][i]) << ","
-			    << std::get<0>(ranks_unpositioned[type][i]) << "," << std::get<1>(ranks_unpositioned[type][i]) << ","
+			    << std::get<0>(ranks_unpositioned[type][i]) << "," << std::get<1>(ranks_unpositioned[type][i])
 			    << std::endl;
 		}
 	}
