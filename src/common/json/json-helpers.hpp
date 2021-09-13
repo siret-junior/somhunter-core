@@ -54,7 +54,7 @@ inline T_ require_float_value(const json& json, const std::string& key)
 {
 	require_key(json, key);
 
-	return static_cast<T_>(json[key].number_value());
+	return static_cast<T_>(json[key].get<T_>());
 }
 
 template <typename T_>
@@ -62,7 +62,7 @@ inline T_ require_float_value(const json& json)
 {
 	require_value(json);
 
-	return static_cast<T_>(json.number_value());
+	return static_cast<T_>(json.get<T_>());
 }
 
 inline bool require_bool_value(const json& json, const std::string& key)
