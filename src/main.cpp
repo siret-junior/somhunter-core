@@ -31,7 +31,7 @@
 
 // !!!
 #include "somhunter.h"  // Do not move this beloe other includes
-                        // -> otherwise the libtorch compile error wil bite you
+                        // -> otherwise the libtorch compile error will (or may) bite you
 #include "network-api.h"
 // !!!
 
@@ -54,24 +54,19 @@ int main()
 {
 	initialize_aplication();
 
-	const std::string cfg_fpth{ "config/config-core.json" };
-
-	// Parse config file
-	auto config = Settings::parse_JSON_config(cfg_fpth);
-
 	// Instantiate the SOMHunter
-	Somhunter core{ config, cfg_fpth };
+	Somhunter core{ "config/config-core.json" };
 
 	/* ***
 	 * Benchmarks
 	 */
 	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
 	// core.benchmark_canvas_queries("saved-queries", "saved-queries-out");
-	core.benchmark_real_queries("data-logs", "data-logs/tasks.csv", "saved-queries-out");
+	// core.benchmark_real_queries("data-logs", "data-logs/tasks.csv", "saved-queries-out");
+	// std::cout << "DONE!" << std::endl;
+	// return 0;
 
-	std::cout << "DONE!" << std::endl;
-	return 0;
-	NetworkApi api{ config.API_config, &core };
+	NetworkApi api{ core.settings().API, &core };
 	api.run();
 
 #if 0

@@ -621,17 +621,17 @@ void handle_options(http_request request)
 	request.reply(response);
 }
 
-NetworkApi::NetworkApi(const ApiConfig& API_config, Somhunter* p_core)
-    : _API_config{ API_config },
+NetworkApi::NetworkApi(const ApiConfig& API, Somhunter* p_core)
+    : _API_config{ API },
       _p_core{ p_core },
-      _base_addr{ (API_config.local_only ? "http://127.0.0.1:" :
+      _base_addr{ (API.local_only ? "http://127.0.0.1:" :
 #ifdef WIN32  //< Windows won't accept zeroes
 	                                     "http://*:"
 #else  // UNIX
 	                                     "http://0.0.0.0:"
 #endif
 	               ) +
-	              std::to_string(API_config.port) }
+	              std::to_string(API.port) }
 {
 }
 

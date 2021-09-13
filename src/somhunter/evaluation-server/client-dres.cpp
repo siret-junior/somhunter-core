@@ -28,7 +28,7 @@ using namespace sh;
 
 ClientDres::ClientDres(const EvalServerSettings& eval_server_settings)
     : IServerClient{ eval_server_settings },
-      _settings{ std::get<ServerConfigDres>(eval_server_settings.server_cfg) },
+      _settings{ std::get<EvalServerSettings::ServerConfigDres>(eval_server_settings.server_cfg) },
       _synced{ false }
 {
 	// Initial setup

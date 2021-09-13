@@ -76,18 +76,19 @@ std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_f
 
 DatasetFrames::DatasetFrames(const Settings& config)
 {
+	const auto& c{config.datasets};
 	// Save the config values
-	frames_dir = config.frames_dir;
-	thumbs_dir = config.thumbs_dir;
+	frames_dir = c.frames_dir;
+	thumbs_dir = c.thumbs_dir;
 
-	offs = config.filename_offsets;
+	offs = c.filename_offsets;
 
-	SHLOG_D("Loading frames from '" << config.frames_list_file << "'...");
+	SHLOG_D("Loading frames from '" << c.frames_list_file << "'...");
 
 	// Open the "frames list" file
-	std::ifstream in(config.frames_list_file);
+	std::ifstream in(c.frames_list_file);
 	if (!in.good()) {
-		auto msg{ "Failed to open " + config.frames_list_file };
+		auto msg{ "Failed to open " + c.frames_list_file };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
@@ -96,12 +97,12 @@ DatasetFrames::DatasetFrames(const Settings& config)
 	std::ifstream ifs_meta;
 
 	// If metadata file available
-	if (!config.LSC_metadata_file.empty()) {
+	if (!c.LSC_metadata_file.empty()) {
 		parse_metadata = true;
 
-		ifs_meta.open(config.LSC_metadata_file);
+		ifs_meta.open(c.LSC_metadata_file);
 		if (!ifs_meta.good()) {
-			auto msg{ "Failed to open " + config.LSC_metadata_file };
+			auto msg{ "Failed to open " + c.LSC_metadata_file };
 			SHLOG_E(msg);
 			throw std::runtime_error(msg);
 		}
@@ -123,7 +124,7 @@ DatasetFrames::DatasetFrames(const Settings& config)
 			if (parse_metadata) {
 				// Read one metadata line
 				if (!getline(ifs_meta, md_line)) {
-					auto msg{ "Not enough lines in " + config.LSC_metadata_file };
+					auto msg{ "Not enough lines in " + c.LSC_metadata_file };
 					SHLOG_E(msg);
 					throw std::runtime_error(msg);
 				}

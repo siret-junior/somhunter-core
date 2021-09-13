@@ -85,7 +85,9 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settin
 
 		if (parent->new_data || parent->terminate) continue;
 
-		std::vector<float> koho(width * height * _logger_settings.features_dim, 0);
+		const auto& pfs{ _logger_settings.datasets.primary_features };
+
+		std::vector<float> koho(width * height * pfs.features_dim, 0);
 		float negAlpha = -0.01f;
 		float negRadius = 1.1f;
 		float alphasA[2] = { 0.3f, 0.1f };
@@ -94,8 +96,8 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settin
 		float radiiB[2] = { negRadius * radiiA[0], negRadius * radiiA[1] };
 
 		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
-		fit_SOM(n, width * height, _logger_settings.features_dim, SOM_ITERS, points, koho, nhbrdist, alphasA, radiiA,
-		        alphasB, radiiB, scores, present_mask, rng);
+		fit_SOM(n, width * height, pfs.features_dim, SOM_ITERS, points, koho, nhbrdist, alphasA, radiiA, alphasB,
+		        radiiB, scores, present_mask, rng);
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 		SHLOG_D("SOM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " [ms]");
 
@@ -110,8 +112,8 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settin
 			auto worker = [&](size_t id) {
 				size_t start = id * n / n_threads;
 				size_t end = (id + 1) * n / n_threads;
-				map_points_to_kohos(start, end, width * height, _logger_settings.features_dim, points, koho,
-				                    point_to_koho, present_mask);
+				map_points_to_kohos(start, end, width * height, pfs.features_dim, points, koho, point_to_koho,
+				                    present_mask);
 			};
 
 			for (size_t i = 0; i < n_threads; ++i) threads[i] = std::thread(worker, i);

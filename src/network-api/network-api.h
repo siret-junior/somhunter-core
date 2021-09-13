@@ -50,7 +50,7 @@ public:
 	static void add_CORS_headers(http_response& res);
 
 	NetworkApi() = delete;
-	NetworkApi(const ApiConfig& API_config, Somhunter* p_core);
+	NetworkApi(const ApiConfig& API, Somhunter* p_core);
 
 	void run();
 	void initialize();

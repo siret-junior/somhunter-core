@@ -175,7 +175,7 @@ class DatasetFrames
 
 	std::string frames_dir;
 	std::string thumbs_dir;
-	VideoFilenameOffsets offs{};
+	DatasetsSettings::VideoFilenameOffsets offs{};
 
 public:
 	DatasetFrames(const Settings& config);

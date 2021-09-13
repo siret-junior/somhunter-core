@@ -82,25 +82,33 @@ public:
 	static FeatureVector parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset = 0);
 
 	inline KeywordRanker(const Settings& config, const DatasetFrames& _dataset_frames)
-	    : _keyword_ranker(parse_kw_classes_text_file(config.kws_file, _dataset_frames)),
+	    : _keyword_ranker(parse_kw_classes_text_file(config.datasets.primary_features.kws_file, _dataset_frames)),
 
-	      kw_features(parse_float_matrix(config.kw_scores_mat_file, config.pre_PCA_features_dim)),
-	      kw_features_bias_vec(parse_float_vector(config.kw_bias_vec_file, config.pre_PCA_features_dim)),
+	      kw_features(parse_float_matrix(config.datasets.primary_features.kw_scores_mat_file,
+	                                     config.datasets.primary_features.pre_PCA_features_dim)),
+	      kw_features_bias_vec(parse_float_vector(config.datasets.primary_features.kw_bias_vec_file,
+	                                              config.datasets.primary_features.pre_PCA_features_dim)),
 
-	      kw_pca_mat(parse_float_matrix(config.kw_PCA_mat_file, config.pre_PCA_features_dim)),
-	      kw_pca_mean_vec(parse_float_vector(config.kw_PCA_mean_vec_file, config.pre_PCA_features_dim))
+	      kw_pca_mat(parse_float_matrix(config.datasets.primary_features.kw_PCA_mat_file,
+	                                    config.datasets.primary_features.pre_PCA_features_dim)),
+	      kw_pca_mean_vec(parse_float_vector(config.datasets.primary_features.kw_PCA_mean_vec_file,
+	                                         config.datasets.primary_features.pre_PCA_features_dim))
 	{
 		assert(kw_pca_mat.size() > 1);  // Make sure it's a matrix!
 
-		SHLOG_S("Keyword features loaded from '" << config.kw_scores_mat_file << "' with dimension ("
-		                                         << config.pre_PCA_features_dim << ").");
-		SHLOG_S("Keyword bias loaded from '" << config.kw_bias_vec_file << "' with dimension ("
-		                                     << config.pre_PCA_features_dim << ").");
+		SHLOG_S("Keyword features loaded from '" << config.datasets.primary_features.kw_scores_mat_file
+		                                         << "' with dimension ("
+		                                         << config.datasets.primary_features.pre_PCA_features_dim << ").");
+		SHLOG_S("Keyword bias loaded from '" << config.datasets.primary_features.kw_bias_vec_file
+		                                     << "' with dimension ("
+		                                     << config.datasets.primary_features.pre_PCA_features_dim << ").");
 
-		SHLOG_S("Loaded PCA matrix from '" << config.kw_PCA_mat_file << "' with dimension ("
-		                                   << config.pre_PCA_features_dim << " ," << config.kw_PCA_mat_dim << ").");
-		SHLOG_S("Loaded PCA mean vector from '" << config.kw_bias_vec_file << "' with dimension ("
-		                                        << config.pre_PCA_features_dim << ").");
+		SHLOG_S("Loaded PCA matrix from '" << config.datasets.primary_features.kw_PCA_mat_file << "' with dimension ("
+		                                   << config.datasets.primary_features.pre_PCA_features_dim << " ,"
+		                                   << config.datasets.primary_features.kw_PCA_mat_dim << ").");
+		SHLOG_S("Loaded PCA mean vector from '" << config.datasets.primary_features.kw_bias_vec_file
+		                                        << "' with dimension ("
+		                                        << config.datasets.primary_features.pre_PCA_features_dim << ").");
 	}
 
 	KeywordRanker(const KeywordRanker&) = delete;

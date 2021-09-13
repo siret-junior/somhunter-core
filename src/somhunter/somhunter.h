@@ -173,6 +173,8 @@ private:
  */
 class Somhunter
 {
+	const Settings _settings;
+
 	// ********************************
 	// Loaded dataset
 	//		(shared for all the users)
@@ -192,7 +194,6 @@ class Somhunter
 	// ********************************
 	const std::string _core_settings_filepath;
 	const std::string _API_settings_filepath;
-	const Settings _settings;
 
 	KeywordRanker _keyword_ranker;
 	CanvasQueryRanker _collage_ranker;
@@ -201,17 +202,17 @@ class Somhunter
 public:
 	Somhunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
-	inline Somhunter(const Settings& settings, const std::string& config_filepath)
-	    : _dataset_frames(settings),
-	      _dataset_features(_dataset_frames, settings),
+	inline Somhunter(const std::string& config_filepath)
+	    : _settings{ Settings::parse_JSON_config(config_filepath) },
+	      _dataset_frames(_settings),
+	      _dataset_features(_dataset_frames, _settings),
 
-	      _user_context(settings, /* \todo */ "admin", &_dataset_frames, &_dataset_features),
+	      _user_context(_settings, /* \todo */ "admin", &_dataset_frames, &_dataset_features),
 
 	      _core_settings_filepath{ config_filepath },
-	      _API_settings_filepath{ settings.API_config.config_filepath },
-	      _settings(settings),
-	      _keyword_ranker(settings, _dataset_frames),
-	      _collage_ranker(settings, &_keyword_ranker),
+	      _API_settings_filepath{ _settings.API.config_filepath },
+	      _keyword_ranker(_settings, _dataset_frames),
+	      _collage_ranker(_settings, &_keyword_ranker),
 	      _relocation_ranker{}
 
 	{
@@ -388,6 +389,7 @@ public:
 	// ********************************
 	// Other
 	// ********************************
+	const Settings& settings() const { return _settings; }
 	const std::string& get_config_filepath() { return _core_settings_filepath; }
 	const std::string& get_API_config_filepath() { return _API_settings_filepath; }
 	const KeywordRanker* textual_model() { return &_keyword_ranker; };

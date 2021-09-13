@@ -30,42 +30,41 @@ ApiConfig parse_API_config(const json& json)
 	};
 }
 
-ServerConfigVbs parse_vbs_config(const json& json)
+EvalServerSettings::ServerConfigVbs parse_VBS_config(const json& json)
 {
-	return ServerConfigVbs{ // .submit_URL
-		                    json["submit_URL"].get<std::string>(),
-		                    // .submit_rerank_URL
-		                    json["submit_rerank_URL"].get<std::string>(),
-		                    // .submit_interaction_URL
-		                    json["submit_interaction_URL"].get<std::string>()
+	return EvalServerSettings::ServerConfigVbs{ // .submit_URL
+		                                        json["submit_URL"].get<std::string>(),
+		                                        // .submit_rerank_URL
+		                                        json["submit_rerank_URL"].get<std::string>(),
+		                                        // .submit_interaction_URL
+		                                        json["submit_interaction_URL"].get<std::string>()
 	};
 }
 
-ServerConfigDres parse_dres_config(const json& json)
+EvalServerSettings::ServerConfigDres parse_DRES_config(const json& json)
 {
-	return ServerConfigDres{ // .cookie_file
-		                     json["cookie_file"].get<std::string>(),
-		                     // .username
-		                     require_string_value(json, "username"),
-		                     // .password
-		                     require_string_value(json, "password"),
-		                     // .submit_URL
-		                     require_string_value(json, "submit_URL"),
-		                     // .submit_rerank_URL
-		                     require_string_value(json, "submit_rerank_URL"),
-		                     // .submit_interaction_URL
-		                     require_string_value(json, "submit_interaction_URL"),
-		                     // .login_URL
-		                     require_string_value(json, "login_URL"),
-		                     // .logout_URL
-		                     require_string_value(json, "logout_URL"),
-		                     // .session_URL
-		                     require_string_value(json, "session_URL"),
-		                     // .server_time_URL
-		                     require_string_value(json, "server_time_URL")
+	return EvalServerSettings::ServerConfigDres{ // .cookie_file
+		                                         json["cookie_file"].get<std::string>(),
+		                                         // .username
+		                                         require_string_value(json, "username"),
+		                                         // .password
+		                                         require_string_value(json, "password"),
+		                                         // .submit_URL
+		                                         require_string_value(json, "submit_URL"),
+		                                         // .submit_rerank_URL
+		                                         require_string_value(json, "submit_rerank_URL"),
+		                                         // .submit_interaction_URL
+		                                         require_string_value(json, "submit_interaction_URL"),
+		                                         // .login_URL
+		                                         require_string_value(json, "login_URL"),
+		                                         // .logout_URL
+		                                         require_string_value(json, "logout_URL"),
+		                                         // .session_URL
+		                                         require_string_value(json, "session_URL"),
+		                                         // .server_time_URL
+		                                         require_string_value(json, "server_time_URL")
 	};
 }
-
 
 EvalServerSettings parse_eval_server(const json& json)
 {
@@ -99,9 +98,9 @@ EvalServerSettings parse_eval_server(const json& json)
 
 	// Parse the correct JSON format based on the server type
 	if (res.server_type == "vbs") {
-		res.server_cfg = parse_vbs_config(json["server_config"][res.server_type]);
+		res.server_cfg = parse_VBS_config(json["server_config"][res.server_type]);
 	} else if (res.server_type == "dres") {
-		res.server_cfg = parse_dres_config(json["server_config"][res.server_type]);
+		res.server_cfg = parse_DRES_config(json["server_config"][res.server_type]);
 	}
 	// If error value
 	else {
@@ -111,6 +110,157 @@ EvalServerSettings parse_eval_server(const json& json)
 	}
 
 	return res;
+}
+
+DatasetsSettings::PrimaryFeaturesSettings parse_primary_features_settings(const json& json)
+{
+	return DatasetsSettings::PrimaryFeaturesSettings{
+		// .features_file_data_off
+		require_int_value<size_t>(json, "features_file_data_off"),
+		// .features_dim
+		require_int_value<size_t>(json, "features_dim"),
+		// .features_file
+		require_string_value(json, "features_file"),
+
+		// .pre_PCA_features_dim
+		require_int_value<size_t>(json, "pre_PCA_features_dim"),
+		// .kw_bias_vec_file
+		require_string_value(json, "kw_bias_vec_file"),
+		// .kw_scores_mat_file
+		require_string_value(json, "kw_scores_mat_file"),
+		// .kw_PCA_mean_vec_file
+		require_string_value(json, "kw_PCA_mean_vec_file"),
+		// .kw_PCA_mat_file
+		require_string_value(json, "kw_PCA_mat_file"),
+		// .kw_PCA_mat_dim
+		require_int_value<size_t>(json, "kw_PCA_mat_dim"),
+
+		// .kws_file
+		require_string_value(json, "kws_file"),
+		// .collage_region_file_prefix
+		require_string_value(json, "collage_region_file_prefix"),
+		// .collage_regions
+		require_int_value<size_t>(json, "collage_regions"),
+	};
+}
+
+DatasetsSettings::SecondaryFeaturesSettings parse_secondary_features_settings(const json& json)
+{
+	return DatasetsSettings::SecondaryFeaturesSettings{ // .features_file_data_off
+		                                                require_int_value<size_t>(json, "features_file_data_off"),
+		                                                // .features_dim
+		                                                require_int_value<size_t>(json, "features_dim"),
+		                                                // .features_file
+		                                                require_string_value(json, "features_file")
+	};
+}
+
+DatasetsSettings::VideoFilenameOffsets parse_filename_offsets(const json& json)
+{
+	return DatasetsSettings::VideoFilenameOffsets{
+
+		// .vid_ID_off
+		require_int_value<size_t>(json, "fr_filename_vid_ID_off"),
+		// .vid_ID_len
+		require_int_value<size_t>(json, "fr_filename_vid_ID_len"),
+		// .shot_ID_off
+		require_int_value<size_t>(json, "fr_filename_shot_ID_off"),
+		// .shot_ID_len
+		require_int_value<size_t>(json, "fr_filename_shot_ID_len"),
+		// .frame_num_off
+		require_int_value<size_t>(json, "fr_filename_frame_num_off"),
+		// .frame_num_len
+		require_int_value<size_t>(json, "fr_filename_frame_num_len")
+
+	};
+}
+
+TestsSettings parse_tests_settings(const json& json)
+{
+	return TestsSettings{ require_string_value(json, "test_data_root") };
+}
+
+PresentationViewsSettings parse_presentation_views_settings(const json& json)
+{
+	return PresentationViewsSettings{ // .display_page_size
+		                              require_int_value<size_t>(json, "display_page_size"),
+		                              // .topn_frames_per_video
+		                              require_int_value<size_t>(json, "topn_frames_per_video"),
+		                              // .topn_frames_per_shot
+		                              require_int_value<size_t>(json, "topn_frames_per_shot")
+	};
+}
+
+LoggerSettings parse_logger_settings(const json& /*json*/)
+{
+	return LoggerSettings{
+		// ...
+	};
+}
+
+RemoteServicesSettings::ClipQueryToVec parse_clip_settings(const json& json)
+{
+	return RemoteServicesSettings::ClipQueryToVec{
+		// .address
+		optional_string_value(json, "address")
+	};
+}
+RemoteServicesSettings::MediaServer parse_media_server_settings(const json& json)
+{
+	return RemoteServicesSettings::MediaServer{
+		// .address
+		optional_string_value(json, "address")
+	};
+}
+
+RemoteServicesSettings parse_remote_services_settings(const json& json)
+{
+	return RemoteServicesSettings{ parse_clip_settings(json["CLIP_query_to_vec"]),
+		                           parse_media_server_settings(json["media_server"]) };
+}
+
+ModelsSettings parse_model_settings(const json& json)
+{
+	return ModelsSettings{
+		// .models_dir
+		require_string_value(json, "models_dir"),
+		// .model_W2VV_img_bias
+		require_string_value(json, "model_W2VV_img_bias"),
+		// .model_W2VV_img_weigths
+		require_string_value(json, "model_W2VV_img_weigths"),
+
+		// .model_ResNet_file
+		optional_string_value(json, "model_ResNet_file"),
+		// .model_ResNet_SHA256
+		optional_string_value(json, "model_ResNet_SHA256"),
+		// .model_ResNext_file
+		optional_string_value(json, "model_ResNext_file"),
+		// .model_ResNext_SHA256
+		optional_string_value(json, "model_ResNext_SHA256"),
+
+	};
+}
+
+DatasetsSettings parse_datasets_settings(const json& json)
+{
+	return DatasetsSettings{ // .data_dir
+		                     require_string_value(json, "data_dir"),
+		                     // .frames_dir
+		                     require_string_value(json, "frames_dir"),
+		                     // .thumbs_dir
+		                     require_string_value(json, "thumbs_dir"),
+		                     // .LSC_metadata_file (optional)
+		                     json["LSC_metadata_file"].get<std::string>(),
+		                     // .frames_list_file
+		                     require_string_value(json, "frames_list_file"),
+		                     // .filename_offsets
+		                     parse_filename_offsets(json["filename_offsets"]),
+
+		                     // .primary_features
+		                     parse_primary_features_settings(json["primary_features"]),
+		                     // .secondary_features
+		                     parse_secondary_features_settings(json["secondary_features"])
+	};
 }
 
 /** Parsees the JSON config file that holds initial config.
@@ -132,87 +282,25 @@ Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents
 	std::string msg_missing_value{ "Missing config value" };
 
 	// clang-format off
-	auto _logger_settings = Settings{ 
-		// .API_config
+	auto ss = Settings{ 
+		// .test
+		parse_tests_settings(json["tests"]),
+		// .presentation_views
+		parse_presentation_views_settings(json["presentation_views"]),
+		// .logger
+		parse_logger_settings(json["logger"]),
+		// .API
 		parse_API_config(json["API"]),
 		// .eval_server
 		parse_eval_server(json["eval_server"]),
-		
-		// .filename_offsets
-		VideoFilenameOffsets{
-			
-			// .vid_ID_off
-			require_int_value<size_t>(json["filename_offsets"], "fr_filename_vid_ID_off"),
-			// .vid_ID_len
-			require_int_value<size_t>(json["filename_offsets"], "fr_filename_vid_ID_len"),
-			// .shot_ID_off
-			require_int_value<size_t>(json["filename_offsets"], "fr_filename_shot_ID_off"),
-			// .shot_ID_len
-			require_int_value<size_t>(json["filename_offsets"], "fr_filename_shot_ID_len"),
-			// .frame_num_off
-			require_int_value<size_t>(json["filename_offsets"], "fr_filename_frame_num_off"),
-			// .frame_num_len
-			require_int_value<size_t>(json["filename_offsets"], "fr_filename_frame_num_len"),
-
-		},
-
-		// .frames_list_file
-		require_string_value(json, "frames_list_file"),
-		// .frames_dir
-		require_string_value(json, "frames_dir"),
-		// .thumbs_dir
-		require_string_value(json, "thumbs_dir"),
-
-		// .features_file_data_off
-		require_int_value<size_t>(json, "features_file_data_off"),
-		// .features_file
-		require_string_value(json, "features_file"),
-		// .features_dim
-		require_int_value<size_t>(json, "features_dim"),
-
-		// .pre_PCA_features_dim
-		require_int_value<size_t>(json, "pre_PCA_features_dim"),
-		// .kw_bias_vec_file
-		require_string_value(json, "kw_bias_vec_file"),
-		// .kw_scores_mat_file
-		require_string_value(json, "kw_scores_mat_file"),
-		// .kw_PCA_mean_vec_file
-		require_string_value(json, "kw_PCA_mean_vec_file"),
-		// .kw_PCA_mat_file
-		require_string_value(json, "kw_PCA_mat_file"),
-		// .kw_PCA_mat_dim
-		require_int_value<size_t>(json, "kw_PCA_mat_dim"),
-
-		// .kws_file
-		require_string_value(json, "kws_file"),
-
-		// .display_page_size
-		require_int_value<size_t>(json, "display_page_size"),
-		// .topn_frames_per_video
-		require_int_value<size_t>(json, "topn_frames_per_video"),
-		// .topn_frames_per_shot
-		require_int_value<size_t>(json, "topn_frames_per_shot"),
-
-		// .LSC_metadata_file
-		json["LSC_metadata_file"].get<std::string>(),
-		
-		// .model_W2VV_img_bias
-		require_string_value(json, "model_W2VV_img_bias"),
-		// .model_W2VV_img_weigths
-		require_string_value(json, "model_W2VV_img_weigths"),
-		// .model_ResNet_file
-		require_string_value(json, "model_ResNet_file"),
-		// .model_ResNext_file
-		require_string_value(json, "model_ResNext_file"),
-
-		// .collage_region_file_prefix
-		require_string_value(json, "collage_region_file_prefix"),
-		// .collage_regions
-		require_int_value<size_t>(json, "collage_regions"),
-
-		require_string_value(json, "test_data_root")
+		// .remote_services
+		parse_remote_services_settings(json["remote_services"]),
+		// .models
+		parse_model_settings(json["models"]),
+		// .datasets
+		parse_datasets_settings(json["datasets"])
 	};
 	// clang-format on
 
-	return _logger_settings;
+	return ss;
 }

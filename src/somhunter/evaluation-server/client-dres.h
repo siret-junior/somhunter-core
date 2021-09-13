@@ -129,7 +129,7 @@ private:
 protected:
 	const std::chrono::milliseconds _sync_period{ 5000ms };
 
-	ServerConfigDres _settings;
+	EvalServerSettings::ServerConfigDres _settings;
 	std::thread _t_sync_worker;
 
 	bool _synced;

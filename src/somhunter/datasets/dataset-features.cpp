@@ -29,26 +29,26 @@
 using namespace sh;
 
 DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Settings& config)
-    : n(p.size()), features_dim(config.features_dim)
+    : n(p.size()), features_dim(config.datasets.primary_features.features_dim)
 {
 	SHLOG_D("Loading dataset features from '" << config.features_file << "'...");
 
 	data.resize(features_dim * n);
-	std::ifstream in(config.features_file, std::ios::binary);
+	std::ifstream in(config.datasets.primary_features.features_file, std::ios::binary);
 	if (!in.good()) {
-		std::string msg{ "Error opening features file '" + config.features_file + "'!" };
+		std::string msg{ "Error opening features file '" + config.datasets.primary_features.features_file + "'!" };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	}
 
 	// Skip the header
-	in.ignore(config.features_file_data_off);
+	in.ignore(config.datasets.primary_features.features_file_data_off);
 
 	if (!in.read(reinterpret_cast<char*>(data.data()), sizeof(float) * data.size())) {
-		std::string msg{ "Feature matrix reading problems at '" + config.features_file + "'!" };
+		std::string msg{ "Feature matrix reading problems at '" + config.datasets.primary_features.features_file + "'!" };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	} else {
-		SHLOG_S("Successfully loaded " << n << " frame features of dimension " << config.features_dim << ".");
+		SHLOG_S("Successfully loaded " << n << " frame features of dimension " << config.datasets.primary_features.features_dim << ".");
 	}
 }

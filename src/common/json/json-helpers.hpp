@@ -36,6 +36,11 @@ inline std::string require_string_value(const json& json, const std::string& key
 	return json[key].get<std::string>();
 }
 
+inline std::string optional_string_value(const json& json, const std::string& key)
+{
+	return (json[key].is_null() ? "" : json[key].get<std::string>());
+}
+
 template <typename T_>
 inline T_ require_int_value(const json& json, const std::string& key)
 {

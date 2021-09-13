@@ -86,20 +86,22 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 
 	    The rest are popups.
 	 */
+
+	const auto& ss{ _settings.presentation_views };
+
 	if ((_user_context._force_result_log) ||
 	    (prev_display == DisplayType::DTopKNN &&
 	     (curr_display == DisplayType::DTopN || curr_display == DisplayType::DTopNContext ||
 	      curr_display == DisplayType::DRand || curr_display == DisplayType::DSom))) {
-		const auto& top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
-		                                                   _settings.topn_frames_per_shot);
+		const auto& top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, ss.topn_frames_per_video,
+		                                                   ss.topn_frames_per_shot);
 
 		_user_context._force_result_log = false;
 
-		_user_context._logger.log_results(_dataset_frames, _user_context.ctx.scores,
-		                                  _user_context.ctx._prev_query.relevance_feeedback,
-		                                  _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
-		                                  _user_context.ctx._prev_query.get_plain_text_query(),
-		                                  _settings.topn_frames_per_video, _settings.topn_frames_per_shot);
+		_user_context._logger.log_results(
+		    _dataset_frames, _user_context.ctx.scores, _user_context.ctx._prev_query.relevance_feeedback,
+		    _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
+		    _user_context.ctx._prev_query.get_plain_text_query(), ss.topn_frames_per_video, ss.topn_frames_per_shot);
 	}
 
 	return GetDisplayResult{ frs, _user_context.ctx.likes, _user_context._bookmarks };
@@ -190,7 +192,7 @@ std::vector<const Keyword*> Somhunter::autocomplete_keywords(const std::string& 
 	return res;
 }
 
-bool Somhunter::has_metadata() const { return !_settings.LSC_metadata_file.empty(); }
+bool Somhunter::has_metadata() const { return !_settings.datasets.LSC_metadata_file.empty(); }
 
 void Somhunter::apply_filters()
 {
@@ -389,14 +391,16 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 
 		_user_context._logger.log_rescore(_user_context.ctx._prev_query, query);
 
-		const auto& top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
-		                                                   _settings.topn_frames_per_shot);
+		const auto& ss{ _settings.presentation_views };
+
+		const auto& top_n = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, ss.topn_frames_per_video,
+		                                                   ss.topn_frames_per_shot);
 
 		// Log this rescore result
 		_user_context._logger.log_results(_dataset_frames, _user_context.ctx.scores, old_likes,
 		                                  _user_context.ctx.used_tools, _user_context.ctx.curr_disp_type, top_n,
-		                                  query.get_plain_text_query(), _settings.topn_frames_per_video,
-		                                  _settings.topn_frames_per_shot, p_filters->dataset_parts);
+		                                  query.get_plain_text_query(), ss.topn_frames_per_video,
+		                                  ss.topn_frames_per_shot, p_filters->dataset_parts);
 
 		// SHLOG_S("Target position is " << tar_pos << ".");
 	}
@@ -1123,9 +1127,12 @@ FramePointerRange Somhunter::get_topn_display(PageId page)
 	// Another display or first page -> load
 	if (_user_context.ctx.curr_disp_type != DisplayType::DTopN || page == 0) {
 		SHLOG_D("Loading top n display first page");
+
+		const auto& ss{ _settings.presentation_views };
+
 		// Get ids
-		const auto& ids = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video,
-		                                                 _settings.topn_frames_per_shot);
+		const auto& ids = _user_context.ctx.scores.top_n(_dataset_frames, TOPN_LIMIT, ss.topn_frames_per_video,
+		                                                 ss.topn_frames_per_shot);
 
 		// Log only if page 0
 		if (page == 0) _user_context._logger.log_show_topn_display(_dataset_frames, ids);
@@ -1143,9 +1150,11 @@ FramePointerRange Somhunter::get_topn_context_display(PageId page)
 	// Another display or first page -> load
 	if (_user_context.ctx.curr_disp_type != DisplayType::DTopNContext || page == 0) {
 		SHLOG_D("Loading top n context display first page");
+		const auto& ss{ _settings.presentation_views };
+
 		// Get ids
-		auto ids = _user_context.ctx.scores.top_n_with_context(
-		    _dataset_frames, TOPN_LIMIT, _settings.topn_frames_per_video, _settings.topn_frames_per_shot);
+		auto ids = _user_context.ctx.scores.top_n_with_context(_dataset_frames, TOPN_LIMIT, ss.topn_frames_per_video,
+		                                                       ss.topn_frames_per_shot);
 
 		// Log
 		if (page == 0) _user_context._logger.log_show_topn_context_display(_dataset_frames, ids);
@@ -1236,9 +1245,10 @@ FramePointerRange Somhunter::get_topKNN_display(FrameId selected_image, PageId p
 {
 	// Another display or first page -> load
 	if (_user_context.ctx.curr_disp_type != DisplayType::DTopKNN || page == 0) {
+		const auto& ss{ _settings.presentation_views };
 		// Get ids
-		auto ids = _dataset_features.get_top_knn(_dataset_frames, selected_image, _settings.topn_frames_per_video,
-		                                         _settings.topn_frames_per_shot);
+		auto ids = _dataset_features.get_top_knn(_dataset_frames, selected_image, ss.topn_frames_per_video,
+		                                         ss.topn_frames_per_shot);
 
 		// Log only if the first page
 		if (page == 0) {
@@ -1254,8 +1264,8 @@ FramePointerRange Somhunter::get_topKNN_display(FrameId selected_image, PageId p
 		ut.topknn_used = true;
 
 		_user_context._logger.log_results(_dataset_frames, _user_context.ctx.scores, _user_context.ctx.likes, ut,
-		                                  _user_context.ctx.curr_disp_type, ids, "", _settings.topn_frames_per_video,
-		                                  _settings.topn_frames_per_shot);
+		                                  _user_context.ctx.curr_disp_type, ids, "", ss.topn_frames_per_video,
+		                                  ss.topn_frames_per_shot);
 	}
 
 	return get_page_from_last(page);
@@ -1265,9 +1275,11 @@ FramePointerRange Somhunter::get_page_from_last(PageId page)
 {
 	SHLOG_D("Getting page " << page << ", page size " << _settings.display_page_size);
 
-	size_t begin_off{ std::min(_user_context.ctx.current_display.size(), page * _settings.display_page_size) };
+	const auto& ss{ _settings.presentation_views };
+
+	size_t begin_off{ std::min(_user_context.ctx.current_display.size(), page * ss.display_page_size) };
 	size_t end_off{ std::min(_user_context.ctx.current_display.size(),
-		                     page * _settings.display_page_size + _settings.display_page_size) };
+		                     page * ss.display_page_size + ss.display_page_size) };
 
 	FramePointerRange res(_user_context.ctx.current_display.cbegin() + begin_off,
 	                      _user_context.ctx.current_display.cbegin() + end_off);
