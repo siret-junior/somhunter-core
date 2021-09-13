@@ -69,7 +69,7 @@ def install_models(args):
         print("Could not open/read file: {}".format(args.config_auth_file))
         sys.exit(1)
 
-    config = config["core"]
+    config = config["core"]["models"]
 
     #
     # 1) Download the model files

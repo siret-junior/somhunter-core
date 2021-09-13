@@ -3,6 +3,7 @@ set(HEADERS
 	canvas-query-ranker.h
 	embedding-ranker.h
 	keyword-ranker.h
+	keyword-clip-ranker.h
 	relocation-ranker.h
 )
 
@@ -11,6 +12,7 @@ set(SOURCES
 	canvas-query-ranker.cpp
 	embedding-ranker.cpp
 	keyword-ranker.cpp
+	keyword-clip-ranker.cpp
 	relocation-ranker.cpp
 )
 
