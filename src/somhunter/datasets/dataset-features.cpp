@@ -28,12 +28,12 @@
 
 using namespace sh;
 
-DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Settings& config)
-    : n(p.size()), features_dim(config.datasets.primary_features.features_dim)
+FrameFeatures::FrameFeatures(const DatasetFrames& p, const Settings& config)
+    : _size(p.size()), _dim(config.datasets.primary_features._dim)
 {
 	SHLOG_D("Loading dataset features from '" << config.features_file << "'...");
 
-	data.resize(features_dim * n);
+	_data.resize(_dim * _size);
 	std::ifstream in(config.datasets.primary_features.features_file, std::ios::binary);
 	if (!in.good()) {
 		std::string msg{ "Error opening features file '" + config.datasets.primary_features.features_file + "'!" };
@@ -44,11 +44,93 @@ DatasetFeatures::DatasetFeatures(const DatasetFrames& p, const Settings& config)
 	// Skip the header
 	in.ignore(config.datasets.primary_features.features_file_data_off);
 
-	if (!in.read(reinterpret_cast<char*>(data.data()), sizeof(float) * data.size())) {
-		std::string msg{ "Feature matrix reading problems at '" + config.datasets.primary_features.features_file + "'!" };
+	if (!in.read(reinterpret_cast<char*>(_data.data()), sizeof(float) * _data.size())) {
+		std::string msg{ "Feature matrix reading problems at '" + config.datasets.primary_features.features_file +
+			             "'!" };
 		SHLOG_E(msg);
 		throw std::runtime_error(msg);
 	} else {
-		SHLOG_S("Successfully loaded " << n << " frame features of dimension " << config.datasets.primary_features.features_dim << ".");
+		SHLOG_S("Successfully loaded " << _size << " frame features of dimension "
+		                               << config.datasets.primary_features._dim << ".");
 	}
+}
+
+std::vector<FrameId> FrameFeatures::get_top_knn(const DatasetFrames& _dataset_frames, FrameId id, size_t per_vid_limit,
+                                                size_t from_shot_limit) const
+{
+	return get_top_knn(
+	    _dataset_frames, id, [](FrameId /*frame_ID*/) { return true; }, per_vid_limit, from_shot_limit);
+}
+
+std::vector<FrameId> FrameFeatures::get_top_knn(const DatasetFrames& _dataset_frames, FrameId id,
+                                                std::function<bool(FrameId ID)> pred, size_t per_vid_limit,
+                                                size_t from_shot_limit) const
+{
+	if (per_vid_limit == 0) per_vid_limit = _dataset_frames.size();
+
+	if (from_shot_limit == 0) from_shot_limit = _dataset_frames.size();
+
+	auto cmp = [](const std::pair<FrameId, float>& left, const std::pair<FrameId, float>& right) {
+		return left.second > right.second;
+	};
+
+	std::priority_queue<std::pair<FrameId, float>, std::vector<std::pair<FrameId, float>>, decltype(cmp)> q3(cmp);
+
+	for (FrameId i{ 0 }; i < _size; ++i) {
+		auto d = d_dot_normalized(id, i);
+		q3.emplace(i, d);
+	}
+
+	std::vector<FrameId> res;
+	res.reserve(TOPKNN_LIMIT);
+
+	size_t num_videos = _dataset_frames.get_num_videos();
+	std::vector<size_t> per_vid_frame_hist(num_videos, 0);
+	std::map<VideoId, std::map<ShotId, size_t>> frames_per_shot;
+
+	while (res.size() < TOPKNN_LIMIT && !q3.empty()) {
+		auto [adept_ID, f]{ q3.top() };
+
+		if (q3.empty()) break;
+
+		q3.pop();
+
+		auto vf = _dataset_frames.get_frame(adept_ID);
+
+		// If we have already enough from this video
+		if (per_vid_frame_hist[vf.video_ID] >= per_vid_limit) continue;
+
+		// If we have already enough from this shot
+		if (frames_per_shot[vf.video_ID][vf.shot_ID] >= from_shot_limit) continue;
+
+		// Only if predicate is true
+		if (pred(adept_ID)) {
+			res.emplace_back(adept_ID);
+			per_vid_frame_hist[vf.video_ID]++;
+			frames_per_shot[vf.video_ID][vf.shot_ID]++;
+		}
+	}
+
+	return res;
+}
+
+float FrameFeatures::d_manhattan(size_t i, size_t j) const { return ::d_manhattan(fv(i), fv(j), _dim); }
+
+float FrameFeatures::d_sqeucl(size_t i, size_t j) const { return ::d_sqeucl(fv(i), fv(j), _dim); }
+
+float FrameFeatures::d_eucl(size_t i, size_t j) const { return sqrtf(d_sqeucl(i, j)); }
+
+float FrameFeatures::d_dot_normalized(size_t i, size_t j) const { return 1 - ::d_dot_normalized(fv(i), fv(j), _dim); }
+
+float FrameFeatures::d_cos(size_t i, size_t j) const
+{
+	float s = 0, w1 = 0, w2 = 0;
+	const float *iv = fv(i), *jv = fv(j);
+	for (size_t d = 0; d < _dim; ++d) {
+		s += iv[d] * jv[d];
+		w1 += utils::square(iv[d]);
+		w2 += utils::square(jv[d]);
+	}
+	if (w1 == 0 && w2 == 0) return 0;
+	return 1 - s / sqrtf(w1 * w2);
 }

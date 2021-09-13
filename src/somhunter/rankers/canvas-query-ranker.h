@@ -123,13 +123,13 @@ public:
 
 	CanvasQueryRanker(const Settings& _settings, KeywordRanker* p_core);
 	void score(const CanvasQuery&, ScoreModel& model, size_t temporal, UsedTools& used_tools,
-	           const DatasetFeatures& _dataset_features, const DatasetFrames& _dataset_frames);
+	           const FrameFeatures& _dataset_features, const DatasetFrames& _dataset_frames);
 
 private:
 	std::vector<FeatureMatrix> region_data;
 
 	at::Tensor get_features(const CanvasQuery&, UsedTools& used_tools);
-	at::Tensor get_L2norm(const at::Tensor& data) const;
+	at::Tensor get_L2norm(const at::Tensor& _data) const;
 
 	std::vector<std::size_t> get_RoIs(const CanvasQuery& collage) const;
 	std::size_t get_RoI(const CanvasSubquery& image) const;

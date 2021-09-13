@@ -44,10 +44,9 @@ public:
 	virtual ~EmbeddingRanker() noexcept {}
 
 protected:
-	std::vector<float> inverse_score_vector(const std::vector<float>& query_vecs,
-	                                        const DatasetFeatures& _dataset_features) const;
+	std::vector<float> inverse_score_vector(const std::vector<float>& query_vecs, const FrameFeatures& _features) const;
 
-	std::vector<float> inverse_score_vector(const float* query_vecs, const DatasetFeatures& _dataset_features) const;
+	std::vector<float> inverse_score_vector(const float* query_vecs, const FrameFeatures& _features) const;
 };
 
 }  // namespace sh

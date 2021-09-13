@@ -27,7 +27,7 @@
 using namespace sh;
 
 UserContext::UserContext(const Settings& settings, const std::string& username, const DatasetFrames* p_dataset_frames,
-                         const DatasetFeatures* p_dataset_features)
+                         const FrameFeatures* p_dataset_features)
     : _p_dataset_frames{ p_dataset_frames },
       _p_dataset_features{ p_dataset_features },
       ctx(0, settings, *_p_dataset_frames),

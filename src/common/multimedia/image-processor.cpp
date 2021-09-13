@@ -95,7 +95,7 @@ BitmapImage<float> ImageManipulator::load_image<BitmapImage<float>>(const std::s
 	b_img.num_channels = cv_fimg.channels();
 
 	cv::Mat flat = cv_fimg.reshape(1, cv_fimg.total() * cv_fimg.channels());
-	flat.copyTo(b_img.data);
+	flat.copyTo(b_img._data);
 
 	return b_img;
 }
@@ -116,7 +116,7 @@ BitmapImage<uint8_t> ImageManipulator::load_image<BitmapImage<uint8_t>>(const st
 	b_img.num_channels = cv_fimg.channels();
 
 	cv::Mat flat = cv_fimg.reshape(1, cv_fimg.total() * cv_fimg.channels());
-	flat.copyTo(b_img.data);
+	flat.copyTo(b_img._data);
 	return b_img;
 }
 

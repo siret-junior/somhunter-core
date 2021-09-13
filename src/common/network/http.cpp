@@ -243,9 +243,9 @@ std::pair<ReqCode, nlohmann::json> sh::Http::do_POST_sync(const std::string& URL
 	nlohmann::json res_data;
 	ReqCode res_code;
 
-	auto succ_fn = [&res_data, &res_code](ReqCode code, nlohmann::json data) {
+	auto succ_fn = [&res_data, &res_code](ReqCode code, nlohmann::json _data) {
 		res_code = code;
-		res_data = data;
+		res_data = _data;
 	};
 
 	auto err_fn = [&fail]() { fail = true; };
@@ -266,9 +266,9 @@ std::pair<ReqCode, nlohmann::json> sh::Http::do_GET_sync(const std::string& URL,
 	nlohmann::json res_data;
 	ReqCode res_code;
 
-	auto succ_fn = [&res_data, &res_code](ReqCode code, nlohmann::json data) {
+	auto succ_fn = [&res_data, &res_code](ReqCode code, nlohmann::json _data) {
 		res_code = code;
-		res_data = data;
+		res_data = _data;
 	};
 
 	auto err_fn = [&fail]() { fail = true; };

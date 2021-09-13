@@ -9,8 +9,6 @@
 
 namespace sh
 {
-
-
 /** Config needed by the Submitter instance.
  *
  * \see ServerConfig
@@ -131,7 +129,7 @@ struct DatasetsSettings {
 	};
 	struct PrimaryFeaturesSettings {
 		size_t features_file_data_off;
-		size_t features_dim;
+		size_t _dim;
 		std::string features_file;
 
 		size_t pre_PCA_features_dim;
@@ -149,7 +147,7 @@ struct DatasetsSettings {
 
 	struct SecondaryFeaturesSettings {
 		size_t features_file_data_off;
-		size_t features_dim;
+		size_t _dim;
 		std::string features_file;
 	};
 

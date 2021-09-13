@@ -44,7 +44,7 @@ class RelocationRanker : public EmbeddingRanker
 {
 public:
 	void score(const RelocationQuery&, ScoreModel& model, size_t temporal,
-	           const DatasetFeatures& _dataset_features) const;
+	           const FrameFeatures& _dataset_features) const;
 };
 }  // namespace sh
 

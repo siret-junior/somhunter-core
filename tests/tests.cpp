@@ -378,10 +378,10 @@ void TESTER_Somhunter::TEST_log_results(Somhunter &core) {
 		// <!> ACTION: RESET_ALL
 		core.reset_search_session();
 
-		json data;
+		json _data;
 		json val(RESET_ALL);
-		actions >> data;
-		assert_contains_key_with_value(data, STD_KEYS::ACTION_NAME, val);
+		actions >> _data;
+		assert_contains_key_with_value(_data, STD_KEYS::ACTION_NAME, val);
 		assert_column_contains(summary.str(), 2, RESET_ALL);
 
 		actions.clear();

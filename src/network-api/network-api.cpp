@@ -626,9 +626,9 @@ NetworkApi::NetworkApi(const ApiConfig& API, Somhunter* p_core)
       _p_core{ p_core },
       _base_addr{ (API.local_only ? "http://127.0.0.1:" :
 #ifdef WIN32  //< Windows won't accept zeroes
-	                                     "http://*:"
+	                              "http://*:"
 #else  // UNIX
-	                                     "http://0.0.0.0:"
+	                              "http://0.0.0.0:"
 #endif
 	               ) +
 	              std::to_string(API.port) }

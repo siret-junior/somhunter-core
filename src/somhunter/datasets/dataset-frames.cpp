@@ -76,7 +76,7 @@ std::vector<std::vector<KeywordId>> DatasetFrames::parse_top_kws_for_imgs_text_f
 
 DatasetFrames::DatasetFrames(const Settings& config)
 {
-	const auto& c{config.datasets};
+	const auto& c{ config.datasets };
 	// Save the config values
 	frames_dir = c.frames_dir;
 	thumbs_dir = c.thumbs_dir;

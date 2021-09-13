@@ -51,7 +51,7 @@ constexpr inline float get(__m128 V)
 #	endif
 #endif
 
-static inline float sqrf(float n) { return n * n; }
+static inline float sqrf(float _size) { return _size * _size; }
 
 inline static float d_sqeucl(const float* p1, const float* p2, const size_t dim)
 {

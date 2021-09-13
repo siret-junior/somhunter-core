@@ -47,7 +47,7 @@ public:
 	size_t w;
 	size_t h;
 	size_t num_channels;
-	std::vector<DType_> data;
+	std::vector<DType_> _data;
 };
 
 /** Provides utilities for image manipulation and processing. */

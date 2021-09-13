@@ -312,8 +312,8 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 	push_action("reportResults", "OTHER", "reportResults", "");
 }
 
-void Logger::log_canvas_query(const std::vector<TemporalQuery>& temp_queries /*canvas_query*/,
-                              const std::vector<VideoFrame>* p_targets)
+void Logger::log_canvas_query(const std::vector<TemporalQuery>& /*temp_queries*/,
+                              const std::vector<VideoFrame>* /*p_targets*/)
 {
 #if 0
 	if (temp_queries.empty()) return;

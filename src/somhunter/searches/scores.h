@@ -125,24 +125,23 @@ public:
 	/**
 	 * Applies relevance feedback rescore based on the Bayesian update rule.
 	 */
-	void apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen,
-	                 const DatasetFeatures& _dataset_features);
+	void apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const FrameFeatures& features);
 
 	/**
 	 * Gets the images with the highest scores but respecting the provided
 	 * limits. */
-	const std::vector<FrameId>& top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit = 0,
+	const std::vector<FrameId>& top_n(const DatasetFrames& _dataset_frames, size_t _size, size_t from_vid_limit = 0,
 	                                  size_t from_shot_limit = 0) const;
 
 	/**
 	 * Gets the images with the highest scores while respecting the
 	 * provided limits and each frame is wrapped by it's context based on
 	 * the number of frames per line. */
-	std::vector<FrameId> top_n_with_context(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
+	std::vector<FrameId> top_n_with_context(const DatasetFrames& _dataset_frames, size_t _size, size_t from_vid_limit,
 	                                        size_t from_shot_limit) const;
 
 	/** Samples `n` random frames from the current scores distribution. */
-	std::vector<FrameId> weighted_sample(size_t n, float pow = 1) const;
+	std::vector<FrameId> weighted_sample(size_t _size, float pow = 1) const;
 
 	/** Samples a random frame from the current scores distribution. */
 	FrameId weighted_example(const std::vector<FrameId>& subset) const;

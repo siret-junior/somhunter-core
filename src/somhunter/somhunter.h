@@ -207,7 +207,7 @@ public:
 	      _dataset_frames(_settings),
 	      _dataset_features(_dataset_frames, _settings),
 
-	      _user_context(_settings, /* \todo */ "admin", &_dataset_frames, &_dataset_features),
+	      _user_context(_settings, /* \todo */ "admin", &_dataset_frames, &(_dataset_features.primary)),
 
 	      _core_settings_filepath{ config_filepath },
 	      _API_settings_filepath{ _settings.API.config_filepath },
@@ -467,7 +467,7 @@ private:
 	/**
 	 *	Applies text query from the user.
 	 */
-	void rescore_keywords(const std::string& query, size_t temporal);
+	void rescore_keywords(const TextualQuery& query, size_t temporal, const FrameFeatures& features);
 
 	/**
 	 *	Applies feedback from the user based

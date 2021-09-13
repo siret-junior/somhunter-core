@@ -699,9 +699,9 @@ struct JsonParser final {
 		if (ch == '"') return parse_string();
 
 		if (ch == '{') {
-			map<string, Json> data;
+			map<string, Json> _data;
 			ch = get_next_token();
-			if (ch == '}') return data;
+			if (ch == '}') return _data;
 
 			while (true) {
 				if (ch != '"') return fail("expected '\"' in object, got " + esc(ch));
@@ -712,7 +712,7 @@ struct JsonParser final {
 				ch = get_next_token();
 				if (ch != ':') return fail("expected ':' in object, got " + esc(ch));
 
-				data[std::move(key)] = parse_json(depth + 1);
+				_data[std::move(key)] = parse_json(depth + 1);
 				if (failed) return Json();
 
 				ch = get_next_token();
@@ -721,17 +721,17 @@ struct JsonParser final {
 
 				ch = get_next_token();
 			}
-			return data;
+			return _data;
 		}
 
 		if (ch == '[') {
-			vector<Json> data;
+			vector<Json> _data;
 			ch = get_next_token();
-			if (ch == ']') return data;
+			if (ch == ']') return _data;
 
 			while (true) {
 				i--;
-				data.push_back(parse_json(depth + 1));
+				_data.push_back(parse_json(depth + 1));
 				if (failed) return Json();
 
 				ch = get_next_token();
@@ -741,7 +741,7 @@ struct JsonParser final {
 				ch = get_next_token();
 				(void)ch;
 			}
-			return data;
+			return _data;
 		}
 
 		return fail("expected value, got " + esc(ch));

@@ -37,7 +37,7 @@ class AsyncSom
 {
 	std::thread worker;
 
-	size_t features_dim{};
+	size_t _dim{};
 
 	// worker sync
 	std::condition_variable new_data_wakeup;
@@ -83,10 +83,10 @@ public:
 
 	AsyncSom(AsyncSom&& _logger_settings) = default;
 
-	AsyncSom(const Settings& _logger_settings, size_t width, size_t height, const DatasetFeatures& fs,
+	AsyncSom(const Settings& _logger_settings, size_t width, size_t height, const FrameFeatures& fs,
 	         const ScoreModel& sc);
 
-	void start_work(const DatasetFeatures& fs, const ScoreModel& sc, const float* scores_orig);
+	void start_work(const FrameFeatures& fs, const ScoreModel& sc, const float* scores_orig);
 
 	std::vector<FrameId> get_display(ScoreModel scores) const;
 
@@ -98,7 +98,7 @@ public:
 	}
 	const std::vector<FrameId>& map(size_t i) const { return mapping.at(i); }
 
-	const float* get_koho(size_t i) const { return koho.data() + i * features_dim; }
+	const float* get_koho(size_t i) const { return koho.data() + i * _dim; }
 
 	size_t nearest_cluster_with_atleast(const float* vec, const std::vector<size_t>& stolen_count) const
 	{
@@ -106,7 +106,7 @@ public:
 		size_t res = 0;
 		for (size_t i = 0; i < mapping.size(); ++i) {
 			if (mapping[i].size() > stolen_count[i]) {
-				float tmp = d_sqeucl(koho.data() + features_dim * i, vec, features_dim);
+				float tmp = d_sqeucl(koho.data() + _dim * i, vec, _dim);
 				if (min > tmp) {
 					min = tmp;
 					res = i;

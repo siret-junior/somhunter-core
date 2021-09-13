@@ -44,12 +44,12 @@ public:
   SHA256();
 
   /// compute SHA256 of a memory block
-  std::string operator()(const void* data, size_t numBytes);
+  std::string operator()(const void* _data, size_t numBytes);
   /// compute SHA256 of a string, excluding final zero
   std::string operator()(const std::string& text);
 
   /// add arbitrary number of bytes
-  void add(const void* data, size_t numBytes);
+  void add(const void* _data, size_t numBytes);
 
   /// return latest hash as 64 hex characters
   std::string getHash();
@@ -61,7 +61,7 @@ public:
 
 private:
   /// process 64 bytes
-  void processBlock(const void* data);
+  void processBlock(const void* _data);
   /// process everything left in the internal buffer
   void processBuffer();
 

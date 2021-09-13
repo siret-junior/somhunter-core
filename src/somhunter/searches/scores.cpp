@@ -120,7 +120,7 @@ float ScoreModel::set(FrameId i, float prob)
 	return _scores[i] = prob;
 }
 
-std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _dataset_frames, size_t n,
+std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _dataset_frames, size_t _size,
                                                     size_t from_vid_limit, size_t from_shot_limit) const
 {
 	// Is this cached
@@ -131,12 +131,12 @@ std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 
 	/* This display needs to have `GUI_IMG_GRID_WIDTH`-times more images
 	if we want to keep reporting `n` unique results. */
-	n = n * DISPLAY_GRID_WIDTH;
+	_size = _size * DISPLAY_GRID_WIDTH;
 
-	const auto& to_show = top_n(_dataset_frames, n / DISPLAY_GRID_WIDTH, from_vid_limit, from_shot_limit);
+	const auto& to_show = top_n(_dataset_frames, _size / DISPLAY_GRID_WIDTH, from_vid_limit, from_shot_limit);
 
 	_topn_ctx_cache.clear();
-	_topn_ctx_cache.reserve(n);
+	_topn_ctx_cache.reserve(_size);
 	for (auto&& selected : to_show) {
 		auto video_id = _dataset_frames.get_video_id(selected);
 		for (int i = -TOP_N_SELECTED_FRAME_POSITION; i < DISPLAY_GRID_WIDTH - TOP_N_SELECTED_FRAME_POSITION; ++i) {
@@ -152,7 +152,7 @@ std::vector<FrameId> ScoreModel::top_n_with_context(const DatasetFrames& _datase
 	return _topn_ctx_cache;
 }
 
-const std::vector<FrameId>& ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t n, size_t from_vid_limit,
+const std::vector<FrameId>& ScoreModel::top_n(const DatasetFrames& _dataset_frames, size_t _size, size_t from_vid_limit,
                                               size_t from_shot_limit) const
 {
 	// Is this cached
@@ -165,7 +165,7 @@ const std::vector<FrameId>& ScoreModel::top_n(const DatasetFrames& _dataset_fram
 
 	if (from_shot_limit == 0) from_shot_limit = _scores.size();
 
-	if (n > _scores.size() || n == 0) n = _scores.size();
+	if (_size > _scores.size() || _size == 0) _size = _scores.size();
 
 	std::vector<FrameScoreIdPair> score_ids;
 	for (FrameId i = 0; i < _scores.size(); ++i) {
@@ -184,9 +184,9 @@ const std::vector<FrameId>& ScoreModel::top_n(const DatasetFrames& _dataset_fram
 	std::unordered_map<VideoId, std::map<ShotId, size_t>> frames_per_shot;
 
 	_topn_cache.clear();
-	_topn_cache.reserve(n);
+	_topn_cache.reserve(_size);
 	size_t t = 0;
-	for (FrameId i = 0; t < n && i < score_ids.size(); ++i) {
+	for (FrameId i = 0; t < _size && i < score_ids.size(); ++i) {
 		FrameId frame = score_ids[i].id;
 		const auto& vf = _dataset_frames.get_frame(frame);
 
@@ -206,27 +206,28 @@ const std::vector<FrameId>& ScoreModel::top_n(const DatasetFrames& _dataset_fram
 
 std::vector<FrameId> ScoreModel::weighted_sample(size_t k, float pow) const
 {
-	size_t n = _scores.size();
+	size_t _size = _scores.size();
 
-	assert(n >= 2);
-	assert(k < n);
+	assert(_size >= 2);
+	assert(k < _size);
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_real_distribution<float> real_dist(0.0f, 1.0f);
 
-	size_t branches = n - 1;
-	std::vector<float> tree(branches + n, 0);
+	size_t branches = _size - 1;
+	std::vector<float> tree(branches + _size, 0);
 	float sum = 0;
-	for (size_t i = 0; i < n; ++i) sum += tree[branches + i] = powf(_scores[i], pow);
+	for (size_t i = 0; i < _size; ++i) sum += tree[branches + i] = powf(_scores[i], pow);
 
-	auto upd = [&tree, branches, n](size_t i) {
+	auto upd = [&tree, branches, _size](size_t i) {
 		const size_t l = 2 * i + 1;
 		const size_t r = 2 * i + 2;
-		if (i < branches + n) tree[i] = ((l < branches + n) ? tree[l] : 0) + ((r < branches + n) ? tree[r] : 0);
+		if (i < branches + _size)
+			tree[i] = ((l < branches + _size) ? tree[l] : 0) + ((r < branches + _size) ? tree[r] : 0);
 	};
 
-	auto updb = [&tree, branches, n, upd](size_t i) {
+	auto updb = [&tree, branches, _size, upd](size_t i) {
 		for (;;) {
 			upd(i);
 			if (i != 0u)
@@ -251,7 +252,7 @@ std::vector<FrameId> ScoreModel::weighted_sample(size_t k, float pow) const
 			// << tree[i] << endl;
 
 			if (i >= branches) break;
-			if (r < branches + n && x >= tree[l]) {
+			if (r < branches + _size && x >= tree[l]) {
 				x -= tree[l];
 				i = r;
 			} else
@@ -277,8 +278,7 @@ FrameId ScoreModel::weighted_example(const std::vector<FrameId>& subset) const
 	return subset[dist(gen)];
 }
 
-void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen,
-                             const DatasetFeatures& _dataset_features)
+void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const FrameFeatures& features)
 {
 	if (likes.empty()) return;
 	invalidate_cache();
@@ -317,10 +317,10 @@ void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& s
 				if (_mask[ii]) {
 					float divSum = 0;
 
-					for (FrameId oi : others) divSum += expf(-_dataset_features.d_dot_normalized(ii, oi) / Sigma);
+					for (FrameId oi : others) divSum += expf(-features.d_dot_normalized(ii, oi) / Sigma);
 
 					for (auto&& like : likes) {
-						const float likeValTmp = expf(-_dataset_features.d_dot_normalized(ii, like) / Sigma);
+						const float likeValTmp = expf(-features.d_dot_normalized(ii, like) / Sigma);
 						_scores[ii] *= likeValTmp / (likeValTmp + divSum);
 					}
 				}
@@ -398,11 +398,11 @@ void ScoreModel::normalize(float* scores, size_t size)
 		smax = MINIMAL_SCORE;
 	}
 
-	size_t n = 0;
+	size_t _size = 0;
 	for (FrameId ii = 0; ii < size; ++ii) {
 		if (_mask[ii]) {
 			scores[ii] /= smax;
-			if (scores[ii] < MINIMAL_SCORE) ++n, scores[ii] = MINIMAL_SCORE;
+			if (scores[ii] < MINIMAL_SCORE) ++_size, scores[ii] = MINIMAL_SCORE;
 		}
 	}
 }

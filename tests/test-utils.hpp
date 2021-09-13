@@ -32,12 +32,12 @@ namespace sh
 {
 namespace tests
 {
-inline void assert_contains_key_with_value(const json& data, const std::string& key, const json& value)
+inline void assert_contains_key_with_value(const json& _data, const std::string& key, const json& value)
 {
-	if (!data.is_object()) {
+	if (!_data.is_object()) {
 		do_assert(false, "Must be an object.");
 	}
-	for (auto& [k, v] : data.items()) {
+	for (auto& [k, v] : _data.items()) {
 		if (k == key) {
 			if (v == value) {
 				return;

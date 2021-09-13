@@ -200,16 +200,14 @@ LoggerSettings parse_logger_settings(const json& /*json*/)
 
 RemoteServicesSettings::ClipQueryToVec parse_clip_settings(const json& json)
 {
-	return RemoteServicesSettings::ClipQueryToVec{
-		// .address
-		optional_string_value(json, "address")
+	return RemoteServicesSettings::ClipQueryToVec{ // .address
+		                                           optional_string_value(json, "address")
 	};
 }
 RemoteServicesSettings::MediaServer parse_media_server_settings(const json& json)
 {
-	return RemoteServicesSettings::MediaServer{
-		// .address
-		optional_string_value(json, "address")
+	return RemoteServicesSettings::MediaServer{ // .address
+		                                        optional_string_value(json, "address")
 	};
 }
 

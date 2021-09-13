@@ -149,7 +149,7 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 }
 
 void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model, size_t temporal,
-                              UsedTools& used_tools, const DatasetFeatures& /*features*/,
+                              UsedTools& used_tools, const FrameFeatures& /*features*/,
                               const DatasetFrames& /*_dataset_frames*/)
 {
 	if (!_loaded) {
@@ -184,11 +184,11 @@ void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model
 }
 
 // in 1st dim
-at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& data) const
+at::Tensor CanvasQueryRanker::get_L2norm(const at::Tensor& _data) const
 {
-	at::Tensor norm = torch::zeros({ data.sizes()[0], 1 });
+	at::Tensor norm = torch::zeros({ _data.sizes()[0], 1 });
 
-	for (int64_t i = 0; i < data.sizes()[0]; i++) norm[i] = torch::sqrt(torch::sum(data[i] * data[i]));
+	for (int64_t i = 0; i < _data.sizes()[0]; i++) norm[i] = torch::sqrt(torch::sum(_data[i] * _data[i]));
 
 	return norm;
 }

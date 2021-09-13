@@ -294,6 +294,8 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	// Store likes for the logging purposees
 	auto old_likes{ _user_context.ctx.likes };
 
+	auto& features{ _dataset_features.primary };
+
 	// Check if temporal queries has changed
 	if (_user_context.ctx.last_temporal_queries != temporal_query) {
 		reset_scores();  //< Resets scores & used tools
@@ -312,7 +314,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 				// Set used tool
 				_user_context.ctx.used_tools.relocation_used = true;
 
-				_relocation_ranker.score(moment_query.relocation, _user_context.ctx.scores, moment, _dataset_features);
+				_relocation_ranker.score(moment_query.relocation, _user_context.ctx.scores, moment, features);
 			}
 			// ***
 			// Canvas
@@ -320,14 +322,20 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 				SHLOG_D("Running the canvas query model...");
 
 				_collage_ranker.score(moment_query.canvas, _user_context.ctx.scores, moment,
-				                      _user_context.ctx.used_tools, _dataset_features, _dataset_frames);
+				                      _user_context.ctx.used_tools, features, _dataset_frames);
 
 			}
 			// ***
 			// Plain text
 			else if (moment_query.is_text()) {
-				SHLOG_D("Running plain texual model...");
-				rescore_keywords(moment_query.textual, moment);
+				// If secondary features should be used
+				if (query.score_secondary()) {
+					SHLOG_D("Running plain texual model << SECONDARY SCORING >>...");
+					rescore_keywords(moment_query.textual, moment, _dataset_features.secondary);
+				} else {
+					SHLOG_D("Running plain texual model << PRIMARY SCORING >>...");
+					rescore_keywords(moment_query.textual, moment, features);
+				}
 			}
 			++moment;
 		}
@@ -1075,9 +1083,9 @@ void Somhunter::generate_new_targets()
 	_user_context.ctx.curr_targets = std::move(targets);
 }
 
-void Somhunter::rescore_keywords(const TextualQuery& query, size_t temporal)
+void Somhunter::rescore_keywords(const TextualQuery& query, size_t temporal, const FrameFeatures& features)
 {
-	_keyword_ranker.rank_sentence_query(query, _user_context.ctx.scores, _dataset_features, _settings, temporal);
+	_keyword_ranker.rank_sentence_query(query, _user_context.ctx.scores, features, _settings, temporal);
 
 	_user_context.ctx.used_tools.KWs_used = true;
 }
@@ -1093,15 +1101,17 @@ void Somhunter::rescore_feedback()
 		get_topn_display(0);
 	}
 
-	_user_context.ctx.scores.apply_bayes(_user_context.ctx.likes, _user_context.ctx.shown_images, _dataset_features);
+	_user_context.ctx.scores.apply_bayes(_user_context.ctx.likes, _user_context.ctx.shown_images,
+	                                     _dataset_features.primary);
 	_user_context.ctx.used_tools.bayes_used = true;
 }
 
 void Somhunter::som_start(size_t temporal)
 {
-	_user_context._async_SOM.start_work(_dataset_features, _user_context.ctx.scores, _user_context.ctx.scores.v());
+	_user_context._async_SOM.start_work(_dataset_features.primary, _user_context.ctx.scores,
+	                                    _user_context.ctx.scores.v());
 	for (size_t i = 0; i < temporal; ++i) {
-		_user_context._temp_async_SOM[i]->start_work(_dataset_features, _user_context.ctx.scores,
+		_user_context._temp_async_SOM[i]->start_work(_dataset_features.primary, _user_context.ctx.scores,
 		                                             _user_context.ctx.scores.temp(i));
 	}
 }
@@ -1247,8 +1257,8 @@ FramePointerRange Somhunter::get_topKNN_display(FrameId selected_image, PageId p
 	if (_user_context.ctx.curr_disp_type != DisplayType::DTopKNN || page == 0) {
 		const auto& ss{ _settings.presentation_views };
 		// Get ids
-		auto ids = _dataset_features.get_top_knn(_dataset_frames, selected_image, ss.topn_frames_per_video,
-		                                         ss.topn_frames_per_shot);
+		auto ids = _dataset_features.primary.get_top_knn(_dataset_frames, selected_image, ss.topn_frames_per_video,
+		                                                 ss.topn_frames_per_shot);
 
 		// Log only if the first page
 		if (page == 0) {

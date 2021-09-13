@@ -78,7 +78,7 @@ namespace
 
 
 /// process 64 bytes
-void SHA256::processBlock(const void* data)
+void SHA256::processBlock(const void* _data)
 {
   // get last hash
   uint32_t a = m_hash[0];
@@ -91,7 +91,7 @@ void SHA256::processBlock(const void* data)
   uint32_t h = m_hash[7];
 
   // data represented as 16x 32-bit words
-  const uint32_t* input = (uint32_t*) data;
+  const uint32_t* input = (uint32_t*) _data;
   // convert to big endian
   uint32_t words[64];
   int i;
@@ -239,9 +239,9 @@ void SHA256::processBlock(const void* data)
 
 
 /// add arbitrary number of bytes
-void SHA256::add(const void* data, size_t numBytes)
+void SHA256::add(const void* _data, size_t numBytes)
 {
-  const uint8_t* current = (const uint8_t*) data;
+  const uint8_t* current = (const uint8_t*) _data;
 
   if (m_bufferSize > 0)
   {
@@ -395,10 +395,10 @@ void SHA256::getHash(unsigned char buffer[SHA256::HashBytes])
 
 
 /// compute SHA256 of a memory block
-std::string SHA256::operator()(const void* data, size_t numBytes)
+std::string SHA256::operator()(const void* _data, size_t numBytes)
 {
   reset();
-  add(data, numBytes);
+  add(_data, numBytes);
   return getHash();
 }
 

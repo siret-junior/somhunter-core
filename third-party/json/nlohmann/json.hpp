@@ -3423,13 +3423,13 @@ namespace nlohmann
 namespace detail
 {
 template<typename BasicJsonType>
-void from_json(const BasicJsonType& j, typename std::nullptr_t& n)
+void from_json(const BasicJsonType& j, typename std::nullptr_t& _size)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_null()))
     {
         JSON_THROW(type_error::create(302, "type must be null, but is " + std::string(j.type_name())));
     }
-    n = nullptr;
+    _size = nullptr;
 }
 
 // overloads for basic_json template parameters
@@ -10683,10 +10683,10 @@ class primitive_iterator_t
         return lhs.m_it < rhs.m_it;
     }
 
-    primitive_iterator_t operator+(difference_type n) noexcept
+    primitive_iterator_t operator+(difference_type _size) noexcept
     {
         auto result = *this;
-        result += n;
+        result += _size;
         return result;
     }
 
@@ -10721,15 +10721,15 @@ class primitive_iterator_t
         return result;
     }
 
-    primitive_iterator_t& operator+=(difference_type n) noexcept
+    primitive_iterator_t& operator+=(difference_type _size) noexcept
     {
-        m_it += n;
+        m_it += _size;
         return *this;
     }
 
-    primitive_iterator_t& operator-=(difference_type n) noexcept
+    primitive_iterator_t& operator-=(difference_type _size) noexcept
     {
-        m_it -= n;
+        m_it -= _size;
         return *this;
     }
 };
@@ -11344,7 +11344,7 @@ class iter_impl
     @brief  access to successor
     @pre The iterator is initialized; i.e. `m_object != nullptr`.
     */
-    reference operator[](difference_type n) const
+    reference operator[](difference_type _size) const
     {
         JSON_ASSERT(m_object != nullptr);
 
@@ -11354,14 +11354,14 @@ class iter_impl
                 JSON_THROW(invalid_iterator::create(208, "cannot use operator[] for object iterators"));
 
             case value_t::array:
-                return *std::next(m_it.array_iterator, n);
+                return *std::next(m_it.array_iterator, _size);
 
             case value_t::null:
                 JSON_THROW(invalid_iterator::create(214, "cannot get value"));
 
             default:
             {
-                if (JSON_HEDLEY_LIKELY(m_it.primitive_iterator.get_value() == -n))
+                if (JSON_HEDLEY_LIKELY(m_it.primitive_iterator.get_value() == -_size))
                 {
                     return *m_object;
                 }
@@ -11506,9 +11506,9 @@ class json_reverse_iterator : public std::reverse_iterator<Base>
     }
 
     /// access to successor
-    reference operator[](difference_type n) const
+    reference operator[](difference_type _size) const
     {
-        return *(this->operator+(n));
+        return *(this->operator+(_size));
     }
 
     /// return the key of an object iterator
@@ -13041,7 +13041,7 @@ class binary_writer
 
                 // step 2: write each element
                 oa->write_characters(
-                    reinterpret_cast<const CharType*>(j.m_value.binary->data()),
+                    reinterpret_cast<const CharType*>(j.m_value.binary->_data()),
                     N);
 
                 break;
@@ -13371,7 +13371,7 @@ class binary_writer
 
                 // step 2: write the byte string
                 oa->write_characters(
-                    reinterpret_cast<const CharType*>(j.m_value.binary->data()),
+                    reinterpret_cast<const CharType*>(j.m_value.binary->_data()),
                     N);
 
                 break;
@@ -13543,7 +13543,7 @@ class binary_writer
                 if (use_type)
                 {
                     oa->write_characters(
-                        reinterpret_cast<const CharType*>(j.m_value.binary->data()),
+                        reinterpret_cast<const CharType*>(j.m_value.binary->_data()),
                         j.m_value.binary->size());
                 }
                 else
@@ -13551,7 +13551,7 @@ class binary_writer
                     for (size_t i = 0; i < j.m_value.binary->size(); ++i)
                     {
                         oa->write_character(to_char_type('U'));
-                        oa->write_character(j.m_value.binary->data()[i]);
+                        oa->write_character(j.m_value.binary->_data()[i]);
                     }
                 }
 
@@ -13986,61 +13986,61 @@ class binary_writer
     // UBJSON: write number (floating point)
     template<typename NumberType, typename std::enable_if<
                  std::is_floating_point<NumberType>::value, int>::type = 0>
-    void write_number_with_ubjson_prefix(const NumberType n,
+    void write_number_with_ubjson_prefix(const NumberType _size,
                                          const bool add_prefix)
     {
         if (add_prefix)
         {
-            oa->write_character(get_ubjson_float_prefix(n));
+            oa->write_character(get_ubjson_float_prefix(_size));
         }
-        write_number(n);
+        write_number(_size);
     }
 
     // UBJSON: write number (unsigned integer)
     template<typename NumberType, typename std::enable_if<
                  std::is_unsigned<NumberType>::value, int>::type = 0>
-    void write_number_with_ubjson_prefix(const NumberType n,
+    void write_number_with_ubjson_prefix(const NumberType _size,
                                          const bool add_prefix)
     {
-        if (n <= static_cast<std::uint64_t>((std::numeric_limits<std::int8_t>::max)()))
+        if (_size <= static_cast<std::uint64_t>((std::numeric_limits<std::int8_t>::max)()))
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('i'));  // int8
             }
-            write_number(static_cast<std::uint8_t>(n));
+            write_number(static_cast<std::uint8_t>(_size));
         }
-        else if (n <= (std::numeric_limits<std::uint8_t>::max)())
+        else if (_size <= (std::numeric_limits<std::uint8_t>::max)())
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('U'));  // uint8
             }
-            write_number(static_cast<std::uint8_t>(n));
+            write_number(static_cast<std::uint8_t>(_size));
         }
-        else if (n <= static_cast<std::uint64_t>((std::numeric_limits<std::int16_t>::max)()))
+        else if (_size <= static_cast<std::uint64_t>((std::numeric_limits<std::int16_t>::max)()))
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('I'));  // int16
             }
-            write_number(static_cast<std::int16_t>(n));
+            write_number(static_cast<std::int16_t>(_size));
         }
-        else if (n <= static_cast<std::uint64_t>((std::numeric_limits<std::int32_t>::max)()))
+        else if (_size <= static_cast<std::uint64_t>((std::numeric_limits<std::int32_t>::max)()))
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('l'));  // int32
             }
-            write_number(static_cast<std::int32_t>(n));
+            write_number(static_cast<std::int32_t>(_size));
         }
-        else if (n <= static_cast<std::uint64_t>((std::numeric_limits<std::int64_t>::max)()))
+        else if (_size <= static_cast<std::uint64_t>((std::numeric_limits<std::int64_t>::max)()))
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('L'));  // int64
             }
-            write_number(static_cast<std::int64_t>(n));
+            write_number(static_cast<std::int64_t>(_size));
         }
         else
         {
@@ -14049,7 +14049,7 @@ class binary_writer
                 oa->write_character(to_char_type('H'));  // high-precision number
             }
 
-            const auto number = BasicJsonType(n).dump();
+            const auto number = BasicJsonType(_size).dump();
             write_number_with_ubjson_prefix(number.size(), true);
             for (std::size_t i = 0; i < number.size(); ++i)
             {
@@ -14062,48 +14062,48 @@ class binary_writer
     template < typename NumberType, typename std::enable_if <
                    std::is_signed<NumberType>::value&&
                    !std::is_floating_point<NumberType>::value, int >::type = 0 >
-    void write_number_with_ubjson_prefix(const NumberType n,
+    void write_number_with_ubjson_prefix(const NumberType _size,
                                          const bool add_prefix)
     {
-        if ((std::numeric_limits<std::int8_t>::min)() <= n && n <= (std::numeric_limits<std::int8_t>::max)())
+        if ((std::numeric_limits<std::int8_t>::min)() <= _size && _size <= (std::numeric_limits<std::int8_t>::max)())
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('i'));  // int8
             }
-            write_number(static_cast<std::int8_t>(n));
+            write_number(static_cast<std::int8_t>(_size));
         }
-        else if (static_cast<std::int64_t>((std::numeric_limits<std::uint8_t>::min)()) <= n && n <= static_cast<std::int64_t>((std::numeric_limits<std::uint8_t>::max)()))
+        else if (static_cast<std::int64_t>((std::numeric_limits<std::uint8_t>::min)()) <= _size && _size <= static_cast<std::int64_t>((std::numeric_limits<std::uint8_t>::max)()))
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('U'));  // uint8
             }
-            write_number(static_cast<std::uint8_t>(n));
+            write_number(static_cast<std::uint8_t>(_size));
         }
-        else if ((std::numeric_limits<std::int16_t>::min)() <= n && n <= (std::numeric_limits<std::int16_t>::max)())
+        else if ((std::numeric_limits<std::int16_t>::min)() <= _size && _size <= (std::numeric_limits<std::int16_t>::max)())
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('I'));  // int16
             }
-            write_number(static_cast<std::int16_t>(n));
+            write_number(static_cast<std::int16_t>(_size));
         }
-        else if ((std::numeric_limits<std::int32_t>::min)() <= n && n <= (std::numeric_limits<std::int32_t>::max)())
+        else if ((std::numeric_limits<std::int32_t>::min)() <= _size && _size <= (std::numeric_limits<std::int32_t>::max)())
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('l'));  // int32
             }
-            write_number(static_cast<std::int32_t>(n));
+            write_number(static_cast<std::int32_t>(_size));
         }
-        else if ((std::numeric_limits<std::int64_t>::min)() <= n && n <= (std::numeric_limits<std::int64_t>::max)())
+        else if ((std::numeric_limits<std::int64_t>::min)() <= _size && _size <= (std::numeric_limits<std::int64_t>::max)())
         {
             if (add_prefix)
             {
                 oa->write_character(to_char_type('L'));  // int64
             }
-            write_number(static_cast<std::int64_t>(n));
+            write_number(static_cast<std::int64_t>(_size));
         }
         // LCOV_EXCL_START
         else
@@ -14113,7 +14113,7 @@ class binary_writer
                 oa->write_character(to_char_type('H'));  // high-precision number
             }
 
-            const auto number = BasicJsonType(n).dump();
+            const auto number = BasicJsonType(_size).dump();
             write_number_with_ubjson_prefix(number.size(), true);
             for (std::size_t i = 0; i < number.size(); ++i)
             {
@@ -14232,11 +14232,11 @@ class binary_writer
           endian) and therefore need reordering on little endian systems.
     */
     template<typename NumberType, bool OutputIsLittleEndian = false>
-    void write_number(const NumberType n)
+    void write_number(const NumberType _size)
     {
         // step 1: write number to array of length NumberType
         std::array<CharType, sizeof(NumberType)> vec;
-        std::memcpy(vec.data(), &n, sizeof(NumberType));
+        std::memcpy(vec.data(), &_size, sizeof(NumberType));
 
         // step 2: write array to output (with possible reordering)
         if (is_little_endian != OutputIsLittleEndian)
@@ -14248,23 +14248,23 @@ class binary_writer
         oa->write_characters(vec.data(), sizeof(NumberType));
     }
 
-    void write_compact_float(const number_float_t n, detail::input_format_t format)
+    void write_compact_float(const number_float_t _size, detail::input_format_t format)
     {
-        if (static_cast<double>(n) >= static_cast<double>(std::numeric_limits<float>::lowest()) &&
-                static_cast<double>(n) <= static_cast<double>((std::numeric_limits<float>::max)()) &&
-                static_cast<double>(static_cast<float>(n)) == static_cast<double>(n))
+        if (static_cast<double>(_size) >= static_cast<double>(std::numeric_limits<float>::lowest()) &&
+                static_cast<double>(_size) <= static_cast<double>((std::numeric_limits<float>::max)()) &&
+                static_cast<double>(static_cast<float>(_size)) == static_cast<double>(_size))
         {
             oa->write_character(format == detail::input_format_t::cbor
-                                ? get_cbor_float_prefix(static_cast<float>(n))
-                                : get_msgpack_float_prefix(static_cast<float>(n)));
-            write_number(static_cast<float>(n));
+                                ? get_cbor_float_prefix(static_cast<float>(_size))
+                                : get_msgpack_float_prefix(static_cast<float>(_size)));
+            write_number(static_cast<float>(_size));
         }
         else
         {
             oa->write_character(format == detail::input_format_t::cbor
-                                ? get_cbor_float_prefix(n)
-                                : get_msgpack_float_prefix(n));
-            write_number(n);
+                                ? get_cbor_float_prefix(_size)
+                                : get_msgpack_float_prefix(_size));
+            write_number(_size);
         }
     }
 
@@ -14821,51 +14821,51 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
 For n != 0, returns k, such that pow10 := 10^(k-1) <= n < 10^k.
 For n == 0, returns 1 and sets pow10 := 1.
 */
-inline int find_largest_pow10(const std::uint32_t n, std::uint32_t& pow10)
+inline int find_largest_pow10(const std::uint32_t _size, std::uint32_t& pow10)
 {
     // LCOV_EXCL_START
-    if (n >= 1000000000)
+    if (_size >= 1000000000)
     {
         pow10 = 1000000000;
         return 10;
     }
     // LCOV_EXCL_STOP
-    else if (n >= 100000000)
+    else if (_size >= 100000000)
     {
         pow10 = 100000000;
         return  9;
     }
-    else if (n >= 10000000)
+    else if (_size >= 10000000)
     {
         pow10 = 10000000;
         return  8;
     }
-    else if (n >= 1000000)
+    else if (_size >= 1000000)
     {
         pow10 = 1000000;
         return  7;
     }
-    else if (n >= 100000)
+    else if (_size >= 100000)
     {
         pow10 = 100000;
         return  6;
     }
-    else if (n >= 10000)
+    else if (_size >= 10000)
     {
         pow10 = 10000;
         return  5;
     }
-    else if (n >= 1000)
+    else if (_size >= 1000)
     {
         pow10 = 1000;
         return  4;
     }
-    else if (n >= 100)
+    else if (_size >= 100)
     {
         pow10 = 100;
         return  3;
     }
-    else if (n >= 10)
+    else if (_size >= 10)
     {
         pow10 = 10;
         return  2;
@@ -14981,8 +14981,8 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     //
     //      rest * 2^e = (d[n-1]...d[0] * 2^-e + p2) * 2^e <= delta * 2^e
 
-    int n = k;
-    while (n > 0)
+    int _size = k;
+    while (_size > 0)
     {
         // Invariants:
         //      M+ = buffer * 10^n + (p1 + p2 * 2^e)    (buffer = 0 for n = k)
@@ -15000,7 +15000,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
         //      M+ = buffer * 10^(n-1) + (r + p2 * 2^e)
         //
         p1 = r;
-        n--;
+        _size--;
         //
         //      M+ = buffer * 10^n + (p1 + p2 * 2^e)
         //      pow10 = 10^n
@@ -15019,7 +15019,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
         {
             // V = buffer * 10^n, with M- <= V <= M+.
 
-            decimal_exponent += n;
+            decimal_exponent += _size;
 
             // We may now just stop. But instead look if the buffer could be
             // decremented to bring V closer to w.
@@ -15318,46 +15318,46 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
     JSON_ASSERT(max_exp > 0);
 
     const int k = len;
-    const int n = len + decimal_exponent;
+    const int _size = len + decimal_exponent;
 
     // v = buf * 10^(n-k)
     // k is the length of the buffer (number of decimal digits)
     // n is the position of the decimal point relative to the start of the buffer.
 
-    if (k <= n && n <= max_exp)
+    if (k <= _size && _size <= max_exp)
     {
         // digits[000]
         // len <= max_exp + 2
 
-        std::memset(buf + k, '0', static_cast<size_t>(n) - static_cast<size_t>(k));
+        std::memset(buf + k, '0', static_cast<size_t>(_size) - static_cast<size_t>(k));
         // Make it look like a floating-point number (#362, #378)
-        buf[n + 0] = '.';
-        buf[n + 1] = '0';
-        return buf + (static_cast<size_t>(n) + 2);
+        buf[_size + 0] = '.';
+        buf[_size + 1] = '0';
+        return buf + (static_cast<size_t>(_size) + 2);
     }
 
-    if (0 < n && n <= max_exp)
+    if (0 < _size && _size <= max_exp)
     {
         // dig.its
         // len <= max_digits10 + 1
 
-        JSON_ASSERT(k > n);
+        JSON_ASSERT(k > _size);
 
-        std::memmove(buf + (static_cast<size_t>(n) + 1), buf + n, static_cast<size_t>(k) - static_cast<size_t>(n));
-        buf[n] = '.';
+        std::memmove(buf + (static_cast<size_t>(_size) + 1), buf + _size, static_cast<size_t>(k) - static_cast<size_t>(_size));
+        buf[_size] = '.';
         return buf + (static_cast<size_t>(k) + 1U);
     }
 
-    if (min_exp < n && n <= 0)
+    if (min_exp < _size && _size <= 0)
     {
         // 0.[000]digits
         // len <= 2 + (-min_exp - 1) + max_digits10
 
-        std::memmove(buf + (2 + static_cast<size_t>(-n)), buf, static_cast<size_t>(k));
+        std::memmove(buf + (2 + static_cast<size_t>(-_size)), buf, static_cast<size_t>(k));
         buf[0] = '0';
         buf[1] = '.';
-        std::memset(buf + 2, '0', static_cast<size_t>(-n));
-        return buf + (2U + static_cast<size_t>(-n) + static_cast<size_t>(k));
+        std::memset(buf + 2, '0', static_cast<size_t>(-_size));
+        return buf + (2U + static_cast<size_t>(-_size) + static_cast<size_t>(k));
     }
 
     if (k == 1)
@@ -15378,7 +15378,7 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
     }
 
     *buf++ = 'e';
-    return append_exponent(buf, n - 1);
+    return append_exponent(buf, _size - 1);
 }
 
 } // namespace dtoa_impl
@@ -25250,9 +25250,9 @@ if no parse error occurred.
 @since version 1.0.0
 */
 JSON_HEDLEY_NON_NULL(1)
-inline nlohmann::json operator "" _json(const char* s, std::size_t n)
+inline nlohmann::json operator "" _json(const char* s, std::size_t _size)
 {
-    return nlohmann::json::parse(s, s + n);
+    return nlohmann::json::parse(s, s + _size);
 }
 
 /*!
@@ -25269,9 +25269,9 @@ object if no parse error occurred.
 @since version 2.0.0
 */
 JSON_HEDLEY_NON_NULL(1)
-inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std::size_t n)
+inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std::size_t _size)
 {
-    return nlohmann::json::json_pointer(std::string(s, n));
+    return nlohmann::json::json_pointer(std::string(s, _size));
 }
 
 // #include <nlohmann/detail/macro_unscope.hpp>

@@ -37,7 +37,7 @@
 namespace sh
 {
 class DatasetFrames;
-class DatasetFeatures;
+class FrameFeatures;
 
 /** Represents exactly one state of ONE user that uses this core. */
 class UserContext
@@ -45,11 +45,11 @@ class UserContext
 public:
 	UserContext() = delete;
 	UserContext(const Settings& settings, const std::string& username, const DatasetFrames* p_dataset_frames,
-	            const DatasetFeatures* p_dataset_features);
+	            const FrameFeatures* p_dataset_features);
 
 	const std::string& get_username() const { return _username; };
 	const DatasetFrames* get_frames() const { return _p_dataset_frames; };
-	const DatasetFeatures* get_features() const { return _p_dataset_features; };
+	const FrameFeatures* get_features() const { return _p_dataset_features; };
 
 	void reset()
 	{
@@ -71,7 +71,7 @@ public:
 
 public:  //< This is temporary, until we support multiple users
 	const DatasetFrames* _p_dataset_frames;
-	const DatasetFeatures* _p_dataset_features;
+	const FrameFeatures* _p_dataset_features;
 
 	// *** SEARCH CONTEXT ***
 	SearchContext ctx;

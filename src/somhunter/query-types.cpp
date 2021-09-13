@@ -80,19 +80,20 @@ nlohmann::json CanvasQuery::to_JSON() const
 	return arr_temp;
 }
 
-std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& /*contents*/, const fs::path /*parentPath*/)
+std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& /*contents*/,
+                                                          const fs::path /*parentPath*/)
 {
 	// \todo Convert to nlohmann::json
 	throw std::runtime_error("...");
 	//
-	//auto json_all{ json::parse(contents) };
+	// auto json_all{ json::parse(contents) };
 
-	//std::vector<CanvasQuery> qs;
+	// std::vector<CanvasQuery> qs;
 
-	//json cqJson{ json_all["canvas_query"] };
+	// json cqJson{ json_all["canvas_query"] };
 
-	//size_t ti = 0;
-	//for (auto&& tempQuery : cqJson) {
+	// size_t ti = 0;
+	// for (auto&& tempQuery : cqJson) {
 	//	qs.push_back(CanvasQuery());
 
 	//	for (auto&& obj : tempQuery) {
@@ -113,16 +114,16 @@ std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& /*c
 	//	++ti;
 	//}
 
-	//return qs;
+	// return qs;
 }
 
-std::vector<CanvasQuery> CanvasQuery::parse_json(const std::string& filepath)
+std::vector<CanvasQuery> CanvasQuery::parse_json(const std::string& /*filepath*/)
 {
 	// \todo Convert to nlohmann::json
 	throw std::runtime_error("...");
-	std::string file_contents(utils::read_whole_file(filepath));
+	/*std::string file_contents(utils::read_whole_file(filepath));
 	fs::path p(filepath);
-	return parse_json_contents(file_contents, p.parent_path());
+	return parse_json_contents(file_contents, p.parent_path());*/
 }
 
 void CanvasQuery::emplace_back(const RelativeRect& rect, const std::string& text_query)

@@ -48,7 +48,7 @@ namespace sh
 namespace utils
 {
 template <typename DataType>
-void serialize_to_file(DataType data, const std::string filepath)
+void serialize_to_file(DataType _data, const std::string filepath)
 {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
 	if (!ofs) {
@@ -59,7 +59,7 @@ void serialize_to_file(DataType data, const std::string filepath)
 	}
 
 	cereal::BinaryOutputArchive out_archive(ofs);
-	out_archive(data);
+	out_archive(_data);
 }
 
 template <typename DataType>
@@ -74,9 +74,9 @@ DataType deserialize_from_file(const std::string filepath)
 
 	cereal::BinaryInputArchive in_archive(ifs);
 
-	DataType data;
-	in_archive(data);
-	return data;
+	DataType _data;
+	in_archive(_data);
+	return _data;
 }
 
 /*!

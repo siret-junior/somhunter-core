@@ -212,12 +212,12 @@ class CanvasSubqueryBitmap : public CanvasSubqueryBase
 public:
 	CanvasSubqueryBitmap() = default;
 	CanvasSubqueryBitmap(const RelativeRect& rect, size_t bitmap_w, size_t bitmap_h, size_t num_channels,
-	                     std::vector<std::uint8_t>&& data)
+	                     std::vector<std::uint8_t>&& _data)
 	    : CanvasSubqueryBase{ rect },
 	      _num_channels{ num_channels },
 	      _width{ bitmap_w },
 	      _height{ bitmap_h },
-	      _data_int{ std::move(data) } {
+	      _data_int{ std::move(_data) } {
 
 	      };
 
@@ -501,6 +501,7 @@ public:
 
 		return false;
 	}
+	const bool score_secondary() const { return _score_secondary; }
 	const bool is_canvas() const { return temporal_queries.front().is_canvas(); }
 	const bool is_bitmap_canvas() const { return temporal_queries.front().is_bitmap_canvas(); }
 	const bool is_text_canvas() const { return temporal_queries.front().is_text_canvas(); }
@@ -616,6 +617,7 @@ public:
 	std::vector<FrameId> targets;
 
 	bool is_save{ false };
+	bool _score_secondary{ false };
 };
 
 struct BaseBenchmarkQuery {
