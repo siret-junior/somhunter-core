@@ -11,9 +11,7 @@ scripts/__pycache__/
 __pycache__
 cookie.txt
 saved-queries
-config/config-core__asi_v3c1-first100.json
 config/_config-core.json
-config/config-core.json
 config/config-auth.json
 bench-out/
 data-logs/
