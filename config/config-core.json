@@ -21,7 +21,8 @@
             "allow_canvas_query_text": true,
             "allow_history_switch": true,
             "show_likes_panel": true,
-            "show_bookmarks_panel": true
+            "show_bookmarks_panel": true,
+            "show_filters_panel": true
         },
         "video_replay": {
             "slide_speed": 50,
@@ -145,7 +146,7 @@
             "primary_features": {
                 "features_file_data_off": 0,
                 "features_dim": 128,
-                "features_file": "data/LSC_2021_November/primary/frame-features.LSC.CLIP.90498x128.float32.bin",
+                "features_file": "data/LSC_2021_November/primary/frame-features.LSC.W2VV.66513x128.float32.bin",
                 "collage_regions": 12,
                 "collage_region_file_prefix": "data/LSC_2021_November/primary/subframes/region_",
                 "kws_file": "data/LSC_2021_November/primary/keyword-to-ID.W2VV-BoW.csv",
@@ -159,7 +160,7 @@
             "secondary_features": {
                 "features_file_data_off": 0,
                 "features_dim": 128,
-                "features_file": "data/LSC_2021_November/secondary/frame-features.LSC.CLIP.90498x640.float32.bin"
+                "features_file": "data/LSC_2021_November/secondary/frame-features.LSC.CLIP.66513x640.float32.bin"
             }
         }
     }

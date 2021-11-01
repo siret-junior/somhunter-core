@@ -58,6 +58,11 @@ int main()
 	Somhunter core{ "config/config-core.json" };
 
 	/* ***
+	 * Dataset generators
+	 */
+	// core.generate_example_images_for_keywords();
+
+	/* ***
 	 * Benchmarks
 	 */
 	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");

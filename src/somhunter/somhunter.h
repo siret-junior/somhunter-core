@@ -217,58 +217,6 @@ public:
 
 	{
 		generate_new_targets();
-
-#if 0  //< Uncomment to generate example frames for each supported word
-		std::ifstream inFile(settings.kws_file, std::ios::in);
-		std::ofstream ofs("wooooords.csv");
-
-		if (!inFile) {
-			std::string msg{ "Error opening file: " + settings.kws_file };
-			SHLOG_E(msg);
-			throw std::runtime_error(msg);
-		}
-
-		std::vector<Keyword> result_keywords;
-
-		std::size_t i{0};
-		// read the input file by lines
-		for (std::string line_text_buffer; std::getline(inFile, line_text_buffer);) {
-			std::stringstream line_buffer_ss(line_text_buffer);
-
-			std::vector<std::string> tokens;
-
-			// Tokenize this line
-			for (std::string token; std::getline(line_buffer_ss, token, ':');) {
-				tokens.push_back(token);
-			}
-
-			SynsetId synset_ID{ utils::str2<SynsetId>(tokens[1]) };
-			//FrameId vec_idx{ FrameId(synset_ID) };
-
-			TemporalQuery tq;
-			tq.textual = tokens[0];
-
-
-			Query q;
-			q.temporal_queries.push_back(tq);
-
-			rescore(q, true);
-			auto res { get_top_scored(10, 1, 3)};
-
-			ofs << tokens[0] << ":" << synset_ID << ":";
-
-			for (auto&& x : res) {
-				ofs << x << "#";
-			}
-
-			ofs << std::endl;
-
-			if (i % 100 == 0) {
-				SHLOG(i);
-			}
-			++i;
-		}
-#endif
 	}
 
 	// ********************************
@@ -398,6 +346,63 @@ public:
 	void benchmark_canvas_queries(const std::string& queries_dir, const std::string& out_dir);
 	void benchmark_real_queries(const std::string& queries_dir, const std::string& targets_fpth,
 	                            const std::string& out_dir);
+
+	/**
+	 * Generates the top example images from the database for all supported W2VV keywords.
+	 * 
+	 * For examples used as `keyword-to-ID.W2VV-BoW.csv` file.
+	 */
+	void generate_example_images_for_keywords()
+	{
+		std::ifstream inFile(_settings.datasets.primary_features.kws_file, std::ios::in);
+		std::ofstream ofs("wooooords.csv");
+
+		if (!inFile) {
+			std::string msg{ "Error opening file: " + _settings.datasets.primary_features.kws_file };
+			SHLOG_E(msg);
+			throw std::runtime_error(msg);
+		}
+
+		std::vector<Keyword> result_keywords;
+
+		std::size_t i{ 0 };
+		// read the input file by lines
+		for (std::string line_text_buffer; std::getline(inFile, line_text_buffer);) {
+			std::stringstream line_buffer_ss(line_text_buffer);
+
+			std::vector<std::string> tokens;
+
+			// Tokenize this line
+			for (std::string token; std::getline(line_buffer_ss, token, ':');) {
+				tokens.push_back(token);
+			}
+
+			SynsetId synset_ID{ utils::str2<SynsetId>(tokens[1]) };
+			// FrameId vec_idx{ FrameId(synset_ID) };
+
+			TemporalQuery tq;
+			tq.textual = tokens[0];
+
+			Query q;
+			q.temporal_queries.push_back(tq);
+
+			rescore(q, true);
+			auto res{ get_top_scored(10, 1, 3) };
+
+			ofs << tokens[0] << ":" << synset_ID << ":";
+
+			for (auto&& x : res) {
+				ofs << x << "#";
+			}
+
+			ofs << std::endl;
+
+			if (i % 100 == 0) {
+				SHLOG(i);
+			}
+			++i;
+		}
+	}
 
 	static void write_resultset(const std::string& file, const std::vector<VideoFramePointer>& results)
 	{
