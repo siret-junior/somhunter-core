@@ -88,20 +88,39 @@ struct TimeFilter {
 	}
 };
 
+/** Container for information about time filtering */
+struct YearFilter {
+	Year from;
+	Year to;
+
+	/** Default state is the whole day */
+	YearFilter() : from(1900), to(2100){};
+	YearFilter(Year from, Year to) : from(from), to(to){};
+
+	bool operator==(const YearFilter& other) const { return (from == other.from && to == other.to); }
+
+	template <class Archive>
+	void serialize(Archive& archive)
+	{
+		archive(from, to);
+	}
+};
+
 /** Container for all the available filters for the rescore */
 struct Filters {
 	TimeFilter time;
+	YearFilter years;
 	WeekDaysFilter days;
 	std::vector<bool> dataset_parts{ true, true };
 
 	bool operator==(const Filters& other) const
 	{
-		return (time == other.time && days == other.days && dataset_parts == other.dataset_parts);
+		return (time == other.time && days == other.days && dataset_parts == other.dataset_parts && years == other.days);
 	}
 
 	bool is_default() const
 	{
-		return time == TimeFilter{} && days == WeekDaysFilter{} && dataset_parts == std::vector<bool>{ true, true };
+		return years == YearFilter{} && time == TimeFilter{} && days == WeekDaysFilter{} && dataset_parts == std::vector<bool>{ true, true };
 	}
 
 	/** Based on `dataset_parts` it returns the allowed frame IDs. */
@@ -121,7 +140,7 @@ struct Filters {
 	template <class Archive>
 	void serialize(Archive& archive)
 	{
-		archive(time, days);
+		archive(time, days, years);
 	}
 };
 

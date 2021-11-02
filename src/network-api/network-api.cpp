@@ -1348,6 +1348,8 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 	json::value weekdays_JSON{ body[U("filters")][U("weekdays")] };
 	Hour hourFrom{ static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer()) };
 	Hour hourTo{ static_cast<Hour>(body[U("filters")][U("hoursTo")].as_integer()) };
+	Year yearFrom{ static_cast<Hour>(body[U("filters")][U("yearsFrom")].as_integer()) };
+	Year yearTo{ static_cast<Hour>(body[U("filters")][U("yearsTo")].as_integer()) };
 	json::value dataset_parts_JSON{ body[U("filters")][U("datasetFilter")] };
 
 	/*
@@ -1370,7 +1372,7 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 		dataset_parts_mask.emplace_back(flag);
 	}
 
-	return Filters{ TimeFilter{ hourFrom, hourTo }, WeekDaysFilter{ weekdays_mask }, dataset_parts_mask };
+	return Filters{ TimeFilter{ hourFrom, hourTo }, YearFilter{yearFrom, yearTo}, WeekDaysFilter{ weekdays_mask }, dataset_parts_mask };
 }
 
 void NetworkApi::handle__search__rescore__POST(http_request req)
