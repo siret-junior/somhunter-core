@@ -22,7 +22,9 @@
             "allow_history_switch": true,
             "show_likes_panel": true,
             "show_bookmarks_panel": true,
-            "show_filters_panel": true
+            "show_filters_panel": true,
+            "show_dataset_filters_panel": false,
+            "show_lsc_filters_panel": true
         },
         "video_replay": {
             "slide_speed": 50,
