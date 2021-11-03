@@ -331,10 +331,10 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 				// If secondary features should be used
 				if (query.score_secondary()) {
 					SHLOG_D("Running plain texual model << SECONDARY SCORING >>...");
-					rescore_keywords(moment_query.textual, moment, _dataset_features.secondary);
+					rescore_keywords(_secondary_keyword_ranker, moment_query.textual, moment, _dataset_features.secondary);
 				} else {
 					SHLOG_D("Running plain texual model << PRIMARY SCORING >>...");
-					rescore_keywords(moment_query.textual, moment, features);
+					rescore_keywords(_keyword_ranker, moment_query.textual, moment, features);
 				}
 			}
 			++moment;
@@ -1081,13 +1081,6 @@ void Somhunter::generate_new_targets()
 	}
 
 	_user_context.ctx.curr_targets = std::move(targets);
-}
-
-void Somhunter::rescore_keywords(const TextualQuery& query, size_t temporal, const FrameFeatures& features)
-{
-	_keyword_ranker.rank_sentence_query(query, _user_context.ctx.scores, features, _settings, temporal);
-
-	_user_context.ctx.used_tools.KWs_used = true;
 }
 
 void Somhunter::rescore_feedback()

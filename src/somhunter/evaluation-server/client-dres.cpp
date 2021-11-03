@@ -44,7 +44,7 @@ ClientDres::ClientDres(const EvalServerSettings& eval_server_settings)
 
 		while (true) {
 			auto ts_our_pre{ utils::timestamp() };
-			auto res{ _http.do_GET_sync(_settings.server_time_URL, {}) };
+			auto res{ _http.do_GET_sync_json(_settings.server_time_URL, {}) };
 			auto ts_our_post{ utils::timestamp() };
 
 			if (res.first != 200) {
@@ -90,7 +90,7 @@ bool ClientDres::login()
 	if (_do_requests) {
 		try {
 			// Do the blocking request
-			std::tie(code, res) = _http.do_POST_sync(URL, body, headers);
+			std::tie(code, res) = _http.do_POST_sync_json(URL, body, headers);
 
 			// If failed
 			if (code != 200) {
@@ -143,7 +143,7 @@ bool ClientDres::logout()
 	if (_do_requests) {
 		try {
 			// Do the blocking request
-			std::tie(code, res) = _http.do_GET_sync(_settings.logout_URL, params, headers);
+			std::tie(code, res) = _http.do_GET_sync_json(_settings.logout_URL, params, headers);
 
 			// If failed
 			if (code != 200) {
@@ -210,7 +210,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 	if (_do_requests) {
 		try {
 			// Do the blocking request
-			std::tie(code, res) = _http.do_GET_sync(URL, params, headers);
+			std::tie(code, res) = _http.do_GET_sync_json(URL, params, headers);
 
 			// If failed
 			if (code != 200 && code != 202) {

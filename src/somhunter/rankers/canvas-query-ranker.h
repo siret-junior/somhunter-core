@@ -123,7 +123,7 @@ public:
 
 	CanvasQueryRanker(const Settings& _settings, KeywordRanker* p_core);
 	void score(const CanvasQuery&, ScoreModel& model, size_t temporal, UsedTools& used_tools,
-	           const FrameFeatures& _dataset_features, const DatasetFrames& _dataset_frames);
+	           const PrimaryFrameFeatures& _dataset_features, const DatasetFrames& _dataset_frames);
 
 private:
 	std::vector<FeatureMatrix> region_data;

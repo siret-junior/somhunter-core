@@ -143,7 +143,7 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settin
 	SHLOG_D("SOM worker finished.");
 }
 
-AsyncSom::AsyncSom(const Settings& _logger_settings, size_t w, size_t h, const FrameFeatures& fs, const ScoreModel& sc)
+AsyncSom::AsyncSom(const Settings& _logger_settings, size_t w, size_t h, const PrimaryFrameFeatures& fs, const ScoreModel& sc)
     :
 
       _features_data_len{ fs.dim() * sc.size() },
@@ -167,7 +167,7 @@ AsyncSom::~AsyncSom()
 	SHLOG_D("SOM worker terminated.");
 }
 
-void AsyncSom::start_work(const FrameFeatures& fs, const ScoreModel& sc, const float* scores_orig)
+void AsyncSom::start_work(const PrimaryFrameFeatures& fs, const ScoreModel& sc, const float* scores_orig)
 {
 	{
 		std::unique_lock lck(worker_lock);

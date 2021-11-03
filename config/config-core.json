@@ -113,7 +113,7 @@
         },
         "remote_services": {
             "CLIP_query_to_vec": {
-                "address": "http://195.113.18.36:42013"
+                "address": "http://195.113.18.36:42013/clip"
             },
             "media_server": {
                 "address": null

@@ -40,11 +40,11 @@
 
 namespace sh
 {
-class RelocationRanker : public EmbeddingRanker
+class RelocationRanker : public EmbeddingRanker<PrimaryFrameFeatures>
 {
 public:
 	void score(const RelocationQuery&, ScoreModel& model, size_t temporal,
-	           const FrameFeatures& _dataset_features) const;
+	           const PrimaryFrameFeatures& _dataset_features) const;
 };
 }  // namespace sh
 

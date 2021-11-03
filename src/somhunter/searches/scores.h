@@ -125,7 +125,7 @@ public:
 	/**
 	 * Applies relevance feedback rescore based on the Bayesian update rule.
 	 */
-	void apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const FrameFeatures& features);
+	void apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const PrimaryFrameFeatures& features);
 
 	/**
 	 * Gets the images with the highest scores but respecting the provided

@@ -83,10 +83,10 @@ public:
 
 	AsyncSom(AsyncSom&& _logger_settings) = default;
 
-	AsyncSom(const Settings& _logger_settings, size_t width, size_t height, const FrameFeatures& fs,
+	AsyncSom(const Settings& _logger_settings, size_t width, size_t height, const PrimaryFrameFeatures& fs,
 	         const ScoreModel& sc);
 
-	void start_work(const FrameFeatures& fs, const ScoreModel& sc, const float* scores_orig);
+	void start_work(const PrimaryFrameFeatures& fs, const ScoreModel& sc, const float* scores_orig);
 
 	std::vector<FrameId> get_display(ScoreModel scores) const;
 

@@ -51,7 +51,7 @@ struct Keyword {
 	std::vector<const VideoFrame*> top_ex_imgs;
 };
 
-class KeywordRanker : public EmbeddingRanker
+class KeywordRanker : public EmbeddingRanker<PrimaryFrameFeatures>
 {
 	std::vector<Keyword> _keyword_ranker;
 	FeatureMatrix kw_features;
@@ -135,8 +135,7 @@ public:
 	KwSearchIds find(const std::string& search, size_t num_limit) const;
 
 	void rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
-	                         const FrameFeatures& _dataset_features, const Settings& _logger_settings,
-	                         size_t temporal) const;
+	                         const PrimaryFrameFeatures& _dataset_features, size_t temporal) const;
 
 	// ----
 	StdVector<float> get_text_query_feature(const std::string& query);

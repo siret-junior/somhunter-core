@@ -35,6 +35,7 @@
 #include "dataset-features.h"
 #include "dataset-frames.h"
 #include "image-processor.h"
+#include "keyword-clip-ranker.h"
 #include "keyword-ranker.h"
 #include "logger.h"
 #include "query-types.h"
@@ -196,6 +197,7 @@ class Somhunter
 	const std::string _API_settings_filepath;
 
 	KeywordRanker _keyword_ranker;
+	KeywordClipRanker _secondary_keyword_ranker;
 	CanvasQueryRanker _collage_ranker;
 	const RelocationRanker _relocation_ranker;
 
@@ -212,6 +214,7 @@ public:
 	      _core_settings_filepath{ config_filepath },
 	      _API_settings_filepath{ _settings.API.config_filepath },
 	      _keyword_ranker(_settings, _dataset_frames),
+	      _secondary_keyword_ranker{ _settings },
 	      _collage_ranker(_settings, &_keyword_ranker),
 	      _relocation_ranker{}
 
@@ -349,7 +352,7 @@ public:
 
 	/**
 	 * Generates the top example images from the database for all supported W2VV keywords.
-	 * 
+	 *
 	 * For examples used as `keyword-to-ID.W2VV-BoW.csv` file.
 	 */
 	void generate_example_images_for_keywords()
@@ -472,7 +475,14 @@ private:
 	/**
 	 *	Applies text query from the user.
 	 */
-	void rescore_keywords(const TextualQuery& query, size_t temporal, const FrameFeatures& features);
+	template <typename SpecificKWRanker, typename SpecificFrameFeatures>
+	inline void rescore_keywords(SpecificKWRanker& kw_ranker, const TextualQuery& query, size_t temporal,
+	                             const SpecificFrameFeatures& features)
+	{
+		kw_ranker.rank_sentence_query(query, _user_context.ctx.scores, features, temporal);
+
+		_user_context.ctx.used_tools.KWs_used = true;
+	}
 
 	/**
 	 *	Applies feedback from the user based

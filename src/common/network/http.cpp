@@ -89,7 +89,6 @@ static int trace_fn(CURL* handle, curl_infotype type, char* dt, size_t size, voi
 
 #endif  // DEBUG_CURL_REQUESTS
 
-enum class RequestType { GET, POST };
 
 static size_t res_cb(char* contents, size_t size, size_t nmemb, void* userp)
 {
@@ -99,11 +98,11 @@ static size_t res_cb(char* contents, size_t size, size_t nmemb, void* userp)
 
 static void request_worker(RequestType type, const std::string& submit_URL, const nlohmann::json& body,
                            const nlohmann::json& /*headers*/ = {},
-                           std::function<void(ReqCode, nlohmann::json)> cb_succ = {}, std::function<void()> cb_err = {},
+                           std::function<void(ReqCode, std::vector<uint8_t>&&)> cb_succ = {}, std::function<void()> cb_err = {},
                            const std::string& cookie_filepath = "", bool allow_insecure = false)
 {
 	CURL* curl = curl_easy_init();
-	std::string res_buffer;
+	//std::string res_buffer;
 
 	std::string url = submit_URL;
 	static std::string hdr = "Content-type: application/json";
@@ -175,7 +174,17 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	}
 	curl_easy_setopt(curl, CURLOPT_HEADER, 0);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, res_cb);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res_buffer);
+
+	std::vector<uint8_t> res_buffer;
+	auto parse_function = [](void *data, size_t size, size_t nmemb, std::vector<uint8_t> *userp) {
+		userp->resize(nmemb);
+		for (size_t i = 0; i < nmemb; ++i) {
+			(*userp)[i] = ((uint8_t*) data)[i];
+		}
+	};
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &parse_function);
+ 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res_buffer);
+
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, &reqheader);
 
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
@@ -194,10 +203,8 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	if (res == CURLE_OK) {
 		SHLOG_D("HTTP request OK: '" << url << "'");
 
-		nlohmann::json json_data(nlohmann::json::parse(res_buffer));
-
 		// Call the success
-		cb_succ(static_cast<ReqCode>(res_code), json_data);
+		cb_succ(static_cast<ReqCode>(res_code), std::move(res_buffer));
 	} else {
 		SHLOG_E("POST request failed with cURL error: " << curl_easy_strerror(res));
 
@@ -235,48 +242,55 @@ void Http::do_GET_async(const std::string& URL, const nlohmann::json& query, con
 	common_finish();
 }
 
-std::pair<ReqCode, nlohmann::json> sh::Http::do_POST_sync(const std::string& URL, const nlohmann::json& body,
-                                                          const nlohmann::json& /*headers*/)
-{
-	bool fail{ false };
-
-	nlohmann::json res_data;
-	ReqCode res_code;
-
-	auto succ_fn = [&res_data, &res_code](ReqCode code, nlohmann::json _data) {
-		res_code = code;
-		res_data = _data;
-	};
-
-	auto err_fn = [&fail]() { fail = true; };
-
-	std::thread worker{ &request_worker, RequestType::POST, URL, body, nlohmann::json{}, succ_fn, err_fn, "",
-		                _allow_insecure };
-	worker.join();  //< Wait for the thread right away
-
-	common_finish();
-	return std::pair<ReqCode, nlohmann::json>{ res_code, res_data };
-}
-
-std::pair<ReqCode, nlohmann::json> sh::Http::do_GET_sync(const std::string& URL, const nlohmann::json& body,
+std::pair<ReqCode, std::vector<uint8_t>> sh::Http::do_request_sync(const RequestType request_method, const std::string& URL, const nlohmann::json& body,
                                                          const nlohmann::json& /*headers*/)
 {
 	bool fail{ false };
 
-	nlohmann::json res_data;
+	std::vector<uint8_t> res_data;
 	ReqCode res_code;
 
-	auto succ_fn = [&res_data, &res_code](ReqCode code, nlohmann::json _data) {
+	auto succ_fn = [&res_data, &res_code](ReqCode code, std::vector<uint8_t>&& res_buffer) {
 		res_code = code;
-		res_data = _data;
+		res_data = std::move(res_buffer);
 	};
 
 	auto err_fn = [&fail]() { fail = true; };
 
-	std::thread worker{ &request_worker, RequestType::GET, URL, body,           nlohmann::json{},
+	std::thread worker{ &request_worker, request_method, URL, body,           nlohmann::json{},
 		                succ_fn,         err_fn,           "",  _allow_insecure };
 	worker.join();  //< Wait for the thread right away
 
 	common_finish();
+	return std::pair<ReqCode, std::vector<uint8_t>>{ res_code, res_data };
+}
+
+std::pair<ReqCode, nlohmann::json> sh::Http::do_POST_sync_json(const std::string& URL, const nlohmann::json& body,
+                                                          const nlohmann::json& headers)
+{
+	auto [res_code, res_buffer] = do_request_sync(RequestType::POST, URL, body, headers);
+	nlohmann::json res_data(nlohmann::json::parse(res_buffer));
+
 	return std::pair<ReqCode, nlohmann::json>{ res_code, res_data };
+}
+
+std::pair<ReqCode, nlohmann::json> sh::Http::do_GET_sync_json(const std::string& URL, const nlohmann::json& body,
+                                                         const nlohmann::json& headers)
+{
+	auto [res_code, res_buffer] = do_request_sync(RequestType::GET, URL, body, headers);
+	nlohmann::json res_data(nlohmann::json::parse(res_buffer));
+
+	return std::pair<ReqCode, nlohmann::json>{ res_code, res_data };
+}
+
+std::pair<ReqCode, std::vector<float>> sh::Http::do_GET_sync_floats(const std::string& URL, const nlohmann::json& body,
+                                                         const nlohmann::json& headers)
+{
+	auto [res_code, res_buffer] = do_request_sync(RequestType::GET, URL, body, headers);
+	do_assert(res_buffer.size() % sizeof(float) == 0, "Float array in binary should be aligned to multiple of 4!");
+
+	std::vector<float> res_data(res_buffer.size() / sizeof(float), 0);
+	std::copy(res_buffer.begin(), res_buffer.end(), (uint8_t*) res_data.data());
+
+	return std::pair<ReqCode, std::vector<float>>{ res_code, res_data };
 }

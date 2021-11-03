@@ -278,7 +278,7 @@ FrameId ScoreModel::weighted_example(const std::vector<FrameId>& subset) const
 	return subset[dist(gen)];
 }
 
-void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const FrameFeatures& features)
+void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const PrimaryFrameFeatures& features)
 {
 	if (likes.empty()) return;
 	invalidate_cache();

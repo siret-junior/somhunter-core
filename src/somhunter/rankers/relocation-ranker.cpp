@@ -26,7 +26,7 @@
 using namespace sh;
 
 void RelocationRanker::score(const RelocationQuery& query, ScoreModel& model, size_t temporal,
-                             const FrameFeatures& _dataset_features) const
+                             const PrimaryFrameFeatures& _dataset_features) const
 {
 	if (query == IMAGE_ID_ERR_VAL) return;
 
