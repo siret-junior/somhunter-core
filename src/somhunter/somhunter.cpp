@@ -345,8 +345,12 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		_user_context.ctx.last_temporal_queries = temporal_query;
 		// Normalize the inverse scores
 		_user_context.ctx.scores.normalize(_user_context.ctx.temporal_size);
+
+		// CLIP needs smaller power due to the curse of dimensionality
+		float power = query.score_secondary() ? 25 : 50; 
 		// Apply temporal fusion and trnsform inv. scores to scores
-		_user_context.ctx.scores.apply_temporals(_user_context.ctx.temporal_size, _dataset_frames);
+		_user_context.ctx.scores.apply_temporals(_user_context.ctx.temporal_size, _dataset_frames, power);
+		
 		// Normalize the scores
 		_user_context.ctx.scores.normalize(_user_context.ctx.temporal_size);
 	}
