@@ -175,15 +175,8 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	curl_easy_setopt(curl, CURLOPT_HEADER, 0);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, res_cb);
 
-	std::vector<uint8_t> res_buffer;
-	auto parse_function = [](void *data, size_t size, size_t nmemb, std::vector<uint8_t> *userp) {
-		userp->resize(nmemb);
-		for (size_t i = 0; i < nmemb; ++i) {
-			(*userp)[i] = ((uint8_t*) data)[i];
-		}
-	};
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &parse_function);
- 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &res_buffer);
+	std::string str_buffer;
+ 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&str_buffer);
 
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, &reqheader);
 
@@ -202,6 +195,7 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 
 	if (res == CURLE_OK) {
 		SHLOG_D("HTTP request OK: '" << url << "'");
+		std::vector<uint8_t> res_buffer(str_buffer.begin(), str_buffer.end());
 
 		// Call the success
 		cb_succ(static_cast<ReqCode>(res_code), std::move(res_buffer));

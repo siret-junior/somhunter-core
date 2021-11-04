@@ -1275,7 +1275,7 @@ FramePointerRange Somhunter::get_topKNN_display(FrameId selected_image, PageId p
 
 FramePointerRange Somhunter::get_page_from_last(PageId page)
 {
-	SHLOG_D("Getting page " << page << ", page size " << _settings.display_page_size);
+	SHLOG_D("Getting page " << page << ", page size " << _settings.presentation_views.display_page_size);
 
 	const auto& ss{ _settings.presentation_views };
 
