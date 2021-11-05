@@ -264,8 +264,10 @@ std::pair<ReqCode, nlohmann::json> sh::Http::do_POST_sync_json(const std::string
                                                           const nlohmann::json& headers)
 {
 	auto [res_code, res_buffer] = do_request_sync(RequestType::POST, URL, body, headers);
-	nlohmann::json res_data(nlohmann::json::parse(res_buffer));
-
+	nlohmann::json res_data;
+	if (!res_buffer.empty())
+		res_data = nlohmann::json::parse(res_buffer);
+	
 	return std::pair<ReqCode, nlohmann::json>{ res_code, res_data };
 }
 
@@ -273,7 +275,9 @@ std::pair<ReqCode, nlohmann::json> sh::Http::do_GET_sync_json(const std::string&
                                                          const nlohmann::json& headers)
 {
 	auto [res_code, res_buffer] = do_request_sync(RequestType::GET, URL, body, headers);
-	nlohmann::json res_data(nlohmann::json::parse(res_buffer));
+	nlohmann::json res_data;
+	if (!res_buffer.empty())
+		res_data = nlohmann::json::parse(res_buffer);
 
 	return std::pair<ReqCode, nlohmann::json>{ res_code, res_data };
 }
