@@ -617,7 +617,7 @@ public:
 	std::vector<FrameId> targets;
 
 	bool is_save{ false };
-	bool _score_secondary{ true };
+	bool _score_secondary{ false };
 };
 
 struct BaseBenchmarkQuery {
