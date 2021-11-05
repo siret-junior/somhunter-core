@@ -104,7 +104,7 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 		    _user_context.ctx._prev_query.get_plain_text_query(), ss.topn_frames_per_video, ss.topn_frames_per_shot);
 	}
 
-	return GetDisplayResult{ frs, _user_context.ctx.likes, _user_context._bookmarks };
+	return GetDisplayResult{ frs, _user_context.ctx.likes, _user_context._bookmarks, _user_context._videos_seen };
 }
 
 std::vector<bool> Somhunter::like_frames(const std::vector<FrameId>& new_likes)
@@ -1243,6 +1243,7 @@ FramePointerRange Somhunter::get_video_detail_display(FrameId selected_image, bo
 
 	_user_context.ctx.current_display = _dataset_frames.range_to_video_frame(video_frames);
 	_user_context.ctx.curr_disp_type = DisplayType::DVideoDetail;
+	_user_context._videos_seen.insert(v_id);
 
 	return FramePointerRange(_user_context.ctx.current_display);
 }

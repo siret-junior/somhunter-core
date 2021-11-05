@@ -62,6 +62,8 @@ public:
 
 		_history.clear();
 		_history.emplace_back(ctx);
+
+		_videos_seen.clear();
 	}
 
 	// ---
@@ -91,6 +93,8 @@ public:  //< This is temporary, until we support multiple users
 	/** Frames selected as important. */
 	BookmarksCont _bookmarks;
 	bool _force_result_log;
+
+	ScreenVideosCont _videos_seen;
 };
 
 /** Result type `get_display` returns */
@@ -98,6 +102,7 @@ struct GetDisplayResult {
 	FramePointerRange _dataset_frames;
 	const LikesCont& likes;
 	const LikesCont& _bookmarks;
+	const ScreenVideosCont& _videos_seen;
 };
 
 /** Result type `rescore` returns */

@@ -129,7 +129,7 @@ json::value to_QueryFilters(Somhunter* /*p_core*/, const SearchContext& search_c
  * OpenAPI: FrameReference
  */
 json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, const LikesCont& likes,
-                              const BookmarksCont& _bookmarks, const std::string& path_prefix)
+                              const BookmarksCont& _bookmarks, const ScreenVideosCont& _videos_seen, const std::string& path_prefix)
 {
 	json::value result_obj = json::value::object();
 	{
@@ -143,12 +143,14 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 
 		bool is_liked{ false };
 		bool is_bookmarked{ false };
+		bool video_seen{ false };
 		std::string filename{};
 
 		if (p_frame != nullptr) {
 			ID = p_frame->frame_ID;
 			v_ID = p_frame->video_ID;
 			s_ID = p_frame->shot_ID;
+			video_seen = _videos_seen.count(v_ID) > 0;
 
 			hour = p_frame->hour;
 			weekday = p_frame->weekday;
@@ -219,6 +221,10 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 
 		{ /* *** src *** */
 			result_obj[U("src")] = json::value::string(to_string_t(filename));
+		}
+
+		{
+			result_obj[U("videoSeen")] = json::value::boolean(video_seen);
 		}
 	}
 	return result_obj;
@@ -298,8 +304,8 @@ json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx)
 			if (search_ctx.last_temporal_queries.size() > 0) q0 = search_ctx.last_temporal_queries[0].relocation;
 			if (search_ctx.last_temporal_queries.size() > 1) q1 = search_ctx.last_temporal_queries[1].relocation;
 
-			json::value q0_napi = to_FrameReference(p_core, p_core->get_frame_ptr(q0), {}, {}, "");
-			json::value q1_napi = to_FrameReference(p_core, p_core->get_frame_ptr(q1), {}, {}, "");
+			json::value q0_napi = to_FrameReference(p_core, p_core->get_frame_ptr(q0), {}, {}, {}, "");
+			json::value q1_napi = to_FrameReference(p_core, p_core->get_frame_ptr(q1), {}, {}, {}, "");
 			value_arr[0] = q0_napi;
 			value_arr[1] = q1_napi;
 		}
@@ -361,7 +367,7 @@ json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx)
 		size_t i{ 0 };
 		for (auto&& f_ID : search_ctx.likes) {
 			const VideoFrame& f{ p_core->get_frame(f_ID) };
-			auto fr{ to_FrameReference(p_core, &f, search_ctx.likes, _bookmarks, "") };
+			auto fr{ to_FrameReference(p_core, &f, search_ctx.likes, _bookmarks, ctx._videos_seen, "") };
 
 			likes_arr[i] = fr;
 			++i;
@@ -429,7 +435,7 @@ json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext
 
 		size_t i{ 0 };
 		for (auto&& b : ctx._bookmarks) {
-			bookmarked_arr[i] = to_FrameReference(p_core, p_core->get_frame_ptr(b), search_ctx.likes, _bookmarks, "");
+			bookmarked_arr[i] = to_FrameReference(p_core, p_core->get_frame_ptr(b), search_ctx.likes, _bookmarks, ctx._videos_seen, "");
 			++i;
 		}
 		result_obj[U("bookmarkedFrames")] = bookmarked_arr;
@@ -439,7 +445,7 @@ json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext
 		json::value arr{ json::value::array(2) };
 		size_t i{ 0 };
 		for (auto&& f : ctx.ctx.curr_targets) {
-			auto fr{ to_FrameReference(p_core, &f, {}, {}, "") };
+			auto fr{ to_FrameReference(p_core, &f, {}, {}, {}, "") };
 
 			arr[i] = fr;
 			++i;
@@ -478,7 +484,7 @@ json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayR
 
 		size_t i{ 0 };
 		for (auto it{ _dataset_frames.begin() }; it != _dataset_frames.end(); ++it) {
-			auto fr{ to_FrameReference(p_core, *it, likes, _bookmarks, path_prefix) };
+			auto fr{ to_FrameReference(p_core, *it, likes, _bookmarks, res._videos_seen, path_prefix) };
 
 			arr[i] = fr;
 			++i;
@@ -518,7 +524,7 @@ json::value to_Response__GetDetailScreen__Post(Somhunter* p_core, const GetDispl
 
 		size_t i{ 0 };
 		for (auto it{ _dataset_frames.begin() }; it != _dataset_frames.end(); ++it) {
-			auto fr{ to_FrameReference(p_core, *it, likes, _bookmarks, path_prefix) };
+			auto fr{ to_FrameReference(p_core, *it, likes, _bookmarks, res._videos_seen, path_prefix) };
 
 			arr[i] = fr;
 			++i;
@@ -589,7 +595,7 @@ json::value to_Response__Rescore__Post(Somhunter* p_core, const RescoreResult& r
 		json::value arr{ json::value::array(2) };
 		size_t i{ 0 };
 		for (auto&& f : rescore_res.targets) {
-			auto fr{ to_FrameReference(p_core, &f, {}, {}, "") };
+			auto fr{ to_FrameReference(p_core, &f, {}, {}, {}, "") };
 
 			arr[i] = fr;
 			++i;

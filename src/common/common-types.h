@@ -89,6 +89,8 @@ using LikesCont = std::set<FrameId>;
 using BookmarksCont = std::set<FrameId>;
 using ShownFramesCont = std::set<FrameId>;
 
+using ScreenVideosCont = std::set<VideoId>;
+
 #define SIZE_T_ERR_VAL (std::numeric_limits<size_t>::max)()
 #define IMAGE_ID_ERR_VAL (std::numeric_limits<FrameId>::max)()
 #define VIDEO_ID_ERR_VAL (std::numeric_limits<VideoId>::max)()
