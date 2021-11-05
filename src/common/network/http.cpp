@@ -4,6 +4,7 @@
 #include <functional>
 // ---
 #include <curl/curl.h>
+#include <regex>
 
 using namespace sh;
 
@@ -104,7 +105,7 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	CURL* curl = curl_easy_init();
 	//std::string res_buffer;
 
-	std::string url = submit_URL;
+	std::string url = std::regex_replace(submit_URL, std::regex("\\s"), "%20");
 	static std::string hdr = "Content-type: application/json";
 	static struct curl_slist reqheader = { hdr.data(), nullptr };
 	auto data_serialized{ body.dump() };
