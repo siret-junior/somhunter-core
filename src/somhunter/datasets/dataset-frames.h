@@ -272,7 +272,7 @@ private:
 	/**
 	 * Parses the desired metadata from the metadata line.
 	 */
-	std::tuple<Weekday, Hour, LscId, Year> parse_metadata_line(const std::string& line);
+	FiltersData parse_metadata_line(const std::string& line);
 };
 
 };  // namespace sh

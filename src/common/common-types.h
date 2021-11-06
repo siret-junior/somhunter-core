@@ -247,6 +247,18 @@ using Hour = uint8_t;
 using Year = uint16_t;
 using LscId = std::string;
 
+struct FiltersData {
+	Weekday weekday;
+
+	/** In interval [0, 23]. */
+	Hour hour;
+
+	/** Year interval */
+	Year year;
+
+	LscId LSC_id;
+};
+
 };  // namespace sh
 
 #endif  // COMMON_TYPES_H_
