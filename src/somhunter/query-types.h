@@ -115,7 +115,7 @@ struct Filters {
 
 	bool operator==(const Filters& other) const
 	{
-		return (time == other.time && days == other.days && dataset_parts == other.dataset_parts && years == other.days);
+		return (time == other.time && days == other.days && dataset_parts == other.dataset_parts && years == other.years);
 	}
 
 	bool is_default() const
