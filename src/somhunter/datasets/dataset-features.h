@@ -94,9 +94,18 @@ public:
 };
 
 template <typename SETT>
-FrameFeatures<SETT>::FrameFeatures(const DatasetFrames& p, const SETT& config) : _size(p.size()), _dim(config._dim)
+FrameFeatures<SETT>::FrameFeatures(const DatasetFrames& p, const SETT& config) : _size{ 0 }, _dim{ 0 }
 {
+	// If no features are provided
+	if (config.features_file.empty()) {
+		SHLOG_W("No features provided for '" << utils::type_name<SETT>() << "'...");
+		return;
+	}
+
 	SHLOG_D("Loading dataset features from '" << config.features_file << "'...");
+
+	_size = p.size();
+	_dim = config._dim;
 
 	_data.resize(_dim * _size);
 	std::ifstream in(config.features_file, std::ios::binary);

@@ -192,7 +192,7 @@ std::vector<const Keyword*> Somhunter::autocomplete_keywords(const std::string& 
 	return res;
 }
 
-bool Somhunter::has_metadata() const { return !_settings.datasets.LSC_metadata_file.empty(); }
+bool Somhunter::has_metadata() const { return _settings.datasets.LSC_metadata_file.has_value(); }
 
 void Somhunter::apply_filters()
 {
@@ -212,7 +212,7 @@ void Somhunter::apply_filters()
 
 	auto ds_valid_interval{ filters.get_dataset_parts_valid_interval(_dataset_frames.size()) };
 
-	//std::cout << "[" << ds_valid_interval.first << ", " << ds_valid_interval.second << ")" << std::endl;
+	// std::cout << "[" << ds_valid_interval.first << ", " << ds_valid_interval.second << ")" << std::endl;
 
 	// A closure that determines if the frame should be filtered out
 	auto is_out{ [&days, t_from, t_to, &ds_valid_interval](const VideoFrame& f) {
@@ -331,7 +331,8 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 				// If secondary features should be used
 				if (query.score_secondary()) {
 					SHLOG_D("Running plain texual model << SECONDARY SCORING >>...");
-					rescore_keywords(_secondary_keyword_ranker, moment_query.textual, moment, _dataset_features.secondary);
+					rescore_keywords(_secondary_keyword_ranker, moment_query.textual, moment,
+					                 _dataset_features.secondary);
 				} else {
 					SHLOG_D("Running plain texual model << PRIMARY SCORING >>...");
 					rescore_keywords(_keyword_ranker, moment_query.textual, moment, features);
@@ -347,10 +348,10 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		_user_context.ctx.scores.normalize(_user_context.ctx.temporal_size);
 
 		// CLIP needs smaller power due to the curse of dimensionality
-		float power = query.score_secondary() ? 25 : 50; 
+		float power = query.score_secondary() ? 25 : 50;
 		// Apply temporal fusion and trnsform inv. scores to scores
 		_user_context.ctx.scores.apply_temporals(_user_context.ctx.temporal_size, _dataset_frames, power);
-		
+
 		// Normalize the scores
 		_user_context.ctx.scores.normalize(_user_context.ctx.temporal_size);
 	}
