@@ -26,11 +26,11 @@
 using namespace sh;
 
 void KeywordClipRanker::rank_sentence_query(const std::string& sentence_query, ScoreModel& model,
-	                         const SecondaryFrameFeatures& _dataset_features, size_t temporal)
+                                            const SecondaryFrameFeatures& _dataset_features, size_t temporal)
 {
 	if (sentence_query.empty()) return;
 
-    const nlohmann::json headers;
+	const nlohmann::json headers;
 
 	nlohmann::json body;
 
@@ -38,7 +38,7 @@ void KeywordClipRanker::rank_sentence_query(const std::string& sentence_query, S
 
 	// Compute inverse scores in for the example query
 	auto start = std::chrono::high_resolution_clock::now();
-    auto [code, res] = _http.do_GET_sync_floats(URL, body, headers);
+	auto [code, res] = _http.do_GET_sync_floats(URL, body, headers);
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> diff = end - start;
 	SHLOG_D("CLIP request took " << diff.count() << " [s]");
@@ -55,5 +55,3 @@ void KeywordClipRanker::rank_sentence_query(const std::string& sentence_query, S
 		model.adjust(temporal, i, scores[i]);
 	}
 }
-
-

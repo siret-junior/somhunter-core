@@ -25,5 +25,3 @@
 #include <fstream>
 
 #include "common.h"
-
-

@@ -143,7 +143,8 @@ void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settin
 	SHLOG_D("SOM worker finished.");
 }
 
-AsyncSom::AsyncSom(const Settings& _logger_settings, size_t w, size_t h, const PrimaryFrameFeatures& fs, const ScoreModel& sc)
+AsyncSom::AsyncSom(const Settings& _logger_settings, size_t w, size_t h, const PrimaryFrameFeatures& fs,
+                   const ScoreModel& sc)
     :
 
       _features_data_len{ fs.dim() * sc.size() },

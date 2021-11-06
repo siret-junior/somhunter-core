@@ -32,10 +32,10 @@
 #include "common.h"
 
 #include "dataset-frames.h"
+#include "distances.hpp"
 #include "scores.h"
 #include "settings.h"
 #include "utils.hpp"
-#include "distances.hpp"
 
 namespace sh
 {
@@ -53,14 +53,15 @@ protected:
 };
 
 template <typename SpecificFrameFeatures>
-std::vector<float> EmbeddingRanker<SpecificFrameFeatures>::inverse_score_vector(const std::vector<float>& query_vec,
-                                                         const SpecificFrameFeatures& _dataset_features) const
+std::vector<float> EmbeddingRanker<SpecificFrameFeatures>::inverse_score_vector(
+    const std::vector<float>& query_vec, const SpecificFrameFeatures& _dataset_features) const
 {
 	return inverse_score_vector(query_vec.data(), _dataset_features);
 }
 
 template <typename SpecificFrameFeatures>
-std::vector<float> EmbeddingRanker<SpecificFrameFeatures>::inverse_score_vector(const float* query_vec, const SpecificFrameFeatures& features) const
+std::vector<float> EmbeddingRanker<SpecificFrameFeatures>::inverse_score_vector(
+    const float* query_vec, const SpecificFrameFeatures& features) const
 {
 	size_t target_dim{ features.dim() };
 

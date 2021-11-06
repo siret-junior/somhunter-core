@@ -129,7 +129,8 @@ json::value to_QueryFilters(Somhunter* /*p_core*/, const SearchContext& search_c
  * OpenAPI: FrameReference
  */
 json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, const LikesCont& likes,
-                              const BookmarksCont& _bookmarks, const ScreenVideosCont& _videos_seen, const std::string& path_prefix)
+                              const BookmarksCont& _bookmarks, const ScreenVideosCont& _videos_seen,
+                              const std::string& path_prefix)
 {
 	json::value result_obj = json::value::object();
 	{
@@ -435,7 +436,8 @@ json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext
 
 		size_t i{ 0 };
 		for (auto&& b : ctx._bookmarks) {
-			bookmarked_arr[i] = to_FrameReference(p_core, p_core->get_frame_ptr(b), search_ctx.likes, _bookmarks, ctx._videos_seen, "");
+			bookmarked_arr[i] =
+			    to_FrameReference(p_core, p_core->get_frame_ptr(b), search_ctx.likes, _bookmarks, ctx._videos_seen, "");
 			++i;
 		}
 		result_obj[U("bookmarkedFrames")] = bookmarked_arr;
