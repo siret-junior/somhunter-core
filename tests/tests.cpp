@@ -328,7 +328,7 @@ void TESTER_Somhunter::TEST_rescore_filters(Somhunter &core) {
 
 	size_t t_i{ 0 };
 	for (auto &&[tq, fr, to, days_mask] : input) {
-		Filters fs{ TimeFilter{ fr, to }, WeekDaysFilter{ days_mask } };
+		Filters fs{ TimeFilter{ fr, to },YearFilter{ 2000, 2030 }, WeekDaysFilter{ days_mask } };
 
 		Query q{ std::vector({ tq }) };
 		q.filters = fs;
