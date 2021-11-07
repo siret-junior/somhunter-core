@@ -84,7 +84,7 @@ void TESTER_Somhunter::TEST_canvas_queries(Somhunter &core) {
 void TESTER_Somhunter::TEST_like_frames(Somhunter &core) {
 	SHLOG("\t Testing `Somhunter::like_frames` method...");
 
-	auto [disp, likes, _bookmarks]{ core.get_display(DisplayType::DTopN, 0, 0) };
+	auto [disp, likes, _bookmarks, _video_seen]{ core.get_display(DisplayType::DTopN, 0, 0) };
 	size_t size{ disp.size() };
 	do_assert(size > 0, "Top N display is empty!");
 
@@ -125,7 +125,7 @@ void TESTER_Somhunter::TEST_like_frames(Somhunter &core) {
 void TESTER_Somhunter::TEST_bookmark_frames(Somhunter &core) {
 	SHLOG("\t Testing `Somhunter::bookmark_frames` method...");
 
-	auto [disp, likes, _bookmarks]{ core.get_display(DisplayType::DTopN, 0, 0) };
+	auto [disp, likes, _bookmarks, _video_seen]{ core.get_display(DisplayType::DTopN, 0, 0) };
 	size_t size{ disp.size() };
 	do_assert(size > 0, "Top N display is empty!");
 

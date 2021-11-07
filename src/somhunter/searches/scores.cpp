@@ -278,7 +278,8 @@ FrameId ScoreModel::weighted_example(const std::vector<FrameId>& subset) const
 	return subset[dist(gen)];
 }
 
-void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const FrameFeatures& features)
+void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen,
+                             const PrimaryFrameFeatures& features)
 {
 	if (likes.empty()) return;
 	invalidate_cache();
@@ -337,7 +338,7 @@ void ScoreModel::apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& s
 	normalize();
 }
 
-void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& _dataset_frames)
+void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& _dataset_frames, const float power)
 {
 	if (depth == 0) return;
 
@@ -368,12 +369,12 @@ void ScoreModel::apply_temporals(size_t depth, const DatasetFrames& _dataset_fra
 
 	// Apply exponential
 	for (size_t j = 0; j < _scores.size(); ++j) {
-		_scores[j] = std::exp(_scores[j] * -50);
+		_scores[j] = std::exp(_scores[j] * -power);
 	}
 
 	for (size_t i = 0; i < depth; ++i) {
 		for (size_t j = 0; j < _scores.size(); ++j) {
-			_temporal_scores[i][j] = std::exp(_temporal_scores[i][j] * -50);
+			_temporal_scores[i][j] = std::exp(_temporal_scores[i][j] * -power);
 		}
 	}
 }

@@ -36,9 +36,64 @@ inline std::string require_string_value(const json& json, const std::string& key
 	return json[key].get<std::string>();
 }
 
+/**
+ * \deprecated
+ */
 inline std::string optional_string_value(const json& json, const std::string& key)
 {
 	return (json[key].is_null() ? "" : json[key].get<std::string>());
+}
+
+/** Parses the (potentialy null) value from the given key in JSON structure. */
+template <typename T_>
+inline T_ optional_value_or(const json& j, const std::string& key, const T_& or_val)
+{
+	if (j[key].is_null()) {
+		return or_val;
+	} else {
+		return j[key].get<T_>();
+	}
+}
+
+/**
+ * Parses the (potentialy null or empty) string from the given key in JSON structure.
+ *
+ * Partial specialization of \ref optional_value_or.
+ */
+template <>
+inline std::string optional_value_or(const json& j, const std::string& key, const std::string& or_val)
+{
+	if (j[key].is_null() || j[key].get<std::string>().empty()) {
+		return or_val;
+	} else {
+		return j[key].get<std::string>();
+	}
+}
+
+/** Parses the (potentialy null) value from the given key in JSON structure. */
+template <typename T_>
+inline std::optional<T_> optional_value(const json& j, const std::string& key)
+{
+	if (j[key].is_null()) {
+		return std::nullopt;
+	} else {
+		return std::optional<T_>{ j[key].get<T_>() };
+	}
+}
+
+/**
+ * Parses the (potentialy null or empty) string from the given key in JSON structure.
+ *
+ * Partial specialization of \ref optional_value.
+ */
+template <>
+inline std::optional<std::string> optional_value(const json& j, const std::string& key)
+{
+	if (j[key].is_null() || j[key].get<std::string>().empty()) {
+		return std::nullopt;
+	} else {
+		return std::optional<std::string>{ j[key].get<std::string>() };
+	}
 }
 
 template <typename T_>

@@ -32,12 +32,23 @@
 // ---
 #include "common.h"
 #include "embedding-ranker.h"
+#include "http.h"
 #include "utils.hpp"
 
 namespace sh
 {
-class KeywordClipRanker : public EmbeddingRanker
+
+class KeywordClipRanker : public EmbeddingRanker<SecondaryFrameFeatures>
 {
+public:
+	inline KeywordClipRanker(const Settings& config) : server_url(config.remote_services.CLIP_query_to_vec.address) {}
+
+	void rank_sentence_query(const std::string& sentence_query, ScoreModel& model,
+	                         const SecondaryFrameFeatures& _dataset_features, size_t temporal);
+
+private:
+	Http _http;
+	std::string server_url;
 };
 };  // namespace sh
 

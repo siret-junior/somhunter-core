@@ -151,7 +151,7 @@ DatasetsSettings::SecondaryFeaturesSettings parse_secondary_features_settings(co
 		                                                // .features_dim
 		                                                require_int_value<size_t>(json, "features_dim"),
 		                                                // .features_file
-		                                                require_string_value(json, "features_file")
+		                                                optional_value_or<std::string>(json, "features_file", "")
 	};
 }
 
@@ -248,7 +248,7 @@ DatasetsSettings parse_datasets_settings(const json& json)
 		                     // .thumbs_dir
 		                     require_string_value(json, "thumbs_dir"),
 		                     // .LSC_metadata_file (optional)
-		                     json["LSC_metadata_file"].get<std::string>(),
+		                     optional_value<std::string>(json, "LSC_metadata_file"),
 		                     // .frames_list_file
 		                     require_string_value(json, "frames_list_file"),
 		                     // .filename_offsets

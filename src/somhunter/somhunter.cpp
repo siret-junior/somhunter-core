@@ -104,7 +104,7 @@ GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_ima
 		    _user_context.ctx._prev_query.get_plain_text_query(), ss.topn_frames_per_video, ss.topn_frames_per_shot);
 	}
 
-	return GetDisplayResult{ frs, _user_context.ctx.likes, _user_context._bookmarks };
+	return GetDisplayResult{ frs, _user_context.ctx.likes, _user_context._bookmarks, _user_context._videos_seen };
 }
 
 std::vector<bool> Somhunter::like_frames(const std::vector<FrameId>& new_likes)
@@ -192,7 +192,7 @@ std::vector<const Keyword*> Somhunter::autocomplete_keywords(const std::string& 
 	return res;
 }
 
-bool Somhunter::has_metadata() const { return !_settings.datasets.LSC_metadata_file.empty(); }
+bool Somhunter::has_metadata() const { return _settings.datasets.LSC_metadata_file.has_value(); }
 
 void Somhunter::apply_filters()
 {
@@ -336,10 +336,11 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 				// If secondary features should be used
 				if (query.score_secondary()) {
 					SHLOG_D("Running plain texual model << SECONDARY SCORING >>...");
-					rescore_keywords(moment_query.textual, moment, _dataset_features.secondary);
+					rescore_keywords(_secondary_keyword_ranker, moment_query.textual, moment,
+					                 _dataset_features.secondary);
 				} else {
 					SHLOG_D("Running plain texual model << PRIMARY SCORING >>...");
-					rescore_keywords(moment_query.textual, moment, features);
+					rescore_keywords(_keyword_ranker, moment_query.textual, moment, features);
 				}
 			}
 			++moment;
@@ -350,8 +351,12 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		_user_context.ctx.last_temporal_queries = temporal_query;
 		// Normalize the inverse scores
 		_user_context.ctx.scores.normalize(_user_context.ctx.temporal_size);
+
+		// CLIP needs smaller power due to the curse of dimensionality
+		float power = query.score_secondary() ? 25 : 50;
 		// Apply temporal fusion and trnsform inv. scores to scores
-		_user_context.ctx.scores.apply_temporals(_user_context.ctx.temporal_size, _dataset_frames);
+		_user_context.ctx.scores.apply_temporals(_user_context.ctx.temporal_size, _dataset_frames, power);
+
 		// Normalize the scores
 		_user_context.ctx.scores.normalize(_user_context.ctx.temporal_size);
 	}
@@ -1088,13 +1093,6 @@ void Somhunter::generate_new_targets()
 	_user_context.ctx.curr_targets = std::move(targets);
 }
 
-void Somhunter::rescore_keywords(const TextualQuery& query, size_t temporal, const FrameFeatures& features)
-{
-	_keyword_ranker.rank_sentence_query(query, _user_context.ctx.scores, features, _settings, temporal);
-
-	_user_context.ctx.used_tools.KWs_used = true;
-}
-
 void Somhunter::rescore_feedback()
 {
 	if (_user_context.ctx.likes.empty()) return;
@@ -1251,6 +1249,7 @@ FramePointerRange Somhunter::get_video_detail_display(FrameId selected_image, bo
 
 	_user_context.ctx.current_display = _dataset_frames.range_to_video_frame(video_frames);
 	_user_context.ctx.curr_disp_type = DisplayType::DVideoDetail;
+	_user_context._videos_seen.insert(v_id);
 
 	return FramePointerRange(_user_context.ctx.current_display);
 }
@@ -1287,7 +1286,7 @@ FramePointerRange Somhunter::get_topKNN_display(FrameId selected_image, PageId p
 
 FramePointerRange Somhunter::get_page_from_last(PageId page)
 {
-	SHLOG_D("Getting page " << page << ", page size " << _settings.display_page_size);
+	SHLOG_D("Getting page " << page << ", page size " << _settings.presentation_views.display_page_size);
 
 	const auto& ss{ _settings.presentation_views };
 

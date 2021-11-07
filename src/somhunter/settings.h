@@ -3,6 +3,7 @@
 #define SETTINGS_H_
 
 #include <fstream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <variant>
@@ -157,7 +158,7 @@ struct DatasetsSettings {
 	std::string frames_dir;
 	std::string thumbs_dir;
 	/** File with time and position for LSC datasets. For non-LSC could be empty. */
-	std::string LSC_metadata_file;
+	std::optional<std::string> LSC_metadata_file;
 	std::string frames_list_file;
 	VideoFilenameOffsets filename_offsets;
 

@@ -97,12 +97,12 @@ DatasetFrames::DatasetFrames(const Settings& config)
 	std::ifstream ifs_meta;
 
 	// If metadata file available
-	if (!c.LSC_metadata_file.empty()) {
+	if (c.LSC_metadata_file.has_value()) {
 		parse_metadata = true;
 
-		ifs_meta.open(c.LSC_metadata_file);
+		ifs_meta.open(c.LSC_metadata_file.value());
 		if (!ifs_meta.good()) {
-			auto msg{ "Failed to open " + c.LSC_metadata_file };
+			auto msg{ "Failed to open " + c.LSC_metadata_file.value() };
 			SHLOG_E(msg);
 			throw std::runtime_error(msg);
 		}
@@ -124,7 +124,7 @@ DatasetFrames::DatasetFrames(const Settings& config)
 			if (parse_metadata) {
 				// Read one metadata line
 				if (!getline(ifs_meta, md_line)) {
-					auto msg{ "Not enough lines in " + c.LSC_metadata_file };
+					auto msg{ "Not enough lines in " + c.LSC_metadata_file.value() };
 					SHLOG_E(msg);
 					throw std::runtime_error(msg);
 				}

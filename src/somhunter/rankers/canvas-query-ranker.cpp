@@ -149,7 +149,7 @@ CanvasQueryRanker::CanvasQueryRanker(const Settings& _settings, KeywordRanker* p
 }
 
 void CanvasQueryRanker::score(const CanvasQuery& canvas_query, ScoreModel& model, size_t temporal,
-                              UsedTools& used_tools, const FrameFeatures& /*features*/,
+                              UsedTools& used_tools, const PrimaryFrameFeatures& /*features*/,
                               const DatasetFrames& /*_dataset_frames*/)
 {
 	if (!_loaded) {

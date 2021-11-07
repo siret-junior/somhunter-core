@@ -94,7 +94,7 @@ public:
 	 * scores and aggregates into full image scores.
 	 * Depth parameter defines depth of temporal query
 	 */
-	void apply_temporals(size_t depth, const DatasetFrames& _dataset_frames);
+	void apply_temporals(size_t depth, const DatasetFrames& _dataset_frames, const float power);
 
 	/** Normalizes the score distribution. */
 	void normalize(size_t depth = MAX_TEMPORAL_SIZE);
@@ -125,7 +125,7 @@ public:
 	/**
 	 * Applies relevance feedback rescore based on the Bayesian update rule.
 	 */
-	void apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const FrameFeatures& features);
+	void apply_bayes(std::set<FrameId> likes, const std::set<FrameId>& screen, const PrimaryFrameFeatures& features);
 
 	/**
 	 * Gets the images with the highest scores but respecting the provided

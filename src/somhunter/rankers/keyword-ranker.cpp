@@ -307,8 +307,7 @@ std::vector<KeywordId> KeywordRanker::decode_keywords(const std::vector<std::str
 }
 
 void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
-                                        const FrameFeatures& _dataset_features, const Settings& /*cfg*/,
-                                        size_t temporal) const
+                                        const PrimaryFrameFeatures& _dataset_features, size_t temporal) const
 {
 	auto tokens{ tokenize_textual_query(sentence_query_raw) };
 

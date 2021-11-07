@@ -30,26 +30,24 @@
 // ---
 #include "async-som.h"
 #include "common.h"
+#include "dataset-features.h"
 #include "eval-server-client.h"
 #include "logger.h"
 #include "search-context.h"
 
 namespace sh
 {
-class DatasetFrames;
-class FrameFeatures;
-
 /** Represents exactly one state of ONE user that uses this core. */
 class UserContext
 {
 public:
 	UserContext() = delete;
 	UserContext(const Settings& settings, const std::string& username, const DatasetFrames* p_dataset_frames,
-	            const FrameFeatures* p_dataset_features);
+	            const PrimaryFrameFeatures* p_dataset_features);
 
 	const std::string& get_username() const { return _username; };
 	const DatasetFrames* get_frames() const { return _p_dataset_frames; };
-	const FrameFeatures* get_features() const { return _p_dataset_features; };
+	const PrimaryFrameFeatures* get_features() const { return _p_dataset_features; };
 
 	void reset()
 	{
@@ -64,6 +62,8 @@ public:
 
 		_history.clear();
 		_history.emplace_back(ctx);
+
+		_videos_seen.clear();
 	}
 
 	// ---
@@ -71,7 +71,7 @@ public:
 
 public:  //< This is temporary, until we support multiple users
 	const DatasetFrames* _p_dataset_frames;
-	const FrameFeatures* _p_dataset_features;
+	const PrimaryFrameFeatures* _p_dataset_features;
 
 	// *** SEARCH CONTEXT ***
 	SearchContext ctx;
@@ -93,6 +93,8 @@ public:  //< This is temporary, until we support multiple users
 	/** Frames selected as important. */
 	BookmarksCont _bookmarks;
 	bool _force_result_log;
+
+	ScreenVideosCont _videos_seen;
 };
 
 /** Result type `get_display` returns */
@@ -100,6 +102,7 @@ struct GetDisplayResult {
 	FramePointerRange _dataset_frames;
 	const LikesCont& likes;
 	const LikesCont& _bookmarks;
+	const ScreenVideosCont& _videos_seen;
 };
 
 /** Result type `rescore` returns */
