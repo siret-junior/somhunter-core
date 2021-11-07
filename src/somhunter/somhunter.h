@@ -349,7 +349,7 @@ public:
 
 	/**
 	 * Generates the top example images from the database for all supported W2VV keywords.
-	 * 
+	 *
 	 * For examples used as `keyword-to-ID.W2VV-BoW.csv` file.
 	 */
 	void generate_example_images_for_keywords()

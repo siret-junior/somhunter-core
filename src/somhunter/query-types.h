@@ -115,12 +115,14 @@ struct Filters {
 
 	bool operator==(const Filters& other) const
 	{
-		return (time == other.time && days == other.days && dataset_parts == other.dataset_parts && years == other.years);
+		return (time == other.time && days == other.days && dataset_parts == other.dataset_parts &&
+		        years == other.years);
 	}
 
 	bool is_default() const
 	{
-		return years == YearFilter{} && time == TimeFilter{} && days == WeekDaysFilter{} && dataset_parts == std::vector<bool>{ true, true };
+		return years == YearFilter{} && time == TimeFilter{} && days == WeekDaysFilter{} &&
+		       dataset_parts == std::vector<bool>{ true, true };
 	}
 
 	/** Based on `dataset_parts` it returns the allowed frame IDs. */

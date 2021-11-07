@@ -214,7 +214,7 @@ void Somhunter::apply_filters()
 
 	auto ds_valid_interval{ filters.get_dataset_parts_valid_interval(_dataset_frames.size()) };
 
-	//std::cout << "[" << ds_valid_interval.first << ", " << ds_valid_interval.second << ")" << std::endl;
+	// std::cout << "[" << ds_valid_interval.first << ", " << ds_valid_interval.second << ")" << std::endl;
 
 	// A closure that determines if the frame should be filtered out
 	auto is_out{ [&days, t_from, t_to, &ds_valid_interval, y_from, y_to](const VideoFrame& f) {

@@ -43,7 +43,7 @@ struct VideoFrame {
 	VideoFrame() = default;
 	VideoFrame(std::string&& filename, VideoId video_ID, ShotId shot_ID, FrameId frame_number, FrameId image_ID,
 	           uint8_t weekday = 0 /* Default is Monday. */, uint8_t hour = 0 /* Default is midnight. */,
-			   uint16_t year = 2021 /* Default is 2021. */)
+	           uint16_t year = 2021 /* Default is 2021. */)
 	    : filename{ std::move(filename) },
 	      video_ID{ video_ID },
 	      shot_ID{ shot_ID },
@@ -52,7 +52,7 @@ struct VideoFrame {
 	      LSC_id{ "" },
 	      weekday{ weekday },
 	      hour{ hour },
-		  year{ year }
+	      year{ year }
 	{
 	}
 

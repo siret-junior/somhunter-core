@@ -31,16 +31,13 @@
 #include <vector>
 // ---
 #include "common.h"
-#include "utils.hpp"
 #include "embedding-ranker.h"
+#include "utils.hpp"
 
 namespace sh
 {
-
 class KeywordClipRanker : public EmbeddingRanker
 {
-	
-	
 };
 };  // namespace sh
 

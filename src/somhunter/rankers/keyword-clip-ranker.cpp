@@ -21,5 +21,4 @@
 
 #include "keyword-clip-ranker.h"
 
-
 using namespace sh;

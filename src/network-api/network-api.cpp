@@ -1372,7 +1372,8 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 		dataset_parts_mask.emplace_back(flag);
 	}
 
-	return Filters{ TimeFilter{ hourFrom, hourTo }, YearFilter{yearFrom, yearTo}, WeekDaysFilter{ weekdays_mask }, dataset_parts_mask };
+	return Filters{ TimeFilter{ hourFrom, hourTo }, YearFilter{ yearFrom, yearTo }, WeekDaysFilter{ weekdays_mask },
+		            dataset_parts_mask };
 }
 
 void NetworkApi::handle__search__rescore__POST(http_request req)
