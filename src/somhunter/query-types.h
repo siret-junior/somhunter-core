@@ -93,7 +93,7 @@ struct YearFilter {
 	Year from;
 	Year to;
 
-	/** Default state is the whole day */
+	/** Default state is interval [1900, 2100] */
 	YearFilter() : from(1900), to(2100){};
 	YearFilter(Year from, Year to) : from(from), to(to){};
 
