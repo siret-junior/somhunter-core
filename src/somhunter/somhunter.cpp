@@ -209,18 +209,23 @@ void Somhunter::apply_filters()
 	const auto& days{ filters.days };
 	Hour t_from{ filters.time.from };
 	Hour t_to{ filters.time.to };
+	Year y_from{ filters.years.from };
+	Year y_to{ filters.years.to };
 
 	auto ds_valid_interval{ filters.get_dataset_parts_valid_interval(_dataset_frames.size()) };
 
 	// std::cout << "[" << ds_valid_interval.first << ", " << ds_valid_interval.second << ")" << std::endl;
 
 	// A closure that determines if the frame should be filtered out
-	auto is_out{ [&days, t_from, t_to, &ds_valid_interval](const VideoFrame& f) {
+	auto is_out{ [&days, t_from, t_to, &ds_valid_interval, y_from, y_to](const VideoFrame& f) {
 		// If NOT within the selected days
 		if (!days[f.weekday]) return true;
 
 		// If NOT within the hour range
 		if (t_from > f.hour || f.hour > t_to) return true;
+
+		// If NOT within the years range
+		if (y_from > f.year || f.year > y_to) return true;
 
 		// Dataset part filter
 		if (!(ds_valid_interval.first <= f.frame_ID && f.frame_ID < ds_valid_interval.second)) return true;

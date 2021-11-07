@@ -42,7 +42,8 @@ using VideoFramePointer = const VideoFrame*;
 struct VideoFrame {
 	VideoFrame() = default;
 	VideoFrame(std::string&& filename, VideoId video_ID, ShotId shot_ID, FrameId frame_number, FrameId image_ID,
-	           uint8_t weekday = 0 /* Default is Monday. */, uint8_t hour = 0 /* Default is midnight. */)
+	           uint8_t weekday = 0 /* Default is Monday. */, uint8_t hour = 0 /* Default is midnight. */,
+	           uint16_t year = 2021 /* Default is 2021. */)
 	    : filename{ std::move(filename) },
 	      video_ID{ video_ID },
 	      shot_ID{ shot_ID },
@@ -50,7 +51,8 @@ struct VideoFrame {
 	      frame_ID{ image_ID },
 	      LSC_id{ "" },
 	      weekday{ weekday },
-	      hour{ hour }
+	      hour{ hour },
+	      year{ year }
 	{
 	}
 
@@ -82,6 +84,9 @@ struct VideoFrame {
 
 	/** In interval [0, 23]. */
 	Hour hour;
+
+	/** Year interval */
+	Year year;
 };
 
 /**
@@ -267,7 +272,7 @@ private:
 	/**
 	 * Parses the desired metadata from the metadata line.
 	 */
-	std::tuple<Weekday, Hour, LscId> parse_metadata_line(const std::string& line);
+	FiltersData parse_metadata_line(const std::string& line);
 };
 
 };  // namespace sh

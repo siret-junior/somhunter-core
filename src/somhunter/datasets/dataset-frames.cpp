@@ -130,11 +130,12 @@ DatasetFrames::DatasetFrames(const Settings& config)
 				}
 
 				// Parse this line
-				auto [weekday, hour, LSC_id]{ DatasetFrames::parse_metadata_line(md_line) };
+				auto fd = DatasetFrames::parse_metadata_line(md_line);
 
-				vf.weekday = weekday;
-				vf.hour = hour;
-				vf.LSC_id = std::move(LSC_id);
+				vf.weekday = fd.weekday;
+				vf.hour = fd.hour;
+				vf.year = fd.year;
+				vf.LSC_id = std::move(fd.LSC_id);
 			}
 
 			vf.frame_ID = i;
@@ -193,20 +194,24 @@ VideoFrame DatasetFrames::parse_video_filename(std::string&& filename)
 	                  utils::str_to_int(frameNumberString), 0);
 }
 
-std::tuple<Weekday, Hour, LscId> DatasetFrames::parse_metadata_line(const std::string& line)
+FiltersData DatasetFrames::parse_metadata_line(const std::string& line)
 {
 	// !!! Beware that the data MUST NOT contain the separator char
 	// TODO: Use propper CSV parser
 	auto tokens{ utils::split(line, ';') };
 
-	auto datetime_str{ tokens[2].substr(11, 2) };
-	Hour h{ static_cast<Hour>(utils::str2<size_t>(datetime_str)) };
+	auto year_str{ tokens[2].substr(0, 4) };
+	auto hour_str{ tokens[2].substr(11, 2) };
+
+	Hour h{ static_cast<Hour>(utils::str2<size_t>(hour_str)) };
+
+	Year y{ static_cast<Year>(utils::str2<size_t>(year_str)) };
 
 	Weekday wd{ static_cast<Weekday>(utils::str2<size_t>(tokens[5])) };
 
 	std::string LSC_id{ tokens[7] };
 
-	return std::tuple{ wd, h, LSC_id };
+	return FiltersData{ wd, h, y, LSC_id };
 }
 
 std::vector<VideoFramePointer> DatasetFrames::ids_to_video_frame(const std::vector<FrameId>& ids) const
