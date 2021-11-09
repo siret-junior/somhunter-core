@@ -140,6 +140,7 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 
 		Hour hour{ ERR_VAL<Hour>() };
 		Weekday weekday{ ERR_VAL<Weekday>() };
+		Year year{ ERR_VAL<Year>() };
 		std::string LSC_ID{ "" };
 
 		bool is_liked{ false };
@@ -155,6 +156,7 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 
 			hour = p_frame->hour;
 			weekday = p_frame->weekday;
+			year = p_frame->year;
 
 			LSC_ID = p_frame->LSC_id;
 
@@ -201,6 +203,13 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 				result_obj[U("weekday")] = json::value::null();
 			} else {
 				result_obj[U("weekday")] = json::value::number(uint32_t(weekday));
+			}
+		}
+		{ /* *** year *** */
+			if (year == ERR_VAL<Year>()) {
+				result_obj[U("year")] = json::value::null();
+			} else {
+				result_obj[U("year")] = json::value::number(uint32_t(year));
 			}
 		}
 
