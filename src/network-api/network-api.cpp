@@ -1424,6 +1424,8 @@ void NetworkApi::handle__search__rescore__POST(http_request req)
 		bool is_save{ body[U("is_save")].as_bool() };
 		query.is_save = is_save;
 
+		query._score_secondary = body[U("isSecondary")].as_bool();
+
 		// Is the query non-empty?
 		if (textual_query.empty() && relevance_query.empty() && canvas_query.empty()) {
 			http_response res{ construct_error_res(status_codes::BadRequest, "Empty queries.") };

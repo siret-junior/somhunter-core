@@ -37,7 +37,6 @@
 
 namespace sh
 {
-
 class KeywordClipRanker : public EmbeddingRanker<SecondaryFrameFeatures>
 {
 public:
