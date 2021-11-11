@@ -109,7 +109,7 @@ void Logger::submit_interaction_logs_buffer()
 {
 	// Send interaction logs
 	if (!_interactions_buffer.empty()) {
-		nlohmann::json a = nlohmann::json{ { "timestamp", double(utils::timestamp()) },
+		nlohmann::json a = nlohmann::json{ { "timestamp", utils::timestamp() },
 			                               { "events", std::move(_interactions_buffer) },
 			                               { "type", "interaction" },
 			                               { "teamId", int(_logger_settings.team_ID) },
