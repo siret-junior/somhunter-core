@@ -48,4 +48,45 @@ overloaded(Ts...) -> overloaded<Ts...>;
 #include <string>
 using namespace std::literals;
 
+/**
+ * Until C++20 and ranges come.
+ *
+ * Copied from here: https://stackoverflow.com/a/63341946/5481153
+ */
+template <typename NumericType>
+struct ioterable {
+	using iterator_category = std::bidirectional_iterator_tag;
+	using value_type = NumericType;
+	using difference_type = NumericType;
+	using pointer = std::add_pointer_t<NumericType>;
+	using reference = NumericType;
+
+	explicit ioterable(NumericType n) : val_(n) {}
+
+	ioterable() = default;
+	ioterable(ioterable&&) = default;
+	ioterable(ioterable const&) = default;
+	ioterable& operator=(ioterable&&) = default;
+	ioterable& operator=(ioterable const&) = default;
+
+	ioterable& operator++()
+	{
+		++val_;
+		return *this;
+	}
+	ioterable operator++(int)
+	{
+		ioterable tmp(*this);
+		++val_;
+		return tmp;
+	}
+	bool operator==(ioterable const& other) const { return val_ == other.val_; }
+	bool operator!=(ioterable const& other) const { return val_ != other.val_; }
+
+	value_type operator*() const { return val_; }
+
+private:
+	NumericType val_{ std::numeric_limits<NumericType>::max() };
+};
+
 #endif  // COMMON_H_

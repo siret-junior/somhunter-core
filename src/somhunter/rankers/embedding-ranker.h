@@ -22,6 +22,7 @@
 #define EMBEDDING_RANKER_H_
 
 #include <cassert>
+#include <execution>
 #include <fstream>
 #include <iomanip>
 #include <map>
@@ -69,15 +70,25 @@ std::vector<float> EmbeddingRanker<SpecificFrameFeatures>::inverse_score_vector(
 	std::vector<float> scores;
 	scores.resize(features.size());
 
-	// For all frame_IDs
-	for (FrameId frame_ID = 0; frame_ID < features.size(); ++frame_ID) {
-		const float* raw_frame_features = features.fv(frame_ID);
+	// For all frames, comute the distance
+	std::for_each(std::execution::par_unseq, ioterable<FrameId>(0), ioterable<FrameId>(features.size()),
+	              [&, this](FrameId frame_ID) {
+		              const float* raw_frame_features = features.fv(frame_ID);
 
-		// auto dist = utils::d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0f;
-		auto dist = d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0F;
+		              // auto dist = utils::d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0f;
+		              auto dist = d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0F;
 
-		scores[frame_ID] = dist;
-	}
+		              scores[frame_ID] = dist;
+	              });
+	// Serial version
+	// for (FrameId frame_ID = 0; frame_ID < features.size(); ++frame_ID) {
+	//	const float* raw_frame_features = features.fv(frame_ID);
+
+	//	// auto dist = utils::d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0f;
+	//	auto dist = d_cos_normalized(query_vec, raw_frame_features, target_dim) / 2.0F;
+
+	//	scores[frame_ID] = dist;
+	//}
 
 	return scores;
 }
