@@ -308,7 +308,13 @@ void ClientDres::write_log(LogType type, UnixTimestamp ts, const std::string& UR
 	                           std::to_string(ts) + std::string("__") + log_type_to_str(type) +
 	                           _eval_server_settings.log_file_suffix;
 
+	bool file_exists{ utils::file_exists(log_filepath) };
+
 	std::ofstream ofs(log_filepath, std::ios::app);
+	if (file_exists) {
+		ofs << ",";
+	}
+
 	if (!ofs) {
 		SHLOG_E("Could not write a log file '" << log_filepath << "'!");
 	}
@@ -320,6 +326,5 @@ void ClientDres::write_log(LogType type, UnixTimestamp ts, const std::string& UR
 		                { "request", req },
 		                { "response_code", code },
 		                { "response", res } };
-
-	ofs << log.dump(4) << "," << std::endl;
+	ofs << log.dump(4) << std::endl;
 }
