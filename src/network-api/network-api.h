@@ -87,6 +87,7 @@ private:
 
 	void handle__log__scroll__GET(http_request req);
 	void handle__log__text_query_change__GET(http_request req);
+	void handle__log__canvas_query_change__GET(http_request req);
 
 	void handle__eval_server__submit__POST(http_request req);
 	void handle__eval_server__login__POST(http_request req);

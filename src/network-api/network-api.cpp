@@ -681,6 +681,7 @@ void NetworkApi::initialize()
 
 	push_endpoint("log/scroll", &NetworkApi::handle__log__scroll__GET);
 	push_endpoint("log/text-query-change", &NetworkApi::handle__log__text_query_change__GET);
+	push_endpoint("log/canvas-query-change", &NetworkApi::handle__log__canvas_query_change__GET);
 
 	push_endpoint("eval-server/submit", {}, &NetworkApi::handle__eval_server__submit__POST);
 	push_endpoint("eval-server/login", {}, &NetworkApi::handle__eval_server__login__POST);
@@ -1130,6 +1131,24 @@ void NetworkApi::handle__log__text_query_change__GET(http_request req)
 	std::string prefix{ to_utf8string(web::http::uri::decode(record->second)) };
 
 	_p_core->log_text_query_change(prefix);
+
+	// Construct the response
+	http_response res(status_codes::OK);
+	NetworkApi::add_CORS_headers(res);
+	res.set_body(json::value::object());
+	req.reply(res);
+}
+
+void NetworkApi::handle__log__canvas_query_change__GET(http_request req)
+{
+	auto lck{ exclusive_lock() };  //< (#)
+	auto remote_addr{ to_utf8string(req.remote_address()) };
+	SHLOG_REQ(remote_addr, __func__);
+
+	auto query{ req.relative_uri().query() };
+	auto query_map{ web::uri::split_query(query) };
+
+	_p_core->log_canvas_query_change();
 
 	// Construct the response
 	http_response res(status_codes::OK);
