@@ -152,8 +152,8 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 			else {
 				item_ss << std::setfill('0') << std::setw(5) << (vf.video_ID + 1);  //< !! VBS videos start from 1
 
-				results.push_back(nlohmann::json{
-				    { "item", item_ss.str() }, { "frame", int(vf.frame_number) }, { "rank", i } });
+				results.push_back(
+				    nlohmann::json{ { "item", item_ss.str() }, { "frame", int(vf.frame_number) }, { "rank", i } });
 			}
 
 			++i;
