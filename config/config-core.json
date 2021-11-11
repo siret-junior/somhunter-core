@@ -45,7 +45,7 @@
             "screenshot_num_height": 3
         },
         "textual_autocomplete": {
-            "num_suggestions": 10,
+            "num_suggestions": 5,
             "num_example_frames": 5,
             "autocomplete_delay": 200
         },
@@ -96,8 +96,8 @@
                     "submit_interaction_URL": "https://vbs.itec.aau.at:9443/api/v1/log/query"
                 }
             },
-            "do_network_requests": false,
-            "submit_LSC_IDs": false,
+            "do_network_requests": true,
+            "submit_LSC_IDs": true,
             "allow_insecure": true,
             "team_ID": 1,
             "member_ID": 2,
