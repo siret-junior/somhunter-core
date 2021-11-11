@@ -183,36 +183,42 @@ struct Filters;
 struct UsedTools {
 	bool operator==(const UsedTools& other) const
 	{
-		return (KWs_used == other.KWs_used && bayes_used == other.bayes_used && topknn_used == other.topknn_used);
+		return (text_search_used == other.text_search_used && bayes_used == other.bayes_used &&
+		        topknn_used == other.topknn_used && canvas_bitmap_used == other.canvas_bitmap_used &&
+		        canvas_text_used == other.canvas_text_used && relocation_used == other.relocation_used &&
+		        temporal_query_used == other.temporal_query_used && filters == other.filters);
 	}
 	UsedTools()
-	    : KWs_used(false),
+	    : text_search_used(false),
 	      bayes_used(false),
 	      topknn_used(false),
 	      canvas_bitmap_used{ false },
 	      canvas_text_used{ false },
 	      relocation_used{ false },
-	      filters(nullptr)
+	      filters{ nullptr },
+	      temporal_query_used{ false }
 	{
 	}
 
 	void reset()
 	{
-		KWs_used = false;
+		text_search_used = false;
 		bayes_used = false;
 		topknn_used = false;
 		canvas_bitmap_used = false;
 		canvas_text_used = false;
 		relocation_used = false;
+		temporal_query_used = false;
 		filters = nullptr;
 	}
 
-	bool KWs_used;
+	bool text_search_used;
 	bool bayes_used;
 	bool topknn_used;
 	bool canvas_bitmap_used;
 	bool canvas_text_used;
 	bool relocation_used;
+	bool temporal_query_used;
 
 	const Filters* filters;
 };

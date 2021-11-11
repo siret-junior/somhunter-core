@@ -221,9 +221,7 @@ public:
 	{
 		generate_new_targets();
 
-		// Trigger the initial display as "rescore" just to have complete logs
-		Query phony_query{};
-		rescore(phony_query);
+		reset_search_session();
 	}
 
 	// ********************************
@@ -485,7 +483,7 @@ private:
 	{
 		kw_ranker.rank_sentence_query(query, _user_context.ctx.scores, features, temporal);
 
-		_user_context.ctx.used_tools.KWs_used = true;
+		_user_context.ctx.used_tools.text_search_used = true;
 	}
 
 	/**

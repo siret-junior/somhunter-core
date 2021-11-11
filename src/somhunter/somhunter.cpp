@@ -264,22 +264,6 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	const std::string& label{ query.metadata.time_label };
 
 	/* ***
-	 * Set the filters to the context
-	 */
-	if (p_filters != nullptr) {
-		_user_context.ctx.filters = *p_filters;
-
-		// If filters used
-		if (!_user_context.ctx.filters.is_default()) {
-			_user_context.ctx.used_tools.filters = &_user_context.ctx.filters;
-		}
-		// Else reset filters used
-		else {
-			_user_context.ctx.used_tools.filters = nullptr;
-		}
-	}
-
-	/* ***
 	 * Save provided screenshot filepath if needed
 	 */
 	if (!benchmark_run) {
@@ -306,10 +290,33 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		reset_scores();  //< Resets scores & used tools
 		size_t moment = 0;
 
+		/* ***
+		 * Set the filters to the context
+		 */
+		if (p_filters != nullptr) {
+			_user_context.ctx.filters = *p_filters;
+
+			// If filters used
+			if (!_user_context.ctx.filters.is_default()) {
+				_user_context.ctx.used_tools.filters = &_user_context.ctx.filters;
+			}
+			// Else reset filters used
+			else {
+				_user_context.ctx.used_tools.filters = nullptr;
+			}
+		}
+
 		for (size_t mi = 0; mi < temporal_query.size(); ++mi) {
 			auto&& moment_query = temporal_query[mi];
 
-			if (moment_query.empty()) continue;
+			if (moment_query.empty()) {
+				continue;
+			} else {
+				// Mark temporality of the query
+				if (mi > 0) {
+					_user_context.ctx.used_tools.temporal_query_used = true;
+				}
+			}
 
 			// ***
 			// Relocation
@@ -482,6 +489,10 @@ void Somhunter::reset_search_session()
 	_user_context.reset();
 
 	generate_new_targets();
+
+	// Trigger the initial display as "rescore" just to have complete logs
+	Query phony_query{};
+	rescore(phony_query);
 }
 
 void Somhunter::log_video_replay(FrameId frame_ID, float delta_X)

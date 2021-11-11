@@ -180,7 +180,7 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 	else {
 		// Just mark that this was NOT KNN request
 
-		if (used_tools.KWs_used) {
+		if (used_tools.text_search_used) {
 			used_cats.insert("text");
 			used_types.insert("jointEmbedding");
 			sort_types.insert("jointEmbedding");
@@ -208,6 +208,10 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 			used_cats.insert("image");
 			used_types.insert("feedbackModel");
 			sort_types.insert("feedbackModel");
+		}
+
+		if (used_tools.temporal_query_used) {
+			used_types.insert("temporal");
 		}
 
 		if (used_tools.filters != nullptr) {
