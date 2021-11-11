@@ -125,6 +125,13 @@ FrameFeatures<SETT>::FrameFeatures(const DatasetFrames& p, const SETT& config) :
 	} else {
 		SHLOG_S("Successfully loaded " << _size << " frame features of dimension " << config._dim << ".");
 	}
+
+	// Detect the incomplete read!
+	if (in.rdbuf()->in_avail() != 0) {
+		std::string msg{ "Incomplete read of the '" + config.features_file + "' file!" };
+		SHLOG_E(msg);
+		throw std::runtime_error(msg);
+	}
 }
 
 template <typename SETT>
