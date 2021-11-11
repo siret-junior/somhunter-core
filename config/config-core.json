@@ -161,7 +161,7 @@
             },
             "secondary_features": {
                 "features_file_data_off": 0,
-                "features_dim": 128,
+                "features_dim": 640,
                 "features_file": "data/LSC-2021-November_W2VV-subregions-CLIP/secondary/frame-features.LSC.CLIP.86652x640.float32.bin"
             }
         }
