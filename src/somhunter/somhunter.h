@@ -325,6 +325,7 @@ public:
 	void log_video_replay(FrameId frame_ID, float delta_X);
 	void log_scroll(DisplayType t, float delta_Y);
 	void log_text_query_change(const std::string& text_query);
+	void log_canvas_query_change();
 
 	// ********************************
 	// Image manipulation utilites

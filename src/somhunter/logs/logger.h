@@ -63,6 +63,7 @@ public:
 	                 const size_t topn_frames_per_shot, const std::vector<bool>& dataset_parts_filter = { true, true });
 
 	void log_text_query_change(const std::string& query_sentence);
+	void log_canvas_query_change();
 
 	void log_like(FrameId frame_ID);
 	void log_unlike(FrameId frame_ID);

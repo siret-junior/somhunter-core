@@ -383,6 +383,28 @@ void Logger::log_text_query_change(const std::string& text_query)
 
 	push_action("textQueryChange", "TEXT", "jointEmbedding", text_query);
 }
+
+void Logger::log_canvas_query_change()
+{
+	static std::atomic<int64_t> last_logged{ 0 };
+
+	// If timeout should be handled here
+	if (_logger_settings.apply_log_action_timeout) {
+		auto ts{ utils::timestamp() };
+		// If no need to log now
+		int64_t prev = last_logged;
+		if (prev + _logger_settings.log_action_timeout > size_t(ts)) {
+			return;
+		} else {
+			if (!last_logged.compare_exchange_strong(prev, ts)) {
+				return;
+			}
+		}
+	}
+
+	push_action("canvasQueryChange", "IMAGE", "jointEmbedding", "");
+}
+
 void Logger::log_like(FrameId frame_ID) { log_bothlike(frame_ID, "like"); }
 
 void Logger::log_unlike(FrameId frame_ID) { log_bothlike(frame_ID, "unlike"); }

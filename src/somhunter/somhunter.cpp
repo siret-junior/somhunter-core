@@ -507,6 +507,8 @@ void Somhunter::log_text_query_change(const std::string& text_query)
 	_user_context._logger.log_text_query_change(text_query);
 }
 
+void Somhunter::log_canvas_query_change() { _user_context._logger.log_canvas_query_change(); }
+
 std::string Somhunter::store_rescore_screenshot(const std::string& /*filepath*/)
 {
 	// SHLOG_W("Simulating the screenshot saving...");
