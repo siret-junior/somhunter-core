@@ -1,165 +1,169 @@
 {
-	"data_server": {},
-
-	"UI": {
-		"features": {
-			"show_filters_panel": true,
-			"allow_plain_text_quey": true,
-			"allow_relocation": true,
-			"allow_canvas_query": true,
-			"allow_canvas_query_bitmap": true,
-			"allow_canvas_query_text": true,
-			"allow_history_switch": true,
-			"show_likes_panel": true,
-			"show_bookmarks_panel": true
-		},
-		"video_replay": {
-            "slide_speed": 50,
-            "thumb_width": 200
-        },
-        "video_detail": {
-            "thumb_width": 150,
-            "grid_width": 8,
-            "grid_height": 8
-        },
-        "available_queries": {
-            "text": true,
-            "canvas": true,
-            "filters": true
-        },
-        "history": {
-            "screenshot_num_width": 3,
-            "screenshot_num_height": 3
-        },
-        "textual_autocomplete": {
-            "num_suggestions": 10,
-            "num_example_frames": 5,
-            "autocomplete_delay": 200
-        },
-        "main_frame_grid": {
-            "inf_scroll_threshold": 1000,
-            "inf_scroll_timeout": 1000
-        }
-	},
-
 	"strings": {
-		"display_types": {
-            "SOM": "SOM_display",
-            "top_scored": "topn_display",
-            "top_scored_context": "topn_context_display",
-            "nearest_neighbours": "topknn_display",
-            "detail": "video_detail",
-            "replay": "video_replay"
-        }
+			"display_types": {
+					"SOM": "SOM_display",
+					"top_scored": "topn_display",
+					"top_scored_context": "topn_context_display",
+					"nearest_neighbours": "topknn_display",
+					"detail": "video_detail",
+					"replay": "video_replay"
+			}
 	},
-
-	"core": {
-		"API": {
-			"local_only": false,
-            "port": 8082,
-            "config_filepath": "config/config-api.json",
-            "docs_dir": "docs/api/"
-        },
-		"eval_server":{
-			"submit_server": "dres",
-			"server_config": {
-				"vbs": {
-					
-					"submit_interaction_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/query",
-					"submit_rerank_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/log",
-					"submit_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/submit"
-				},
-				"dres": {
-					"cookie_file": "cookie.txt",
-					
-					"username": "somhunter",
-					"password": "MSV5be4r7j3w",
-					
-					"login_URL": "https://vbs2.itec.aau.at:9443/api/login",
-					"logout_URL": "https://vbs2.itec.aau.at:9443/api/logout",
-					"session_URL": "https://vbs2.itec.aau.at:9443/api/user/session",
-					"server_time_URL": "https://vbs2.itec.aau.at:9443/api/status/time",
-
-					"submit_URL": "https://vbs2.itec.aau.at:9443/submit",
-					"submit_rerank_URL": "https://vbs2.itec.aau.at:9443/log/result",
-					"submit_interaction_URL": "https://vbs2.itec.aau.at:9443/log/query"
-				}
+	"UI": {
+			"API": {
+					"port": 8080
 			},
-		
-			"do_network_requests": true,
-			"submit_LSC_IDs": false,
-			"allow_insecure": true,
-
-			"team_ID": 4,
-			"member_ID": 1,
-		
-			"log_dir_eval_server_requests": "logs/eval-server-requests/",
-			"log_dir_user_actions": "logs/actions/",
-			"log_dir_user_actions_summary": "logs/summary/",
-			"log_dir_results": "logs/results/",
-			"log_dir_queries": "logs/queries/",			
-			"log_file_suffix": ".json",
-			"extra_verbose_log": false,
-		
-			"send_logs_to_server_period": 10000,
-			"log_action_timeout": 500
-		},
-		"logger": {
-
-		},
-		"display_page_size": 128,
-		"topn_frames_per_video": 3,
-		"topn_frames_per_shot": 1,
-		
-		"model_W2VV_img_bias": "data/nn_models/w2vv-img_bias-2048floats.bin",
-		"model_W2VV_img_weigths": "data/nn_models/w2vv-img_weight-2048x4096floats.bin",
-		
-		"model_ResNet_file": "data/nn_models/traced_Resnet152.pt",
-		"model_ResNet_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnet152.pt",
-		"model_ResNet_SHA256": "9c90dd6ac9dd9792ff1bd7da36749ccba713d15b3bb03c890b3bc6fa891ff75e",
-
-		"model_ResNext_file": "data/nn_models/traced_Resnext101.pt",
-		"model_ResNext_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnext101.pt",
-		"model_ResNext_SHA256": "d5c990df4ec76d2a0671e8d61717fa0cf27e90cc627750d41c1be443ea36b9f9",
-
-        
-		"models_dir": "data/nn_models/",
-
-		"ui_dir": "ui/",
-
-		"filename_offsets": {
-			"fr_filename_off": 6,
-			"fr_filename_vid_ID_off": 7,
-			"fr_filename_vid_ID_len": 5,
-			"fr_filename_shot_ID_off": 14,
-			"fr_filename_shot_ID_len": 5,
-			"fr_filename_frame_num_off": 42,
-			"fr_filename_frame_num_len": 8
-		},
-		
-		"frames_list_file": "data/V3C1_2021_June/frame-ID-to-filepath.V3C1.csv",
-        "frames_dir": "data/V3C1_2021_June/frames/",
-        "thumbs_dir": "data/V3C1_2021_June/thumbs/",
-        "data_dir": "data/V3C1_2021_June/",
-		
-        "features_file_data_off": 0,
-        "features_dim": 128,
-        "features_file": "data/V3C1_2021_June/W2VV_BoW/frame-features.V3C1.W2VV-BoW.1154039x128.float32.bin",
-		"collage_regions": 12,
-		"collage_region_file_prefix": "data/V3C1_2021_June/W2VV_BoW/subframes/region_",
-
-        "kws_file": "data/V3C1_2021_June/W2VV_BoW/keyword-to-ID.W2VV-BoW.csv",
-        "kw_bias_vec_file": "data/V3C1_2021_June/W2VV_BoW/keyword-dense-bias.W2VV-BoW.2048.float32.bin",
-        "kw_scores_mat_file": "data/V3C1_2021_June/W2VV_BoW/keyword-dense-weigths.W2VV-BoW.11147x2048.float32.bin",
-		
-        "kw_PCA_mat_dim": 128,
-        "pre_PCA_features_dim": 2048,
-        "kw_PCA_mean_vec_file": "data/V3C1_2021_June/W2VV_BoW/PCA-mean.V3C1.W2VV-BoW.2048.float32.bin",
-        "kw_PCA_mat_file": "data/V3C1_2021_June/W2VV_BoW/PCA-matrix.V3C1.W2VV-BoW.2048x128.float32.bin",
-			
-		"LSC_metadata_file": "",
-
-        "test_data_root": "tests/data"
+			"features": {
+					"allow_plain_text_quey": true,
+					"allow_relocation": true,
+					"allow_canvas_query": true,
+					"allow_canvas_query_bitmap": true,
+					"allow_canvas_query_text": true,
+					"allow_history_switch": true,
+					"show_likes_panel": true,
+					"show_bookmarks_panel": true,
+					"show_filters_panel": true,
+					"show_dataset_filters_panel": false,
+					"show_lsc_filters_panel": true
+			},
+			"video_replay": {
+					"slide_speed": 50,
+					"thumb_width": 200
+			},
+			"video_detail": {
+					"thumb_width": 150,
+					"grid_width": 8,
+					"grid_height": 8
+			},
+			"available_queries": {
+					"text": true,
+					"canvas": true,
+					"filters": true
+			},
+			"history": {
+					"screenshot_num_width": 3,
+					"screenshot_num_height": 3
+			},
+			"textual_autocomplete": {
+					"num_suggestions": 10,
+					"num_example_frames": 5,
+					"autocomplete_delay": 200
+			},
+			"main_frame_grid": {
+					"inf_scroll_threshold": 1000,
+					"inf_scroll_timeout": 1000
+			}
+	},
+	"data_server": {
+			"API": {
+					"port": 8081
+			}
+	},
+	"core": {
+			"tests": {
+					"test_data_root": "tests/data"
+			},
+			"presentation_views": {
+					"display_page_size": 128,
+					"topn_frames_per_video": 3,
+					"topn_frames_per_shot": 1
+			},
+			"logger": {},
+			"API": {
+					"local_only": true,
+					"port": 8088,
+					"config_filepath": "config/config-api.json",
+					"docs_dir": "docs/api/"
+			},
+			"eval_server": {
+					"submit_server": "dres",
+					"server_config": {
+							"vbs": {
+									"submit_interaction_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/query",
+									"submit_rerank_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/log",
+									"submit_URL": "http://herkules.ms.mff.cuni.cz:8080/vbs/submit"
+							},
+							"dres": {
+									"cookie_file": "cookie.txt",
+									"username": "somhunter",
+									"password": "MSV5be4r7j3w",
+									"login_URL": "https://vbs2.itec.aau.at:9443/api/login",
+									"logout_URL": "https://vbs2.itec.aau.at:9443/api/logout",
+									"session_URL": "https://vbs2.itec.aau.at:9443/api/user/session",
+									"server_time_URL": "https://vbs2.itec.aau.at:9443/api/status/time",
+									"submit_URL": "https://vbs2.itec.aau.at:9443/submit",
+									"submit_rerank_URL": "https://vbs2.itec.aau.at:9443/log/result",
+									"submit_interaction_URL": "https://vbs2.itec.aau.at:9443/log/query"
+							}
+					},
+					"do_network_requests": false,
+					"submit_LSC_IDs": false,
+					"allow_insecure": true,
+					"team_ID": 1,
+					"member_ID": 2,
+					"log_dir_eval_server_requests": "logs/eval-server-requests/",
+					"log_dir_user_actions": "logs/actions/",
+					"log_dir_user_actions_summary": "logs/queries/",
+					"log_dir_results": "logs/results/",
+					"log_dir_queries": "logs/queries/",
+					"log_file_suffix": ".json",
+					"extra_verbose_log": false,
+					"send_logs_to_server_period": 10000,
+					"log_action_timeout": 500
+			},
+			"remote_services": {
+					"CLIP_query_to_vec": {
+							"address": "http://195.113.18.36:42013/clip"
+					},
+					"media_server": {
+							"address": null
+					}
+			},
+			"models": {
+					"models_dir": "data/nn_models/",
+					"model_W2VV_img_bias": "data/nn_models/w2vv-img_bias-2048floats.bin",
+					"model_W2VV_img_weigths": "data/nn_models/w2vv-img_weight-2048x4096floats.bin",
+					"model_ResNet_file": "data/nn_models/traced_Resnet152.pt",
+					"model_ResNet_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnet152.pt",
+					"model_ResNet_SHA256": "9c90dd6ac9dd9792ff1bd7da36749ccba713d15b3bb03c890b3bc6fa891ff75e",
+					"model_ResNext_file": "data/nn_models/traced_Resnext101.pt",
+					"model_ResNext_URL": "http://herkules.ms.mff.cuni.cz:8889/data/nn_models/traced_Resnext101.pt",
+					"model_ResNext_SHA256": "d5c990df4ec76d2a0671e8d61717fa0cf27e90cc627750d41c1be443ea36b9f9"
+			},
+			"datasets": {
+					"data_dir": "data/V3C1_2021_June/",
+					"frames_dir": "data/V3C1_2021_June/frames/",
+					"thumbs_dir": "data/V3C1_2021_June/thumbs/",
+					"LSC_metadata_file": "",
+					"frames_list_file": "data/V3C1_2021_June/frame-ID-to-filepath.V3C1.csv",
+					"filename_offsets": {
+							"fr_filename_off": 6,
+							"fr_filename_vid_ID_off": 7,
+							"fr_filename_vid_ID_len": 5,
+							"fr_filename_shot_ID_off": 14,
+							"fr_filename_shot_ID_len": 5,
+							"fr_filename_frame_num_off": 42,
+							"fr_filename_frame_num_len": 8
+					},
+					"primary_features": {
+							"features_file_data_off": 0,
+							"features_dim": 128,
+							"features_file": "data/V3C1_2021_June/W2VV_BoW/frame-features.V3C1.W2VV-BoW.1154039x128.float32.bin",
+							"collage_regions": 12,
+							"collage_region_file_prefix": "data/V3C1_2021_June/W2VV_BoW/subframes/region_",
+							"kws_file": "data/V3C1_2021_June/W2VV_BoW/keyword-to-ID.W2VV-BoW.csv",
+							"kw_bias_vec_file": "data/V3C1_2021_June/W2VV_BoW/keyword-dense-bias.W2VV-BoW.2048.float32.bin",
+							"kw_scores_mat_file": "data/V3C1_2021_June/W2VV_BoW/keyword-dense-weigths.W2VV-BoW.11147x2048.float32.bin",
+							"kw_PCA_mat_dim": 128,
+							"pre_PCA_features_dim": 2048,
+							"kw_PCA_mean_vec_file": "data/V3C1_2021_June/W2VV_BoW/PCA-mean.V3C1.W2VV-BoW.2048.float32.bin",
+							"kw_PCA_mat_file": "data/V3C1_2021_June/W2VV_BoW/PCA-matrix.V3C1.W2VV-BoW.2048x128.float32.bin"
+					},
+					"secondary_features": {
+							"features_file_data_off": 0,
+							"features_dim": 640,
+							"features_file": "data/V3C1_2021_June/frame-features.V3C1.CLIP.1154039x640.float32.bin"
+					}
+			}
 	}
-  	
 }
