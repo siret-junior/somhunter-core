@@ -123,10 +123,15 @@ DatasetFrames::DatasetFrames(const Settings& config)
 
 			if (parse_metadata) {
 				// Read one metadata line
-				if (!getline(ifs_meta, md_line)) {
+				if (!std::getline(ifs_meta, md_line)) {
 					auto msg{ "Not enough lines in " + c.LSC_metadata_file.value() };
 					SHLOG_E(msg);
 					throw std::runtime_error(msg);
+				}
+
+				// Make sure there is no extra '\r' at the end
+				if (md_line.back() == '\r') {
+					md_line.pop_back();
 				}
 
 				// Parse this line
