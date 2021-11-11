@@ -67,39 +67,12 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
 	}
 
 	// Enable automatic flushing
-	_results_log_stream << std::unitbuf << "[" << std::endl;
-	for (auto&& s : _results_streams) {
-		s << "[";
-	}
-	_actions_log_stream << std::unitbuf << "[" << std::endl;
-	for (auto&& s : _actions_streams) {
-		s << "[";
-	}
-
-	_summary_log_stream << std::unitbuf << "[" << std::endl;
-	for (auto&& s : _summary_streams) {
-		s << "[";
-	}
+	_results_log_stream << std::unitbuf;
+	_actions_log_stream << std::unitbuf;
+	_summary_log_stream << std::unitbuf;
 }
 
-Logger::~Logger()
-{
-	submit_interaction_logs_buffer();
-	_results_log_stream << "]" << std::endl;
-	for (auto&& s : _results_streams) {
-		s << "]";
-	}
-
-	_actions_log_stream << "]" << std::endl;
-	for (auto&& s : _actions_streams) {
-		s << "]";
-	}
-
-	_summary_log_stream << "]" << std::endl;
-	for (auto&& s : _summary_streams) {
-		s << "]";
-	}
-}
+Logger::~Logger() { submit_interaction_logs_buffer(); }
 
 void Logger::log_submit(const VideoFrame frame, bool submit_result)
 {
