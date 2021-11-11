@@ -93,8 +93,8 @@ struct YearFilter {
 	Year from;
 	Year to;
 
-	/** Default state is interval [1900, 2100] */
-	YearFilter() : from(1900), to(2100){};
+	/** Default state is interval [2000, 2021] */
+	YearFilter() : from(2000), to(2021){};
 	YearFilter(Year from, Year to) : from(from), to(to){};
 
 	bool operator==(const YearFilter& other) const { return (from == other.from && to == other.to); }
