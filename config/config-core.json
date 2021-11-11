@@ -131,11 +131,11 @@
             "model_ResNext_SHA256": "d5c990df4ec76d2a0671e8d61717fa0cf27e90cc627750d41c1be443ea36b9f9"
         },
         "datasets": {
-            "data_dir": "data/LSC_2021_November/",
-            "frames_dir": "data/LSC_2021_November/media/frames/",
-            "thumbs_dir": "data/LSC_2021_November/media/thumbs/",
-            "LSC_metadata_file": "data/LSC_2021_November/selected-frames-metadata.LSC.csv",
-            "frames_list_file": "data/LSC_2021_November/frame-ID-to-filepath.LSC.csv",
+            "data_dir": "data/LSC-2021-November_W2VV-subregions-CLIP/",
+            "frames_dir": "data/LSC-2021-November_W2VV-subregions-CLIP/media/frames/",
+            "thumbs_dir": "data/LSC-2021-November_W2VV-subregions-CLIP/media/thumbs/",
+            "LSC_metadata_file": "data/LSC-2021-November_W2VV-subregions-CLIP/selected-frames-metadata.LSC.csv",
+            "frames_list_file": "data/LSC-2021-November_W2VV-subregions-CLIP/frame-ID-to-filepath.LSC.csv",
             "filename_offsets": {
                 "fr_filename_off": 6,
                 "fr_filename_vid_ID_off": 7,
@@ -148,21 +148,21 @@
             "primary_features": {
                 "features_file_data_off": 0,
                 "features_dim": 128,
-                "features_file": "data/LSC_2021_November/primary/frame-features.LSC.W2VV.66513x128.float32.bin",
+                "features_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/frame-features.LSC.W2VV.86652x128.float32.bin",
                 "collage_regions": 12,
-                "collage_region_file_prefix": "data/LSC_2021_November/primary/subframes/region_",
-                "kws_file": "data/LSC_2021_November/primary/keyword-to-ID.W2VV-BoW.csv",
-                "kw_bias_vec_file": "data/LSC_2021_November/primary/keyword-dense-bias.W2VV-BoW.2048.float32.bin",
-                "kw_scores_mat_file": "data/LSC_2021_November/primary/keyword-dense-weigths.W2VV-BoW.11147x2048.float32.bin",
+                "collage_region_file_prefix": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/subframes/region_",
+                "kws_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/keyword-to-ID.W2VV-BoW.csv",
+                "kw_bias_vec_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/keyword-dense-bias.W2VV-BoW.2048.float32.bin",
+                "kw_scores_mat_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/keyword-dense-weigths.W2VV-BoW.11147x2048.float32.bin",
                 "kw_PCA_mat_dim": 128,
                 "pre_PCA_features_dim": 2048,
-                "kw_PCA_mean_vec_file": "data/LSC_2021_November/primary/PCA-mean.V3C1.W2VV-BoW.2048.float32.bin",
-                "kw_PCA_mat_file": "data/LSC_2021_November/primary/PCA-matrix.V3C1.W2VV-BoW.2048x128.float32.bin"
+                "kw_PCA_mean_vec_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/PCA-mean.V3C1.W2VV-BoW.2048.float32.bin",
+                "kw_PCA_mat_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/PCA-matrix.V3C1.W2VV-BoW.2048x128.float32.bin"
             },
             "secondary_features": {
                 "features_file_data_off": 0,
                 "features_dim": 128,
-                "features_file": "data/LSC_2021_November/secondary/frame-features.LSC.CLIP.66513x640.float32.bin"
+                "features_file": "data/LSC-2021-November_W2VV-subregions-CLIP/secondary/frame-features.LSC.CLIP.86652x640.float32.bin"
             }
         }
     }
