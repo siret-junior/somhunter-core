@@ -65,8 +65,8 @@
         },
         "presentation_views": {
             "display_page_size": 128,
-            "topn_frames_per_video": 3,
-            "topn_frames_per_shot": 1
+            "topn_frames_per_video": 10,
+            "topn_frames_per_shot": 10
         },
         "logger": {},
         "API": {
