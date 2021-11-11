@@ -220,6 +220,10 @@ public:
 
 	{
 		generate_new_targets();
+
+		// Trigger the initial display as "rescore" just to have complete logs
+		Query phony_query{};
+		rescore(phony_query);
 	}
 
 	// ********************************

@@ -145,19 +145,15 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 			// If LSC type of submit
 			if (_logger_settings.submit_LSC_IDs) {
 				item_ss << vf.LSC_id;
-				/* !!!
-				  We use "rank" field as our internal frame ID */
-				results.push_back(nlohmann::json{ { "item", item_ss.str() }, { "rank", int(vf.frame_ID) } });
+				results.push_back(nlohmann::json{ { "item", item_ss.str() }, { "rank", i } });
 
 			}
 			// Non-LSC submit
 			else {
 				item_ss << std::setfill('0') << std::setw(5) << (vf.video_ID + 1);  //< !! VBS videos start from 1
 
-				/* !!!
-				  We use "rank" field as our internal frame ID */
 				results.push_back(nlohmann::json{
-				    { "item", item_ss.str() }, { "frame", int(vf.frame_number) }, { "rank", int(vf.frame_ID) } });
+				    { "item", item_ss.str() }, { "frame", int(vf.frame_number) }, { "rank", i } });
 			}
 
 			++i;
@@ -231,6 +227,12 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 			}
 			filters_val_ss << ";";
 		}
+	}
+
+	// If history jump to the initial display
+	if (used_cats.empty() && used_types.empty()) {
+		used_cats.insert("initial");
+		used_types.insert("initial");
 	}
 
 	query_val += "fromVideoLimit=";
