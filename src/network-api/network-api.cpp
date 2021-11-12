@@ -1443,7 +1443,7 @@ void NetworkApi::handle__search__rescore__POST(http_request req)
 		bool is_save{ body[U("is_save")].as_bool() };
 		query.is_save = is_save;
 
-		query._score_secondary = body[U("isSecondary")].as_bool();
+		bool is_score_secondary{ body[U("isSecondary")].as_bool() };
 
 		// Is the query non-empty?
 		if (textual_query.empty() && relevance_query.empty() && canvas_query.empty()) {
@@ -1462,9 +1462,14 @@ void NetworkApi::handle__search__rescore__POST(http_request req)
 			if (i < textual_query.size()) tq.textual = textual_query[i];
 			if (i < canvas_query.size()) tq.canvas = canvas_query[i];
 			if (i < relocation_query.size()) tq.relocation = relocation_query[i];
+			tq.score_secondary(is_score_secondary);
 
 			query.temporal_queries.push_back(tq);
 		}
+
+		// Recursive scoring type set
+		query.score_secondary(is_score_secondary);
+
 	} catch (...) {
 		http_response res{ construct_error_res(status_codes::BadRequest, "Invalid parameters.") };
 		NetworkApi::add_CORS_headers(res);
