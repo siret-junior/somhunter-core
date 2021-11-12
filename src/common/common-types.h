@@ -195,8 +195,8 @@ struct UsedTools {
 	      canvas_bitmap_used{ false },
 	      canvas_text_used{ false },
 	      relocation_used{ false },
-	      filters{ nullptr },
-	      temporal_query_used{ false }
+	      temporal_query_used{ false },
+	      filters{ nullptr }
 	{
 	}
 

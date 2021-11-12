@@ -359,8 +359,8 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 		// Normalize the inverse scores
 		_user_context.ctx.scores.normalize(_user_context.ctx.temporal_size);
 
-		// CLIP needs smaller power due to the curse of dimensionality
-		float power = query.score_secondary() ? 25 : 50;
+		// Power of query initialization
+		const float power = 50;
 		// Apply temporal fusion and trnsform inv. scores to scores
 		_user_context.ctx.scores.apply_temporals(_user_context.ctx.temporal_size, _dataset_frames, power);
 
