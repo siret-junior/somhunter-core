@@ -55,13 +55,13 @@ public:
 		ctx.reset();
 		// Make sure we're not pushing in any old screenshot
 		ctx.screenshot_fpth = "";
-		ctx.ID = 0;
+		ctx.ID = 0;  //< This value means NULL state after the reset
 
 		// Reset bookmarks
 		_bookmarks.clear();
 
 		_history.clear();
-		_history.emplace_back(ctx);
+		//_history.emplace_back(ctx);
 
 		_videos_seen.clear();
 	}

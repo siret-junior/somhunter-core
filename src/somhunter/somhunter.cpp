@@ -267,11 +267,13 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run)
 	 * Save provided screenshot filepath if needed
 	 */
 	if (!benchmark_run) {
-		if (_user_context._history.size() <= src_search_ctx_ID) {
+		// Catch occasional "inconsistent state" that happens due to old front-end state (e.g. after core restart)
+		if (_user_context._history.size() < src_search_ctx_ID) {
 			return RescoreResult{ _user_context.ctx.ID, _user_context._history, _user_context.ctx.curr_targets };
 		}
 
-		if (src_search_ctx_ID != SIZE_T_ERR_VAL && _user_context._history[src_search_ctx_ID].screenshot_fpth.empty()) {
+		if (src_search_ctx_ID > 0 && src_search_ctx_ID != SIZE_T_ERR_VAL &&
+		    _user_context._history[src_search_ctx_ID].screenshot_fpth.empty()) {
 			_user_context._history[src_search_ctx_ID].label = label;
 			_user_context._history[src_search_ctx_ID].screenshot_fpth = screenshot_fpth;
 		}
