@@ -443,6 +443,8 @@ public:
 	{
 	}
 	// ---
+	bool score_secondary() const { return _score_secondary; }
+	void score_secondary(bool new_value) { _score_secondary = new_value; }
 	const bool is_relocation() const { return relocation != ERR_VAL<FrameId>(); }
 	const bool is_canvas() const { return !canvas.empty(); }
 	const bool is_text() const { return !is_relocation() && !textual.empty(); }
@@ -471,10 +473,11 @@ public:
 		archive(textual, canvas, relocation);
 	}
 	// ---
-	bool operator!=(const TemporalQuery& b) const { return !((*this) == b); }
+	// bool operator!=(const TemporalQuery& b) const { return !((*this) == b); }
 	bool operator==(const TemporalQuery& b) const
 	{
-		return textual == b.textual && canvas == b.canvas && relocation == b.relocation;
+		return textual == b.textual && canvas == b.canvas && relocation == b.relocation &&
+		       score_secondary() == b.score_secondary();
 	}
 
 	nlohmann::json to_JSON() const
@@ -498,6 +501,7 @@ public:
 	TextualQuery textual;
 	CanvasQuery canvas;
 	RelocationQuery relocation;
+	bool _score_secondary{ false };
 };
 
 /** The type representing the whole query. */
@@ -505,13 +509,16 @@ struct Query {
 	// *** METHODS ***
 public:
 	Query() = default;
-	template <typename Q>
-	Query(const std::vector<Q>& temp_queries) : metadata{}, filters{}, relevance_feeedback{}
+	template <typename QueryType>
+	Query(const std::vector<QueryType>& temp_queries) : metadata{}, filters{}, relevance_feeedback{}
 	{
 		for (auto&& q : temp_queries) {
-			temporal_queries.emplace_back(q);
+			auto& item{ temporal_queries.emplace_back(q) };
+			// Make sure correct scoring is set
+			item.score_secondary(_score_secondary);
 		}
 	}
+
 	// ---
 
 	const bool is_relocation() const
@@ -523,6 +530,13 @@ public:
 		return false;
 	}
 	const bool score_secondary() const { return _score_secondary; }
+	void score_secondary(bool new_value)
+	{
+		_score_secondary = new_value;
+		for (auto&& q : temporal_queries) {
+			q.score_secondary(new_value);
+		}
+	}
 	const bool is_canvas() const { return temporal_queries.front().is_canvas(); }
 	const bool is_bitmap_canvas() const { return temporal_queries.front().is_bitmap_canvas(); }
 	const bool is_text_canvas() const { return temporal_queries.front().is_text_canvas(); }
@@ -621,6 +635,7 @@ public:
 		}
 	}
 
+	// --- Helper methods ---
 	nlohmann::json to_JSON() const;
 
 	template <class Archive>
@@ -628,6 +643,9 @@ public:
 	{
 		archive(metadata, filters, relevance_feeedback, temporal_queries, targets, is_save);
 	}
+
+	// --- Operators ---
+	// bool operator==(const TemporalQuery& other) const { return (*this) == other; }
 
 	// *** MEMBER VARIABLES ***
 public:
