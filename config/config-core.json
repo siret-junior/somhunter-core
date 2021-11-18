@@ -71,7 +71,7 @@
         "logger": {},
         "API": {
             "local_only": true,
-            "port": 8088,
+            "port": 8082,
             "config_filepath": "config/config-api.json",
             "docs_dir": "docs/api/"
         },
