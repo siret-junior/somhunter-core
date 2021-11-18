@@ -148,7 +148,7 @@
             "primary_features": {
                 "features_file_data_off": 0,
                 "features_dim": 128,
-                "features_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/frame-features.LSC.W2VV.86652x128.float32.bin",
+                "features_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/frame-features.LSC.W2VV.183307x128.float32.bin",
                 "collage_regions": 12,
                 "collage_region_file_prefix": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/subframes/region_",
                 "kws_file": "data/LSC-2021-November_W2VV-subregions-CLIP/primary/keyword-to-ID.W2VV-BoW.csv",
@@ -162,7 +162,7 @@
             "secondary_features": {
                 "features_file_data_off": 0,
                 "features_dim": 640,
-                "features_file": "data/LSC-2021-November_W2VV-subregions-CLIP/secondary/frame-features.LSC.CLIP.86652x640.float32.bin"
+                "features_file": "data/LSC-2021-November_W2VV-subregions-CLIP/secondary/frame-features.LSC.CLIP.183307x640.float32.bin"
             }
         }
     }
