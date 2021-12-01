@@ -37,12 +37,10 @@
 
 #include "utils.hpp"
 
-namespace sh
-{
+namespace sh {
 /** Basic abstraction for images. */
 template <typename DType_>
-class BitmapImage
-{
+class BitmapImage {
 public:
 	size_t w;
 	size_t h;
@@ -51,14 +49,12 @@ public:
 };
 
 /** Provides utilities for image manipulation and processing. */
-class ImageManipulator
-{
+class ImageManipulator {
 public:
 	template <typename OutType_>
 	static OutType_ load_image(const std::string& filepath);
 
-	static void show_image(const std::string& filepath, size_t delay = 0)
-	{
+	static void show_image(const std::string& filepath, size_t delay = 0) {
 		if (!utils::file_exists(filepath)) {
 			std::string msg{ "Unable to open file '" + filepath + "'." };
 			SHLOG_E(msg);
@@ -70,8 +66,7 @@ public:
 		cv::waitKey(delay);
 	}
 
-	static void show_image(const cv::Mat image, size_t delay = 0)
-	{
+	static void show_image(const cv::Mat image, size_t delay = 0) {
 		cv::imshow("IMAGE", image);
 		cv::waitKey(delay);
 	}
@@ -104,8 +99,7 @@ public:
 	 * \exception std::runtime_error If the writing fails.
 	 */
 	static void store_PNG(const std::string& filepath, const std::vector<uint8_t>& in, size_t w, size_t h,
-	                      size_t num_channels)
-	{
+	                      size_t num_channels) {
 		auto res{ stbi_write_png(filepath.c_str(), w, h, num_channels, (uint8_t*)in.data(), w * num_channels) };
 
 		if (res == 0) {
@@ -116,8 +110,7 @@ public:
 	}
 
 	static void store_PNG(const std::string& filepath, const std::vector<float>& in, size_t w, size_t h,
-	                      size_t num_channels)
-	{
+	                      size_t num_channels) {
 		auto res{ stbi_write_png(filepath.c_str(), w, h, num_channels, (float*)in.data(), w * num_channels) };
 
 		if (res == 0) {

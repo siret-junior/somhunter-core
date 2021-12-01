@@ -29,8 +29,7 @@ using namespace sh;
 ClientDres::ClientDres(const EvalServerSettings& eval_server_settings)
     : IServerClient{ eval_server_settings },
       _settings{ std::get<EvalServerSettings::ServerConfigDres>(eval_server_settings.server_cfg) },
-      _synced{ false }
-{
+      _synced{ false } {
 	// Initial setup
 	set_do_requests(eval_server_settings.do_network_requests);
 
@@ -68,8 +67,7 @@ ClientDres::ClientDres(const EvalServerSettings& eval_server_settings)
 
 sh::ClientDres::~ClientDres() noexcept { logout(); }
 
-bool ClientDres::login()
-{
+bool ClientDres::login() {
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers;
@@ -123,8 +121,7 @@ bool ClientDres::login()
 	return success;
 }
 
-bool ClientDres::logout()
-{
+bool ClientDres::logout() {
 	auto ts{ utils::timestamp() };
 
 	nlohmann::json headers;
@@ -177,8 +174,7 @@ bool ClientDres::logout()
 	return success;
 }
 
-bool sh::ClientDres::submit(const VideoFrame& frame)
-{
+bool sh::ClientDres::submit(const VideoFrame& frame) {
 	// Login check
 	if (!is_logged_in()) {
 		throw NotLoggedInEx("You must be logged in to the evaluation server to submit.");
@@ -245,8 +241,7 @@ bool sh::ClientDres::submit(const VideoFrame& frame)
 	return success;
 }
 
-bool ClientDres::send_results_log(const nlohmann::json& log_JSON)
-{
+bool ClientDres::send_results_log(const nlohmann::json& log_JSON) {
 	// \todo Actually send the log to the server.
 
 	bool result{ true };
@@ -260,8 +255,7 @@ bool ClientDres::send_results_log(const nlohmann::json& log_JSON)
 	return result;
 }
 
-bool ClientDres::send_interactions_log(const nlohmann::json& log_JSON)
-{
+bool ClientDres::send_interactions_log(const nlohmann::json& log_JSON) {
 	// \todo Actually send the log to the server.
 
 	bool result{ true };
@@ -276,8 +270,7 @@ bool ClientDres::send_interactions_log(const nlohmann::json& log_JSON)
 	return result;
 }
 
-UnixTimestamp ClientDres::get_server_ts()
-{
+UnixTimestamp ClientDres::get_server_ts() {
 	if (!_synced) {
 		return 0;
 	}
@@ -286,8 +279,7 @@ UnixTimestamp ClientDres::get_server_ts()
 	return utils::timestamp() + _diff;
 }
 
-nlohmann::json ClientDres::get_current_task()
-{
+nlohmann::json ClientDres::get_current_task() {
 	// \todo Implement...
 	// clang-format off
 	nlohmann::json task_JSON{
@@ -302,8 +294,7 @@ nlohmann::json ClientDres::get_current_task()
 }
 
 void ClientDres::write_log(LogType type, UnixTimestamp ts, const std::string& URL, const nlohmann::json& req,
-                           ReqCode code, nlohmann::json& res) const
-{
+                           ReqCode code, nlohmann::json& res) const {
 	std::string log_filepath = _eval_server_settings.log_dir_eval_server_requests + std::string("/") +
 	                           std::to_string(ts) + std::string("__") + log_type_to_str(type) +
 	                           _eval_server_settings.log_file_suffix;

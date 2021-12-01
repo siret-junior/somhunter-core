@@ -11,13 +11,11 @@
 // ---
 #include "common.h"
 
-namespace sh
-{
+namespace sh {
 using ReqCode = std::size_t;
 enum class RequestType { GET, POST };
 
-class Http
-{
+class Http {
 	// *** METHODS ***
 public:
 	~Http() noexcept;
@@ -43,8 +41,7 @@ public:
 private:
 	void common_finish() { prune_threads(); }
 
-	void prune_threads()
-	{
+	void prune_threads() {
 		for (size_t i = 0; i < submit_threads.size();) {
 			if (*finish_flags[i]) {
 				submit_threads[i].join();

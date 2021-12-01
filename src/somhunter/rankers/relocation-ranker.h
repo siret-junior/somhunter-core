@@ -38,10 +38,8 @@
 #include "settings.h"
 #include "utils.hpp"
 
-namespace sh
-{
-class RelocationRanker : public EmbeddingRanker<PrimaryFrameFeatures>
-{
+namespace sh {
+class RelocationRanker : public EmbeddingRanker<PrimaryFrameFeatures> {
 public:
 	void score(const RelocationQuery&, ScoreModel& model, size_t temporal,
 	           const PrimaryFrameFeatures& _dataset_features) const;

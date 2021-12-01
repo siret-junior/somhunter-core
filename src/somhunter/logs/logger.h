@@ -22,8 +22,7 @@
 
 using namespace json11;
 
-namespace sh
-{
+namespace sh {
 using ImageKeywords = KeywordRanker;
 class EvalServerClient;
 class UserContext;
@@ -33,8 +32,7 @@ class UserContext;
  *
  * \see class UserContext
  */
-class Logger
-{
+class Logger {
 	// *** METHODS ***
 public:
 	Logger() = delete;
@@ -95,15 +93,13 @@ public:
 	/** Sends the accumulated logs to the evaluation server (through `_p_eval_server`). */
 	void submit_interaction_logs_buffer();
 
-	DebugLogStreamPtrs get_debug_streams()
-	{
+	DebugLogStreamPtrs get_debug_streams() {
 		return DebugLogStreamPtrs{ _summary_streams.emplace_back(std::stringstream{}),
 			                       _actions_streams.emplace_back(std::stringstream{}),
 			                       _results_streams.emplace_back(std::stringstream{}) };
 	};
 
-	void clear_debug_streams()
-	{
+	void clear_debug_streams() {
 		_summary_streams.clear();
 		_actions_streams.clear();
 		_results_streams.clear();
@@ -118,8 +114,7 @@ private:
 	                    std::initializer_list<std::string> summary_keys = {});
 
 	/** Writes the log into the local file. */
-	void write_result(const nlohmann::json& action_log)
-	{
+	void write_result(const nlohmann::json& action_log) {
 		std::stringstream ss;
 
 		// If first time output
@@ -137,8 +132,7 @@ private:
 	}
 
 	/** Writes the log into the local file. */
-	void write_action(const nlohmann::json& action_log)
-	{
+	void write_action(const nlohmann::json& action_log) {
 		std::stringstream ss;
 
 		// If first time output
@@ -158,8 +152,7 @@ private:
 
 	/** Writes the log into the local file. */
 	void write_summary(const nlohmann::json& log, const std::string& action_name,
-	                   std::initializer_list<std::string> keys = {})
-	{
+	                   std::initializer_list<std::string> keys = {}) {
 		auto ts{ log["metadata"]["timestamp"].get<UnixTimestamp>() };
 		auto hash{ log["metadata"]["hash"].get<std::string>() };
 

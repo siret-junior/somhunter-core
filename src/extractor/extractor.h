@@ -6,10 +6,8 @@
 #include <torch/jit.h>
 #include <torch/types.h>
 
-namespace sh
-{
-class Extractor
-{
+namespace sh {
+class Extractor {
 public:
 	Extractor();
 

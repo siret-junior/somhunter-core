@@ -37,11 +37,9 @@
 #include "dataset-frames.h"
 #include "utils.hpp"
 
-namespace sh
-{
+namespace sh {
 /** Container for information about days filtering */
-class WeekDaysFilter
-{
+class WeekDaysFilter {
 	std::array<bool, 7> _days;
 
 public:
@@ -49,8 +47,7 @@ public:
 	WeekDaysFilter() { _days.fill(true); }
 
 	/** Construct from the bit mask */
-	WeekDaysFilter(uint8_t mask)
-	{
+	WeekDaysFilter(uint8_t mask) {
 		// Set the according days, ignore the last 2 bits
 		for (size_t i{ 0 }; i < 7; ++i) {
 			_days[i] = utils::is_set(mask, i);
@@ -64,8 +61,7 @@ public:
 	bool operator==(const WeekDaysFilter& other) const { return (_days == other._days); }
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(_days);
 	}
 };
@@ -82,8 +78,7 @@ struct TimeFilter {
 	bool operator==(const TimeFilter& other) const { return (from == other.from && to == other.to); }
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(from, to);
 	}
 };
@@ -100,8 +95,7 @@ struct YearFilter {
 	bool operator==(const YearFilter& other) const { return (from == other.from && to == other.to); }
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(from, to);
 	}
 };
@@ -113,21 +107,18 @@ struct Filters {
 	WeekDaysFilter days;
 	std::vector<bool> dataset_parts{ true, true };
 
-	bool operator==(const Filters& other) const
-	{
+	bool operator==(const Filters& other) const {
 		return (time == other.time && days == other.days && dataset_parts == other.dataset_parts &&
 		        years == other.years);
 	}
 
-	bool is_default() const
-	{
+	bool is_default() const {
 		return years == YearFilter{} && time == TimeFilter{} && days == WeekDaysFilter{} &&
 		       dataset_parts == std::vector<bool>{ true, true };
 	}
 
 	/** Based on `dataset_parts` it returns the allowed frame IDs. */
-	std::pair<FrameId, FrameId> get_dataset_parts_valid_interval(std::size_t num_total_frames) const
-	{
+	std::pair<FrameId, FrameId> get_dataset_parts_valid_interval(std::size_t num_total_frames) const {
 		std::size_t num_parts{ dataset_parts.size() };
 		do_assert(num_parts == 2, "Must be 2 intervals.");
 		do_assert(num_total_frames >= 2, "At least 2 frames to it.");
@@ -140,8 +131,7 @@ struct Filters {
 	}
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(time, days, years);
 	}
 };
@@ -153,8 +143,7 @@ struct RescoreMetadata {
 	std::string time_label;
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		// Some of these dont matter in the future
 		archive(_username);
 	}
@@ -171,40 +160,34 @@ struct RelativeRect {
 	float left, top, right, bottom;
 
 	/** Set rectangle to cover everything. */
-	void to_full()
-	{
+	void to_full() {
 		left = 0;
 		top = 0;
 		right = 0;
 		left = 0;
 	}
 
-	float width_norm() const
-	{
+	float width_norm() const {
 		do_assert_debug(right >= right, "");
 		return right - left;
 	};
 
-	float height_norm() const
-	{
+	float height_norm() const {
 		do_assert_debug(bottom >= top, "");
 		return bottom - top;
 	};
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(left, top, right, bottom);
 	}
 
-	bool operator==(const RelativeRect& b) const
-	{
+	bool operator==(const RelativeRect& b) const {
 		return left == b.left && top == b.top && right == b.right && bottom == b.bottom;
 	}
 };
 
-class CanvasSubqueryBase
-{
+class CanvasSubqueryBase {
 protected:
 	RelativeRect _rect;
 
@@ -218,8 +201,7 @@ public:
 	const RelativeRect& rect() const { return _rect; };
 };
 
-class CanvasSubqueryBitmap : public CanvasSubqueryBase
-{
+class CanvasSubqueryBitmap : public CanvasSubqueryBase {
 	size_t _num_channels;
 	size_t _width;
 	size_t _height;
@@ -253,14 +235,12 @@ public:
 
 	bool operator!=(const CanvasSubqueryBitmap& b) const { return !((*this) == b); }
 
-	bool operator==(const CanvasSubqueryBitmap& b) const
-	{
+	bool operator==(const CanvasSubqueryBitmap& b) const {
 		return _num_channels == b._num_channels && _width == b._width && _height == b._height &&
 		       _data_int == b._data_int && _rect == b._rect;
 	}
 
-	nlohmann::json to_JSON() const
-	{
+	nlohmann::json to_JSON() const {
 		nlohmann::json res = { { "rect", nlohmann::json::array({ _rect.left, _rect.top, _rect.right, _rect.bottom }) },
 			                   { "bitmap_filename", jpeg_filename },
 			                   { "width_pixels", static_cast<int>(_width) },
@@ -270,16 +250,14 @@ public:
 	}
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(_rect, _num_channels, _width, _height, _data_int);
 	}
 
 	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x);
 };
 
-inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x)
-{
+inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x) {
 	os << "---------------------------------" << std::endl;
 	os << "CanvasSubqueryBitmap: " << std::endl;
 	os << "---" << std::endl;
@@ -295,30 +273,25 @@ inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryBitmap x)
 	return os;
 }
 
-class CanvasSubqueryText : public CanvasSubqueryBase
-{
+class CanvasSubqueryText : public CanvasSubqueryBase {
 	TextualQuery _text_query;
 
 public:
 	CanvasSubqueryText() = default;
 	CanvasSubqueryText(const RelativeRect& rect, const TextualQuery query)
-	    : CanvasSubqueryBase{ rect }, _text_query{ utils::trim(query) }
-	{
-	}
+	    : CanvasSubqueryBase{ rect }, _text_query{ utils::trim(query) } {}
 	// ---
 	const TextualQuery& query() const { return _text_query; };
 	bool empty() const { return _text_query.empty(); }
 
-	nlohmann::json to_JSON() const
-	{
+	nlohmann::json to_JSON() const {
 		nlohmann::json res = { { "rect", nlohmann::json::array({ _rect.left, _rect.top, _rect.right, _rect.bottom }) },
 			                   { "text_query", _text_query } };
 
 		return res;
 	}
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(_rect, _text_query);
 	}
 
@@ -329,8 +302,7 @@ public:
 	friend std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x);
 };
 
-inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x)
-{
+inline std::ostream& operator<<(std::ofstream& os, CanvasSubqueryText x) {
 	os << "---------------------------------" << std::endl;
 	os << "CanvasSubqueryText: " << std::endl;
 	os << "---" << std::endl;
@@ -349,8 +321,7 @@ using CanvasSubquery = std::variant<CanvasSubqueryBitmap, CanvasSubqueryText>;
 /**
  * Type representing query related to the canvas (atm text & bitmap) rectangles.
  */
-class CanvasQuery
-{
+class CanvasQuery {
 	// *** METHODS ***
 public:
 	/** Emplace new subregion TEXT query. */
@@ -362,8 +333,7 @@ public:
 	                  uint8_t* bitmap_RGBA_data);
 
 	size_t size() const { return _subqueries.size(); }
-	bool empty() const
-	{
+	bool empty() const {
 		if (size() == 0)
 			return true;
 		else {
@@ -385,8 +355,7 @@ public:
 	 * https://uscilab.github.io/cereal/stl_support.html
 	 */
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(_subqueries);
 	}
 
@@ -402,8 +371,7 @@ public:
 	static std::vector<CanvasQuery> parse_json_contents(const std::string& contents,
 	                                                    const std::filesystem::path parentPath);
 
-	bool operator==(const CanvasQuery& b) const
-	{
+	bool operator==(const CanvasQuery& b) const {
 		if (b.size() != size()) return false;
 
 		for (size_t i = 0; i < size(); ++i) {
@@ -439,28 +407,24 @@ public:
 	TemporalQuery(TextualQuery tq) : textual{ tq }, canvas{}, relocation{ ERR_VAL<FrameId>() } {}
 	TemporalQuery(CanvasQuery cq) : textual{}, canvas{ cq }, relocation{ ERR_VAL<FrameId>() } {}
 	TemporalQuery(RelocationQuery rq) : textual{}, canvas{}, relocation{ rq } {}
-	TemporalQuery(TextualQuery tq, CanvasQuery cq, RelocationQuery rq) : textual{ tq }, canvas{ cq }, relocation{ rq }
-	{
-	}
+	TemporalQuery(TextualQuery tq, CanvasQuery cq, RelocationQuery rq)
+	    : textual{ tq }, canvas{ cq }, relocation{ rq } {}
 	// ---
 	bool score_secondary() const { return _score_secondary; }
 	void score_secondary(bool new_value) { _score_secondary = new_value; }
 	const bool is_relocation() const { return relocation != ERR_VAL<FrameId>(); }
 	const bool is_canvas() const { return !canvas.empty(); }
 	const bool is_text() const { return !is_relocation() && !textual.empty(); }
-	const bool empty() const
-	{
+	const bool empty() const {
 		return (relocation == ERR_VAL<RelocationQuery>()) && (utils::trim(textual).empty()) && canvas.empty();
 	}
-	const bool is_bitmap_canvas() const
-	{
+	const bool is_bitmap_canvas() const {
 		if (!is_canvas()) return false;
 
 		const auto& sqs{ canvas.subqueries() };
 		return std::holds_alternative<CanvasSubqueryBitmap>(sqs.front());
 	}
-	const bool is_text_canvas() const
-	{
+	const bool is_text_canvas() const {
 		if (!is_canvas()) return false;
 
 		const auto& sqs{ canvas.subqueries() };
@@ -468,20 +432,17 @@ public:
 	}
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(textual, canvas, relocation);
 	}
 	// ---
 	// bool operator!=(const TemporalQuery& b) const { return !((*this) == b); }
-	bool operator==(const TemporalQuery& b) const
-	{
+	bool operator==(const TemporalQuery& b) const {
 		return textual == b.textual && canvas == b.canvas && relocation == b.relocation &&
 		       score_secondary() == b.score_secondary();
 	}
 
-	nlohmann::json to_JSON() const
-	{
+	nlohmann::json to_JSON() const {
 		nlohmann::json o = nlohmann::json::object();
 
 		o["textual"] = textual;
@@ -510,8 +471,7 @@ struct Query {
 public:
 	Query() = default;
 	template <typename QueryType>
-	Query(const std::vector<QueryType>& temp_queries) : metadata{}, filters{}, relevance_feeedback{}
-	{
+	Query(const std::vector<QueryType>& temp_queries) : metadata{}, filters{}, relevance_feeedback{} {
 		for (auto&& q : temp_queries) {
 			auto& item{ temporal_queries.emplace_back(q) };
 			// Make sure correct scoring is set
@@ -521,8 +481,7 @@ public:
 
 	// ---
 
-	const bool is_relocation() const
-	{
+	const bool is_relocation() const {
 		for (auto&& t : temporal_queries) {
 			if (t.is_relocation()) return true;
 		}
@@ -530,8 +489,7 @@ public:
 		return false;
 	}
 	const bool score_secondary() const { return _score_secondary; }
-	void score_secondary(bool new_value)
-	{
+	void score_secondary(bool new_value) {
 		_score_secondary = new_value;
 		for (auto&& q : temporal_queries) {
 			q.score_secondary(new_value);
@@ -542,8 +500,7 @@ public:
 	const bool is_text_canvas() const { return temporal_queries.front().is_text_canvas(); }
 	const bool is_temporal_text() const { return !is_relocation() && is_text() && temporal_queries.size() > 1; }
 	const bool is_text() const { return temporal_queries.front().is_text(); }
-	const bool empty() const
-	{
+	const bool empty() const {
 		for (auto&& q : temporal_queries) {
 			if (q.empty()) return true;
 		}
@@ -552,16 +509,14 @@ public:
 
 	const std::vector<TemporalQuery>& queries() const { return temporal_queries; }
 
-	void set_targets(const std::vector<VideoFrame>& ts)
-	{
+	void set_targets(const std::vector<VideoFrame>& ts) {
 		targets.clear();
 		for (auto&& t : ts) {
 			targets.emplace_back(t.frame_ID);
 		}
 	}
 
-	std::string get_plain_text_query() const
-	{
+	std::string get_plain_text_query() const {
 		std::string text2;
 
 		for (auto&& tq : temporal_queries) {
@@ -594,8 +549,7 @@ public:
 		return text2;
 	}
 
-	void transform_to_no_pos_queries()
-	{
+	void transform_to_no_pos_queries() {
 		if (is_temporal_text()) {
 			std::cout << ">>> DECAY TEMPORAL TEXT: " << std::endl;
 			temporal_queries.erase(temporal_queries.begin() + 1);
@@ -639,8 +593,7 @@ public:
 	nlohmann::json to_JSON() const;
 
 	template <class Archive>
-	void serialize(Archive& archive)
-	{
+	void serialize(Archive& archive) {
 		archive(metadata, filters, relevance_feeedback, temporal_queries, targets, is_save);
 	}
 

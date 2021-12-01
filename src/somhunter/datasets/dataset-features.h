@@ -33,14 +33,12 @@
 #include "common.h"
 #include "distances.hpp"
 
-namespace sh
-{
+namespace sh {
 /**
  * Represents one set of features for the given dataset.
  */
 template <typename SETT>
-class FrameFeatures
-{
+class FrameFeatures {
 	// *** METHODS ***
 public:
 	FrameFeatures() = delete;
@@ -81,8 +79,7 @@ using SecondaryFrameFeatures = FrameFeatures<DatasetsSettings::SecondaryFeatures
 /**
  * Represents all available feature sets.
  */
-class DatasetFeatures
-{
+class DatasetFeatures {
 public:
 	DatasetFeatures(const DatasetFrames& frames, const Settings& config)
 	    : primary{ frames, config.datasets.primary_features },
@@ -94,8 +91,7 @@ public:
 };
 
 template <typename SETT>
-FrameFeatures<SETT>::FrameFeatures(const DatasetFrames& p, const SETT& config) : _size{ 0 }, _dim{ 0 }
-{
+FrameFeatures<SETT>::FrameFeatures(const DatasetFrames& p, const SETT& config) : _size{ 0 }, _dim{ 0 } {
 	// If no features are provided
 	if (config.features_file.empty()) {
 		SHLOG_W("No features provided for '" << utils::type_name<SETT>() << "'...");
@@ -136,8 +132,7 @@ FrameFeatures<SETT>::FrameFeatures(const DatasetFrames& p, const SETT& config) :
 
 template <typename SETT>
 std::vector<FrameId> FrameFeatures<SETT>::get_top_knn(const DatasetFrames& _dataset_frames, FrameId id,
-                                                      size_t per_vid_limit, size_t from_shot_limit) const
-{
+                                                      size_t per_vid_limit, size_t from_shot_limit) const {
 	return get_top_knn(
 	    _dataset_frames, id, [](FrameId /*frame_ID*/) { return true; }, per_vid_limit, from_shot_limit);
 }
@@ -145,8 +140,7 @@ std::vector<FrameId> FrameFeatures<SETT>::get_top_knn(const DatasetFrames& _data
 template <typename SETT>
 std::vector<FrameId> FrameFeatures<SETT>::get_top_knn(const DatasetFrames& _dataset_frames, FrameId id,
                                                       std::function<bool(FrameId ID)> pred, size_t per_vid_limit,
-                                                      size_t from_shot_limit) const
-{
+                                                      size_t from_shot_limit) const {
 	if (per_vid_limit == 0) per_vid_limit = _dataset_frames.size();
 
 	if (from_shot_limit == 0) from_shot_limit = _dataset_frames.size();
@@ -196,32 +190,27 @@ std::vector<FrameId> FrameFeatures<SETT>::get_top_knn(const DatasetFrames& _data
 }
 
 template <typename SETT>
-float FrameFeatures<SETT>::d_manhattan(size_t i, size_t j) const
-{
+float FrameFeatures<SETT>::d_manhattan(size_t i, size_t j) const {
 	return ::d_manhattan(fv(i), fv(j), _dim);
 }
 
 template <typename SETT>
-float FrameFeatures<SETT>::d_sqeucl(size_t i, size_t j) const
-{
+float FrameFeatures<SETT>::d_sqeucl(size_t i, size_t j) const {
 	return ::d_sqeucl(fv(i), fv(j), _dim);
 }
 
 template <typename SETT>
-float FrameFeatures<SETT>::d_eucl(size_t i, size_t j) const
-{
+float FrameFeatures<SETT>::d_eucl(size_t i, size_t j) const {
 	return sqrtf(d_sqeucl(i, j));
 }
 
 template <typename SETT>
-float FrameFeatures<SETT>::d_dot_normalized(size_t i, size_t j) const
-{
+float FrameFeatures<SETT>::d_dot_normalized(size_t i, size_t j) const {
 	return 1 - ::d_dot_normalized(fv(i), fv(j), _dim);
 }
 
 template <typename SETT>
-float FrameFeatures<SETT>::d_cos(size_t i, size_t j) const
-{
+float FrameFeatures<SETT>::d_cos(size_t i, size_t j) const {
 	float s = 0, w1 = 0, w2 = 0;
 	const float *iv = fv(i), *jv = fv(j);
 	for (size_t d = 0; d < _dim; ++d) {

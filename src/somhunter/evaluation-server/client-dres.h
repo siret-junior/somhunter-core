@@ -28,13 +28,11 @@
 #include "http.h"
 #include "settings.h"
 
-namespace sh
-{
+namespace sh {
 struct VideoFrame;
 
 /** Unified interface for all remote evaluation servers. */
-class IServerClient
-{
+class IServerClient {
 	// *** METHODS ***
 public:
 	IServerClient(const EvalServerSettings& settings)
@@ -55,8 +53,7 @@ public:
 	virtual bool get_do_requests() const { return _do_requests; };
 
 protected:
-	virtual void set_user_token(const std::string& val)
-	{
+	virtual void set_user_token(const std::string& val) {
 		SHLOG_D("Setting `_user_token` to " << val);
 		_username = val;
 	};
@@ -74,8 +71,7 @@ protected:
  *
  * https://github.com/dres-dev/DRES
  */
-class ClientDres final : public IServerClient
-{
+class ClientDres final : public IServerClient {
 	// *** METHODS ***
 public:
 	ClientDres(const EvalServerSettings& settings);
@@ -92,8 +88,7 @@ public:
 
 private:
 	enum class LogType { LOGIN, LOGOUT, SUBMIT, RESULT, INTERACTION };
-	std::string log_type_to_str(LogType t) const
-	{
+	std::string log_type_to_str(LogType t) const {
 		switch (t) {
 			case LogType::LOGIN:
 				return "login";

@@ -26,8 +26,7 @@
 using namespace sh;
 
 void KeywordClipRanker::rank_sentence_query(const std::string& sentence_query, ScoreModel& model,
-                                            const SecondaryFrameFeatures& _dataset_features, size_t temporal)
-{
+                                            const SecondaryFrameFeatures& _dataset_features, size_t temporal) {
 	if (sentence_query.empty()) return;
 
 	const nlohmann::json headers;

@@ -26,8 +26,7 @@
 using namespace sh;
 
 std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string& filepath,
-                                                               const DatasetFrames& _dataset_frames)
-{
+                                                               const DatasetFrames& _dataset_frames) {
 	std::ifstream inFile(filepath.c_str(), std::ios::in);
 
 	SHLOG_D("Loading supported textual model keywords from '" << filepath << "'...");
@@ -96,8 +95,7 @@ std::vector<Keyword> KeywordRanker::parse_kw_classes_text_file(const std::string
 	return result_keywords;
 }
 
-FeatureVector KeywordRanker::parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset)
-{
+FeatureVector KeywordRanker::parse_float_vector(const std::string& filepath, size_t dim, size_t begin_offset) {
 	// Open file for reading as binary from the end side
 	std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
 
@@ -156,8 +154,7 @@ FeatureVector KeywordRanker::parse_float_vector(const std::string& filepath, siz
 	return features_vector;
 }
 
-FeatureMatrix KeywordRanker::parse_float_matrix(const std::string& filepath, size_t row_dim, size_t begin_offset)
-{
+FeatureMatrix KeywordRanker::parse_float_matrix(const std::string& filepath, size_t row_dim, size_t begin_offset) {
 	// Open file for reading as binary from the end side
 	std::ifstream ifs(filepath, std::ios::binary | std::ios::ate);
 
@@ -219,8 +216,7 @@ FeatureMatrix KeywordRanker::parse_float_matrix(const std::string& filepath, siz
 	return result_features;
 }
 
-KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) const
-{
+KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) const {
 	KwSearchIds r;
 	KwSearchIds r2;
 
@@ -255,8 +251,7 @@ KwSearchIds KeywordRanker::find(const std::string& search, size_t num_limit) con
 	return res;
 }
 
-StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query_raw)
-{
+StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query_raw) {
 	auto tokens{ tokenize_textual_query(query_raw) };
 
 	if (tokens.empty()) {
@@ -269,8 +264,7 @@ StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query_
 	return textual_query_vectors;
 }
 
-std::vector<std::string> KeywordRanker::tokenize_textual_query(const std::string& sentence_query_raw) const
-{
+std::vector<std::string> KeywordRanker::tokenize_textual_query(const std::string& sentence_query_raw) const {
 	// Copy this sentence
 	std::string sentence_query(sentence_query_raw);
 
@@ -293,8 +287,7 @@ std::vector<std::string> KeywordRanker::tokenize_textual_query(const std::string
 	return query;
 }
 
-std::vector<KeywordId> KeywordRanker::decode_keywords(const std::vector<std::string>& query) const
-{
+std::vector<KeywordId> KeywordRanker::decode_keywords(const std::vector<std::string>& query) const {
 	std::vector<KeywordId> pos_one_query;
 	// Split tokens into temporal queries
 	for (const auto& kw_word : query) {
@@ -307,8 +300,7 @@ std::vector<KeywordId> KeywordRanker::decode_keywords(const std::vector<std::str
 }
 
 void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, ScoreModel& model,
-                                        const PrimaryFrameFeatures& _dataset_features, size_t temporal) const
-{
+                                        const PrimaryFrameFeatures& _dataset_features, size_t temporal) const {
 	auto tokens{ tokenize_textual_query(sentence_query_raw) };
 
 	if (tokens.empty()) return;
@@ -328,8 +320,7 @@ void KeywordRanker::rank_sentence_query(const std::string& sentence_query_raw, S
 	}
 }
 
-StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& kws) const
-{
+StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& kws) const {
 	// Initialize zero vector
 	std::vector<float> score_vec(kw_pca_mean_vec.size(), 0.0f);
 
@@ -354,8 +345,7 @@ StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& 
 }
 
 void KeywordRanker::report_results(const StdVector<std::pair<FrameId, float>>& sorted_results,
-                                   const DatasetFrames& _dataset_frames, size_t num)
-{
+                                   const DatasetFrames& _dataset_frames, size_t num) {
 	size_t i{ 0 };
 	for (auto&& [frame_ID, score] : sorted_results) {
 		++i;

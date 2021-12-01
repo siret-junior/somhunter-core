@@ -35,10 +35,8 @@
 #include "http.h"
 #include "utils.hpp"
 
-namespace sh
-{
-class KeywordClipRanker : public EmbeddingRanker<SecondaryFrameFeatures>
-{
+namespace sh {
+class KeywordClipRanker : public EmbeddingRanker<SecondaryFrameFeatures> {
 public:
 	inline KeywordClipRanker(const Settings& config) : server_url(config.remote_services.CLIP_query_to_vec.address) {}
 

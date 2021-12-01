@@ -45,26 +45,21 @@
 #include "user-context.h"
 #include "utils.hpp"
 
-namespace sh
-{
-namespace tests
-{
+namespace sh {
+namespace tests {
 class TESTER_Somhunter;
 }  // namespace tests
 
 /**
  * Represents real competition task and for given timestamp responds with the target.
  */
-class TaskTargetHelper
-{
+class TaskTargetHelper {
 public:
-	class Task
-	{
+	class Task {
 	public:
 		enum class Type { TEXT, VISUAL, AVS };
 
-		Type type_to_enum(const std::string& s)
-		{
+		Type type_to_enum(const std::string& s) {
 			if (s == "t" || s == "T")
 				return Type::TEXT;
 			else if (s == "v" || s == "V")
@@ -81,9 +76,7 @@ public:
 		      _type(type_to_enum(type)),
 		      _timestamps(ts_from, ts_to),
 		      _video_ID(video_ID - 1),  // To 0-based
-		      _frames_interval(fr_from, fr_to)
-		{
-		}
+		      _frames_interval(fr_from, fr_to) {}
 
 		std::pair<std::size_t, std::size_t> timestamps() { return _timestamps; }
 
@@ -103,8 +96,7 @@ public:
 
 public:
 	TaskTargetHelper() = delete;
-	TaskTargetHelper(const std::string& filepath)
-	{
+	TaskTargetHelper(const std::string& filepath) {
 		SHLOG_I("Parsing tasks from '" << filepath << "'...");
 
 		auto ifs = std::ifstream(filepath, std::ios::in);
@@ -149,8 +141,7 @@ public:
 	}
 
 	// ---
-	std::tuple<VideoId, FrameNum, FrameNum> target(std::size_t ts)
-	{
+	std::tuple<VideoId, FrameNum, FrameNum> target(std::size_t ts) {
 		for (auto&& t : _tasks) {
 			auto [ts_fr, ts_to] = t.timestamps();
 			if (ts_fr <= ts && ts <= ts_to) {
@@ -172,8 +163,7 @@ private:
  *
  * \todo Export for a library compilation.
  */
-class Somhunter
-{
+class Somhunter {
 	const Settings _settings;
 
 	// ********************************
@@ -282,13 +272,11 @@ public:
 
 	const VideoFrame& get_frame(FrameId ID) const { return _dataset_frames.get_frame(ID); }
 
-	FrameRange get_frames(VideoId video_ID, FrameNum fr, FrameNum to) const
-	{
+	FrameRange get_frames(VideoId video_ID, FrameNum fr, FrameNum to) const {
 		return _dataset_frames.get_shot_frames(video_ID, fr, to);
 	}
 
-	VideoFramePointer get_frame_ptr(FrameId img) const
-	{
+	VideoFramePointer get_frame_ptr(FrameId img) const {
 		if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
 		return nullptr;
 	}
@@ -358,8 +346,7 @@ public:
 	 *
 	 * For examples used as `keyword-to-ID.W2VV-BoW.csv` file.
 	 */
-	void generate_example_images_for_keywords()
-	{
+	void generate_example_images_for_keywords() {
 		std::ifstream inFile(_settings.datasets.primary_features.kws_file, std::ios::in);
 		std::ofstream ofs("wooooords.csv");
 
@@ -410,8 +397,7 @@ public:
 		}
 	}
 
-	static void write_resultset(const std::string& file, const std::vector<VideoFramePointer>& results)
-	{
+	static void write_resultset(const std::string& file, const std::vector<VideoFramePointer>& results) {
 		nlohmann::json arr = nlohmann::json::array();
 
 		std::size_t i = 0;
@@ -435,8 +421,7 @@ public:
 		ofs << arr.dump(4) << std::endl;
 	}
 
-	static void write_query(const std::string& file, const Query& q)
-	{
+	static void write_query(const std::string& file, const Query& q) {
 		std::ofstream ofs(file);
 		if (!ofs) {
 			throw std::runtime_error("Unable to open file for writing: "s + file);
@@ -447,8 +432,7 @@ public:
 
 	static void write_query_info(const std::string& file, const std::string& ID, const std::string& user,
 	                             const std::tuple<VideoId, FrameId, FrameId>& target, std::size_t pos_vid,
-	                             std::size_t pos_fr, std::size_t unpos_vid, std::size_t unpos_fr)
-	{
+	                             std::size_t pos_fr, std::size_t unpos_vid, std::size_t unpos_fr) {
 		nlohmann::json o = nlohmann::json::object();
 
 		o["binary_ID"] = ID;
@@ -480,8 +464,7 @@ private:
 	 */
 	template <typename SpecificKWRanker, typename SpecificFrameFeatures>
 	inline void rescore_keywords(SpecificKWRanker& kw_ranker, const TextualQuery& query, size_t temporal,
-	                             const SpecificFrameFeatures& features)
-	{
+	                             const SpecificFrameFeatures& features) {
 		kw_ranker.rank_sentence_query(query, _user_context.ctx.scores, features, temporal);
 
 		_user_context.ctx.used_tools.text_search_used = true;
@@ -519,8 +502,7 @@ private:
 
 	/** Adds currently active search context to the history and starts a new
 	 * context (with next contiguous ID number) */
-	void push_search_ctx()
-	{
+	void push_search_ctx() {
 		// Make sure we're not pushing in any old screenshot
 		_user_context.ctx.screenshot_fpth = "";
 

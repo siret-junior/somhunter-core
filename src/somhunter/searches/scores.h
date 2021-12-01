@@ -31,10 +31,8 @@
 #include "dataset-features.h"
 #include "dataset-frames.h"
 
-namespace sh
-{
-class ScoreModel
-{
+namespace sh {
+class ScoreModel {
 	/** Current score distribution for the frames. */
 	std::vector<float> _scores;
 
@@ -61,9 +59,7 @@ public:
 	      _temporal_scores(MAX_TEMPORAL_SIZE, _scores),
 	      _mask(p.size(), true),
 	      _cache_dirty{ true },
-	      _cache_ctx_dirty{ true }
-	{
-	}
+	      _cache_ctx_dirty{ true } {}
 
 	bool operator==(const ScoreModel& other) const;
 	float operator[](FrameId i) const { return _scores[i]; }
@@ -100,14 +96,12 @@ public:
 	void normalize(size_t depth = MAX_TEMPORAL_SIZE);
 	void normalize(float* scores, size_t size);
 
-	void invalidate_cache()
-	{
+	void invalidate_cache() {
 		_cache_dirty = true;
 		_cache_ctx_dirty = true;
 	}
 
-	void reset_mask()
-	{
+	void reset_mask() {
 		invalidate_cache();
 		std::transform(_mask.begin(), _mask.end(), _mask.begin(), [](const bool&) { return true; });
 	};
@@ -116,8 +110,7 @@ public:
 	bool is_masked(FrameId ID) const { return _mask[ID]; }
 
 	/** Sets the mask value for the frame. */
-	bool set_mask(FrameId ID, bool val)
-	{
+	bool set_mask(FrameId ID, bool val) {
 		invalidate_cache();
 		return _mask[ID] = val;
 	}

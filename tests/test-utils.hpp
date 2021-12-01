@@ -28,12 +28,9 @@
 
 using json = nlohmann::json;
 
-namespace sh
-{
-namespace tests
-{
-inline void assert_contains_key_with_value(const json& _data, const std::string& key, const json& value)
-{
+namespace sh {
+namespace tests {
+inline void assert_contains_key_with_value(const json& _data, const std::string& key, const json& value) {
 	if (!_data.is_object()) {
 		do_assert(false, "Must be an object.");
 	}
@@ -47,8 +44,7 @@ inline void assert_contains_key_with_value(const json& _data, const std::string&
 	do_assert(false, "Key-value " + key + " -> " + value.dump(4) + "not found.");
 }
 
-inline void assert_column_contains(const std::string& line, std::size_t idx, const std::string& val)
-{
+inline void assert_column_contains(const std::string& line, std::size_t idx, const std::string& val) {
 	std::stringstream ss{ line };
 	std::string tok;
 	for (size_t i = 0; i <= idx; i++) {

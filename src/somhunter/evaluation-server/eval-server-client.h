@@ -32,12 +32,10 @@
 #include "client-dres.h"
 #include "common.h"
 
-namespace sh
-{
+namespace sh {
 struct VideoFrame;
 
-class EvalServerClient
-{
+class EvalServerClient {
 	// *** METHODS ***
 public:
 	EvalServerClient(const EvalServerSettings& settings);

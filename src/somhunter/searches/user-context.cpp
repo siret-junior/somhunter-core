@@ -35,8 +35,7 @@ UserContext::UserContext(const Settings& settings, const std::string& username, 
       _eval_server{ settings.eval_server },
       _logger(settings.eval_server, this, &_eval_server),
       _async_SOM(settings, SOM_DISPLAY_GRID_WIDTH, SOM_DISPLAY_GRID_HEIGHT, *p_dataset_features, ctx.scores),
-      _force_result_log{ false }
-{
+      _force_result_log{ false } {
 	SHLOG_D("Triggering main SOM worker");
 	_async_SOM.start_work(*_p_dataset_features, ctx.scores, ctx.scores.v());
 
@@ -55,7 +54,6 @@ UserContext::UserContext(const Settings& settings, const std::string& username, 
 	_history.emplace_back(ctx);
 }
 
-bool UserContext::operator==(const UserContext& other) const
-{
+bool UserContext::operator==(const UserContext& other) const {
 	return (ctx == other.ctx && _username == other._username && _history == other._history);
 }

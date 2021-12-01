@@ -24,8 +24,7 @@
 
 #include <cstddef>
 
-namespace sh
-{
+namespace sh {
 /**
  * Internal logger lever.
  *
@@ -88,24 +87,20 @@ constexpr int MAX_TEMPORAL_SIZE = 2;
 /* ***********************************
  * Logging names
  * *********************************** */
-namespace LOGGING_STRINGS
-{
-namespace STD_CATEGORIES
-{
+namespace LOGGING_STRINGS {
+namespace STD_CATEGORIES {
 constexpr const char* BROWSING = "BROWSING";
 constexpr const char* IMAGE = "IMAGE";
 constexpr const char* TEXT = "TEXT";
 };  // namespace STD_CATEGORIES
 
-namespace STD_TYPES
-{
+namespace STD_TYPES {
 constexpr const char* EXPLORATION = "exploration";
 constexpr const char* RANKED_LIST = "rankedList";
 constexpr const char* RANDOM_SELECTION = "randomSelection";
 };  // namespace STD_TYPES
 
-namespace STD_VALUES
-{
+namespace STD_VALUES {
 constexpr const char* RANDOM_DISPLAY = "randomDisplay";
 constexpr const char* SOM_DISPLAY = "somDisplay";
 
@@ -114,13 +109,11 @@ constexpr const char* SOM_RELOC_DISPLAY = "somRelocationDisplay";
 constexpr const char* TOP_SCORED_CONTEXT_DISPLAY = "topnContextDisplay";
 };  // namespace STD_VALUES
 
-namespace STD_KEYS
-{
+namespace STD_KEYS {
 constexpr const char* ACTION_NAME = "actionName";
 };
 
-namespace ACTION_NAMES
-{
+namespace ACTION_NAMES {
 constexpr const char* SHOW_RANDOM_DISPLAY = "showRandomDisplay";
 constexpr const char* SHOW_SOM_DISPLAY = "showSomDisplay";
 constexpr const char* SHOW_SOM_RELOC_DISPLAY = "showSomRelocationDisplay";

@@ -34,8 +34,7 @@
 #include "query-types.h"
 #include "scores.h"
 
-namespace sh
-{
+namespace sh {
 class DatasetFrames;
 class DatasetFeatures;
 
@@ -52,8 +51,7 @@ public:
 	bool operator==(const SearchContext& other) const;
 	// ---
 
-	void reset()
-	{
+	void reset() {
 		scores.reset_mask();
 		reset_filters();
 	}

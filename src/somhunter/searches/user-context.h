@@ -35,11 +35,9 @@
 #include "logger.h"
 #include "search-context.h"
 
-namespace sh
-{
+namespace sh {
 /** Represents exactly one state of ONE user that uses this core. */
-class UserContext
-{
+class UserContext {
 public:
 	UserContext() = delete;
 	UserContext(const Settings& settings, const std::string& username, const DatasetFrames* p_dataset_frames,
@@ -49,8 +47,7 @@ public:
 	const DatasetFrames* get_frames() const { return _p_dataset_frames; };
 	const PrimaryFrameFeatures* get_features() const { return _p_dataset_features; };
 
-	void reset()
-	{
+	void reset() {
 		// Reset SearchContext
 		ctx.reset();
 		// Make sure we're not pushing in any old screenshot

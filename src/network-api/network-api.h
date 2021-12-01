@@ -40,12 +40,10 @@ using namespace http;                          //< cpprest
 using namespace utility;                       //< cpprest
 using namespace http::experimental::listener;  //< cpprest
 
-namespace sh
-{
+namespace sh {
 class Somhunter;
 
-class NetworkApi
-{
+class NetworkApi {
 public:
 	static void add_CORS_headers(http_response& res);
 

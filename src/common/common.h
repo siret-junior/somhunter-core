@@ -69,13 +69,11 @@ struct ioterable {
 	ioterable& operator=(ioterable&&) = default;
 	ioterable& operator=(ioterable const&) = default;
 
-	ioterable& operator++()
-	{
+	ioterable& operator++() {
 		++val_;
 		return *this;
 	}
-	ioterable operator++(int)
-	{
+	ioterable operator++(int) {
 		ioterable tmp(*this);
 		++val_;
 		return tmp;

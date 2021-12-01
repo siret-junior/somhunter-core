@@ -7,8 +7,7 @@
 using namespace sh;
 using namespace nlohmann;
 
-ApiConfig parse_API_config(const json& json)
-{
+ApiConfig parse_API_config(const json& json) {
 	auto docs_dir{ require_string_value(json, "docs_dir") };
 
 	if (docs_dir.back() != '/') {
@@ -30,8 +29,7 @@ ApiConfig parse_API_config(const json& json)
 	};
 }
 
-EvalServerSettings::ServerConfigVbs parse_VBS_config(const json& json)
-{
+EvalServerSettings::ServerConfigVbs parse_VBS_config(const json& json) {
 	return EvalServerSettings::ServerConfigVbs{ // .submit_URL
 		                                        json["submit_URL"].get<std::string>(),
 		                                        // .submit_rerank_URL
@@ -41,8 +39,7 @@ EvalServerSettings::ServerConfigVbs parse_VBS_config(const json& json)
 	};
 }
 
-EvalServerSettings::ServerConfigDres parse_DRES_config(const json& json)
-{
+EvalServerSettings::ServerConfigDres parse_DRES_config(const json& json) {
 	return EvalServerSettings::ServerConfigDres{ // .cookie_file
 		                                         json["cookie_file"].get<std::string>(),
 		                                         // .username
@@ -66,8 +63,7 @@ EvalServerSettings::ServerConfigDres parse_DRES_config(const json& json)
 	};
 }
 
-EvalServerSettings parse_eval_server(const json& json)
-{
+EvalServerSettings parse_eval_server(const json& json) {
 	EvalServerSettings res;
 
 	// .do_network_requests
@@ -112,8 +108,7 @@ EvalServerSettings parse_eval_server(const json& json)
 	return res;
 }
 
-DatasetsSettings::PrimaryFeaturesSettings parse_primary_features_settings(const json& json)
-{
+DatasetsSettings::PrimaryFeaturesSettings parse_primary_features_settings(const json& json) {
 	return DatasetsSettings::PrimaryFeaturesSettings{
 		// .features_file_data_off
 		require_int_value<size_t>(json, "features_file_data_off"),
@@ -144,8 +139,7 @@ DatasetsSettings::PrimaryFeaturesSettings parse_primary_features_settings(const 
 	};
 }
 
-DatasetsSettings::SecondaryFeaturesSettings parse_secondary_features_settings(const json& json)
-{
+DatasetsSettings::SecondaryFeaturesSettings parse_secondary_features_settings(const json& json) {
 	return DatasetsSettings::SecondaryFeaturesSettings{ // .features_file_data_off
 		                                                require_int_value<size_t>(json, "features_file_data_off"),
 		                                                // .features_dim
@@ -155,8 +149,7 @@ DatasetsSettings::SecondaryFeaturesSettings parse_secondary_features_settings(co
 	};
 }
 
-DatasetsSettings::VideoFilenameOffsets parse_filename_offsets(const json& json)
-{
+DatasetsSettings::VideoFilenameOffsets parse_filename_offsets(const json& json) {
 	return DatasetsSettings::VideoFilenameOffsets{
 
 		// .vid_ID_off
@@ -175,13 +168,11 @@ DatasetsSettings::VideoFilenameOffsets parse_filename_offsets(const json& json)
 	};
 }
 
-TestsSettings parse_tests_settings(const json& json)
-{
+TestsSettings parse_tests_settings(const json& json) {
 	return TestsSettings{ require_string_value(json, "test_data_root") };
 }
 
-PresentationViewsSettings parse_presentation_views_settings(const json& json)
-{
+PresentationViewsSettings parse_presentation_views_settings(const json& json) {
 	return PresentationViewsSettings{ // .display_page_size
 		                              require_int_value<size_t>(json, "display_page_size"),
 		                              // .topn_frames_per_video
@@ -191,34 +182,29 @@ PresentationViewsSettings parse_presentation_views_settings(const json& json)
 	};
 }
 
-LoggerSettings parse_logger_settings(const json& /*json*/)
-{
+LoggerSettings parse_logger_settings(const json& /*json*/) {
 	return LoggerSettings{
 		// ...
 	};
 }
 
-RemoteServicesSettings::ClipQueryToVec parse_clip_settings(const json& json)
-{
+RemoteServicesSettings::ClipQueryToVec parse_clip_settings(const json& json) {
 	return RemoteServicesSettings::ClipQueryToVec{ // .address
 		                                           optional_string_value(json, "address")
 	};
 }
-RemoteServicesSettings::MediaServer parse_media_server_settings(const json& json)
-{
+RemoteServicesSettings::MediaServer parse_media_server_settings(const json& json) {
 	return RemoteServicesSettings::MediaServer{ // .address
 		                                        optional_string_value(json, "address")
 	};
 }
 
-RemoteServicesSettings parse_remote_services_settings(const json& json)
-{
+RemoteServicesSettings parse_remote_services_settings(const json& json) {
 	return RemoteServicesSettings{ parse_clip_settings(json["CLIP_query_to_vec"]),
 		                           parse_media_server_settings(json["media_server"]) };
 }
 
-ModelsSettings parse_model_settings(const json& json)
-{
+ModelsSettings parse_model_settings(const json& json) {
 	return ModelsSettings{
 		// .models_dir
 		require_string_value(json, "models_dir"),
@@ -239,8 +225,7 @@ ModelsSettings parse_model_settings(const json& json)
 	};
 }
 
-DatasetsSettings parse_datasets_settings(const json& json)
-{
+DatasetsSettings parse_datasets_settings(const json& json) {
 	return DatasetsSettings{ // .data_dir
 		                     require_string_value(json, "data_dir"),
 		                     // .frames_dir
@@ -265,14 +250,12 @@ DatasetsSettings parse_datasets_settings(const json& json)
  *
  * That means basically what we have in config.h now (paths etc.)
  */
-Settings Settings::parse_JSON_config(const std::string& filepath)
-{
+Settings Settings::parse_JSON_config(const std::string& filepath) {
 	std::string cfg_file_contents(utils::read_whole_file(filepath));
 	return parse_JSON_config_string(cfg_file_contents);
 }
 
-Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents)
-{
+Settings Settings::parse_JSON_config_string(const std::string& cfg_file_contents) {
 	json json_all = json::parse(cfg_file_contents);
 
 	auto& json{ json_all["core"] };

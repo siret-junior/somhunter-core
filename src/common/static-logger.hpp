@@ -49,8 +49,7 @@
 /** If `true` the assertions will be executed */
 constexpr bool RUN_ASSERTS = true;
 
-namespace TermColor
-{
+namespace TermColor {
 enum Code {
 	FG_RED = 31,
 	FG_GREEN = 32,
@@ -70,8 +69,7 @@ enum Code {
 	BG_GREY = 100,
 	BG_DEFAULT = 49
 };
-class Modifier
-{
+class Modifier {
 	Code code;
 
 public:
@@ -101,15 +99,13 @@ static Modifier defbg{ TermColor::Code::BG_DEFAULT };
 /**
  * Returns a view pointing to at most `len` long tail of the `str`.
  */
-static inline std::string_view view_tail(const std::string& str, size_t len)
-{
+static inline std::string_view view_tail(const std::string& str, size_t len) {
 	return std::string_view{ str.data() + std::max<size_t>(0, str.length() - len) };
 }
 
 /** Mutex for optional STDOUT/STDERR synchronization */
 inline std::mutex logger_mtx;
-static inline auto lock_out()
-{
+static inline auto lock_out() {
 #if LOCK_STDOUT
 	return std::lock_guard<std::mutex>{ logger_mtx };
 #else
@@ -196,8 +192,7 @@ static inline auto lock_out()
 #	define SHLOG_UNREQ(id, x) _dont_write_log_err
 #endif  // LOGAPI
 
-namespace sh
-{
+namespace sh {
 /** Assert execuded at all times. */
 
 #define do_assert(assertion, msg)                                                                                    \

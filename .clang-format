@@ -5,11 +5,11 @@ UseTab: ForIndentation
 IndentWidth: 4
 TabWidth: 4
 AccessModifierOffset: -4
-PointerAlignment: Left
 ColumnLimit: 120
 IndentPPDirectives: AfterHash
 IncludeBlocks: Preserve
 Cpp11BracedListStyle: false
-AlwaysBreakAfterDefinitionReturnType: None
-BreakBeforeBraces: Linux
+#AlwaysBreakAfterDefinitionReturnType: None
+#PointerAlignment: Left
+#BreakBeforeBraces: Attach
 ...

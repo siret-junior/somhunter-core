@@ -8,8 +8,7 @@
 #include <string>
 #include <variant>
 
-namespace sh
-{
+namespace sh {
 /** Config needed by the Submitter instance.
  *
  * \see ServerConfig

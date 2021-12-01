@@ -39,8 +39,7 @@
 #include "scores.h"
 #include "settings.h"
 
-namespace sh
-{
+namespace sh {
 struct Keyword {
 	KeywordId kw_ID;
 	SynsetId synset_ID;
@@ -51,8 +50,7 @@ struct Keyword {
 	std::vector<const VideoFrame*> top_ex_imgs;
 };
 
-class KeywordRanker : public EmbeddingRanker<PrimaryFrameFeatures>
-{
+class KeywordRanker : public EmbeddingRanker<PrimaryFrameFeatures> {
 	std::vector<Keyword> _keyword_ranker;
 	FeatureMatrix kw_features;
 	FeatureVector kw_features_bias_vec;
@@ -92,8 +90,7 @@ public:
 	      kw_pca_mat(parse_float_matrix(config.datasets.primary_features.kw_PCA_mat_file,
 	                                    config.datasets.primary_features.pre_PCA_features_dim)),
 	      kw_pca_mean_vec(parse_float_vector(config.datasets.primary_features.kw_PCA_mean_vec_file,
-	                                         config.datasets.primary_features.pre_PCA_features_dim))
-	{
+	                                         config.datasets.primary_features.pre_PCA_features_dim)) {
 		assert(kw_pca_mat.size() > 1);  // Make sure it's a matrix!
 
 		SHLOG_S("Keyword features loaded from '" << config.datasets.primary_features.kw_scores_mat_file
@@ -126,8 +123,7 @@ public:
 	/**
 	 * Gets all string representants of this keyword.
 	 */
-	const Keyword& operator[](KeywordId idx) const
-	{
+	const Keyword& operator[](KeywordId idx) const {
 		// Get all keywords with this Keyword ID
 		return _keyword_ranker[idx];
 	}

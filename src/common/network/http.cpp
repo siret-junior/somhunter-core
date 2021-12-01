@@ -10,8 +10,7 @@ using namespace sh;
 
 #if DEBUG_CURL_REQUESTS
 
-static void curl_dump(const char* text, FILE* stream, unsigned char* ptr, size_t size, char nohex)
-{
+static void curl_dump(const char* text, FILE* stream, unsigned char* ptr, size_t size, char nohex) {
 	size_t i;
 	size_t c;
 
@@ -54,8 +53,7 @@ static void curl_dump(const char* text, FILE* stream, unsigned char* ptr, size_t
 	fflush(stream);
 }
 
-static int trace_fn(CURL* handle, curl_infotype type, char* dt, size_t size, void* userp)
-{
+static int trace_fn(CURL* handle, curl_infotype type, char* dt, size_t size, void* userp) {
 	struct data* config = (struct data*)userp;
 	const char* text;
 
@@ -90,8 +88,7 @@ static int trace_fn(CURL* handle, curl_infotype type, char* dt, size_t size, voi
 
 #endif  // DEBUG_CURL_REQUESTS
 
-static size_t res_cb(char* contents, size_t size, size_t nmemb, void* userp)
-{
+static size_t res_cb(char* contents, size_t size, size_t nmemb, void* userp) {
 	static_cast<std::string*>(userp)->append(contents, size * nmemb);
 	return size * nmemb;
 }
@@ -100,8 +97,7 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
                            const nlohmann::json& /*headers*/ = {},
                            std::function<void(ReqCode, std::vector<uint8_t>&&)> cb_succ = {},
                            std::function<void()> cb_err = {}, const std::string& cookie_filepath = "",
-                           bool allow_insecure = false)
-{
+                           bool allow_insecure = false) {
 	CURL* curl = curl_easy_init();
 	// std::string res_buffer;
 
@@ -210,14 +206,12 @@ static void request_worker(RequestType type, const std::string& submit_URL, cons
 	curl_easy_cleanup(curl);
 }
 
-Http::~Http()
-{
+Http::~Http() {
 	for (auto& t : submit_threads) t.join();
 }
 
 void Http::do_POST_async(const std::string& URL, const nlohmann::json& body, const nlohmann::json& /*headers*/,
-                         std::function<void(ReqCode, nlohmann::json)> cb_succ, std::function<void()> cb_err)
-{
+                         std::function<void(ReqCode, nlohmann::json)> cb_succ, std::function<void()> cb_err) {
 	finish_flags.emplace_back(std::make_unique<bool>(false));
 
 	submit_threads.emplace_back(request_worker, RequestType::POST, URL, body, nlohmann::json{}, cb_succ, cb_err, "",
@@ -227,8 +221,7 @@ void Http::do_POST_async(const std::string& URL, const nlohmann::json& body, con
 }
 
 void Http::do_GET_async(const std::string& URL, const nlohmann::json& query, const nlohmann::json& /*headers*/,
-                        std::function<void(ReqCode, nlohmann::json)> cb_succ, std::function<void()> cb_err)
-{
+                        std::function<void(ReqCode, nlohmann::json)> cb_succ, std::function<void()> cb_err) {
 	finish_flags.emplace_back(std::make_unique<bool>(false));
 
 	submit_threads.emplace_back(request_worker, RequestType::GET, URL, query, nlohmann::json{}, cb_succ, cb_err, "",
@@ -239,8 +232,7 @@ void Http::do_GET_async(const std::string& URL, const nlohmann::json& query, con
 
 std::pair<ReqCode, std::vector<uint8_t>> sh::Http::do_request_sync(const RequestType request_method,
                                                                    const std::string& URL, const nlohmann::json& body,
-                                                                   const nlohmann::json& /*headers*/)
-{
+                                                                   const nlohmann::json& /*headers*/) {
 	bool fail{ false };
 
 	std::vector<uint8_t> res_data;
@@ -262,8 +254,7 @@ std::pair<ReqCode, std::vector<uint8_t>> sh::Http::do_request_sync(const Request
 }
 
 std::pair<ReqCode, nlohmann::json> sh::Http::do_POST_sync_json(const std::string& URL, const nlohmann::json& body,
-                                                               const nlohmann::json& headers)
-{
+                                                               const nlohmann::json& headers) {
 	auto [res_code, res_buffer] = do_request_sync(RequestType::POST, URL, body, headers);
 	nlohmann::json res_data;
 	if (!res_buffer.empty()) res_data = nlohmann::json::parse(res_buffer);
@@ -272,8 +263,7 @@ std::pair<ReqCode, nlohmann::json> sh::Http::do_POST_sync_json(const std::string
 }
 
 std::pair<ReqCode, nlohmann::json> sh::Http::do_GET_sync_json(const std::string& URL, const nlohmann::json& body,
-                                                              const nlohmann::json& headers)
-{
+                                                              const nlohmann::json& headers) {
 	auto [res_code, res_buffer] = do_request_sync(RequestType::GET, URL, body, headers);
 	nlohmann::json res_data;
 	if (!res_buffer.empty()) res_data = nlohmann::json::parse(res_buffer);
@@ -282,8 +272,7 @@ std::pair<ReqCode, nlohmann::json> sh::Http::do_GET_sync_json(const std::string&
 }
 
 std::pair<ReqCode, std::vector<float>> sh::Http::do_GET_sync_floats(const std::string& URL, const nlohmann::json& body,
-                                                                    const nlohmann::json& headers)
-{
+                                                                    const nlohmann::json& headers) {
 	auto [res_code, res_buffer] = do_request_sync(RequestType::GET, URL, body, headers);
 	do_assert(res_buffer.size() % sizeof(float) == 0, "Float array in binary should be aligned to multiple of 4!");
 

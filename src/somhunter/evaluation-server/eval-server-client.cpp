@@ -30,8 +30,7 @@
 using namespace sh;
 
 EvalServerClient::EvalServerClient(const EvalServerSettings& settings)
-    : _submitter_settings{ settings }, _p_client{ std::make_unique<ClientDres>(settings) }
-{
+    : _submitter_settings{ settings }, _p_client{ std::make_unique<ClientDres>(settings) } {
 	// Make sure that submitted logs directory exists
 	utils::dir_create(_submitter_settings.log_dir_eval_server_requests);
 
@@ -45,13 +44,11 @@ bool EvalServerClient::logout() { return _p_client->logout(); }
 
 bool EvalServerClient::submit(const VideoFrame& frame) { return _p_client->submit(frame); }
 
-bool EvalServerClient::send_results_log(const nlohmann::json& log_JSON)
-{
+bool EvalServerClient::send_results_log(const nlohmann::json& log_JSON) {
 	return _p_client->send_results_log(log_JSON);
 }
 
-bool EvalServerClient::send_interactions_log(const nlohmann::json& log_JSON)
-{
+bool EvalServerClient::send_interactions_log(const nlohmann::json& log_JSON) {
 	return _p_client->send_interactions_log(log_JSON);
 }
 

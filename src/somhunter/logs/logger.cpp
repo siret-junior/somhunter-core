@@ -40,8 +40,7 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
     : _logger_settings{ settings },
       _p_user_ctx{ p_user_ctx },
       _p_eval_server{ p_eval_server },
-      _last_interactions_submit_ts{ utils::timestamp() }
-{
+      _last_interactions_submit_ts{ utils::timestamp() } {
 	// Make sure that log directories exist
 	if (!utils::dir_create(get_log_dir_queries()) ||
 	    !utils::dir_create(_logger_settings.log_dir_results + "/" + _p_user_ctx->get_username()) ||
@@ -74,8 +73,7 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
 
 Logger::~Logger() { submit_interaction_logs_buffer(); }
 
-void Logger::log_submit(const VideoFrame frame, bool submit_result)
-{
+void Logger::log_submit(const VideoFrame frame, bool submit_result) {
 	nlohmann::json log(frame.to_JSON());
 
 	// clang-format off
@@ -91,8 +89,7 @@ void Logger::log_submit(const VideoFrame frame, bool submit_result)
 	            { "videoId", "frameNumber", "frameId" });
 }
 
-void Logger::log_query(const LogHash& hash, const Query& query) const
-{
+void Logger::log_query(const LogHash& hash, const Query& query) const {
 	auto dir{ get_log_dir_queries() };
 
 	auto filepath_bin{ dir + "/" + hash + ".bin" };
@@ -105,8 +102,7 @@ void Logger::log_query(const LogHash& hash, const Query& query) const
 	utils::serialize_to_file<Query>(query, filepath_bin);
 }
 
-void Logger::submit_interaction_logs_buffer()
-{
+void Logger::submit_interaction_logs_buffer() {
 	// Send interaction logs
 	if (!_interactions_buffer.empty()) {
 		nlohmann::json a = nlohmann::json{ { "timestamp", utils::timestamp() },
@@ -126,8 +122,7 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
                          const std::set<FrameId>& /*likes*/, const UsedTools& used_tools, DisplayType /*disp_type*/,
                          const std::vector<FrameId>& topn_imgs, const std::string& sentence_query,
                          const size_t topn_frames_per_video, const size_t topn_frames_per_shot,
-                         const std::vector<bool>& dataset_parts_filter)
-{
+                         const std::vector<bool>& dataset_parts_filter) {
 	/* ***
 	 * Prepare the log compatible with the eval server. */
 	UnixTimestamp ts{ utils::timestamp() };
@@ -292,8 +287,7 @@ void Logger::log_results(const DatasetFrames& _dataset_frames, const ScoreModel&
 }
 
 void Logger::log_canvas_query(const std::vector<TemporalQuery>& /*temp_queries*/,
-                              const std::vector<VideoFrame>* /*p_targets*/)
-{
+                              const std::vector<VideoFrame>* /*p_targets*/) {
 #if 0
 	if (temp_queries.empty()) return;
 
@@ -356,15 +350,13 @@ void Logger::log_canvas_query(const std::vector<TemporalQuery>& /*temp_queries*/
 #endif
 }
 
-void sh::Logger::log_rescore(const Query& /*prev_query*/, const Query& new_query)
-{
+void sh::Logger::log_rescore(const Query& /*prev_query*/, const Query& new_query) {
 	// Log query
 	auto h{ push_action("rescore", "OTHER ", "rescore", "") };
 	log_query(h, new_query);
 }
 
-void Logger::log_text_query_change(const std::string& text_query)
-{
+void Logger::log_text_query_change(const std::string& text_query) {
 	static std::atomic<int64_t> last_logged{ 0 };
 
 	// If timeout should be handled here
@@ -384,8 +376,7 @@ void Logger::log_text_query_change(const std::string& text_query)
 	push_action("textQueryChange", "TEXT", "jointEmbedding", text_query);
 }
 
-void Logger::log_canvas_query_change()
-{
+void Logger::log_canvas_query_change() {
 	static std::atomic<int64_t> last_logged{ 0 };
 
 	// If timeout should be handled here
@@ -413,39 +404,33 @@ void Logger::log_bookmark(FrameId frame_ID) { log_bothlike(frame_ID, "bookmark")
 
 void Logger::log_unbookmark(FrameId frame_ID) { log_bothlike(frame_ID, "unbookmark"); }
 
-void Logger::log_show_random_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
-{
+void Logger::log_show_random_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/) {
 	push_action(ACTION_NAMES::SHOW_RANDOM_DISPLAY, STD_CATEGORIES::BROWSING, STD_TYPES::RANDOM_SELECTION,
 	            STD_VALUES::RANDOM_DISPLAY);
 }
 
-void Logger::log_show_som_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
-{
+void Logger::log_show_som_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/) {
 	push_action(ACTION_NAMES::SHOW_SOM_DISPLAY, STD_CATEGORIES::BROWSING, STD_TYPES::EXPLORATION,
 	            STD_VALUES::SOM_DISPLAY);
 }
 
-void Logger::log_show_som_relocation_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
-{
+void Logger::log_show_som_relocation_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/) {
 	push_action(ACTION_NAMES::SHOW_SOM_RELOC_DISPLAY, STD_CATEGORIES::BROWSING, STD_TYPES::EXPLORATION,
 	            STD_VALUES::SOM_RELOC_DISPLAY);
 }
 
-void Logger::log_show_topn_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
-{
+void Logger::log_show_topn_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/) {
 	push_action(ACTION_NAMES::SHOW_TOP_SCORED_DISPLAY, STD_CATEGORIES::BROWSING, STD_TYPES::RANKED_LIST,
 	            STD_VALUES::TOP_SCORED_DISPLAY);
 }
 
-void Logger::log_show_topn_context_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/)
-{
+void Logger::log_show_topn_context_display(const DatasetFrames& /*frames*/, const std::vector<FrameId>& /*imgs*/) {
 	push_action(ACTION_NAMES::SHOW_TOP_SCORED_CONTEXT_DISPLAY, STD_CATEGORIES::BROWSING, STD_TYPES::RANKED_LIST,
 	            STD_VALUES::TOP_SCORED_CONTEXT_DISPLAY);
 }
 
 void Logger::log_show_topknn_display(const DatasetFrames& _dataset_frames, FrameId frame_ID,
-                                     const std::vector<FrameId>& /*imgs*/)
-{
+                                     const std::vector<FrameId>& /*imgs*/) {
 	auto frame = _dataset_frames.get_frame(frame_ID);
 
 	nlohmann::json log(frame.to_JSON());
@@ -453,8 +438,7 @@ void Logger::log_show_topknn_display(const DatasetFrames& _dataset_frames, Frame
 	push_action("showNearestNeighboursDisplay", "IMAGE", "globalFeatures", log.dump(4), std::move(log), { "frameId" });
 }
 
-void Logger::log_show_detail_display(const DatasetFrames& _dataset_frames, FrameId frame_ID)
-{
+void Logger::log_show_detail_display(const DatasetFrames& _dataset_frames, FrameId frame_ID) {
 	auto vf = _dataset_frames.get_frame(frame_ID);
 
 	std::stringstream data_ss;
@@ -463,8 +447,7 @@ void Logger::log_show_detail_display(const DatasetFrames& _dataset_frames, Frame
 	push_action("showDetailDisplay", STD_CATEGORIES::BROWSING, "videoSummary", data_ss.str());
 }
 
-void Logger::log_show_video_replay(const DatasetFrames& _dataset_frames, FrameId frame_ID, float delta)
-{
+void Logger::log_show_video_replay(const DatasetFrames& _dataset_frames, FrameId frame_ID, float delta) {
 	static int64_t last_replay_submit = 0;
 	static FrameId last_frame_ID = IMAGE_ID_ERR_VAL;
 
@@ -488,8 +471,7 @@ void Logger::log_show_video_replay(const DatasetFrames& _dataset_frames, FrameId
 	push_action("replayVideo", STD_CATEGORIES::BROWSING, "temporalContext", data_ss.str());
 }
 
-void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_type, float dirY)
-{
+void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_type, float dirY) {
 	std::string ev_type("rankedList");
 	std::string disp_type;
 
@@ -555,14 +537,12 @@ void Logger::log_scroll(const DatasetFrames& /*frames*/, DisplayType from_disp_t
 
 void Logger::log_reset_search() { push_action("resetAll", STD_CATEGORIES::BROWSING, "resetAll", ""); }
 
-void Logger::poll()
-{
+void Logger::poll() {
 	if (_last_interactions_submit_ts + _logger_settings.send_logs_to_server_period < size_t(utils::timestamp()))
 		submit_interaction_logs_buffer();
 }
 
-void Logger::log_search_context_switch(std::size_t dest_context_ID, size_t src_context_ID)
-{
+void Logger::log_search_context_switch(std::size_t dest_context_ID, size_t src_context_ID) {
 	// clang-format off
 	nlohmann::json log{ 
 		{"sourceContextId", src_context_ID},
@@ -575,8 +555,7 @@ void Logger::log_search_context_switch(std::size_t dest_context_ID, size_t src_c
 	            { "sourceContextId", "destinationContextId" });
 }
 
-void Logger::log_bothlike(FrameId frame_ID, const std::string& type)
-{
+void Logger::log_bothlike(FrameId frame_ID, const std::string& type) {
 	auto vf = _p_user_ctx->get_frames()->get_frame(frame_ID);
 	auto f_JSON(vf.to_JSON());
 
@@ -592,8 +571,7 @@ void Logger::log_bothlike(FrameId frame_ID, const std::string& type)
 	push_action(type, "IMAGE", "feedbackModel", f_JSON.dump(4), std::move(log_JSON), { "frameId" });
 }
 
-LogHash Logger::gen_action_hash(UnixTimestamp ts)
-{
+LogHash Logger::gen_action_hash(UnixTimestamp ts) {
 	std::string hash{ _p_user_ctx->get_username() };
 	hash.append("#");
 	hash.append(std::to_string(ts));
@@ -602,8 +580,7 @@ LogHash Logger::gen_action_hash(UnixTimestamp ts)
 
 LogHash Logger::push_action(const std::string& action_name, const std::string& cat, const std::string& type,
                             const std::string& value, nlohmann::json&& our,
-                            std::initializer_list<std::string> summary_keys)
-{
+                            std::initializer_list<std::string> summary_keys) {
 	auto lck{ get_exclusive_actions_lock() };  //< (#)
 
 	/* ***
@@ -649,13 +626,11 @@ LogHash Logger::push_action(const std::string& action_name, const std::string& c
 	return hash;
 }
 
-std::string Logger::get_log_dir_queries() const
-{
+std::string Logger::get_log_dir_queries() const {
 	return _logger_settings.log_dir_queries + "/" + _p_user_ctx->get_username();
 }
 
-std::string Logger::get_results_log_filepath() const
-{
+std::string Logger::get_results_log_filepath() const {
 	std::filesystem::path p{ _logger_settings.log_dir_results + "/" + _p_user_ctx->get_username() };
 	p = p /
 	    ("results." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." + _p_user_ctx->get_username() + ".json");
@@ -663,8 +638,7 @@ std::string Logger::get_results_log_filepath() const
 	return p.string();
 }
 
-std::string Logger::get_actions_log_filepath() const
-{
+std::string Logger::get_actions_log_filepath() const {
 	std::filesystem::path p{ _logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username() };
 	p = p / ("user-actions." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." + _p_user_ctx->get_username() +
 	         ".json");
@@ -672,8 +646,7 @@ std::string Logger::get_actions_log_filepath() const
 	return p.string();
 }
 
-std::string Logger::get_summary_log_filepath() const
-{
+std::string Logger::get_summary_log_filepath() const {
 	std::filesystem::path p{ _logger_settings.log_dir_user_actions_summary + "/" + _p_user_ctx->get_username() };
 	p = p / ("user-actions-summary." + utils::get_formated_timestamp("%d-%m-%YT%H-%M-%S") + "." +
 	         _p_user_ctx->get_username() + ".log");

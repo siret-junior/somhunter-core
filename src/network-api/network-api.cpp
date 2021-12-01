@@ -33,8 +33,7 @@ using namespace utility::conversions;  //< cpprest
 
 using namespace sh;
 
-static http_response construct_error_res(status_code code, const std::string& msg)
-{
+static http_response construct_error_res(status_code code, const std::string& msg) {
 	json::value o_msg = json::value::string(to_string_t(msg));
 	json::value e = json::value::object();
 	e[U("message")] = o_msg;
@@ -50,8 +49,7 @@ static http_response construct_error_res(status_code code, const std::string& ms
 /**
  * Writes the provided image as JPEG file placed at `filepath`, returns number of written bytes.
  */
-static size_t store_JPEG_from_base64(const std::string& /*filepath*/, const std::string& /*base64_data*/)
-{
+static size_t store_JPEG_from_base64(const std::string& /*filepath*/, const std::string& /*base64_data*/) {
 	// \todo
 	SHLOG_D("Simulating the JPEG screenshot write to '"
 	        << "filepath"
@@ -60,8 +58,7 @@ static size_t store_JPEG_from_base64(const std::string& /*filepath*/, const std:
 }
 
 template <typename _ElemType>
-std::vector<_ElemType> from_JSON_array(json::value x)
-{
+std::vector<_ElemType> from_JSON_array(json::value x) {
 	auto arr{ x.as_array() };
 
 	std::vector<_ElemType> res;
@@ -79,8 +76,7 @@ std::vector<_ElemType> from_JSON_array(json::value x)
 }
 
 template <typename _ElemType>
-std::vector<_ElemType> from_double_array(json::value x)
-{
+std::vector<_ElemType> from_double_array(json::value x) {
 	auto arr{ x.as_array() };
 
 	std::vector<_ElemType> res;
@@ -101,8 +97,7 @@ std::vector<_ElemType> from_double_array(json::value x)
  *
  * OpenAPI: QueryFilters
  */
-json::value to_QueryFilters(Somhunter* /*p_core*/, const SearchContext& search_ctx)
-{
+json::value to_QueryFilters(Somhunter* /*p_core*/, const SearchContext& search_ctx) {
 	json::value result_obj = json::value::object();
 
 	{ /* *** weekdays *** */
@@ -130,8 +125,7 @@ json::value to_QueryFilters(Somhunter* /*p_core*/, const SearchContext& search_c
  */
 json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, const LikesCont& likes,
                               const BookmarksCont& _bookmarks, const ScreenVideosCont& _videos_seen,
-                              const std::string& path_prefix)
-{
+                              const std::string& path_prefix) {
 	json::value result_obj = json::value::object();
 	{
 		FrameId ID{ IMAGE_ID_ERR_VAL };
@@ -233,15 +227,12 @@ json::value to_FrameReference(Somhunter* /*p_core*/, const VideoFrame* p_frame, 
 			result_obj[U("src")] = json::value::string(to_string_t(filename));
 		}
 
-		{
-			result_obj[U("videoSeen")] = json::value::boolean(video_seen);
-		}
+		{ result_obj[U("videoSeen")] = json::value::boolean(video_seen); }
 	}
 	return result_obj;
 }
 
-json::value canvas_to_json(const CanvasSubqueryBitmap& q)
-{
+json::value canvas_to_json(const CanvasSubqueryBitmap& q) {
 	json::value res = json::value::object();
 	res[U("rect")] = json::value::array({ q.rect().left, q.rect().top, q.rect().right, q.rect().bottom });
 	res[U("type")] = json::value::string(U("bitmap"));
@@ -260,8 +251,7 @@ json::value canvas_to_json(const CanvasSubqueryBitmap& q)
 	return res;
 }
 
-json::value canvas_to_json(const CanvasSubqueryText& q)
-{
+json::value canvas_to_json(const CanvasSubqueryText& q) {
 	json::value res = json::value::object();
 	res[U("rect")] = json::value::array({ q.rect().left, q.rect().top, q.rect().right, q.rect().bottom });
 	res[U("type")] = json::value::string(U("text"));
@@ -269,8 +259,7 @@ json::value canvas_to_json(const CanvasSubqueryText& q)
 	return res;
 }
 
-json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx)
-{
+json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx) {
 	auto search_ctx{ ctx.ctx };
 	auto _bookmarks{ ctx._bookmarks };
 
@@ -394,8 +383,7 @@ json::value to_SearchContext(Somhunter* p_core, const UserContext& ctx)
 	return result_obj;
 }
 
-json::value to_HistoryArray(Somhunter* /*p_core*/, const std::vector<SearchContext>& _history)
-{
+json::value to_HistoryArray(Somhunter* /*p_core*/, const std::vector<SearchContext>& _history) {
 	json::value history_arr{ json::value::array(_history.size()) };
 
 	size_t i{ 0 };
@@ -424,8 +412,7 @@ json::value to_HistoryArray(Somhunter* /*p_core*/, const std::vector<SearchConte
  *
  * OpenAPI: Response__User__Context__Get
  */
-json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext& ctx)
-{
+json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext& ctx) {
 	auto search_ctx{ ctx.ctx };
 	auto _bookmarks{ ctx._bookmarks };
 
@@ -472,8 +459,7 @@ json::value to_Response__User__Context__Get(Somhunter* p_core, const UserContext
  * OpenAPI: Response__GetTopScreen__Post
  */
 json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayResult& res, size_t page_num,
-                                            const std::string& type, const std::string& path_prefix)
-{
+                                            const std::string& type, const std::string& path_prefix) {
 	const auto& _dataset_frames{ res._dataset_frames };
 	const auto& likes{ res.likes };
 	const auto& _bookmarks{ res._bookmarks };
@@ -516,8 +502,7 @@ json::value to_Response__GetTopScreen__Post(Somhunter* p_core, const GetDisplayR
 }
 
 json::value to_Response__GetDetailScreen__Post(Somhunter* p_core, const GetDisplayResult& res, size_t page_num,
-                                               const std::string& /*type*/, const std::string& path_prefix)
-{
+                                               const std::string& /*type*/, const std::string& path_prefix) {
 	const auto& _dataset_frames{ res._dataset_frames };
 	const auto& likes{ res.likes };
 	const auto& _bookmarks{ res._bookmarks };
@@ -548,8 +533,7 @@ json::value to_Response__GetDetailScreen__Post(Somhunter* p_core, const GetDispl
 }
 
 json::value to_Response__GetAutocompleteResults__Get(Somhunter* /*p_core*/, const std::vector<const Keyword*>& kws,
-                                                     size_t example_count, const std::string& path_prefix)
-{
+                                                     size_t example_count, const std::string& path_prefix) {
 	json::value result_arr{ json::value::array(kws.size()) };
 
 	size_t i = 0ULL;
@@ -587,8 +571,7 @@ json::value to_Response__GetAutocompleteResults__Get(Somhunter* /*p_core*/, cons
 	return result_arr;
 }
 
-json::value to_Response__Rescore__Post(Somhunter* p_core, const RescoreResult& rescore_res)
-{
+json::value to_Response__Rescore__Post(Somhunter* p_core, const RescoreResult& rescore_res) {
 	size_t curr_ctx_ID{ rescore_res.curr_ctx_ID };
 	const auto& _history{ rescore_res._history };
 
@@ -619,14 +602,12 @@ json::value to_Response__Rescore__Post(Somhunter* p_core, const RescoreResult& r
 	return result_obj;
 }
 
-void NetworkApi::add_CORS_headers(http_response& res)
-{
+void NetworkApi::add_CORS_headers(http_response& res) {
 	// Let the client know we approve of this
 	res.headers().add(U("Access-Control-Allow-Origin"), U("*"));
 }
 
-void handle_options(http_request request)
-{
+void handle_options(http_request request) {
 	auto remote_addr{ to_utf8string(request.remote_address()) };
 	SHLOG_REQ(remote_addr, "handle_options");
 
@@ -648,12 +629,10 @@ NetworkApi::NetworkApi(const ApiConfig& API, Somhunter* p_core)
 	                              "http://0.0.0.0:"
 #endif
 	               ) +
-	              std::to_string(API.port) }
-{
+	              std::to_string(API.port) } {
 }
 
-void NetworkApi::initialize()
-{
+void NetworkApi::initialize() {
 	uri_builder endpoint(utility::conversions::to_string_t(_base_addr));
 	http_listener ep_listener{ endpoint.to_uri().to_string() };
 	ep_listener.support(methods::OPTIONS, handle_options);
@@ -690,15 +669,13 @@ void NetworkApi::initialize()
 	SHLOG_S("Listening for requests at '" << _base_addr << "' at the API endpoints.");
 }
 
-void NetworkApi::terminate()
-{
+void NetworkApi::terminate() {
 	for (auto&& ep : _endpoints) {
 		ep.close();
 	}
 }
 
-void NetworkApi::run()
-{
+void NetworkApi::run() {
 	initialize();
 
 	SHLOG("Type in \"exit\" to exit.");
@@ -717,8 +694,7 @@ void NetworkApi::run()
 void NetworkApi::push_endpoint(const std::string& path, std::function<void(NetworkApi*, http_request)> GET_handler,
                                std::function<void(NetworkApi*, http_request)> POST_handler,
                                std::function<void(NetworkApi*, http_request)> PUT_handler,
-                               std::function<void(NetworkApi*, http_request)> DEL_handler)
-{
+                               std::function<void(NetworkApi*, http_request)> DEL_handler) {
 	uri_builder endpoint(utility::conversions::to_string_t(_base_addr));
 	endpoint.append_path(utility::conversions::to_string_t(path));
 
@@ -771,8 +747,7 @@ void NetworkApi::push_endpoint(const std::string& path, std::function<void(Netwo
 /**
  * This handles request to `/api/` endpoint - it serves OpenAPI HTML docs.
  */
-void NetworkApi::handle__api__GET(http_request message)
-{
+void NetworkApi::handle__api__GET(http_request message) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(message.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -813,8 +788,7 @@ void NetworkApi::handle__api__GET(http_request message)
 	SHLOG_UNREQ(remote_addr, __func__);
 	return;
 }
-void NetworkApi::handle__api__config__GET(http_request req)
-{
+void NetworkApi::handle__api__config__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -835,8 +809,7 @@ void NetworkApi::handle__api__config__GET(http_request req)
 	req.reply(response);
 }
 
-void NetworkApi::handle__config__GET(http_request req)
-{
+void NetworkApi::handle__config__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -862,8 +835,7 @@ void NetworkApi::handle__config__GET(http_request req)
 	req.reply(response);
 }
 
-void NetworkApi::handle__user__context__GET(http_request req)
-{
+void NetworkApi::handle__user__context__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -886,8 +858,7 @@ void NetworkApi::handle__user__context__GET(http_request req)
 	req.reply(response);
 }
 
-void NetworkApi::handle__search__get_top_display__POST(http_request req)
-{
+void NetworkApi::handle__search__get_top_display__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -916,8 +887,7 @@ void NetworkApi::handle__search__get_top_display__POST(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__get_som_display__POST(http_request req)
-{
+void NetworkApi::handle__search__get_som_display__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -947,8 +917,7 @@ void NetworkApi::handle__search__get_som_display__POST(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__get_som_relocation_display__POST(http_request req)
-{
+void NetworkApi::handle__search__get_som_relocation_display__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -977,8 +946,7 @@ void NetworkApi::handle__search__get_som_relocation_display__POST(http_request r
 	req.reply(res);
 }
 
-void NetworkApi::handle__dataset__video_detail__GET(http_request req)
-{
+void NetworkApi::handle__dataset__video_detail__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1020,8 +988,7 @@ void NetworkApi::handle__dataset__video_detail__GET(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req)
-{
+void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1059,8 +1026,7 @@ void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__log__scroll__GET(http_request req)
-{
+void NetworkApi::handle__log__scroll__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1112,8 +1078,7 @@ void NetworkApi::handle__log__scroll__GET(http_request req)
 	}
 }
 
-void NetworkApi::handle__log__text_query_change__GET(http_request req)
-{
+void NetworkApi::handle__log__text_query_change__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1139,8 +1104,7 @@ void NetworkApi::handle__log__text_query_change__GET(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__log__canvas_query_change__GET(http_request req)
-{
+void NetworkApi::handle__log__canvas_query_change__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1157,8 +1121,7 @@ void NetworkApi::handle__log__canvas_query_change__GET(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__eval_server__submit__POST(http_request req)
-{
+void NetworkApi::handle__eval_server__submit__POST(http_request req) {
 	// Submits should not be synchronized because
 	// eval server may cause delay and performance
 	// bottleneck.
@@ -1199,8 +1162,7 @@ void NetworkApi::handle__eval_server__submit__POST(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__eval_server__login__POST(http_request req)
-{
+void NetworkApi::handle__eval_server__login__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1217,8 +1179,7 @@ void NetworkApi::handle__eval_server__login__POST(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__eval_server__logout__POST(http_request req)
-{
+void NetworkApi::handle__eval_server__logout__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1235,8 +1196,7 @@ void NetworkApi::handle__eval_server__logout__POST(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__reset__POST(http_request req)
-{
+void NetworkApi::handle__search__reset__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1251,8 +1211,7 @@ void NetworkApi::handle__search__reset__POST(http_request req)
 	req.reply(res);
 }
 
-RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body)
-{
+RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body) {
 	/*
 	 * Extract from the body
 	 */
@@ -1277,8 +1236,7 @@ RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body)
 	return md;
 }
 
-std::vector<TextualQuery> NetworkApi::extract_textual_query(web::json::value& body)
-{
+std::vector<TextualQuery> NetworkApi::extract_textual_query(web::json::value& body) {
 	/*
 	 * Extract from the body
 	 */
@@ -1291,8 +1249,7 @@ std::vector<TextualQuery> NetworkApi::extract_textual_query(web::json::value& bo
 	return { q0, q1 };
 }
 
-std::vector<RelocationQuery> NetworkApi::extract_relocation_query(web::json::value& body)
-{
+std::vector<RelocationQuery> NetworkApi::extract_relocation_query(web::json::value& body) {
 	/*
 	 * Extract from the body
 	 */
@@ -1302,8 +1259,7 @@ std::vector<RelocationQuery> NetworkApi::extract_relocation_query(web::json::val
 	return { relocation0, relocation1 };
 }
 
-std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body)
-{
+std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body) {
 	/*
 	 * Extract from the body
 	 */
@@ -1376,8 +1332,7 @@ std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body
 	return canvas_query;
 }
 
-Filters NetworkApi::extract_filters(web::json::value& body)
-{
+Filters NetworkApi::extract_filters(web::json::value& body) {
 	/*
 	 * Extract from the body
 	 */
@@ -1412,8 +1367,7 @@ Filters NetworkApi::extract_filters(web::json::value& body)
 		            dataset_parts_mask };
 }
 
-void NetworkApi::handle__search__rescore__POST(http_request req)
-{
+void NetworkApi::handle__search__rescore__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1487,8 +1441,7 @@ void NetworkApi::handle__search__rescore__POST(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__like_frame__POST(http_request req)
-{
+void NetworkApi::handle__search__like_frame__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1518,8 +1471,7 @@ void NetworkApi::handle__search__like_frame__POST(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__bookmark_frame__POST(http_request req)
-{
+void NetworkApi::handle__search__bookmark_frame__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1549,8 +1501,7 @@ void NetworkApi::handle__search__bookmark_frame__POST(http_request req)
 	req.reply(res);
 }
 
-void NetworkApi::handle__search__context__POST(http_request req)
-{
+void NetworkApi::handle__search__context__POST(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
@@ -1591,8 +1542,7 @@ void NetworkApi::handle__search__context__POST(http_request req)
 	}
 }
 
-void NetworkApi::handle__search__context__GET(http_request req)
-{
+void NetworkApi::handle__search__context__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	// Construct the response
 	http_response res(status_codes::OK);

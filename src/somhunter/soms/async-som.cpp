@@ -37,8 +37,7 @@ using namespace sh;
 #	define SHLOG_D(x) _dont_write_log_err
 #endif
 
-void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settings)
-{
+void AsyncSom::async_som_worker(AsyncSom* parent, const Settings& _logger_settings) {
 	std::random_device rd;
 	std::mt19937 rng(rd());
 	const size_t width = parent->width;
@@ -153,14 +152,12 @@ AsyncSom::AsyncSom(const Settings& _logger_settings, size_t w, size_t h, const P
       scores(_scores_data_len),
 
       width(w),
-      height(h)
-{
+      height(h) {
 	new_data = m_ready = terminate = false;
 	worker = std::thread(async_som_worker, this, _logger_settings);
 }
 
-AsyncSom::~AsyncSom()
-{
+AsyncSom::~AsyncSom() {
 	SHLOG_D("Requesting SOM worker termination...");
 	terminate = true;
 	new_data_wakeup.notify_all();
@@ -168,8 +165,7 @@ AsyncSom::~AsyncSom()
 	SHLOG_D("SOM worker terminated.");
 }
 
-void AsyncSom::start_work(const PrimaryFrameFeatures& fs, const ScoreModel& sc, const float* scores_orig)
-{
+void AsyncSom::start_work(const PrimaryFrameFeatures& fs, const ScoreModel& sc, const float* scores_orig) {
 	{
 		std::unique_lock lck(worker_lock);
 
@@ -191,8 +187,7 @@ void AsyncSom::start_work(const PrimaryFrameFeatures& fs, const ScoreModel& sc, 
 	new_data_wakeup.notify_all();
 }
 
-std::vector<FrameId> AsyncSom::get_display(ScoreModel model_scores) const
-{
+std::vector<FrameId> AsyncSom::get_display(ScoreModel model_scores) const {
 	std::vector<FrameId> ids;
 	ids.resize(width * height);
 

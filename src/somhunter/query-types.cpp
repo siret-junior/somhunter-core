@@ -32,8 +32,7 @@ using namespace sh;
 
 namespace fs = std::filesystem;
 
-nlohmann::json Query::to_JSON() const
-{
+nlohmann::json Query::to_JSON() const {
 	nlohmann::json o = nlohmann::json::object();
 
 	// o["metadata"] = metadata.to_JSON();
@@ -62,13 +61,11 @@ nlohmann::json Query::to_JSON() const
 	return o;
 }
 
-std::vector<std::uint8_t> CanvasSubqueryBitmap::get_scaled_bitmap(size_t w, size_t h) const
-{
+std::vector<std::uint8_t> CanvasSubqueryBitmap::get_scaled_bitmap(size_t w, size_t h) const {
 	return ImageManipulator::resize(_data_int, width_pixels(), height_pixels(), w, h, _num_channels);
 }
 
-nlohmann::json CanvasQuery::to_JSON() const
-{
+nlohmann::json CanvasQuery::to_JSON() const {
 	nlohmann::json arr_temp = nlohmann::json::array();
 	for (size_t i{ 0 }; i < _subqueries.size(); ++i) {
 		arr_temp.emplace_back(std::visit(
@@ -81,8 +78,7 @@ nlohmann::json CanvasQuery::to_JSON() const
 }
 
 std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& /*contents*/,
-                                                          const fs::path /*parentPath*/)
-{
+                                                          const fs::path /*parentPath*/) {
 	// \todo Convert to nlohmann::json
 	throw std::runtime_error("...");
 	//
@@ -117,8 +113,7 @@ std::vector<CanvasQuery> CanvasQuery::parse_json_contents(const std::string& /*c
 	// return qs;
 }
 
-std::vector<CanvasQuery> CanvasQuery::parse_json(const std::string& /*filepath*/)
-{
+std::vector<CanvasQuery> CanvasQuery::parse_json(const std::string& /*filepath*/) {
 	// \todo Convert to nlohmann::json
 	throw std::runtime_error("...");
 	/*std::string file_contents(utils::read_whole_file(filepath));
@@ -126,14 +121,12 @@ std::vector<CanvasQuery> CanvasQuery::parse_json(const std::string& /*filepath*/
 	return parse_json_contents(file_contents, p.parent_path());*/
 }
 
-void CanvasQuery::emplace_back(const RelativeRect& rect, const std::string& text_query)
-{
+void CanvasQuery::emplace_back(const RelativeRect& rect, const std::string& text_query) {
 	_subqueries.emplace_back(CanvasSubqueryText{ rect, text_query });
 }
 
 void CanvasQuery::emplace_back(const RelativeRect& rect, size_t bitmap_w, size_t bitmap_h, size_t num_channels,
-                               uint8_t* bitmap_RGBA_data)
-{
+                               uint8_t* bitmap_RGBA_data) {
 	std::vector<std::uint8_t> image;
 
 	// DO: RGBA_to_RGB
