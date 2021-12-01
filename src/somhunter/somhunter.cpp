@@ -26,6 +26,7 @@
 #include "somhunter.h"
 
 #include "common.h"
+#include "tests.h"
 #include "utils.hpp"
 
 using namespace sh;
@@ -237,6 +238,133 @@ void Somhunter::apply_filters() {
 
 		++frame_ID;
 	}
+}
+
+void Somhunter::run_basic_test() {
+	/* ***
+	 * Test features here...
+	 */
+
+	{  // *** PNGs ***
+		cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(TEST_PNGS[0]) };
+		BitmapImage<uint8_t> std_img_u8{ ImageManipulator::load_image<BitmapImage<uint8_t>>(TEST_PNGS[0]) };
+		BitmapImage<float> std_img_f32{ ImageManipulator::load_image<BitmapImage<float>>(TEST_PNGS[0]) };
+
+		ImageManipulator::show_image(TEST_PNGS[0]);
+		ImageManipulator::show_image(cv_img);
+	}
+
+	{  // *** JPEGs ***
+		cv::Mat cv_img{ ImageManipulator::load_image<cv::Mat>(TEST_JPEGS[0]) };
+		BitmapImage<uint8_t> std_img_u8{ ImageManipulator::load_image<BitmapImage<uint8_t>>(TEST_JPEGS[0]) };
+		BitmapImage<float> std_img_f32{ ImageManipulator::load_image<BitmapImage<float>>(TEST_JPEGS[0]) };
+
+		ImageManipulator::show_image(TEST_JPEGS[0]);
+		ImageManipulator::show_image(cv_img);
+	}
+
+	// *** SHA file checksum ***
+	std::cout << "SHA256: " << utils::SHA256_sum("config/config-json") << std::endl;
+
+	// Try autocomplete
+	auto ac_res{ autocomplete_keywords("Cat", 30) };
+	for (auto&& p_kw : ac_res) {
+		std::cout << p_kw->synset_strs.front() << std::endl;
+	}
+
+	// Try different displays
+	{
+		Query q{ std::vector({ "dog park" }) };
+		rescore(q);
+
+		auto d_topn = get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
+		std::cout << "TOP N\n";
+		d_topn.print_display();
+
+		auto d_topknn = get_display(DisplayType::DTopKNN, 2, 0)._dataset_frames;
+		std::cout << "TOP KNN\n";
+		d_topknn.print_display();
+
+		auto d_rand = get_display(DisplayType::DRand)._dataset_frames;
+		std::cout << "RANDOM\n";
+		d_rand.print_display();
+	}
+
+	// Try keyword rescore
+	{
+		Query q{ std::vector({ "dog park" }) };
+		rescore(q);
+		auto d_topn1 = get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
+		std::cout << "TOP N\n";
+		d_topn1.print_display();
+	}
+
+	// Try reset session
+	reset_search_session();
+
+	// Try relevance feedback
+	{
+		auto d_rand1 = get_display(DisplayType::DRand)._dataset_frames;
+		std::vector<FrameId> likes;
+		auto d_rand_b = d_rand1.begin();
+		likes.push_back((*d_rand_b)->frame_ID);
+		d_rand_b++;
+		likes.push_back((*d_rand_b)->frame_ID);
+
+		like_frames(likes);
+		likes.resize(1);
+		like_frames(likes);
+		std::cout << "Like " << likes[0] << std::endl;
+
+		Query q{ std::vector({ "\\/?!,.'\"" }) };
+		rescore(q);
+	}
+
+	{
+		auto d_topn2 = get_display(DisplayType::DTopN, 0, 0)._dataset_frames;
+		d_topn2.print_display();
+		std::cout << "Len of top n page 0 " << d_topn2.size() << std::endl;
+	}
+	{
+		auto d_topn2 = get_display(DisplayType::DTopN, 0, 1)._dataset_frames;
+		std::cout << "Len of top n page 1 " << d_topn2.size() << std::endl;
+	}
+	{
+		auto d_topn2 = get_display(DisplayType::DTopN, 0, 2)._dataset_frames;
+		std::cout << "Len of top n page 2 " << d_topn2.size() << std::endl;
+	}
+
+	// Try SOM
+	{
+		while (!som_ready()) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		}
+		std::cout << "SOM is ready now!" << std::endl;
+
+		auto d_som = get_display(DisplayType::DSom);
+	}
+
+	SHLOG_E("this is an error log");
+	SHLOG_W("this is a warning log");
+	SHLOG_I("this is an info log");
+	SHLOG_S("this is a success log");
+	SHLOG_D("this is a debug log");
+	SHLOG_REQ("123.0.0.1", "this is an API request");
+}
+
+void Somhunter::run_generators() {
+	/* ***
+	 * Dataset generators
+	 */
+	// core.generate_example_images_for_keywords();
+
+	/* ***
+	 * Benchmarks
+	 */
+	// core.benchmark_native_text_queries(R"(data\v3c1-20k\native-queries.csv)", "bench-out");
+	// core.benchmark_canvas_queries("saved-queries", "saved-queries-out");
+	// core.benchmark_real_queries("data-logs", "data-logs/tasks.csv", "saved-queries-out");
+	// std::cout << "DONE!" << std::endl;
 }
 
 RescoreResult Somhunter::rescore(Query& query, bool benchmark_run) {

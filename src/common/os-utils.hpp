@@ -21,6 +21,9 @@
 
 #ifndef OS_UTILS_H_
 #define OS_UTILS_H_
+
+#include <filesystem>
+
 namespace osutils {
 
 /**
@@ -30,8 +33,6 @@ inline void setup_terminal() {
 	// Enable ANSII colored output if not enabled by default
 #if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
 	// From: https://superuser.com/a/1529908
-
-#	include "Windows.h"
 
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	DWORD dwMode = 0;

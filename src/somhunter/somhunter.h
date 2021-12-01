@@ -451,6 +451,9 @@ public:
 		ofs << o.dump(4) << std::endl;
 	}
 
+	void run_basic_test();
+	void run_generators();
+
 private:
 	void apply_filters();
 
