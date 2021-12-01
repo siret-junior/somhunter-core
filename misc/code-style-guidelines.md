@@ -73,7 +73,7 @@ void size(std::size_t x) { _size = x; }
 ```
 
 ## **Namespace names**
-Name them like **type names**.
+Name them like **lowercase with underscores (_)**.
 
 ```cpp
 namespace sh {
@@ -88,7 +88,7 @@ Name them like **constants** - uppercase with _.
 ```cpp
 enum class SomeEnum {
     NONE,
-    OK
+    OK_STATE
 };
 ``` 
 
@@ -111,9 +111,11 @@ Use capitalized class name or source file name postfixed with `_H_`. Do not use 
 
 ## **Names and order of includes**
 Include headers in the following order: 
-Related header, C system headers (with angle brackets), C++ standard library headers (with angle brackets), other libraries' headers (with angle brackets), your project's headers (with qotes).
+Related header (with quotes), C system headers (with angle brackets), C++ standard library headers (with angle brackets), other libraries' headers (with angle brackets), your project's headers (with quotes).
 
 ```cpp
+#include "my-header-file.h"
+
 #include <stdio.h>
 
 #include <filesystem>
@@ -128,7 +130,7 @@ Related header, C system headers (with angle brackets), C++ standard library hea
 
 # Classes & struct
 ## **Structs vs. classes**
-Use a struct only for passive objects that carry data; everything else is a class.
+Use a struct only for passive objects that carry data, everything else is a class.
 
 ## **Class sctructure**
 Within each section, prefer grouping similar kinds of declarations together, and prefer the following order: types and type aliases (typedef, using, enum, nested structs and classes), static constants, factory functions, constructors and assignment operators, destructor, all other member and friend functions, data members
