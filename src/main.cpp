@@ -36,21 +36,15 @@
 // !!!
 
 #include "common.h"
+#include "os-utils.hpp"
 #include "utils.hpp"
 
 #include "tests.h"
 
 using namespace sh;
 
-namespace sh {
-/**
- * Does the global application initialization.
- */
-static void initialize_aplication();
-};  // namespace sh
-
 int main() {
-	initialize_aplication();
+	osutils::initialize_aplication();
 
 	// Instantiate the SOMHunter
 	Somhunter core{ "config/config-core.json" };
@@ -185,103 +179,4 @@ int main() {
 #endif
 
 	return 0;
-}
-
-static void sh::initialize_aplication() {
-	// Enable ANSII colored output if not enabled by default
-#if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
-	// From: https://superuser.com/a/1529908
-
-#	include "Windows.h"
-
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	DWORD dwMode = 0;
-	GetConsoleMode(hOut, &dwMode);
-	dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-	SetConsoleMode(hOut, dwMode);
-
-	// References:
-	// SetConsoleMode() and ENABLE_VIRTUAL_TERMINAL_PROCESSING?
-	// https://stackoverflow.com/questions/38772468/setconsolemode-and-enable-virtual-terminal-processing
-
-	// Windows console with ANSI colors handling
-	// https://superuser.com/questions/413073/windows-console-with-ansi-colors-handling
-#endif
-
-	/*	cd to the parent dir (root of the project)
-	 *  `cd ..`
-	 *	Change this accordingly. 	*/
-	auto path = std::filesystem::current_path();
-	std::cout << path << std::endl;
-	std::filesystem::current_path(path.parent_path());
-
-	SHLOG("ISA capibilites:");
-
-#if __SSE__
-	SHLOG("__SSE__: true");
-#else
-	SHLOG("__SSE__: false");
-#endif  // __SSE__
-
-#if __SSE2__
-	SHLOG("__SSE2__: true");
-#else
-	SHLOG("__SSE2__: false");
-#endif  // __SSE2__
-
-#if __SSE3__
-	SHLOG("__SSE3__: true");
-#else
-	SHLOG("__SSE3__: false");
-#endif  // __SSE3__
-
-#if __SSE4_2__
-	SHLOG("__SSE4_2__ : true");
-#else
-	SHLOG("__SSE4_2__ : false");
-#endif  // __SSE4_2__
-
-#if __AVX__
-	SHLOG("__AVX__: true");
-#else
-	SHLOG("__AVX__: false");
-#endif  // __AVX__
-
-#if __AVX2__
-	SHLOG("__AVX2__: true");
-#else
-	SHLOG("__AVX2__: false");
-#endif  // __AVX2__
-
-#if __AVX512BW__
-	SHLOG("__AVX512BW__ : true");
-#else
-	SHLOG("__AVX512BW__ : false");
-#endif  // __AVX512BW__
-
-#if __AVX512CD__
-	SHLOG("__AVX512CD__  : true");
-#else
-	SHLOG("__AVX512CD__  : false");
-#endif  // __AVX512CD__
-
-#if __AVX512DQ__
-	SHLOG("__AVX512DQ__  : true");
-#else
-	SHLOG("__AVX512DQ__  : false");
-#endif  // __AVX512DQ__
-
-#if __AVX512F__
-	SHLOG("__AVX512F__  : true");
-#else
-	SHLOG("__AVX512F__  : false");
-#endif  // __AVX512F__
-
-#if __AVX512VL__
-	SHLOG("__AVX512VL__  : true");
-#else
-	SHLOG("__AVX512VL__  : false");
-#endif  // __AVX512VL__
-
-	SHLOG_I("The binary is running from the directory " << std::filesystem::current_path() << "...");
 }
