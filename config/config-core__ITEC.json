@@ -70,8 +70,8 @@
         },
         "logger": {},
         "API": {
-            "local_only": true,
-            "port": 8088,
+            "local_only": false,
+            "port": 8082,
             "config_filepath": "config/config-api.json",
             "docs_dir": "docs/api/"
         },
@@ -161,7 +161,7 @@
             },
             "secondary_features": {
                 "features_file_data_off": 0,
-                "features_dim": 128,
+                "features_dim": 640,
                 "features_file": null
             }
         }
