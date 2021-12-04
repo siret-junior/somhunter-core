@@ -622,13 +622,14 @@ void handle_options(http_request request) {
 NetworkApi::NetworkApi(const ApiConfig& API, Somhunter* p_core)
     : _API_config{ API },
       _p_core{ p_core },
-      _base_addr{ (API.local_only ? "http://127.0.0.1:" :
-#ifdef WIN32  //< Windows won't accept zeroes
-	                              "http://*:"
-#else  // UNIX
-	                              "http://0.0.0.0:"
+      _base_addr{ (  // If no need to listen to public requests
+	                  API.local_only ? "http://127.0.0.1:" :
+#ifdef WIN32  //< Windows won't accept zeroes.
+	                                 "http://*:"
+#else  // UNIX OS.
+	                                 "http://0.0.0.0:"
 #endif
-	               ) +
+	                  ) +
 	              std::to_string(API.port) } {
 }
 
@@ -637,116 +638,72 @@ void NetworkApi::initialize() {
 	http_listener ep_listener{ endpoint.to_uri().to_string() };
 	ep_listener.support(methods::OPTIONS, handle_options);
 
-	// Add all desired endpoints
+	/* ***
+	 * Add all the desired endpoints.
+	 *
+	 * << This is the place where you'll add new API endpoints.
+	 */
+	// clang-format off
+
+	// Endpoint publishing the OpenAPI specification using the Swagger template.
 	push_endpoint("api", &NetworkApi::handle__api__GET);
+	
+	// Endpoint publishing OpenAPI specification config file.
 	push_endpoint("api/config", &NetworkApi::handle__api__config__GET);
+	
 	push_endpoint("config", &NetworkApi::handle__config__GET);
-
 	push_endpoint("user/context", &NetworkApi::handle__user__context__GET);
-
 	push_endpoint("dataset/video-detail", &NetworkApi::handle__dataset__video_detail__GET);
-
 	push_endpoint("search/get-top-display", {}, &NetworkApi::handle__search__get_top_display__POST);
 	push_endpoint("search/get-som-display", {}, &NetworkApi::handle__search__get_som_display__POST);
-	push_endpoint("search/get-som-relocation-display", {},
-	              &NetworkApi::handle__search__get_som_relocation_display__POST);
+	push_endpoint("search/get-som-relocation-display", {},&NetworkApi::handle__search__get_som_relocation_display__POST);
 	push_endpoint("search/keyword-autocomplete", &NetworkApi::handle__search__keyword_autocomplete__GET);
 	push_endpoint("search/reset", {}, &NetworkApi::handle__search__reset__POST);
 	push_endpoint("search/rescore", {}, &NetworkApi::handle__search__rescore__POST);
 	push_endpoint("search/like-frame", {}, &NetworkApi::handle__search__like_frame__POST);
 	push_endpoint("search/bookmark-frame", {}, &NetworkApi::handle__search__bookmark_frame__POST);
-	push_endpoint("search/context", &NetworkApi::handle__search__context__GET,
-	              &NetworkApi::handle__search__context__POST);
-
+	push_endpoint("search/context", &NetworkApi::handle__search__context__GET,&NetworkApi::handle__search__context__POST);
 	push_endpoint("log/scroll", &NetworkApi::handle__log__scroll__GET);
 	push_endpoint("log/text-query-change", &NetworkApi::handle__log__text_query_change__GET);
 	push_endpoint("log/canvas-query-change", &NetworkApi::handle__log__canvas_query_change__GET);
-
 	push_endpoint("eval-server/submit", {}, &NetworkApi::handle__eval_server__submit__POST);
 	push_endpoint("eval-server/login", {}, &NetworkApi::handle__eval_server__login__POST);
 	push_endpoint("eval-server/logout", {}, &NetworkApi::handle__eval_server__logout__POST);
+	// clang-format off
 
 	SHLOG_S("Listening for requests at '" << _base_addr << "' at the API endpoints.");
 }
 
+void NetworkApi::run() {
+	// Initialize all the endpoints.
+	initialize();
+
+	SHLOG("Type in '" << sconfig::EXIT_HTTP_API_LOOP_KEYWORD << "' to exit.");
+
+	// The main API loop accepting the input from STDIN.
+	while (true) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(sconfig::HTTP_API_LOOP_SLEEP));
+		std::string line;
+		std::getline(std::cin, line);
+
+		// Check for end-of-the-loop keyword.
+		if (line == "exit") {
+			break;
+		}
+	}
+
+	// Safely destroy all the endpoints.
+	terminate();
+}
+
 void NetworkApi::terminate() {
+	// For every endpoint, close it.
 	for (auto&& ep : _endpoints) {
 		ep.close();
 	}
 }
 
-void NetworkApi::run() {
-	initialize();
 
-	SHLOG("Type in \"exit\" to exit.");
-
-	while (true) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-		std::string line;
-		std::getline(std::cin, line);
-
-		if (line == "exit") break;
-	}
-
-	terminate();
-}
-
-void NetworkApi::push_endpoint(const std::string& path, std::function<void(NetworkApi*, http_request)> GET_handler,
-                               std::function<void(NetworkApi*, http_request)> POST_handler,
-                               std::function<void(NetworkApi*, http_request)> PUT_handler,
-                               std::function<void(NetworkApi*, http_request)> DEL_handler) {
-	uri_builder endpoint(utility::conversions::to_string_t(_base_addr));
-	endpoint.append_path(utility::conversions::to_string_t(path));
-
-	try {
-		http_listener ep_listener{ endpoint.to_uri().to_string() };
-
-		if (GET_handler) {
-			ep_listener.support(methods::GET, std::bind(GET_handler, this, std::placeholders::_1));
-		}
-
-		if (POST_handler) {
-			ep_listener.support(methods::POST, std::bind(POST_handler, this, std::placeholders::_1));
-		}
-
-		if (PUT_handler) {
-			ep_listener.support(methods::PUT, std::bind(PUT_handler, this, std::placeholders::_1));
-		}
-
-		if (DEL_handler) {
-			ep_listener.support(methods::DEL, std::bind(DEL_handler, this, std::placeholders::_1));
-		}
-
-		// For CORS
-		ep_listener.support(methods::OPTIONS, std::bind(handle_options, std::placeholders::_1));
-
-		auto res = ep_listener.open().wait();
-
-		// Check if failed
-		if (res != pplx::completed) {
-			std::string msg{ "Unable to set the HTTP listener for '" + path + ".!" };
-
-			SHLOG_E(msg);
-			throw std::runtime_error{ msg };
-		}
-
-		_endpoints.emplace_back(std::move(ep_listener));
-	} catch (const std::exception& e) {
-		std::string msg{ "Unable to set the HTTP listener for '" + path + "'!" };
-
-		msg.append("\n\nIf these are access problems, try running it as an administrator.\n\n");
-
-		msg.append("\nMESSAGE: \n");
-		msg.append(e.what());
-
-		SHLOG_E(msg);
-		throw std::runtime_error{ msg };
-	}
-}
-
-/**
- * This handles request to `/api/` endpoint - it serves OpenAPI HTML docs.
- */
 void NetworkApi::handle__api__GET(http_request message) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(message.remote_address()) };
@@ -790,10 +747,9 @@ void NetworkApi::handle__api__GET(http_request message) {
 }
 void NetworkApi::handle__api__config__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
+	
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
-
-	// auto b = message.extract_json().get();
 
 	std::error_code ec;
 	auto j{ json::value::parse(utils::read_whole_file(_p_core->get_API_config_filepath()), ec) };
@@ -814,8 +770,6 @@ void NetworkApi::handle__config__GET(http_request req) {
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
 
-	// auto b = message.extract_json().get();
-
 	std::error_code ec;
 	auto j_API{ json::value::parse(utils::read_whole_file(_p_core->get_API_config_filepath()), ec) };
 
@@ -826,7 +780,7 @@ void NetworkApi::handle__config__GET(http_request req) {
 		throw std::runtime_error(msg);
 	}
 
-	// Append API config to the core one
+	// Append API config to the core one.
 	j[U("API")] = j_API;
 
 	http_response response(status_codes::OK);
@@ -841,19 +795,16 @@ void NetworkApi::handle__user__context__GET(http_request req) {
 	SHLOG_REQ(remote_addr, __func__);
 
 	auto body = req.extract_json().get();
-	// \ytbi
-	// size_t user_ID{ body[U("user_ID")].as_integer() };
-	// std::string user_token{ to_utf8string(body[U("auth_token")].as_string()) };
 
-	// Fetch the data
+	// Fetch the data.
 	const UserContext& user_ctx{ _p_core->get_user_context() };
 	json::value res_data{ to_Response__User__Context__Get(_p_core, user_ctx) };
 
-	// Construct the response
+	// Construct the response.
 	http_response response(status_codes::OK);
 	response.set_body(res_data);
 
-	// Send the response
+	// Send the response.
 	NetworkApi::add_CORS_headers(response);
 	req.reply(response);
 }
@@ -874,15 +825,15 @@ void NetworkApi::handle__search__get_top_display__POST(http_request req) {
 
 	auto dtype{ str_to_disp_type(type) };
 
-	// Fetch the data
+	// Fetch the data.
 	auto display_frames{ _p_core->get_display(dtype, frame_ID, page_idx) };
 	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, page_idx, type, "") };
 
-	// Construct the response
+	// Construct the response.
 	http_response res(status_codes::OK);
 	res.set_body(res_data);
 
-	// Send the response
+	// Send the response.
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
 }
@@ -904,15 +855,15 @@ void NetworkApi::handle__search__get_som_display__POST(http_request req) {
 		return;
 	}
 
-	// Fetch the data
+	// Fetch the data.
 	auto display_frames{ _p_core->get_display(dtype) };
 	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, 0, "SOM_display", "") };
 
-	// Construct the response
+	// Construct the response.
 	http_response res(status_codes::OK);
 	res.set_body(res_data);
 
-	// Send the response
+	// Send the response.
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
 }
@@ -933,15 +884,15 @@ void NetworkApi::handle__search__get_som_relocation_display__POST(http_request r
 		return;
 	}
 
-	// Fetch the data
+	// Fetch the data.
 	auto display_frames{ _p_core->get_display(DisplayType::DRelocation, ERR_VAL<FrameId>(), temporal_id) };
 	json::value res_data{ to_Response__GetTopScreen__Post(_p_core, display_frames, 0, "SOM_relocation_display", "") };
 
-	// Construct the response
+	// Construct the response.
 	http_response res(status_codes::OK);
 	res.set_body(res_data);
 
-	// Send the response
+	// Send the response.
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
 }
@@ -950,8 +901,6 @@ void NetworkApi::handle__dataset__video_detail__GET(http_request req) {
 	auto lck{ exclusive_lock() };  //< (#)
 	auto remote_addr{ to_utf8string(req.remote_address()) };
 	SHLOG_REQ(remote_addr, __func__);
-
-	// auto paths = http::uri::split_path(http::uri::decode(req.relative_uri().path()));
 
 	auto query{ req.relative_uri().query() };
 	auto query_map{ web::uri::split_query(query) };
@@ -974,16 +923,16 @@ void NetworkApi::handle__dataset__video_detail__GET(http_request req) {
 		log_it = (to_utf8string(query_map[U("logIt")]) == "true" ? true : false);
 	}
 
-	// Fetch the data
+	// Fetch the data.
 	auto display_frames{ _p_core->get_display(DisplayType::DVideoDetail, frame_ID, 0, log_it) };
 	json::value res_data{ to_Response__GetDetailScreen__Post(_p_core, display_frames, 0,
 		                                                     disp_type_to_str(DisplayType::DVideoDetail), "") };
 
-	// Construct the response
+	// Construct the response.
 	http_response res(status_codes::OK);
 	res.set_body(res_data);
 
-	// Send the response
+	// Send the response.
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
 }
@@ -1007,7 +956,7 @@ void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req) {
 		return;
 	}
 
-	// \todo
+	// \todo Take the values from the config.
 	size_t num_suggestions{ 5 };
 	size_t example_frames_count{ 5 };
 	auto record_count{ query_map.find(U("count")) };
@@ -1017,11 +966,11 @@ void NetworkApi::handle__search__keyword_autocomplete__GET(http_request req) {
 	json::value res_data{ to_Response__GetAutocompleteResults__Get(_p_core, _keyword_ranker, example_frames_count,
 		                                                           "") };
 
-	// Construct the response
+	// Construct the response.
 	http_response res(status_codes::OK);
 	res.set_body(res_data);
 
-	// Send the response
+	// Send the response.
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
 }
@@ -1055,16 +1004,16 @@ void NetworkApi::handle__log__scroll__GET(http_request req) {
 		auto disp{ str_to_disp_type(scroll_area) };
 		float delta{ (utils::str2<float>(to_utf8string(delta_record->second)) > 0 ? 1.0F : -1.0F) };
 
-		// If normal scroll
+		// If normal scroll.
 		if (frame_ID == ERR_VAL<FrameId>()) {
 			_p_core->log_scroll(disp, delta);
 		}
-		// Else replay scroll over the frrame_ID frame
+		// Else replay scroll over the frrame_ID frame.
 		else {
 			_p_core->log_video_replay(frame_ID, delta);
 		}
 
-		// Construct the response
+		// Construct the response.
 		http_response res(status_codes::OK);
 		NetworkApi::add_CORS_headers(res);
 		res.set_body(json::value::object());
@@ -1209,162 +1158,6 @@ void NetworkApi::handle__search__reset__POST(http_request req) {
 	res.set_body(json::value::object());
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
-}
-
-RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body) {
-	/*
-	 * Extract from the body
-	 */
-	size_t src_ctx_ID{ static_cast<size_t>(body[U("srcSearchCtxId")].as_integer()) };
-	std::string screenshot_data{ to_utf8string(body[U("screenshotData")].as_string()) };
-	std::string _username{ "matfyz" };
-
-	/*
-	 * Process it
-	 */
-
-	// \todo Validate the user
-	// p_core->auth_user()
-
-	std::string time_label{ utils::get_formated_timestamp("%H:%M:%S") };
-
-	RescoreMetadata md;
-	md._username = _username;
-	md.screenshot_filepath = _p_core->store_rescore_screenshot(screenshot_data);
-	md.srd_search_ctx_ID = src_ctx_ID;
-	md.time_label = time_label;
-	return md;
-}
-
-std::vector<TextualQuery> NetworkApi::extract_textual_query(web::json::value& body) {
-	/*
-	 * Extract from the body
-	 */
-	std::string q0{ to_utf8string(body[U("q0")].as_string()) };
-	std::string q1{ to_utf8string(body[U("q1")].as_string()) };
-
-	/*
-	 * Process it
-	 */
-	return { q0, q1 };
-}
-
-std::vector<RelocationQuery> NetworkApi::extract_relocation_query(web::json::value& body) {
-	/*
-	 * Extract from the body
-	 */
-	RelocationQuery relocation0{ static_cast<RelocationQuery>(body[U("relocation0")].as_integer()) };
-	RelocationQuery relocation1{ static_cast<RelocationQuery>(body[U("relocation1")].as_integer()) };
-
-	return { relocation0, relocation1 };
-}
-
-std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body) {
-	/*
-	 * Extract from the body
-	 */
-	json::value outer_array{ body[U("canvas_query")] };
-
-	if (outer_array.is_null()) {
-		return { DEFAULT_COLLAGE };
-	}
-
-	/*
-	 * Process it
-	 */
-	std::vector<CanvasQuery> canvas_query;
-
-	/* outer_array:
-	[
-	    [inner_arr #0], < The first scene described
-	    [inner_arr #1], < The following scene
-	    [inner_arr #2], < The third scene
-	    ...
-	] */
-
-	// For each temporal query provided by the user
-	for (size_t temp_i{ 0 }; temp_i < outer_array.size(); ++temp_i) {
-		canvas_query.push_back(CanvasQuery());
-
-		auto inner_arr{ outer_array[temp_i] };
-		if (inner_arr.is_null()) {
-			return { DEFAULT_COLLAGE };
-		}
-
-		/* inner_arr:
-		[
-		    { "bitmap" OR "text" subquery #0 },
-		    { "bitmap" OR "text" subquery #1 },
-		    { "bitmap" OR "text" subquery #2 },
-		    { "bitmap" OR "text" subquery #3 },
-		    ...
-		] */
-		// For each query placed on this temporal canvas
-		for (size_t canvas_query_i{ 0 }; canvas_query_i < inner_arr.size(); ++canvas_query_i) {
-			auto subquery_JSON{ inner_arr[canvas_query_i].as_object() };
-
-			// Determine the type
-			std::string subquery_type{ to_utf8string(subquery_JSON[U("type")].as_string()) };
-
-			// Parse the rect
-			std::vector<float> rect_vals = from_double_array<float>(subquery_JSON[U("rect")]);
-			if (rect_vals.size() != 4) {
-				throw std::runtime_error("Invalid `rect` property.");
-			}
-			RelativeRect rect{ rect_vals[0], rect_vals[1], rect_vals[2], rect_vals[3] };
-
-			// If textual query on the canvas
-			if (subquery_type == "text") {
-				std::string text_query{ to_utf8string(subquery_JSON[U("text_query")].as_string()) };
-				canvas_query[temp_i].emplace_back(rect, text_query);
-			}
-			// Else bitmap
-			else {
-				std::vector<uint8_t> bitmap_data{ from_JSON_array<uint8_t>(subquery_JSON[U("bitmap_data")]) };
-				size_t width{ static_cast<size_t>(subquery_JSON[U("width_pixels")].as_integer()) };
-				size_t height{ static_cast<size_t>(subquery_JSON[U("height_pixels")].as_integer()) };
-				size_t num_channels{ static_cast<size_t>(subquery_JSON[U("num_channels")].as_integer()) };
-				canvas_query[temp_i].emplace_back(rect, width, height, num_channels, bitmap_data.data());
-			}
-		}
-	}
-
-	return canvas_query;
-}
-
-Filters NetworkApi::extract_filters(web::json::value& body) {
-	/*
-	 * Extract from the body
-	 */
-	json::value weekdays_JSON{ body[U("filters")][U("weekdays")] };
-	Hour hourFrom{ static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer()) };
-	Hour hourTo{ static_cast<Hour>(body[U("filters")][U("hoursTo")].as_integer()) };
-	Year yearFrom{ static_cast<Year>(body[U("filters")][U("yearsFrom")].as_integer()) };
-	Year yearTo{ static_cast<Year>(body[U("filters")][U("yearsTo")].as_integer()) };
-	json::value dataset_parts_JSON{ body[U("filters")][U("datasetFilter")] };
-
-	/*
-	 * Process it
-	 */
-	uint8_t weekdays_mask{ 0 };
-	for (size_t i{ 0 }; i < 7; ++i) {
-		bool flag{ weekdays_JSON.as_array().at(i).as_bool() };
-		if (flag) {
-			// LSb is day 0, MSb is day 6
-			weekdays_mask = weekdays_mask | (1 << i);
-		}
-	}
-
-	auto xx{ dataset_parts_JSON.as_array() };
-	std::vector<bool> dataset_parts_mask;
-	for (size_t i{ 0 }; i < xx.size(); ++i) {
-		bool flag{ xx.at(i).as_bool() };
-
-		dataset_parts_mask.emplace_back(flag);
-	}
-
-	return Filters{ TimeFilter{ hourFrom, hourTo }, YearFilter{ yearFrom, yearTo }, WeekDaysFilter{ weekdays_mask },
-		            dataset_parts_mask };
 }
 
 void NetworkApi::handle__search__rescore__POST(http_request req) {
@@ -1548,4 +1341,213 @@ void NetworkApi::handle__search__context__GET(http_request req) {
 	http_response res(status_codes::OK);
 	NetworkApi::add_CORS_headers(res);
 	req.reply(res);
+}
+
+void NetworkApi::push_endpoint(const std::string& path, std::function<void(NetworkApi*, http_request)> GET_handler,
+                               std::function<void(NetworkApi*, http_request)> POST_handler,
+                               std::function<void(NetworkApi*, http_request)> PUT_handler,
+                               std::function<void(NetworkApi*, http_request)> DEL_handler) {
+	uri_builder endpoint(utility::conversions::to_string_t(_base_addr));
+	endpoint.append_path(utility::conversions::to_string_t(path));
+
+	try {
+		http_listener ep_listener{ endpoint.to_uri().to_string() };
+
+		if (GET_handler) {
+			ep_listener.support(methods::GET, std::bind(GET_handler, this, std::placeholders::_1));
+		}
+
+		if (POST_handler) {
+			ep_listener.support(methods::POST, std::bind(POST_handler, this, std::placeholders::_1));
+		}
+
+		if (PUT_handler) {
+			ep_listener.support(methods::PUT, std::bind(PUT_handler, this, std::placeholders::_1));
+		}
+
+		if (DEL_handler) {
+			ep_listener.support(methods::DEL, std::bind(DEL_handler, this, std::placeholders::_1));
+		}
+
+		// For CORS
+		ep_listener.support(methods::OPTIONS, std::bind(handle_options, std::placeholders::_1));
+
+		auto res = ep_listener.open().wait();
+
+		// Check if failed
+		if (res != pplx::completed) {
+			std::string msg{ "Unable to set the HTTP listener for '" + path + ".!" };
+
+			SHLOG_E(msg);
+			throw std::runtime_error{ msg };
+		}
+
+		_endpoints.emplace_back(std::move(ep_listener));
+	} catch (const std::exception& e) {
+		std::string msg{ "Unable to set the HTTP listener for '" + path + "'!" };
+
+		msg.append("\n\nIf these are access problems, try running it as an administrator.\n\n");
+
+		msg.append("\nMESSAGE: \n");
+		msg.append(e.what());
+
+		SHLOG_E(msg);
+		throw std::runtime_error{ msg };
+	}
+}
+
+RescoreMetadata NetworkApi::extract_rescore_metadata(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	size_t src_ctx_ID{ static_cast<size_t>(body[U("srcSearchCtxId")].as_integer()) };
+	std::string screenshot_data{ to_utf8string(body[U("screenshotData")].as_string()) };
+	std::string _username{ "matfyz" };
+
+	/*
+	 * Process it
+	 */
+
+	// \todo Validate the user here.
+	// p_core->auth_user()
+
+	std::string time_label{ utils::get_formated_timestamp("%H:%M:%S") };
+
+	RescoreMetadata md;
+	md._username = _username;
+	md.screenshot_filepath = _p_core->store_rescore_screenshot(screenshot_data);
+	md.srd_search_ctx_ID = src_ctx_ID;
+	md.time_label = time_label;
+	return md;
+}
+
+std::vector<TextualQuery> NetworkApi::extract_textual_query(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	std::string q0{ to_utf8string(body[U("q0")].as_string()) };
+	std::string q1{ to_utf8string(body[U("q1")].as_string()) };
+
+	/*
+	 * Process it
+	 */
+	return { q0, q1 };
+}
+
+std::vector<RelocationQuery> NetworkApi::extract_relocation_query(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	RelocationQuery relocation0{ static_cast<RelocationQuery>(body[U("relocation0")].as_integer()) };
+	RelocationQuery relocation1{ static_cast<RelocationQuery>(body[U("relocation1")].as_integer()) };
+
+	return { relocation0, relocation1 };
+}
+
+std::vector<CanvasQuery> NetworkApi::extract_canvas_query(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	json::value outer_array{ body[U("canvas_query")] };
+
+	if (outer_array.is_null()) {
+		return { DEFAULT_COLLAGE };
+	}
+
+	/*
+	 * Process it
+	 */
+	std::vector<CanvasQuery> canvas_query;
+
+	/* outer_array:
+	[
+	    [inner_arr #0], < The first scene described
+	    [inner_arr #1], < The following scene
+	    [inner_arr #2], < The third scene
+	    ...
+	] */
+
+	// For each temporal query provided by the user
+	for (size_t temp_i{ 0 }; temp_i < outer_array.size(); ++temp_i) {
+		canvas_query.push_back(CanvasQuery());
+
+		auto inner_arr{ outer_array[temp_i] };
+		if (inner_arr.is_null()) {
+			return { DEFAULT_COLLAGE };
+		}
+
+		/* inner_arr:
+		[
+		    { "bitmap" OR "text" subquery #0 },
+		    { "bitmap" OR "text" subquery #1 },
+		    { "bitmap" OR "text" subquery #2 },
+		    { "bitmap" OR "text" subquery #3 },
+		    ...
+		] */
+		// For each query placed on this temporal canvas
+		for (size_t canvas_query_i{ 0 }; canvas_query_i < inner_arr.size(); ++canvas_query_i) {
+			auto subquery_JSON{ inner_arr[canvas_query_i].as_object() };
+
+			// Determine the type
+			std::string subquery_type{ to_utf8string(subquery_JSON[U("type")].as_string()) };
+
+			// Parse the rect
+			std::vector<float> rect_vals = from_double_array<float>(subquery_JSON[U("rect")]);
+			if (rect_vals.size() != 4) {
+				throw std::runtime_error("Invalid `rect` property.");
+			}
+			RelativeRect rect{ rect_vals[0], rect_vals[1], rect_vals[2], rect_vals[3] };
+
+			// If textual query on the canvas
+			if (subquery_type == "text") {
+				std::string text_query{ to_utf8string(subquery_JSON[U("text_query")].as_string()) };
+				canvas_query[temp_i].emplace_back(rect, text_query);
+			}
+			// Else bitmap
+			else {
+				std::vector<uint8_t> bitmap_data{ from_JSON_array<uint8_t>(subquery_JSON[U("bitmap_data")]) };
+				size_t width{ static_cast<size_t>(subquery_JSON[U("width_pixels")].as_integer()) };
+				size_t height{ static_cast<size_t>(subquery_JSON[U("height_pixels")].as_integer()) };
+				size_t num_channels{ static_cast<size_t>(subquery_JSON[U("num_channels")].as_integer()) };
+				canvas_query[temp_i].emplace_back(rect, width, height, num_channels, bitmap_data.data());
+			}
+		}
+	}
+
+	return canvas_query;
+}
+
+Filters NetworkApi::extract_filters(web::json::value& body) {
+	/*
+	 * Extract from the body
+	 */
+	json::value weekdays_JSON{ body[U("filters")][U("weekdays")] };
+	Hour hourFrom{ static_cast<Hour>(body[U("filters")][U("hoursFrom")].as_integer()) };
+	Hour hourTo{ static_cast<Hour>(body[U("filters")][U("hoursTo")].as_integer()) };
+	Year yearFrom{ static_cast<Year>(body[U("filters")][U("yearsFrom")].as_integer()) };
+	Year yearTo{ static_cast<Year>(body[U("filters")][U("yearsTo")].as_integer()) };
+	json::value dataset_parts_JSON{ body[U("filters")][U("datasetFilter")] };
+
+	/*
+	 * Process it
+	 */
+	uint8_t weekdays_mask{ 0 };
+	for (size_t i{ 0 }; i < 7; ++i) {
+		bool flag{ weekdays_JSON.as_array().at(i).as_bool() };
+		if (flag) {
+			// LSb is day 0, MSb is day 6
+			weekdays_mask = weekdays_mask | (1 << i);
+		}
+	}
+
+	auto xx{ dataset_parts_JSON.as_array() };
+	std::vector<bool> dataset_parts_mask;
+	for (size_t i{ 0 }; i < xx.size(); ++i) {
+		bool flag{ xx.at(i).as_bool() };
+
+		dataset_parts_mask.emplace_back(flag);
+	}
+
+	return Filters{ TimeFilter{ hourFrom, hourTo }, YearFilter{ yearFrom, yearTo }, WeekDaysFilter{ weekdays_mask },
+		            dataset_parts_mask };
 }

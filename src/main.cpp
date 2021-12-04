@@ -42,7 +42,7 @@ int main() {
 
 	// Start the HTTP API
 	NetworkApi api{ core.settings().API, &core };
-	api.run();
+	api.run();  //< Type "exit" to stop the server
 
 	// Run optional utility stuff
 	core.run_generators();  //< Optional
