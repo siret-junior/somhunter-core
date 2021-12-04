@@ -3,7 +3,7 @@ ABSOLUTE_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 cd ${ABSOLUTE_PATH}
 printf "\tInstalling 'somhunter-core'...\n"
 
-BUILD_TYPE=Release
+BUILD_TYPE=RelWithDebInfo
 
 if [ -z ${1} ]; then 
     echo ".."
