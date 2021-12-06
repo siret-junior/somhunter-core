@@ -56,34 +56,45 @@ void serialize_to_file(DataType_ data, const std::string filepath) {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
 	if (!ofs) {
 		SHLOG_E_THROW("Error openning file: " << filepath);
-		return;
 	}
 
 	cereal::BinaryOutputArchive out_archive(ofs);
 	out_archive(data);
 }
 
+/**
+ * Deserializes the data from the provided file using cereal lib.
+ *
+ * https://uscilab.github.io/cereal/
+ */
 template <typename DataType_>
 DataType_ deserialize_from_file(const std::string filepath) {
 	std::ifstream ifs(filepath, std::ios::in | std::ios::binary);
 	if (!ifs) {
-		std::string msg{ "Error openning file: " + filepath };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
+		SHLOG_E_THROW("Error openning file: " << filepath);
 	}
 
 	cereal::BinaryInputArchive in_archive(ifs);
 
-	DataType_ _data;
-	in_archive(_data);
-	return _data;
+	DataType_ data;
+	in_archive(data);
+
+	return data;
 }
 
-/*!
+/**
+ * Returns the actual UNIX timestamp (ms).
+ */
+inline int64_t timestamp() {
+	using namespace std::chrono;
+	return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+
+/**
  * Returns string representing current time and date in formated
  * string based on provided format.
  *
- * @remarks
+ * \remarks
  *  Use format string as for put_time method
  *  (https://en.cppreference.com/w/cpp/io/manip/put_time)
  *
@@ -92,15 +103,7 @@ DataType_ deserialize_from_file(const std::string filepath) {
  *  @param fmt  Format string using the same rules as put_time method.
  *  @return   String representing current date and time in desired format.
  */
-inline std::string get_formated_timestamp(const std::string& fmt) {
-	auto ts = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-	std::stringstream ss;
-	ss << std::put_time(std::localtime(&ts), fmt.data());
-	return ss.str();
-}
-
-inline std::string get_formated_timestamp(const std::string& fmt, UnixTimestamp ts) {
+inline std::string get_formated_timestamp(const std::string& fmt, UnixTimestamp ts = timestamp()) {
 	auto x = std::chrono::duration<std::size_t, std::milli>(ts);
 	std::chrono::time_point<std::chrono::system_clock> tp{ x };
 	auto tts{ std::chrono::system_clock::to_time_t(tp) };
@@ -110,6 +113,14 @@ inline std::string get_formated_timestamp(const std::string& fmt, UnixTimestamp 
 	return ss.str();
 }
 
+/**
+ * Tries to parse the integer from the string.
+ *
+ * \throws std::runtime_error	If unable to parse from the string.
+ *
+ * \param	str		String to be parsed as an int.
+ * \returns		Parsed integer.
+ */
 inline int str_to_int(const std::string& str) {
 	int result = 0;
 
@@ -117,269 +128,77 @@ inline int str_to_int(const std::string& str) {
 	auto conv_res = std::from_chars(str.data(), str.data() + str.size(), result);
 
 	if (conv_res.ptr != (str.data() + str.size())) {
-		std::string msg{ "Incorrect string to covnert: " + str };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
+		SHLOG_E_THROW("Incorrect string to covnert: " << str);
 	}
 
 	return result;
 }
 
-template <typename T, typename S>
-static inline T str2(const S& s) {
+/**
+ * Parses the `T_` type from the string using std streams.
+ *
+ * \remark Because it uses streams, it is quite slow
+ * \param	s		String to be parsed as `T_`.
+ * \returns		Parsed integer.
+ */
+template <typename T_, typename S_>
+static inline T_ str2(const S_& s) {
 	std::stringstream ss(s);
-	T r;
+	T_ r;
 	ss >> r;
 	return r;
 }
 
-template <typename T>
-inline float d_manhattan(const std::vector<T>& left, const std::vector<T>& right) {
-	if (left.size() != right.size()) {
-		SHLOG_E("Vectors have different sizes.");
-#ifndef NDEBUG
-		throw std::runtime_error("Vectors have different sizes.");
-#endif
-	}
-
-	float s = 0;
-
-	for (size_t d = 0; d < left.size(); ++d) {
-		s += abs(left[d] - right[d]);
-	}
-	return s;
-}
-
-template <typename T>
-inline float d_sqeucl(const std::vector<T>& left, const std::vector<T>& right) {
-	if (left.size() != right.size()) {
-		SHLOG_E("Vectors have different sizes.");
-#ifndef NDEBUG
-		throw std::runtime_error("Vectors have different sizes.");
-#endif
-	}
-
-	float s = 0;
-	for (size_t d = 0; d < left.size(); ++d) {
-		s += squaref(left[d] - right[d]);
-	}
-	return s;
-}
-
-template <typename T>
-inline float d_eucl(const std::vector<T>& left, const std::vector<T>& right) {
-	return sqrtf(d_sqeucl(left, right));
-}
-
-inline static float squaref(float a) { return a * a; }
-
-inline float d_cos(const std::vector<float>& left, const std::vector<float>& right) {
-	float s = 0.0f;
-	float w1 = 0.0f;
-	float w2 = 0.0f;
-
-	for (size_t i = 0; i < left.size(); ++i) {
-		s += left[i] * right[i];
-
-		w1 += squaref(left[i]);
-		w2 += squaref(right[i]);
-	}
-	if (w1 == 0 && w2 == 0) return 0;
-	return 1.0f - (s / (sqrtf(w1) * sqrtf(w2)));
-}
-
-template <typename T>
-inline std::vector<T> VecSub(const std::vector<T>& left, const std::vector<T>& right) {
-	if (left.size() != right.size()) {
-		SHLOG_E("Vectors have different sizes.");
-#ifndef NDEBUG
-		throw std::runtime_error("Vectors have different sizes.");
-#endif
-	}
-
-	std::vector<T> result;
-	result.resize(left.size());
-
-	size_t i = 0;
-	for (auto& v : result) {
-		v = left[i] - right[i];
-		++i;
-	}
-
-	return result;
-}
-
-template <typename T>
-inline std::vector<T> VecAdd(const std::vector<T>& left, const std::vector<T>& right) {
-	if (left.size() != right.size()) {
-		SHLOG_E("Vectors have different sizes.");
-#ifndef NDEBUG
-		throw std::runtime_error("Vectors have different sizes.");
-#endif
-	}
-
-	std::vector<T> result;
-	result.resize(left.size());
-
-	size_t i = 0;
-	for (auto& v : result) {
-		v = left[i] + right[i];
-		++i;
-	}
-
-	return result;
-}
-
-template <typename T, typename S>
-inline std::vector<T> VecMult(const std::vector<T>& left, S right) {
-	std::vector<T> result(left.size());
-
-	std::transform(left.begin(), left.end(), result.begin(), [right](const T& l) { return l * right; });
-
-	return result;
-}
-
-template <typename T>
-inline std::vector<T> VecMult(const std::vector<T>& left, const std::vector<T>& right) {
-	if (left.size() != right.size()) {
-		SHLOG_E("Vectors have different sizes.");
-#ifndef NDEBUG
-		throw std::runtime_error("Vectors have different sizes.");
-#endif
-	}
-
-	std::vector<T> result;
-
-	std::transform(left.begin(), left.end(), right.begin(), std::back_inserter(result),
-	               [](const T& l, const T& r) { return l * r; });
-
-	return result;
-}
-
-template <typename T>
-inline T VecDot(const std::vector<T>& left, const std::vector<T>& right) {
-	if (left.size() != right.size()) {
-		SHLOG_E("Vectors have different sizes.");
-#ifndef NDEBUG
-		throw std::runtime_error("Vectors have different sizes.");
-#endif
-	}
-
-	std::vector<T> sum = VecMult<T>(left, right);
-
-	return std::accumulate(sum.begin(), sum.end(), 0.0f, std::plus<T>());
-}
-
-template <typename T>
-inline std::vector<T> MatVecProd(const std::vector<std::vector<T>>& mat, const std::vector<T>& vec) {
-	if (mat.empty() || mat[0].size() != vec.size()) {
-		SHLOG_E("Vectors have different sizes.");
-#ifndef NDEBUG
-		throw std::runtime_error("Vectors have different sizes.");
-#endif
-	}
-
-	std::vector<T> result;
-	result.resize(mat.size());
-
-	size_t i = 0;
-	for (auto&& mat_row_vec : mat) result[i++] = VecDot(mat_row_vec, vec);
-
-	return result;
-}
-
-template <typename T>
-inline float VecLen(const std::vector<T>& left) {
-	return sqrtf(VecDot(left, left));
-}
-
-template <typename T>
-inline std::vector<T> VecNorm(const std::vector<T>& left) {
-	float vec_size = VecLen(left);
-
-	if (vec_size > 0.0f)
-		return VecMult(left, (1.0f / vec_size));
-	else {
-		SHLOG_E("Zero vector!");
-#ifndef NDEBUG
-		throw std::runtime_error("Zero vector!");
-#else
-		return std::vector<T>{};
-#endif
-	}
+/**
+ * Returns the squared parameter.
+ *
+ * \param	x	Number to be squared.
+ * \returns		The squared number.
+ */
+template <typename T_>
+inline static T_ square(T_ a) {
+	return a * a;
 }
 
 /**
- * Vectors must have unit size!
+ * Returns a pseudorandom integral number sampled from the uniform distribution [from, to].
+ *
+ * \param	from	Lower distribution bound.
+ * \param	to	Upper distribution bound (inclusive).
+ * \returns		The sampled number.
  */
-inline float d_cos_normalized(const std::vector<float>& left, const std::vector<float>& right) {
-	return 1.0f - VecDot(left, right);
-}
-
-/**
- * Vectors must have unit size!
- */
-
-inline float d_cos_normalized(const float* left, const float* right, size_t dim) {
-	float s = 0.0f;
-	const float* iv = left;
-	const float* jv = right;
-
-	for (size_t d = 0; d < dim; ++d) {
-		s += iv[d] * jv[d];
-	}
-
-	return 1.0f - s;
-}
-
-inline float d_cos_normalized(const std::vector<float>& left, const float* right, size_t dim) {
-	return d_cos_normalized(left.data(), right, dim);
-}
-
-/**
- * Vectors must have unit size!
- */
-inline float cos_sim_normalized(const std::vector<float>& left, const float* right, size_t dim) {
-	float s = 0.0f;
-	const float* iv = left.data();
-	const float* jv = right;
-
-	for (size_t d = 0; d < dim; ++d) {
-		s += iv[d] * jv[d];
-	}
-
-	return s;
-}
-
-inline static float square(float a) { return a * a; }
-
-inline int64_t timestamp() {
-	using namespace std::chrono;
-	return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-}
-
-/** Returns pseudorandom integral number sampled from
- *  the uniform distribution [from, to]. */
-template <typename T>
-T irand(T from, T to) {
+template <typename T_>
+T_ irand(T_ from, T_ to) {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<T> dist(from, to);
+	std::uniform_int_distribution<T_> dist(from, to);
 
 	return dist(gen);
 }
 
-/** Returns pseudorandom floating point number sampled from
- *  the uniform distribution [from, to). */
-template <typename T>
-T frand(T from, T to) {
+/**
+ * Returns a pseudorandom floating point number sampled from the uniform distribution [from, to).
+ *
+ * \param	from	Lower distribution bound.
+ * \param	to	Upper distribution bound (exclusive).
+ * \returns		The sampled number.
+ */
+template <typename T_>
+T_ frand(T_ from, T_ to) {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<T> dist(from, to);
+	std::uniform_real_distribution<T_> dist(from, to);
 
 	return dist(gen);
 }
 
+/**
+ * Splits the string with the provided character delimiter.
+ *
+ * \param	str		String to be split.
+ * \param	delim		Delimiter to split with.
+ * \returns	Vector of resulting strings.
+ */
 inline std::vector<std::string> split(const std::string& str, char delim) {
 	std::vector<std::string> result;
 	std::stringstream ss(str);
@@ -392,8 +211,15 @@ inline std::vector<std::string> split(const std::string& str, char delim) {
 	return result;
 }
 
-template <typename T>
-bool is_set(T mask, size_t i) {
+/**
+ * Tests whether the `i`-th lowest significant bit  is set.
+ *
+ * \param	mask	Bitfield to test in.
+ * \param	i	Index of the LSb in question.
+ * \returns		True if the bit is high.
+ */
+template <typename T_>
+bool is_set(T_ mask, size_t i) {
 	return ((mask >> i) & 0x01) == 1;
 }
 
@@ -515,9 +341,9 @@ void to_file(const std::vector<std::vector<DType_>>& mat, const std::string file
 }
 
 /** UInteger power function. */
-template <typename T>
-T ipow(T b, std::size_t p) {
-	T r = 1;
+template <typename T_>
+T_ ipow(T_ b, std::size_t p) {
+	T_ r = 1;
 	for (std::size_t i = 0; i < p; ++i) {
 		r = r * b;
 	}

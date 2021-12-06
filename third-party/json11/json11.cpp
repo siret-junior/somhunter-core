@@ -186,25 +186,25 @@ void Json::pretty_print(string& out, PrettyPrintOptions& options) const { m_ptr-
  * Value wrappers
  */
 
-template <Json::Type tag, typename T>
+template <Json::Type tag, typename T_>
 class Value : public JsonValue {
 protected:
 	// Constructors
-	explicit Value(const T& value) : m_value(value) {}
-	explicit Value(T&& value) : m_value(move(value)) {}
+	explicit Value(const T_& value) : m_value(value) {}
+	explicit Value(T_&& value) : m_value(move(value)) {}
 
 	// Get type tag
 	Json::Type type() const override { return tag; }
 
 	// Comparisons
 	bool equals(const JsonValue* other) const override {
-		return m_value == static_cast<const Value<tag, T>*>(other)->m_value;
+		return m_value == static_cast<const Value<tag, T_>*>(other)->m_value;
 	}
 	bool less(const JsonValue* other) const override {
-		return m_value < static_cast<const Value<tag, T>*>(other)->m_value;
+		return m_value < static_cast<const Value<tag, T_>*>(other)->m_value;
 	}
 
-	const T m_value;
+	const T_ m_value;
 	void dump(string& out) const override { json11::dump(m_value, out); }
 	void pretty_print(string& out, PrettyPrintOptions& options) const override {
 		json11::pretty_print(m_value, out, options);
@@ -402,8 +402,8 @@ struct JsonParser final {
 	 */
 	Json fail(string&& msg) { return fail(move(msg), Json()); }
 
-	template <typename T>
-	T fail(string&& msg, const T err_ret) {
+	template <typename T_>
+	T_ fail(string&& msg, const T_ err_ret) {
 		if (!failed) err = std::move(msg);
 		failed = true;
 		return err_ret;

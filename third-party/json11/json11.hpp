@@ -127,8 +127,8 @@ public:
 	Json(object&& values);          // OBJECT
 
 	// Implicit constructor: anything with a to_json() function.
-	template<class T, class = decltype(&T::to_json)>
-	Json(const T& t)
+	template<class T_, class = decltype(&T_::to_json)>
+	Json(const T_& t)
 	  : Json(t.to_json())
 	{}
 

@@ -57,8 +57,8 @@ struct FrameScoreIdPair {
 
 // the dank C++ standard is still missing adjust_heap!
 // (this is maximum heap w.r.t. the supplied `less`)
-template <typename T, typename C>
-static void heap_down(T* heap, size_t start, size_t lim, C less = std::less<T>()) {
+template <typename T_, typename C>
+static void heap_down(T_* heap, size_t start, size_t lim, C less = std::less<T_>()) {
 	for (;;) {
 		size_t L = 2 * start + 1;
 		size_t R = L + 1;

@@ -344,7 +344,7 @@ std::size_t CanvasQueryRanker::get_RoI(const CanvasSubquery& image) const {
 std::vector<float> CanvasQueryRanker::score_image(const std::vector<float>& feature, std::size_t region) const {
 	std::vector<float> score;
 	for (size_t i = 0; i < region_data[region].size(); i++)
-		score.push_back(utils::d_cos_normalized(feature, region_data[region][i]) / 2);
+		score.push_back(d_cos_normalized(feature.data(), region_data[region][i].data(), feature.size()) / 2);
 	return score;
 }
 

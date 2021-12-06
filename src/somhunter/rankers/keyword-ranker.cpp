@@ -20,8 +20,10 @@
  */
 
 #include "keyword-ranker.h"
-
+// ---
 #include <cmath>
+// ---
+#include "vector.hpp"
 
 using namespace sh;
 
@@ -256,7 +258,7 @@ StdVector<float> KeywordRanker::get_text_query_feature(const std::string& query_
 
 	if (tokens.empty()) {
 		// We return uniformly distributed valid vector
-		return utils::VecNorm(StdVector<float>(128, 0.3F));
+		return math::vector::normalize(StdVector<float>(128, 0.3F));
 	}
 
 	auto decoded{ decode_keywords(tokens) };
@@ -326,20 +328,20 @@ StdVector<float> KeywordRanker::embedd_text_queries(const StdVector<KeywordId>& 
 
 	// Accumuate scores for given keywords
 	for (auto&& ID : kws) {
-		score_vec = utils::VecAdd(score_vec, kw_features[ID]);
+		score_vec = math::vector::add(score_vec, kw_features[ID]);
 	}
 
 	// Add bias
-	score_vec = utils::VecAdd(score_vec, kw_features_bias_vec);
+	score_vec = math::vector::add(score_vec, kw_features_bias_vec);
 
 	// Apply hyperbolic tangent function
 	std::transform(score_vec.begin(), score_vec.end(), score_vec.begin(),
 	               [](const float& score) { return std::tanh(score); });
 
 	std::vector<float> sentence_vec =
-	    utils::MatVecProd(kw_pca_mat, utils::VecSub(utils::VecNorm(score_vec), kw_pca_mean_vec));
+	    math::vector::mat_mult(kw_pca_mat, math::vector::sub(math::vector::normalize(score_vec), kw_pca_mean_vec));
 
-	sentence_vec = utils::VecNorm(sentence_vec);
+	sentence_vec = math::vector::normalize(sentence_vec);
 
 	return sentence_vec;
 }

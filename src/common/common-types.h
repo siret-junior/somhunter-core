@@ -77,11 +77,11 @@ using ScreenImgsCont = std::vector<FrameId>;
 using FeatureMatrix = std::vector<std::vector<float>>;
 using FeatureVector = std::vector<float>;
 
-template <typename T = float>
-using StdMatrix = std::vector<std::vector<T>>;
+template <typename T_ = float>
+using StdMatrix = std::vector<std::vector<T_>>;
 
-template <typename T = float>
-using StdVector = std::vector<T>;
+template <typename T_ = float>
+using StdVector = std::vector<T_>;
 
 using LikesCont = std::set<FrameId>;
 using BookmarksCont = std::set<FrameId>;
@@ -94,9 +94,9 @@ using ScreenVideosCont = std::set<VideoId>;
 #define VIDEO_ID_ERR_VAL (std::numeric_limits<VideoId>::max)()
 
 /** Value indicating error/invalid/"NULL" value for the given type. */
-template <typename T>
-constexpr T ERR_VAL() {
-	return std::numeric_limits<T>::max();
+template <typename T_>
+constexpr T_ ERR_VAL() {
+	return std::numeric_limits<T_>::max();
 }
 
 enum class DisplayType {

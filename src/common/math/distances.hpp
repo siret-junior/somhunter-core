@@ -19,7 +19,12 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// This particular file is relicensed, originating in EmbedSOM software.
+// This particular file is relicensed and edited, originating in EmbedSOM software.
+
+/** \file distances.hpp
+ *
+ * File implementing distance calculations on vectors.
+ */
 
 #ifndef DISTANCES_H_
 #define DISTANCES_H_

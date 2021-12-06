@@ -1,10 +1,11 @@
 
 set(HEADERS
   	distances.hpp
+		vector.hpp
 )
 
 set(SOURCES
-	${HEADERS}
+		${HEADERS}
 )
 
 target_include_directories(${SOMHUNTER_TARGET} PRIVATE .)
