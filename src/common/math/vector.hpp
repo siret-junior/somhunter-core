@@ -178,7 +178,7 @@ inline std::vector<T_> normalize(const std::vector<T_>& left) {
 #ifndef NDEBUG
 		throw std::runtime_error("Zero vector!");
 #else
-		return std::vector<T>{};
+		return std::vector<T_>{};
 #endif
 	}
 }

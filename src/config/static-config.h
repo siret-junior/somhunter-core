@@ -53,7 +53,7 @@ namespace sconfig {
 #define MAX_NUM_TEMP_WORKERS 4
 
 /** Keyword to type in to end the HTTP API listening loop. */
-constexpr char* EXIT_HTTP_API_LOOP_KEYWORD = "exit";
+constexpr const char* EXIT_HTTP_API_LOOP_KEYWORD = "exit";
 
 /** Sleep interval for the  the HTTP API listening loop. */
 constexpr std::size_t HTTP_API_LOOP_SLEEP = 1000;
