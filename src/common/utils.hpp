@@ -1,7 +1,7 @@
 
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2020 František Mejzlík <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 František Mejzlík <frankmejzlik@gmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
  *                    Patrik Veselý <prtrikvesely@gmail.com>
  *
@@ -45,22 +45,26 @@
 
 namespace sh {
 namespace utils {
-template <typename DataType>
-void serialize_to_file(DataType _data, const std::string filepath) {
+
+/**
+ * Serializes the given data into the file using cereal lib.
+ *
+ * https://uscilab.github.io/cereal/
+ */
+template <typename DataType_>
+void serialize_to_file(DataType_ data, const std::string filepath) {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
 	if (!ofs) {
-		std::string msg{ "Error openning file: " + filepath };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
+		SHLOG_E_THROW("Error openning file: " << filepath);
 		return;
 	}
 
 	cereal::BinaryOutputArchive out_archive(ofs);
-	out_archive(_data);
+	out_archive(data);
 }
 
-template <typename DataType>
-DataType deserialize_from_file(const std::string filepath) {
+template <typename DataType_>
+DataType_ deserialize_from_file(const std::string filepath) {
 	std::ifstream ifs(filepath, std::ios::in | std::ios::binary);
 	if (!ifs) {
 		std::string msg{ "Error openning file: " + filepath };
@@ -70,7 +74,7 @@ DataType deserialize_from_file(const std::string filepath) {
 
 	cereal::BinaryInputArchive in_archive(ifs);
 
-	DataType _data;
+	DataType_ _data;
 	in_archive(_data);
 	return _data;
 }
@@ -478,22 +482,6 @@ inline std::string trim_right(std::string s) {
 /** Bi-trim. */
 inline std::string trim(std::string s) { return trim_right(trim_left(s)); }
 
-inline bool file_exists(const std::string& filepath) { return std::filesystem::exists(filepath); }
-
-inline bool dir_exists(const std::string& path) { return std::filesystem::is_directory(path); }
-
-inline bool dir_create(const std::string& path) {
-	try {
-		if (!std::filesystem::is_directory(path)) {
-			std::filesystem::create_directories(path);
-		}
-	} catch (...) {
-		return false;
-	}
-
-	return true;
-}
-
 template <typename DType_>
 void to_file(const std::vector<DType_>& vec, const std::string filepath) {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
@@ -536,7 +524,7 @@ T ipow(T b, std::size_t p) {
 	return r;
 }
 
-/** Runds the number to the specified decimal places. */
+/** Rounds the number to the specified decimal places. */
 template <typename T_>
 T_ round_decimal(T_ x, std::size_t places) {
 	std::size_t b = ipow(10, places);

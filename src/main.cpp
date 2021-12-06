@@ -19,10 +19,6 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
-#	include <Windows.h>
-#endif  // defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
-
 // !!!
 #include "somhunter.h"  // Do NOT move this below other includes -> libtorch hell
 // !!!

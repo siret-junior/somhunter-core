@@ -20,9 +20,10 @@
  */
 
 #include "client-dres.h"
-// ---
+
 #include "common.h"
 #include "dataset-frames.h"
+#include "os-utils.hpp"
 
 using namespace sh;
 
@@ -299,7 +300,7 @@ void ClientDres::write_log(LogType type, UnixTimestamp ts, const std::string& UR
 	                           std::to_string(ts) + std::string("__") + log_type_to_str(type) +
 	                           _eval_server_settings.log_file_suffix;
 
-	bool file_exists{ utils::file_exists(log_filepath) };
+	bool file_exists{ osutils::file_exists(log_filepath) };
 
 	std::ofstream ofs(log_filepath, std::ios::app);
 	if (file_exists) {

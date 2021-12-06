@@ -2,7 +2,8 @@
 set(HEADERS
 	common.h
 	common-types.h
-  	utils.hpp
+  utils.hpp
+	os-utils.hpp
 	static-logger.hpp
 )
 

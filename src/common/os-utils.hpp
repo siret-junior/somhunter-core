@@ -22,6 +22,10 @@
 #ifndef OS_UTILS_H_
 #define OS_UTILS_H_
 
+#if defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
+#	include <Windows.h>
+#endif  // defined WIN32 || defined _WIN32 || defined WIN64 || defined _WIN64
+
 #include <filesystem>
 
 namespace osutils {
@@ -135,11 +139,27 @@ inline void cd_back(std::size_t count = 1) {
  */
 inline void initialize_aplication() {
 	setup_terminal();
-	print_ISA_capibilites();
+	// print_ISA_capibilites();
 
 	// Change binary directory to the parent one.
 	cd_back();
 	SHLOG_I("The binary is running from the directory " << std::filesystem::current_path() << "...");
+}
+
+inline bool file_exists(const std::string& filepath) { return std::filesystem::exists(filepath); }
+
+inline bool dir_exists(const std::string& path) { return std::filesystem::is_directory(path); }
+
+inline bool dir_create(const std::string& path) {
+	try {
+		if (!std::filesystem::is_directory(path)) {
+			std::filesystem::create_directories(path);
+		}
+	} catch (...) {
+		return false;
+	}
+
+	return true;
 }
 
 }  // namespace osutils

@@ -42,10 +42,10 @@ Logger::Logger(const EvalServerSettings& settings, const UserContext* p_user_ctx
       _p_eval_server{ p_eval_server },
       _last_interactions_submit_ts{ utils::timestamp() } {
 	// Make sure that log directories exist
-	if (!utils::dir_create(get_log_dir_queries()) ||
-	    !utils::dir_create(_logger_settings.log_dir_results + "/" + _p_user_ctx->get_username()) ||
-	    !utils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
-	    !utils::dir_create(_logger_settings.log_dir_user_actions_summary + "/" + _p_user_ctx->get_username())) {
+	if (!osutils::dir_create(get_log_dir_queries()) ||
+	    !osutils::dir_create(_logger_settings.log_dir_results + "/" + _p_user_ctx->get_username()) ||
+	    !osutils::dir_create(_logger_settings.log_dir_user_actions + "/" + _p_user_ctx->get_username()) ||
+	    !osutils::dir_create(_logger_settings.log_dir_user_actions_summary + "/" + _p_user_ctx->get_username())) {
 		std::string msg{ "Unable to create log directories!" };
 		SHLOG_E(msg);
 		throw std::runtime_error{ msg };

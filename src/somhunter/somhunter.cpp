@@ -739,7 +739,7 @@ void Somhunter::benchmark_native_text_queries(const std::string& queries_filepat
 
 	// If print to file required
 	if (!out_dir.empty()) {
-		utils::dir_create(out_dir);
+		osutils::dir_create(out_dir);
 
 		std::string query_scores_file{ out_dir + "/native-query-scores.bin" };
 		std::string query_IDs_file{ out_dir + "/native-query-frame-IDs.bin" };
@@ -787,7 +787,7 @@ void Somhunter::benchmark_canvas_queries(const std::string& queries_dir, const s
 
 	// ***
 	// Prepare output
-	utils::dir_create(out_dir);
+	osutils::dir_create(out_dir);
 	std::string filename{ "canvas_benchmark_" + std::to_string(utils::timestamp()) + ".txt" };
 	auto out_filepath{ std::filesystem::path{ out_dir } / filename };
 
@@ -1002,12 +1002,12 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 
 	// ***
 	// Prepare output
-	utils::dir_create(out_dir);
+	osutils::dir_create(out_dir);
 	std::map<std::string, std::ofstream> ofss;
 	for (auto&& type : types) {
 		std::string filename = type + "-benchmark.csv";
 
-		utils::dir_create((std::filesystem::path(out_dir) / type).string());
+		osutils::dir_create((std::filesystem::path(out_dir) / type).string());
 		auto out_filepath{ std::filesystem::path(out_dir) / filename };
 
 		auto&& [item, ins] = ofss.emplace(type, out_filepath.string());

@@ -26,13 +26,14 @@
 #include "client-dres.h"
 #include "common.h"
 #include "dataset-frames.h"
+#include "os-utils.hpp"
 
 using namespace sh;
 
 EvalServerClient::EvalServerClient(const EvalServerSettings& settings)
     : _submitter_settings{ settings }, _p_client{ std::make_unique<ClientDres>(settings) } {
 	// Make sure that submitted logs directory exists
-	utils::dir_create(_submitter_settings.log_dir_eval_server_requests);
+	osutils::dir_create(_submitter_settings.log_dir_eval_server_requests);
 
 	// Do login
 	login();

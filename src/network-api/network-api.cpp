@@ -20,13 +20,11 @@
  */
 
 // !!!
-// This include has to be first
-// otherwise Torch will not build
+#include "somhunter.h"  // Do NOT move this below other includes -> libtorch hell
 // !!!
-#include "somhunter.h"
-
+// ---
 #include "network-api.h"
-
+// ---
 #include <algorithm>
 
 using namespace utility::conversions;  //< cpprest

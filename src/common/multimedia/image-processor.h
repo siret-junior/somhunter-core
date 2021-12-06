@@ -35,6 +35,7 @@
 
 #include "common.h"
 
+#include "os-utils.hpp"
 #include "utils.hpp"
 
 namespace sh {
@@ -55,7 +56,7 @@ public:
 	static OutType_ load_image(const std::string& filepath);
 
 	static void show_image(const std::string& filepath, size_t delay = 0) {
-		if (!utils::file_exists(filepath)) {
+		if (!osutils::file_exists(filepath)) {
 			std::string msg{ "Unable to open file '" + filepath + "'." };
 			SHLOG_E(msg);
 			throw std::runtime_error{ msg };

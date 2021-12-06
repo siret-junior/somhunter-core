@@ -141,9 +141,21 @@ static inline auto lock_out() {
 			          << std::endl;                                                                          \
 		} while (0)
 
+/** Logs an ERROR. */
 #	define SHLOG_E(x) _write_log_err(TermColor::red << "E: ", x << TermColor::def)
+
+/** Logs an ERROR and throws an exception with the same message. */
+#	define SHLOG_E_THROW(x)                                                     \
+		do {                                                                     \
+			std::stringstream ss;                                                \
+			ss << x;                                                             \
+			_write_log_err(TermColor::red << "E: ", ss.str() << TermColor::def); \
+			throw std::runtime_error{ ss.str() };                                \
+		} while (false);
+
 #else
 #	define SHLOG_E(x)
+#	define SHLOG_E_THROW(x)
 #	define _write_log_err(level, x)
 #endif
 
