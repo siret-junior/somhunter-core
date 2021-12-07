@@ -28,6 +28,7 @@
 // ---
 #include <nlohmann/json.hpp>
 // ---
+#include "json-helpers.hpp"
 #include "settings.h"
 #include "somhunter.h"
 #include "test-utils.hpp"
@@ -378,10 +379,10 @@ void TESTER_Somhunter::TEST_log_results(Somhunter &core) {
 		// <!> ACTION: RESET_ALL
 		core.reset_search_session();
 
-		json _data;
-		json val(RESET_ALL);
-		actions >> _data;
-		assert_contains_key_with_value(_data, STD_KEYS::ACTION_NAME, val);
+		json val{ RESET_ALL };
+		json data{ wrap_and_parse(actions) };
+
+		contains_key_with_value_recur(data, STD_KEYS::ACTION_NAME, val);
 		assert_column_contains(summary.str(), 2, RESET_ALL);
 
 		actions.clear();

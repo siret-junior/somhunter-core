@@ -28,6 +28,8 @@
 #ifndef JSON_HELPERS_H_
 #define JSON_HELPERS_H_
 
+#include <sstream>
+// ---
 #include <nlohmann/json.hpp>
 // ---
 #include "common.h"
@@ -115,6 +117,16 @@ inline T_ require_value(const json& json, const std::string& key) {
 	require_key(json, key);
 
 	return static_cast<T_>(json[key].get<T_>());
+}
+
+inline json wrap_and_parse(std::stringstream& in_stream) {
+	std::string s{ in_stream.str() };
+
+	if (s[0] == ',') {
+		s[0] = ' ';
+	}
+
+	return json::parse("[" + s + "]");
 }
 
 }  // namespace sh

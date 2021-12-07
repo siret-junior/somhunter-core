@@ -30,18 +30,37 @@ using json = nlohmann::json;
 
 namespace sh {
 namespace tests {
-inline void assert_contains_key_with_value(const json& _data, const std::string& key, const json& value) {
-	if (!_data.is_object()) {
-		do_assert(false, "Must be an object.");
-	}
-	for (auto& [k, v] : _data.items()) {
-		if (k == key) {
-			if (v == value) {
-				return;
+
+inline bool contains_key_with_value_recur(const json& _data, const std::string& key, const json& value) {
+	if (_data.is_object()) {
+		for (auto& [k, v] : _data.items()) {
+			if (k == key) {
+				if (v == value) {
+					return true;
+				}
+			}
+		}
+	} else if (_data.is_array()) {
+		for (auto&& x : _data) {
+			if (contains_key_with_value_recur(x, key, value)) {
+				return true;
 			}
 		}
 	}
-	do_assert(false, "Key-value " + key + " -> " + value.dump(4) + "not found.");
+	return false;
+}
+
+inline bool contains_key_with_value(const json& _data, const std::string& key, const json& value) {
+	if (_data.is_object()) {
+		for (auto& [k, v] : _data.items()) {
+			if (k == key) {
+				if (v == value) {
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 inline void assert_column_contains(const std::string& line, std::size_t idx, const std::string& val) {
