@@ -278,7 +278,7 @@ class CanvasSubqueryText : public CanvasSubqueryBase {
 
 public:
 	CanvasSubqueryText() = default;
-	CanvasSubqueryText(const RelativeRect& rect, const TextualQuery query)
+	CanvasSubqueryText(const RelativeRect& rect, const TextualQuery& query)
 	    : CanvasSubqueryBase{ rect }, _text_query{ utils::trim(query) } {}
 	// ---
 	const TextualQuery& query() const { return _text_query; };

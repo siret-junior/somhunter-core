@@ -8,7 +8,7 @@ using namespace sh;
 using namespace nlohmann;
 
 ApiConfig parse_API_config(const json& json) {
-	auto docs_dir{ require_string_value(json, "docs_dir") };
+	auto docs_dir{ require_value<std::string>(json, "docs_dir") };
 
 	if (docs_dir.back() != '/') {
 		docs_dir.append("/");
@@ -16,13 +16,13 @@ ApiConfig parse_API_config(const json& json) {
 	}
 
 	return ApiConfig{ // .local_only
-		              require_bool_value(json, "local_only"),
+		              require_value<bool>(json, "local_only"),
 
 		              // .port
-		              require_int_value<std::size_t>(json, "port"),
+		              require_value<std::size_t>(json, "port"),
 
 		              // .config_filepath
-		              require_string_value(json, "config_filepath"),
+		              require_value<std::string>(json, "config_filepath"),
 
 		              // .docs_dir
 		              docs_dir
@@ -43,23 +43,23 @@ EvalServerSettings::ServerConfigDres parse_DRES_config(const json& json) {
 	return EvalServerSettings::ServerConfigDres{ // .cookie_file
 		                                         json["cookie_file"].get<std::string>(),
 		                                         // .username
-		                                         require_string_value(json, "username"),
+		                                         require_value<std::string>(json, "username"),
 		                                         // .password
-		                                         require_string_value(json, "password"),
+		                                         require_value<std::string>(json, "password"),
 		                                         // .submit_URL
-		                                         require_string_value(json, "submit_URL"),
+		                                         require_value<std::string>(json, "submit_URL"),
 		                                         // .submit_rerank_URL
-		                                         require_string_value(json, "submit_rerank_URL"),
+		                                         require_value<std::string>(json, "submit_rerank_URL"),
 		                                         // .submit_interaction_URL
-		                                         require_string_value(json, "submit_interaction_URL"),
+		                                         require_value<std::string>(json, "submit_interaction_URL"),
 		                                         // .login_URL
-		                                         require_string_value(json, "login_URL"),
+		                                         require_value<std::string>(json, "login_URL"),
 		                                         // .logout_URL
-		                                         require_string_value(json, "logout_URL"),
+		                                         require_value<std::string>(json, "logout_URL"),
 		                                         // .session_URL
-		                                         require_string_value(json, "session_URL"),
+		                                         require_value<std::string>(json, "session_URL"),
 		                                         // .server_time_URL
-		                                         require_string_value(json, "server_time_URL")
+		                                         require_value<std::string>(json, "server_time_URL")
 	};
 }
 
@@ -67,11 +67,11 @@ EvalServerSettings parse_eval_server(const json& json) {
 	EvalServerSettings res;
 
 	// .do_network_requests
-	res.do_network_requests = require_bool_value(json, "do_network_requests"),
+	res.do_network_requests = require_value<bool>(json, "do_network_requests"),
 	// .submit_LSC_IDs
-	    res.submit_LSC_IDs = require_bool_value(json, "submit_LSC_IDs"),
+	    res.submit_LSC_IDs = require_value<bool>(json, "submit_LSC_IDs"),
 	// .allow_insecure
-	    res.allow_insecure = require_bool_value(json, "allow_insecure"),
+	    res.allow_insecure = require_value<bool>(json, "allow_insecure"),
 
 	res.team_ID = size_t(json["team_ID"].get<std::size_t>());
 	res.member_ID = size_t(json["member_ID"].get<std::size_t>());
@@ -100,9 +100,7 @@ EvalServerSettings parse_eval_server(const json& json) {
 	}
 	// If error value
 	else {
-		std::string msg{ "Uknown submit server type: " + res.server_type };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
+		SHLOG_E_THROW("Uknown submit server type: " + res.server_type);
 	}
 
 	return res;
@@ -111,39 +109,39 @@ EvalServerSettings parse_eval_server(const json& json) {
 DatasetsSettings::PrimaryFeaturesSettings parse_primary_features_settings(const json& json) {
 	return DatasetsSettings::PrimaryFeaturesSettings{
 		// .features_file_data_off
-		require_int_value<size_t>(json, "features_file_data_off"),
+		require_value<std::size_t>(json, "features_file_data_off"),
 		// .features_dim
-		require_int_value<size_t>(json, "features_dim"),
+		require_value<std::size_t>(json, "features_dim"),
 		// .features_file
-		require_string_value(json, "features_file"),
+		require_value<std::string>(json, "features_file"),
 
 		// .pre_PCA_features_dim
-		require_int_value<size_t>(json, "pre_PCA_features_dim"),
+		require_value<std::size_t>(json, "pre_PCA_features_dim"),
 		// .kw_bias_vec_file
-		require_string_value(json, "kw_bias_vec_file"),
+		require_value<std::string>(json, "kw_bias_vec_file"),
 		// .kw_scores_mat_file
-		require_string_value(json, "kw_scores_mat_file"),
+		require_value<std::string>(json, "kw_scores_mat_file"),
 		// .kw_PCA_mean_vec_file
-		require_string_value(json, "kw_PCA_mean_vec_file"),
+		require_value<std::string>(json, "kw_PCA_mean_vec_file"),
 		// .kw_PCA_mat_file
-		require_string_value(json, "kw_PCA_mat_file"),
+		require_value<std::string>(json, "kw_PCA_mat_file"),
 		// .kw_PCA_mat_dim
-		require_int_value<size_t>(json, "kw_PCA_mat_dim"),
+		require_value<std::size_t>(json, "kw_PCA_mat_dim"),
 
 		// .kws_file
-		require_string_value(json, "kws_file"),
+		require_value<std::string>(json, "kws_file"),
 		// .collage_region_file_prefix
-		require_string_value(json, "collage_region_file_prefix"),
+		require_value<std::string>(json, "collage_region_file_prefix"),
 		// .collage_regions
-		require_int_value<size_t>(json, "collage_regions"),
+		require_value<std::size_t>(json, "collage_regions"),
 	};
 }
 
 DatasetsSettings::SecondaryFeaturesSettings parse_secondary_features_settings(const json& json) {
 	return DatasetsSettings::SecondaryFeaturesSettings{ // .features_file_data_off
-		                                                require_int_value<size_t>(json, "features_file_data_off"),
+		                                                require_value<std::size_t>(json, "features_file_data_off"),
 		                                                // .features_dim
-		                                                require_int_value<size_t>(json, "features_dim"),
+		                                                require_value<std::size_t>(json, "features_dim"),
 		                                                // .features_file
 		                                                optional_value_or<std::string>(json, "features_file", "")
 	};
@@ -153,49 +151,49 @@ DatasetsSettings::VideoFilenameOffsets parse_filename_offsets(const json& json) 
 	return DatasetsSettings::VideoFilenameOffsets{
 
 		// .vid_ID_off
-		require_int_value<size_t>(json, "fr_filename_vid_ID_off"),
+		require_value<std::size_t>(json, "fr_filename_vid_ID_off"),
 		// .vid_ID_len
-		require_int_value<size_t>(json, "fr_filename_vid_ID_len"),
+		require_value<std::size_t>(json, "fr_filename_vid_ID_len"),
 		// .shot_ID_off
-		require_int_value<size_t>(json, "fr_filename_shot_ID_off"),
+		require_value<std::size_t>(json, "fr_filename_shot_ID_off"),
 		// .shot_ID_len
-		require_int_value<size_t>(json, "fr_filename_shot_ID_len"),
+		require_value<std::size_t>(json, "fr_filename_shot_ID_len"),
 		// .frame_num_off
-		require_int_value<size_t>(json, "fr_filename_frame_num_off"),
+		require_value<std::size_t>(json, "fr_filename_frame_num_off"),
 		// .frame_num_len
-		require_int_value<size_t>(json, "fr_filename_frame_num_len")
+		require_value<std::size_t>(json, "fr_filename_frame_num_len")
 
 	};
 }
 
 TestsSettings parse_tests_settings(const json& json) {
-	return TestsSettings{ require_string_value(json, "test_data_root") };
+	return TestsSettings{ require_value<std::string>(json, "test_data_root") };
 }
 
 PresentationViewsSettings parse_presentation_views_settings(const json& json) {
 	return PresentationViewsSettings{ // .display_page_size
-		                              require_int_value<size_t>(json, "display_page_size"),
+		                              require_value<std::size_t>(json, "display_page_size"),
 		                              // .topn_frames_per_video
-		                              require_int_value<size_t>(json, "topn_frames_per_video"),
+		                              require_value<std::size_t>(json, "topn_frames_per_video"),
 		                              // .topn_frames_per_shot
-		                              require_int_value<size_t>(json, "topn_frames_per_shot")
+		                              require_value<std::size_t>(json, "topn_frames_per_shot")
 	};
 }
 
 LoggerSettings parse_logger_settings(const json& /*json*/) {
 	return LoggerSettings{
-		// ...
+		// ... No settings as of yet
 	};
 }
 
 RemoteServicesSettings::ClipQueryToVec parse_clip_settings(const json& json) {
 	return RemoteServicesSettings::ClipQueryToVec{ // .address
-		                                           optional_string_value(json, "address")
+		                                           optional_value_or<std::string>(json, "address", "")
 	};
 }
 RemoteServicesSettings::MediaServer parse_media_server_settings(const json& json) {
 	return RemoteServicesSettings::MediaServer{ // .address
-		                                        optional_string_value(json, "address")
+		                                        optional_value_or<std::string>(json, "address", "")
 	};
 }
 
@@ -207,35 +205,35 @@ RemoteServicesSettings parse_remote_services_settings(const json& json) {
 ModelsSettings parse_model_settings(const json& json) {
 	return ModelsSettings{
 		// .models_dir
-		require_string_value(json, "models_dir"),
+		require_value<std::string>(json, "models_dir"),
 		// .model_W2VV_img_bias
-		require_string_value(json, "model_W2VV_img_bias"),
+		require_value<std::string>(json, "model_W2VV_img_bias"),
 		// .model_W2VV_img_weigths
-		require_string_value(json, "model_W2VV_img_weigths"),
+		require_value<std::string>(json, "model_W2VV_img_weigths"),
 
 		// .model_ResNet_file
-		optional_string_value(json, "model_ResNet_file"),
+		optional_value_or<std::string>(json, "model_ResNet_file", ""),
 		// .model_ResNet_SHA256
-		optional_string_value(json, "model_ResNet_SHA256"),
+		optional_value_or<std::string>(json, "model_ResNet_SHA256", ""),
 		// .model_ResNext_file
-		optional_string_value(json, "model_ResNext_file"),
+		optional_value_or<std::string>(json, "model_ResNext_file", ""),
 		// .model_ResNext_SHA256
-		optional_string_value(json, "model_ResNext_SHA256"),
+		optional_value_or<std::string>(json, "model_ResNext_SHA256", ""),
 
 	};
 }
 
 DatasetsSettings parse_datasets_settings(const json& json) {
 	return DatasetsSettings{ // .data_dir
-		                     require_string_value(json, "data_dir"),
+		                     require_value<std::string>(json, "data_dir"),
 		                     // .frames_dir
-		                     require_string_value(json, "frames_dir"),
+		                     require_value<std::string>(json, "frames_dir"),
 		                     // .thumbs_dir
-		                     require_string_value(json, "thumbs_dir"),
+		                     require_value<std::string>(json, "thumbs_dir"),
 		                     // .LSC_metadata_file (optional)
 		                     optional_value<std::string>(json, "LSC_metadata_file"),
 		                     // .frames_list_file
-		                     require_string_value(json, "frames_list_file"),
+		                     require_value<std::string>(json, "frames_list_file"),
 		                     // .filename_offsets
 		                     parse_filename_offsets(json["filename_offsets"]),
 

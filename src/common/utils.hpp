@@ -325,7 +325,7 @@ inline std::string read_whole_file(const std::string& filepath) {
 inline std::string trim_left(const std::string& s) {
 	std::string res{ s };
 	res.erase(res.begin(),
-	          std::find_if(res.begin(), res.end(), [](unsigned char ch) { return (std::isspace(ch) != 0); }));
+	          std::find_if(res.begin(), res.end(), [](unsigned char ch) { return (std::isspace(ch) == 0); }));
 	return res;
 }
 
@@ -337,7 +337,7 @@ inline std::string trim_left(const std::string& s) {
  */
 inline std::string trim_right(const std::string& s) {
 	std::string res{ s };
-	res.erase(std::find_if(res.rbegin(), res.rend(), [](unsigned char ch) { return (std::isspace(ch) != 0); }).base(),
+	res.erase(std::find_if(res.rbegin(), res.rend(), [](unsigned char ch) { return (std::isspace(ch) == 0); }).base(),
 	          res.end());
 	return res;
 }
