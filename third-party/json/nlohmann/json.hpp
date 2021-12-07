@@ -16406,20 +16406,20 @@ template <class Key, class T_, class IgnoredLess = std::less<Key>,
 {
     using key_type = Key;
     using mapped_type = T_;
-    using Container = std::vector<std::pair<const Key, T_>, Allocator>;
-    using typename Container::iterator;
-    using typename Container::const_iterator;
-    using typename Container::size_type;
-    using typename Container::value_type;
+    using Container_ = std::vector<std::pair<const Key, T_>, Allocator>;
+    using typename Container_::iterator;
+    using typename Container_::const_iterator;
+    using typename Container_::size_type;
+    using typename Container_::value_type;
 
     // Explicit constructors instead of `using Container::Container`
     // otherwise older compilers choke on it (GCC <= 5.5, xcode <= 9.4)
-    ordered_map(const Allocator& alloc = Allocator()) : Container{alloc} {}
+    ordered_map(const Allocator& alloc = Allocator()) : Container_{alloc} {}
     template <class It>
     ordered_map(It first, It last, const Allocator& alloc = Allocator())
-        : Container{first, last, alloc} {}
+        : Container_{first, last, alloc} {}
     ordered_map(std::initializer_list<T_> init, const Allocator& alloc = Allocator() )
-        : Container{init, alloc} {}
+        : Container_{init, alloc} {}
 
     std::pair<iterator, bool> emplace(const key_type& key, T_&& t)
     {
@@ -16430,7 +16430,7 @@ template <class Key, class T_, class IgnoredLess = std::less<Key>,
                 return {it, false};
             }
         }
-        Container::emplace_back(key, t);
+        Container_::emplace_back(key, t);
         return {--this->end(), true};
     }
 
@@ -16482,7 +16482,7 @@ template <class Key, class T_, class IgnoredLess = std::less<Key>,
                     it->~value_type(); // Destroy but keep allocation
                     new (&*it) value_type{std::move(*next)};
                 }
-                Container::pop_back();
+                Container_::pop_back();
                 return 1;
             }
         }
@@ -16499,7 +16499,7 @@ template <class Key, class T_, class IgnoredLess = std::less<Key>,
             it->~value_type(); // Destroy but keep allocation
             new (&*it) value_type{std::move(*next)};
         }
-        Container::pop_back();
+        Container_::pop_back();
         return pos;
     }
 
@@ -16524,7 +16524,7 @@ template <class Key, class T_, class IgnoredLess = std::less<Key>,
                 return it;
             }
         }
-        return Container::end();
+        return Container_::end();
     }
 
     const_iterator find(const Key& key) const
@@ -16536,7 +16536,7 @@ template <class Key, class T_, class IgnoredLess = std::less<Key>,
                 return it;
             }
         }
-        return Container::end();
+        return Container_::end();
     }
 
     std::pair<iterator, bool> insert( value_type&& value )
@@ -16553,7 +16553,7 @@ template <class Key, class T_, class IgnoredLess = std::less<Key>,
                 return {it, false};
             }
         }
-        Container::push_back(value);
+        Container_::push_back(value);
         return {--this->end(), true};
     }
 };

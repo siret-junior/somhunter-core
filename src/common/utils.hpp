@@ -214,7 +214,7 @@ inline std::vector<std::string> split(const std::string& str, char delim) {
 /**
  * Tests whether the `i`-th lowest significant bit  is set.
  *
- * \param	mask	Bitfield to test in.
+ * \param	mask	Bitfield to test bit in.
  * \param	i	Index of the LSb in question.
  * \returns		True if the bit is high.
  */
@@ -223,21 +223,39 @@ bool is_set(T_ mask, size_t i) {
 	return ((mask >> i) & 0x01) == 1;
 }
 
-template <typename Container>
-void print_matrix(const Container& mat) {
+/**
+ * Prints out any two-dimensional iterable container.
+ *
+ * \param	mat	Container to be printed.
+ * \returns		void
+ */
+template <typename Container_>
+void print_matrix(const Container_& mat) {
 	for (auto&& row : mat) {
 		print_vector(row);
 	}
 }
 
-template <typename Container>
-void print_vector(const Container& row) {
+/**
+ * Prints out any one-dimensional iterable container.
+ *
+ * \param	mat	Container to be printed.
+ * \returns		void
+ */
+template <typename Container_>
+void print_vector(const Container_& row) {
 	for (auto&& v : row) {
 		std::cout << "\t" << std::fixed << std::setprecision(4) << v;
 	}
 	std::cout << std::endl;
 }
 
+/**
+ * Returns a copy of old string but all lowercase.
+ *
+ * \param	old	String to be transformed.
+ * \raturns		New copy of lowercase string.
+ */
 inline std::string to_lowercase(const std::string& old) {
 	std::string transformed;
 
@@ -248,42 +266,47 @@ inline std::string to_lowercase(const std::string& old) {
 
 /**
  * Computes the SHA256 hash for the given file and returns it.
+ *
+ * \param	filepath	Filepath of the file to compute hash for.
+ * \returns		Computed hash for the file.
  */
-inline std::string SHA256_sum(const std::string& filepath) {
+inline std::string sha256_sum(const std::string& filepath) {
 	// \todo test with large files
 	third_party::SHA256 hash;
 
 	std::ifstream f(filepath, std::ios::binary);
 	if (!f.is_open()) {
-		std::string msg{ "Unable to open file '" + filepath + "'." };
-		SHLOG_E(msg);
-		throw std::runtime_error{ msg };
+		SHLOG_E_THROW("Unable to open file '" << filepath << "'.");
 	}
 
-	const size_t buff_size = 4096;
-	char* buffer = new char[buff_size];
+	constexpr const std::size_t buff_size = 4096;
+	std::vector<char> buffer(buff_size);
 
 	while (f) {
-		f.read(buffer, buff_size);
+		f.read(buffer.data(), buff_size);
 		size_t bytes_read = size_t(f.gcount());
 
-		hash.add(buffer, bytes_read);
+		hash.add(buffer.data(), bytes_read);
 	}
 
 	return hash.getHash();
 }
 
+/**
+ * Reads the whole file into string that it will return.
+ *
+ * \param	filepath	Filepath of the file to be read.
+ * \returns		Contents of the file in the string.
+ */
 inline std::string read_whole_file(const std::string& filepath) {
 	std::ifstream ifs{ filepath };
 	if (!ifs.is_open()) {
-		std::string msg{ "Error opening file: " + filepath };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
+		SHLOG_E_THROW("Error opening file: " << filepath);
 	}
 
 	// Rad the whole file
 	ifs.seekg(0, std::ios::end);
-	size_t size = ifs.tellg();
+	std::streamsize size = ifs.tellg();
 
 	std::string file_content(size, ' ');
 
@@ -293,28 +316,48 @@ inline std::string read_whole_file(const std::string& filepath) {
 	return file_content;
 }
 
-/** Left trim. */
-inline std::string trim_left(std::string s) {
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
-	return s;
+/**
+ * Left trim.
+ *
+ * /param	s	A reference to the string to be trimmed.
+ * /returns		A new copy of trimmed string.
+ */
+inline std::string trim_left(const std::string& s) {
+	std::string res{ s };
+	res.erase(res.begin(),
+	          std::find_if(res.begin(), res.end(), [](unsigned char ch) { return (std::isspace(ch) != 0); }));
+	return res;
 }
 
-/** Right trim. */
-inline std::string trim_right(std::string s) {
-	s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
-	return s;
+/**
+ * Right trim.
+ *
+ * /param	s	A reference to the string to be trimmed.
+ * /returns		A new copy of trimmed string.
+ */
+inline std::string trim_right(const std::string& s) {
+	std::string res{ s };
+	res.erase(std::find_if(res.rbegin(), res.rend(), [](unsigned char ch) { return (std::isspace(ch) != 0); }).base(),
+	          res.end());
+	return res;
 }
 
-/** Bi-trim. */
-inline std::string trim(std::string s) { return trim_right(trim_left(s)); }
+/**
+ * Trim.
+ *
+ * /param	s	A reference to the string to be trimmed.
+ * /returns		A new copy of trimmed string.
+ */
+inline std::string trim(const std::string& s) { return trim_right(trim_left(s)); }
 
+/**
+ * Writes the given vector into the given file.
+ */
 template <typename DType_>
 void to_file(const std::vector<DType_>& vec, const std::string filepath) {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
 	if (!ofs) {
-		std::string msg{ "Error openning file: " + filepath };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
+		SHLOG_E_THROW("Error openning file: " << filepath);
 	}
 
 	for (auto&& d : vec) {
@@ -323,13 +366,14 @@ void to_file(const std::vector<DType_>& vec, const std::string filepath) {
 	}
 }
 
+/**
+ * Writes the given matrix into the given file.
+ */
 template <typename DType_>
 void to_file(const std::vector<std::vector<DType_>>& mat, const std::string filepath) {
 	std::ofstream ofs(filepath, std::ios::out | std::ios::binary);
 	if (!ofs) {
-		std::string msg{ "Error openning file: " + filepath };
-		SHLOG_E(msg);
-		throw std::runtime_error(msg);
+		SHLOG_E_THROW("Error openning file: " << filepath);
 	}
 
 	for (auto&& vec : mat) {
@@ -340,7 +384,9 @@ void to_file(const std::vector<std::vector<DType_>>& mat, const std::string file
 	}
 }
 
-/** UInteger power function. */
+/**
+ * Unsigned integer power function.
+ */
 template <typename T_>
 T_ ipow(T_ b, std::size_t p) {
 	T_ r = 1;
@@ -350,7 +396,9 @@ T_ ipow(T_ b, std::size_t p) {
 	return r;
 }
 
-/** Rounds the number to the specified decimal places. */
+/**
+ * Rounds the number to the specified number of decimal places.
+ */
 template <typename T_>
 T_ round_decimal(T_ x, std::size_t places) {
 	std::size_t b = ipow(10, places);

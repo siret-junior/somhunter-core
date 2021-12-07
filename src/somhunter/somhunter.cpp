@@ -264,7 +264,7 @@ void Somhunter::run_basic_test() {
 	}
 
 	// *** SHA file checksum ***
-	std::cout << "SHA256: " << utils::SHA256_sum("config/config-json") << std::endl;
+	std::cout << "SHA256: " << utils::sha256_sum("config/config-json") << std::endl;
 
 	// Try autocomplete
 	auto ac_res{ autocomplete_keywords("Cat", 30) };
