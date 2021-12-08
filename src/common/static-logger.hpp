@@ -1,9 +1,8 @@
-
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2020 FrantiÅ¡ek MejzlÃ­k <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 František Mejzlík <frankmejzlik@gmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
- *                    Patrik VeselÃ½ <prtrikvesely@gmail.com>
+ *                    Patrik Veselý <prtrikvesely@gmail.com>
  *
  * SOMHunter is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -145,12 +144,13 @@ static inline auto lock_out() {
 #	define SHLOG_E(x) _write_log_err(TermColor::red << "E: ", x << TermColor::def)
 
 /** Logs an ERROR and throws an exception with the same message. */
-#	define SHLOG_E_THROW(x)                                                     \
-		do {                                                                     \
-			std::stringstream ss;                                                \
-			ss << x;                                                             \
-			_write_log_err(TermColor::red << "E: ", ss.str() << TermColor::def); \
-			throw std::runtime_error{ ss.str() };                                \
+#	define SHLOG_E_THROW(x)                                              \
+		do {                                                              \
+			std::stringstream ss;                                         \
+			ss << x;                                                      \
+			std::string s{ ss.str() };                                    \
+			_write_log_err(TermColor::red << "E: ", s << TermColor::def); \
+			throw std::runtime_error{ ss.str() };                         \
 		} while (false);
 
 #else

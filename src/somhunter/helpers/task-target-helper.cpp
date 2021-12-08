@@ -18,9 +18,4 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-#include "config-tests.h"
-
-#include "image-processor.h"
-
-using namespace sh;
+#include "task-target-helper.h"

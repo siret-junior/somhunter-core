@@ -1,9 +1,8 @@
-
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2020 FrantiÅ¡ek MejzlÃ­k <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 František Mejzlík <frankmejzlik@gmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
- *                    Patrik VeselÃ½ <prtrikvesely@gmail.com>
+ *                    Patrik Veselý <prtrikvesely@gmail.com>
  *
  * SOMHunter is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -18,6 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
+
 #ifndef use_intrins_h
 
 /* MSVC does not define SSE* flags therefore we just try to turn in on,
