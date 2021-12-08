@@ -21,10 +21,7 @@
 #ifndef SOMHUNTER_H_
 #define SOMHUNTER_H_
 
-#include <array>
-#include <mutex>
-#include <optional>
-#include <set>
+#include <cstddef>
 #include <string>
 #include <vector>
 // ---
@@ -53,9 +50,11 @@ class TESTER_Somhunter;
 }  // namespace tests
 
 /**
- * The main API of the SOMHunter Core.
+ * The main C++ API of the SOMHunter Core.
  *
- * \todo Export for a library compilation.
+ * Every comunication from the outside world goes through this API.
+ * This API can be called directly from other C++ code or can be called 
+ * by the HTTP API provided inside \ref `class NetworkApi`.
  */
 class Somhunter {
 	const Settings _settings;
