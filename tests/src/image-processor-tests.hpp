@@ -18,7 +18,6 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #include "config-tests.h"
 
 #include "image-processor.h"

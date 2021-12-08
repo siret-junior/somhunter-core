@@ -18,7 +18,6 @@
  * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #include "canvas-query-ranker.h"
 
 using namespace std;

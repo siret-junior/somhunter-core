@@ -21,6 +21,15 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+// Forward declare tester classes.
+namespace sh {
+namespace tests {
+
+class TESTER_Somhunter;
+
+};  // namespace tests
+};  // namespace sh
+
 // *** CONFIGS ***
 
 #include "intrinsics.h"

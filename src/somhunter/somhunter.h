@@ -27,6 +27,7 @@
 // ---
 #include "async-som.h"
 #include "canvas-query-ranker.h"
+#include "common.h"
 #include "dataset-features.h"
 #include "dataset-frames.h"
 #include "image-processor.h"
@@ -43,136 +44,66 @@
 
 namespace sh {
 
-namespace tests {
-
-class TESTER_Somhunter;
-
-}  // namespace tests
-
 /**
  * The main C++ API of the SOMHunter Core.
  *
  * Every comunication from the outside world goes through this API.
- * This API can be called directly from other C++ code or can be called 
+ * This API can be called directly from other C++ code or can be called
  * by the HTTP API provided inside \ref `class NetworkApi`.
  */
 class Somhunter {
-	const Settings _settings;
-
-	// ********************************
-	// Loaded dataset
-	//		(shared for all the users)
-	// ********************************
-	const DatasetFrames _dataset_frames;
-	const DatasetFeatures _dataset_features;
-
-	// ********************************
-	// User contexts
-	//		(private for each unique user session)
-	// ********************************
-	UserContext _user_context;  // This will become std::vector<UserContext>
-
-	// ********************************
-	// Services
-	//		(shared for all the users)
-	// ********************************
-	const std::string _core_settings_filepath;
-	const std::string _API_settings_filepath;
-
-	KeywordRanker _keyword_ranker;
-	KeywordClipRanker _secondary_keyword_ranker;
-	CanvasQueryRanker _collage_ranker;
-	const RelocationRanker _relocation_ranker;
-
 public:
+	/*
 	Somhunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
-	inline Somhunter(const std::string& config_filepath)
-	    : _settings{ Settings::parse_JSON_config(config_filepath) },
-	      _dataset_frames(_settings),
-	      _dataset_features(_dataset_frames, _settings),
+	Somhunter(const std::string& config_filepath);
 
-	      _user_context(_settings, /* \todo */ "admin", &_dataset_frames, &(_dataset_features.primary)),
-
-	      _core_settings_filepath{ config_filepath },
-	      _API_settings_filepath{ _settings.API.config_filepath },
-	      _keyword_ranker(_settings, _dataset_frames),
-	      _secondary_keyword_ranker{ _settings },
-	      _collage_ranker(_settings, &_keyword_ranker),
-	      _relocation_ranker{}
-
-	{
-		generate_new_targets();
-
-		reset_search_session();
-	}
-
-	// ********************************
-	// Interactive search calls
-	// ********************************
+	// ---
 
 	/**
-	 * Returns display of desired type
+	 * Returns display of the desired type.
 	 *
-	 *	Some diplays may even support paging (e.g. top_n) or
-	 * selection of one frame (e.g. top_knn)
+	 *	Some diplays may even support paging (e.g. DISP_TOP_N) or selection of one frame (e.g. DISP_KNN).
 	 */
 	GetDisplayResult get_display(DisplayType d_type, FrameId selected_image = 0, PageId page = 0, bool log_it = true);
 
-	/** Inverts the like states of the provided frames and returns the new
-	 * states. */
+	/** Inverts the like states of the provided frames and returns the new states. */
 	std::vector<bool> like_frames(const std::vector<FrameId>& new_likes);
 
 	/** (De)selects the provided frames from the bookmark list. */
 	std::vector<bool> bookmark_frames(const std::vector<FrameId>& new_bookmarks);
 
-	/** Returns the nearest supported keyword matches to the provided
-	 * prefix. */
+	/** Returns the nearest supported keyword matches to the provided prefix. */
 	std::vector<const Keyword*> autocomplete_keywords(const std::string& prefix, size_t count = 5) const;
 
 	/**
 	 * Applies all algorithms for score computation and updates context.
 	 *
-	 * Returns references to existing history states that we can go back to
-	 * (including the current one).
+	 * Returns references to existing history states that we can go back to (including the current one).
 	 */
 	RescoreResult rescore(Query& query, bool benchmark_run = false);
 
-	/** Switches the search context for the user to the provided index in
-	 *  the history and returns reference to it.
-	 *
-	 * To be extended with the `user_token` argument with multiple users
-	 * support.
+	/**
+	 * Switches the search context for the user to the provided index in the history and returns reference to it.
 	 */
 	const UserContext& switch_search_context(size_t index, size_t src_search_ctx_ID = SIZE_T_ERR_VAL,
 	                                         const std::string& screenshot_fpth = "", const std::string& label = "");
 
 	/**
 	 * Returns a reference to the current user's search context.
-	 *
-	 * To be extended with the `user_token` argument with multiple users
-	 * support.
 	 */
 	const SearchContext& get_search_context() const;
 
 	/**
 	 * Returns a reference to the current user's context.
-	 *
-	 * To be extended with the `user_token` argument with multiple users
-	 * support.
 	 */
 	const UserContext& get_user_context() const;
 
-	const VideoFrame& get_frame(FrameId ID) const { return _dataset_frames.get_frame(ID); }
+	const VideoFrame& get_frame(FrameId ID) const;
 
-	FrameRange get_frames(VideoId video_ID, FrameNum fr, FrameNum to) const {
-		return _dataset_frames.get_shot_frames(video_ID, fr, to);
-	}
+	FrameRange get_frames(VideoId video_ID, FrameNum fr, FrameNum to) const;
 
-	VideoFramePointer get_frame_ptr(FrameId img) const {
-		if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
-		return nullptr;
-	}
+	VideoFramePointer get_frame_ptr(FrameId img) const;
 
 	/** Returns true if the user's SOM is ready */
 	bool som_ready() const;
@@ -187,10 +118,13 @@ public:
 	// ********************************
 
 	/**
-	 * Tries to login into the DRES evaluation server
-	 *		https://github.com/lucaro/DRES
+	 * Tries to login into the remote evaluation server (competition one).
 	 */
 	bool login_to_eval_server();
+
+	/**
+	 * Tries to logout from the remote evaluation server (competition one).
+	 */
 	bool logout_from_eval_server();
 
 	/** Sumbits frame with given id to VBS server */
@@ -239,110 +173,13 @@ public:
 	 *
 	 * For examples used as `keyword-to-ID.W2VV-BoW.csv` file.
 	 */
-	void generate_example_images_for_keywords() {
-		std::ifstream inFile(_settings.datasets.primary_features.kws_file, std::ios::in);
-		std::ofstream ofs("wooooords.csv");
+	void generate_example_images_for_keywords();
 
-		if (!inFile) {
-			std::string msg{ "Error opening file: " + _settings.datasets.primary_features.kws_file };
-			SHLOG_E(msg);
-			throw std::runtime_error(msg);
-		}
-
-		std::vector<Keyword> result_keywords;
-
-		std::size_t i{ 0 };
-		// read the input file by lines
-		for (std::string line_text_buffer; std::getline(inFile, line_text_buffer);) {
-			std::stringstream line_buffer_ss(line_text_buffer);
-
-			std::vector<std::string> tokens;
-
-			// Tokenize this line
-			for (std::string token; std::getline(line_buffer_ss, token, ':');) {
-				tokens.push_back(token);
-			}
-
-			SynsetId synset_ID{ utils::str2<SynsetId>(tokens[1]) };
-			// FrameId vec_idx{ FrameId(synset_ID) };
-
-			TemporalQuery tq;
-			tq.textual = tokens[0];
-
-			Query q;
-			q.temporal_queries.push_back(tq);
-
-			rescore(q, true);
-			auto res{ get_top_scored(10, 1, 3) };
-
-			ofs << tokens[0] << ":" << synset_ID << ":";
-
-			for (auto&& x : res) {
-				ofs << x << "#";
-			}
-
-			ofs << std::endl;
-
-			if (i % 100 == 0) {
-				SHLOG(i);
-			}
-			++i;
-		}
-	}
-
-	static void write_resultset(const std::string& file, const std::vector<VideoFramePointer>& results) {
-		nlohmann::json arr = nlohmann::json::array();
-
-		std::size_t i = 0;
-		for (auto&& p_vf : results) {
-			++i;
-
-			nlohmann::json o = nlohmann::json::object();
-			o["rank"] = i;
-			o["video_ID"] = p_vf->video_ID;
-			o["frame_number"] = p_vf->frame_number;
-			o["frame_ID"] = p_vf->frame_ID;
-
-			arr.emplace_back(o);
-		}
-
-		std::ofstream ofs(file);
-		if (!ofs) {
-			throw std::runtime_error("Unable to open file for writing: "s + file);
-		}
-
-		ofs << arr.dump(4) << std::endl;
-	}
-
-	static void write_query(const std::string& file, const Query& q) {
-		std::ofstream ofs(file);
-		if (!ofs) {
-			throw std::runtime_error("Unable to open file for writing: "s + file);
-		}
-
-		ofs << q.to_JSON().dump(4) << std::endl;
-	}
-
+	static void write_resultset(const std::string& file, const std::vector<VideoFramePointer>& results);
+	static void write_query(const std::string& file, const Query& q);
 	static void write_query_info(const std::string& file, const std::string& ID, const std::string& user,
 	                             const std::tuple<VideoId, FrameId, FrameId>& target, std::size_t pos_vid,
-	                             std::size_t pos_fr, std::size_t unpos_vid, std::size_t unpos_fr) {
-		nlohmann::json o = nlohmann::json::object();
-
-		o["binary_ID"] = ID;
-		o["user"] = user;
-		o["target"] = { { "video_ID", std::get<0>(target) },
-			            { "frame_number_start", std::get<1>(target) },
-			            { "frame_number_end", std::get<2>(target) } };
-		o["positions"] = { { "original", nlohmann::json::array({ pos_vid, pos_fr }) },
-			               { "limited", nlohmann::json::array({ unpos_vid, unpos_fr }) } };
-
-		std::ofstream ofs(file);
-		if (!ofs) {
-			throw std::runtime_error("Unable to open file for writing: "s + file);
-		}
-
-		ofs << o.dump(4) << std::endl;
-	}
+	                             std::size_t pos_fr, std::size_t unpos_vid, std::size_t unpos_fr);
 
 	void run_basic_test();
 	void run_generators();
@@ -359,21 +196,17 @@ private:
 	 *	Applies text query from the user.
 	 */
 	template <typename SpecificKWRanker, typename SpecificFrameFeatures>
-	inline void rescore_keywords(SpecificKWRanker& kw_ranker, const TextualQuery& query, size_t temporal,
-	                             const SpecificFrameFeatures& features) {
-		kw_ranker.rank_sentence_query(query, _user_context.ctx.scores, features, temporal);
-
-		_user_context.ctx.used_tools.text_search_used = true;
-	}
+	void rescore_keywords(SpecificKWRanker& kw_ranker, const TextualQuery& query, size_t temporal,
+	                      const SpecificFrameFeatures& features);
 
 	/**
-	 *	Applies feedback from the user based
-	 * on shown_images.
+	 * Applies the relevance feedback from the user based on images
+	 * the user already saw (as implicit negative examples).
 	 */
 	void rescore_feedback();
 
 	/**
-	 *	Gives SOM worker new work.
+	 *	Gives the SOM worker the new work.
 	 */
 	void som_start(size_t temporal);
 
@@ -396,22 +229,59 @@ private:
 
 	void reset_scores(float val = 1.0F);
 
-	/** Adds currently active search context to the history and starts a new
-	 * context (with next contiguous ID number) */
-	void push_search_ctx() {
-		// Make sure we're not pushing in any old screenshot
-		_user_context.ctx.screenshot_fpth = "";
+	/**
+	 * Adds the currently active search context to the history and starts a new
+	 * context (with next contiguous ID number)
+	 */
+	void push_search_ctx();
 
-		// Increment context ID
-		_user_context.ctx.ID = _user_context._history.size();
-		_user_context._history.emplace_back(_user_context.ctx);
-	}
-
+	/**
+	 * Returns true if LSC metadata file provided inside the config.
+	 */
 	bool has_metadata() const;
 
-	/** The tester class */
+	/** The tester class for this one. */
 	friend sh::tests::TESTER_Somhunter;
+
+	// ---
+	/** Current application settings. */
+	const Settings _settings;
+
+	// ********************************
+	// Loaded dataset
+	//		(shared for all the users)
+	// ********************************
+	const DatasetFrames _dataset_frames;
+	const DatasetFeatures _dataset_features;
+
+	// ********************************
+	// User contexts
+	//		(private for each unique user session)
+	// ********************************
+	UserContext _user_context;
+
+	// ********************************
+	// Services
+	//		(shared for all the users)
+	// ********************************
+	const std::string _core_settings_filepath;
+	const std::string _API_settings_filepath;
+
+	KeywordRanker _keyword_ranker;
+	KeywordClipRanker _secondary_keyword_ranker;
+	CanvasQueryRanker _collage_ranker;
+	const RelocationRanker _relocation_ranker;
 };
+
+// ---
+
+template <typename SpecificKWRanker, typename SpecificFrameFeatures>
+void Somhunter::rescore_keywords(SpecificKWRanker& kw_ranker, const TextualQuery& query, size_t temporal,
+                                 const SpecificFrameFeatures& features) {
+	kw_ranker.rank_sentence_query(query, _user_context.ctx.scores, features, temporal);
+
+	_user_context.ctx.used_tools.text_search_used = true;
+}
 
 };      // namespace sh
 #endif  // SOMHUNTER_H_

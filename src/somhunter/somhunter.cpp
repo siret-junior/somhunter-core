@@ -30,6 +30,26 @@
 
 using namespace sh;
 
+Somhunter::Somhunter(const std::string& config_filepath)
+    : _settings{ Settings::parse_JSON_config(config_filepath) },
+      _dataset_frames(_settings),
+      _dataset_features(_dataset_frames, _settings),
+
+      _user_context(_settings, /* \todo */ "admin", &_dataset_frames, &(_dataset_features.primary)),
+
+      _core_settings_filepath{ config_filepath },
+      _API_settings_filepath{ _settings.API.config_filepath },
+      _keyword_ranker(_settings, _dataset_frames),
+      _secondary_keyword_ranker{ _settings },
+      _collage_ranker(_settings, &_keyword_ranker),
+      _relocation_ranker{}
+
+{
+	generate_new_targets();
+
+	reset_search_session();
+}
+
 GetDisplayResult Somhunter::get_display(DisplayType d_type, FrameId selected_image, PageId page, bool log_it) {
 	_user_context._logger.poll();
 
@@ -189,6 +209,15 @@ std::vector<const Keyword*> Somhunter::autocomplete_keywords(const std::string& 
 }
 
 bool Somhunter::has_metadata() const { return _settings.datasets.LSC_metadata_file.has_value(); }
+
+void Somhunter::push_search_ctx() {
+	// Make sure we're not pushing in any old screenshot
+	_user_context.ctx.screenshot_fpth = "";
+
+	// Increment context ID
+	_user_context.ctx.ID = _user_context._history.size();
+	_user_context._history.emplace_back(_user_context.ctx);
+}
 
 void Somhunter::apply_filters() {
 	const Filters& filters{ _user_context.ctx.filters };
@@ -1184,6 +1213,111 @@ void Somhunter::benchmark_real_queries(const std::string& queries_dir, const std
 	}
 }
 
+void Somhunter::generate_example_images_for_keywords() {
+	std::ifstream inFile(_settings.datasets.primary_features.kws_file, std::ios::in);
+	std::ofstream ofs("wooooords.csv");
+
+	if (!inFile) {
+		std::string msg{ "Error opening file: " + _settings.datasets.primary_features.kws_file };
+		SHLOG_E(msg);
+		throw std::runtime_error(msg);
+	}
+
+	std::vector<Keyword> result_keywords;
+
+	std::size_t i{ 0 };
+	// read the input file by lines
+	for (std::string line_text_buffer; std::getline(inFile, line_text_buffer);) {
+		std::stringstream line_buffer_ss(line_text_buffer);
+
+		std::vector<std::string> tokens;
+
+		// Tokenize this line
+		for (std::string token; std::getline(line_buffer_ss, token, ':');) {
+			tokens.push_back(token);
+		}
+
+		SynsetId synset_ID{ utils::str2<SynsetId>(tokens[1]) };
+		// FrameId vec_idx{ FrameId(synset_ID) };
+
+		TemporalQuery tq;
+		tq.textual = tokens[0];
+
+		Query q;
+		q.temporal_queries.push_back(tq);
+
+		rescore(q, true);
+		auto res{ get_top_scored(10, 1, 3) };
+
+		ofs << tokens[0] << ":" << synset_ID << ":";
+
+		for (auto&& x : res) {
+			ofs << x << "#";
+		}
+
+		ofs << std::endl;
+
+		if (i % 100 == 0) {
+			SHLOG(i);
+		}
+		++i;
+	}
+}
+
+void Somhunter::write_resultset(const std::string& file, const std::vector<VideoFramePointer>& results) {
+	nlohmann::json arr = nlohmann::json::array();
+
+	std::size_t i = 0;
+	for (auto&& p_vf : results) {
+		++i;
+
+		nlohmann::json o = nlohmann::json::object();
+		o["rank"] = i;
+		o["video_ID"] = p_vf->video_ID;
+		o["frame_number"] = p_vf->frame_number;
+		o["frame_ID"] = p_vf->frame_ID;
+
+		arr.emplace_back(o);
+	}
+
+	std::ofstream ofs(file);
+	if (!ofs) {
+		throw std::runtime_error("Unable to open file for writing: "s + file);
+	}
+
+	ofs << arr.dump(4) << std::endl;
+}
+
+void Somhunter::write_query(const std::string& file, const Query& q) {
+	std::ofstream ofs(file);
+	if (!ofs) {
+		throw std::runtime_error("Unable to open file for writing: "s + file);
+	}
+
+	ofs << q.to_JSON().dump(4) << std::endl;
+}
+
+void Somhunter::write_query_info(const std::string& file, const std::string& ID, const std::string& user,
+                                 const std::tuple<VideoId, FrameId, FrameId>& target, std::size_t pos_vid,
+                                 std::size_t pos_fr, std::size_t unpos_vid, std::size_t unpos_fr) {
+	nlohmann::json o = nlohmann::json::object();
+
+	o["binary_ID"] = ID;
+	o["user"] = user;
+	o["target"] = { { "video_ID", std::get<0>(target) },
+		            { "frame_number_start", std::get<1>(target) },
+		            { "frame_number_end", std::get<2>(target) } };
+	o["positions"] = { { "original", nlohmann::json::array({ pos_vid, pos_fr }) },
+		               { "limited", nlohmann::json::array({ unpos_vid, unpos_fr }) } };
+
+	std::ofstream ofs(file);
+	if (!ofs) {
+		throw std::runtime_error("Unable to open file for writing: "s + file);
+	}
+
+	ofs << o.dump(4) << std::endl;
+}
+
 void Somhunter::generate_new_targets() {
 	constexpr std::size_t num_seq{ 5 };
 	std::size_t num_frames{ _dataset_frames.size() };
@@ -1467,3 +1601,14 @@ const UserContext& Somhunter::switch_search_context(size_t index, size_t src_sea
 const SearchContext& Somhunter::get_search_context() const { return _user_context.ctx; }
 
 const UserContext& Somhunter::get_user_context() const { return _user_context; }
+
+const VideoFrame& Somhunter::get_frame(FrameId ID) const { return _dataset_frames.get_frame(ID); }
+
+FrameRange Somhunter::get_frames(VideoId video_ID, FrameNum fr, FrameNum to) const {
+	return _dataset_frames.get_shot_frames(video_ID, fr, to);
+}
+
+VideoFramePointer Somhunter::get_frame_ptr(FrameId img) const {
+	if (img < _dataset_frames.size()) return _dataset_frames.get_frame_ptr(img);
+	return nullptr;
+}
