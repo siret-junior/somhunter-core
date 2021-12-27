@@ -281,3 +281,20 @@ std::pair<ReqCode, std::vector<float>> sh::Http::do_GET_sync_floats(const std::s
 
 	return std::pair<ReqCode, std::vector<float>>{ res_code, res_data };
 }
+
+std::tuple<ReqCode, std::vector<float>, std::vector<int>> sh::Http::do_GET_sync_distances(const std::string& URL, const nlohmann::json& body, 
+																				const nlohmann::json& headers) {
+
+	auto [res_code, res_buffer] = do_request_sync(RequestType::GET, URL, body, headers);
+
+	size_t halfsize = (res_buffer.end() - res_buffer.begin()) / 2;
+
+	std::vector<int> frame_ids((res_buffer.size() / sizeof(int)) / 2, 0);
+	std::copy(res_buffer.begin(), res_buffer.begin() + halfsize, (uint8_t*)frame_ids.data());
+
+	std::vector<float> distances((res_buffer.size() / sizeof(float)) / 2, 0);
+	std::copy(res_buffer.begin() + halfsize, res_buffer.end(), (uint8_t*)distances.data());
+
+	return make_tuple(res_code, distances, frame_ids);
+}
+
