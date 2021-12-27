@@ -34,8 +34,9 @@ public:
 	                                                    const nlohmann::json& headers = {});
 	std::pair<ReqCode, std::vector<float>> do_GET_sync_floats(const std::string& URL, const nlohmann::json& body,
 	                                                          const nlohmann::json& headers);
-	std::tuple<ReqCode, std::vector<float>, std::vector<int>> do_GET_sync_distances(const std::string& URL, const nlohmann::json& body, 
-																				const nlohmann::json& headers);
+	std::tuple<ReqCode, std::vector<float>, std::vector<int>> do_GET_sync_distances(const std::string& URL,
+	                                                                                const nlohmann::json& body,
+	                                                                                const nlohmann::json& headers);
 
 	void set_allow_insecure(bool val) { _allow_insecure = val; };
 	bool get_allow_insecure() const { return _allow_insecure; };

@@ -51,9 +51,9 @@ void KeywordClipRanker::rank_sentence_query(const std::string& sentence_query, S
 	std::for_each(std::execution::par_unseq, ioterable<size_t>(0), ioterable<size_t>(frame_ids.size()),
 	              [&, this](size_t it) {
 		              auto similarity = similarities[it];
-					  
-					  auto frame_id = frame_ids[it];
-					  scores[frame_id] = 1.0F - similarity;
+
+		              auto frame_id = frame_ids[it];
+		              scores[frame_id] = 1.0F - similarity;
 	              });
 
 	// Update the model
