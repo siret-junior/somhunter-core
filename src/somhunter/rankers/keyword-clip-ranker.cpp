@@ -36,17 +36,24 @@ void KeywordClipRanker::rank_sentence_query(const std::string& sentence_query, S
 
 	// Compute inverse scores in for the example query
 	auto start = std::chrono::high_resolution_clock::now();
-	auto [code, res] = _http.do_GET_sync_floats(URL, body, headers);
+	auto [code, similarities, frame_ids] = _http.do_GET_sync_distances(URL, body, headers);
 	auto end = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> diff = end - start;
 	SHLOG_D("CLIP request took " << diff.count() << " [s]");
-
 	if (code != 200) {
 		SHLOG_E("Could not retrieve text query embedding from remote server!!! Return code: " << code);
 		return;
 	}
 
-	auto scores{ inverse_score_vector(res, _dataset_features) };
+	std::vector<float> scores(_dataset_features.size(), 2.0f);
+
+	std::for_each(std::execution::par_unseq, ioterable<size_t>(0), ioterable<size_t>(frame_ids.size()),
+	              [&, this](size_t it) {
+		              auto similarity = similarities[it];
+
+		              auto frame_id = frame_ids[it];
+		              scores[frame_id] = 1.0F - similarity;
+	              });
 
 	// Update the model
 	for (size_t i = 0; i < scores.size(); ++i) {
