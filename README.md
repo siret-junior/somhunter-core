@@ -1,9 +1,18 @@
 # SOMHunter Core
 The main component of the SOMHunter Video Search Tool.
 
-## Build using Docker container
-> TODO: Add Dockerfile just for the core.
-## Build natively
+## **Build using Docker (recommended)**
+
+```sh
+# Build the container
+docker build -t somhunter-core .
+# Install the core
+docker run -ti --rm -v ${PWD}:/somhunter-core somhunter-core:latest sh install.sh RelWithDebugInfo
+# Run it on port 8080
+docker run -ti --rm -v ${PWD}:/somhunter-core -p 8080:8080 somhunter-core:latest sh run.sh
+```
+
+## **Build natively (for bold & brave)**
 ### Prerequisites
 - `libcurl`- [https://curl.se/libcurl/](https://curl.se/libcurl/)
 - `OpenCV` - [https://opencv.org/](https://opencv.org/)
@@ -18,10 +27,7 @@ Because Windows does not have a unified package manager with dev packages, you n
 1) Download and install `vcpkg`
 2) Install required dependencies for your architecture and system (e.g. for x64 windows)
 ```sh
-./vcpkg install curl:x64-windows
-./vcpkg install opencv4:x64-windows
-./vcpkg install cpprestsdk:x64-windows
-./vcpkg install openssl:x64-windows
+./vcpkg install curl:x64-windows opencv4:x64-windows cpprestsdk:x64-windows openssl:x64-windows
 ```
 3) Get path to the CMake toolchain file
 
@@ -83,7 +89,7 @@ make -j
 ```
 
 ## Core HTTP API
-API documentation is available at `<server_address>/api/` (e.g. [http://localhost:8888/api/](http://localhost:8888/api/)). It requires the running core.
+API documentation is available at `<server_address>/api/` (e.g. [http://localhost:8080/api/](http://localhost:8888/api/)). It requires the running core.
 
 ## Doxygen documentation
 ```sh
