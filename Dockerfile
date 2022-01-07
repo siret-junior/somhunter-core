@@ -14,4 +14,4 @@ RUN pip3 install -q --upgrade cmake urllib3 > /dev/null
 
 WORKDIR /somhunter-core
 
-EXPOSE 8080
+EXPOSE 8082

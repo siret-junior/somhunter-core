@@ -70,7 +70,7 @@
         },
         "logger": {},
         "API": {
-            "local_only": true,
+            "local_only": false,
             "port": 8082,
             "config_filepath": "config/config-api.json",
             "docs_dir": "docs/api/"
@@ -113,7 +113,7 @@
         },
         "remote_services": {
             "CLIP_query_to_vec": {
-                "address": "http://195.113.18.36:42013/clip-results"
+                "address": "http://localhost:8083/clip-results"
             },
             "media_server": {
                 "address": null
@@ -162,7 +162,7 @@
             "secondary_features": {
                 "features_file_data_off": 0,
                 "features_dim": 640,
-                "features_file": null
+                "features_file": "data/ITEC_W2VV-CLIP/secondary/frame-features.ITEC.CLIP.628x640.float32.bin"
             }
         }
     }

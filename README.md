@@ -5,11 +5,11 @@ The main component of the SOMHunter Video Search Tool.
 
 ```sh
 # Build the container
-docker build -t somhunter-core .
+sudo docker build -t somhunter-core .
 # Install the core
-docker run -ti --rm -v ${PWD}:/somhunter-core somhunter-core:latest sh install.sh RelWithDebugInfo
-# Run it on port 8080
-docker run -ti --rm -v ${PWD}:/somhunter-core -p 8080:8080 somhunter-core:latest sh run.sh
+sudo docker run -ti --rm -v ${PWD}:/somhunter-core somhunter-core:latest sh install.sh RelWithDebugInfo
+# Run it on port 8082
+sudo docker run -ti --rm -v ${PWD}:/somhunter-core -p 8082:8082 somhunter-core:latest sh run.sh
 ```
 
 ## **Build natively (for bold & brave)**
