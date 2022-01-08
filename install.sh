@@ -7,7 +7,7 @@ cd ${ABSOLUTE_PATH}
 
 BUILD_TYPE=RelWithDebInfo
 if [ -z ${1} ]; then 
-    echo "Usage: install.sh <BUILD_TYPE> \n\t BUILD_TYPE \in { Release, RelWithDebInfo, Debug }"
+    printf "Usage: install.sh <BUILD_TYPE> \n\t BUILD_TYPE \in { Release, RelWithDebInfo, Debug }\n"
     exit 1
 else
     BUILD_TYPE=${1}

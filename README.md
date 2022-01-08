@@ -1,7 +1,7 @@
 # SOMHunter Core
-The main component of the SOMHunter Video Search Tool.
+The main component of the [SOMHunter](https://github.com/siret-junior/somhunter) tool. All models and all the logic is inside this component. Other components can be substituted with other implementetions because the core uses HTTP server (OpenAPI) as its interface. Optionally, you can use the core natively as a C++ class (`class Somhunter`).
 
-## **Build using Docker (recommended)**
+## **Build  & Run with Docker (recommended)**
 
 ```sh
 # Build the container
@@ -12,7 +12,7 @@ sudo docker run -ti --rm -v ${PWD}:/somhunter-core somhunter-core:latest sh inst
 sudo docker run -ti --rm -v ${PWD}:/somhunter-core -p 8082:8082 somhunter-core:latest sh run.sh
 ```
 
-## **Build natively (for bold & brave)**
+## **Build & Run (for bold & brave)**
 ### Prerequisites
 - `libcurl`- [https://curl.se/libcurl/](https://curl.se/libcurl/)
 - `OpenCV` - [https://opencv.org/](https://opencv.org/)
