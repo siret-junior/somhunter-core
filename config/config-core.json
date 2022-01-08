@@ -11,6 +11,7 @@
     },
     "UI": {
         "API": {
+            "hostname": "http://localhost",
             "port": 8080
         },
         "features": {
@@ -56,6 +57,7 @@
     },
     "data_server": {
         "API": {
+            "hostname": "http://localhost",
             "port": 8081
         }
     },
@@ -70,6 +72,7 @@
         },
         "logger": {},
         "API": {
+            "hostname": "http://localhost",
             "local_only": false,
             "port": 8082,
             "config_filepath": "config/config-api.json",
