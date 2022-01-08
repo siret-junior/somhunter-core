@@ -53,7 +53,7 @@ namespace sh {
  */
 class Somhunter {
 public:
-	/*
+	
 	Somhunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
 	Somhunter(const std::string& config_filepath);

@@ -369,7 +369,7 @@ void Somhunter::run_basic_test() {
 		}
 		std::cout << "SOM is ready now!" << std::endl;
 
-		auto d_som = get_display(DisplayType::DSom);
+		//auto d_som = get_display(DisplayType::DSom);
 	}
 
 	SHLOG_E("this is an error log");
