@@ -27,6 +27,6 @@ mkdir build
 # Configure
 cmake -B ./build -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
 # Build
-cmake --build ./build --config ${BUILD_TYPE} -j
+cmake --build ./build --config ${BUILD_TYPE} -j4
 
 echo "Done installing 'somhunter-core'..."
