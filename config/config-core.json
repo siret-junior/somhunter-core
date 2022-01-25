@@ -116,7 +116,7 @@
         },
         "remote_services": {
             "CLIP_query_to_vec": {
-                "address": "http://localhost:8083/clip-results"
+                "address": "http://ranking-server:8083/clip-results"
             },
             "media_server": {
                 "address": null
