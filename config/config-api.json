@@ -437,10 +437,9 @@
                 "tags": [
                     "Evaluation server"
                 ],
-                "summary": "TODO",
+                "summary": "Login to evaulation server",
                 "operationId": "login_to_eval_server",
                 "requestBody": {
-                    "description": "...",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -473,10 +472,9 @@
                 "tags": [
                     "Evaluation server"
                 ],
-                "summary": "TODO",
+                "summary": "Logs out from the evaluation server",
                 "operationId": "logout_from_eval_server",
                 "requestBody": {
-                    "description": "...",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -512,7 +510,6 @@
                 "summary": "Resets the user's search session.",
                 "operationId": "search_reset",
                 "requestBody": {
-                    "description": "...",
                     "required": true,
                     "content": {
                         "application/json": {}
