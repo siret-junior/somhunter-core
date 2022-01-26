@@ -161,7 +161,27 @@ if __name__ == '__main__':
     print("This script is running from the '{}' directory...".format(cwd))
     print("(!!!)")
 
-    if (not args.no_models):
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("This script is about to download the two third-party models. Before proceeding, make sure that the way you are about to use them is OK with the respective licenses (non-commercial use SHOULD be fine).\n")
+
+    print("~~~")
+    print("ResNext101: Mettes, P., Koelma, D. C., & Snoek, C. G. (2020). Shuffled ImageNet Banks for Video Event Detection and Search. ACM Transactions on Multimedia Computing, Communications, and Applications (TOMM), 16(2), 1-21.")
+    print("ResNet152: https://mxnet.incubator.apache.org/versions/1.9.0/")
+    print("~~~")
+
+    
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+    answer = input('Are you eligible to use the models? [y/n]\n\t The output after you answer will be delayed, that is OK. Just wait a bit.\n')
+
+    if (answer == "y"):
+        print("Models will be downloaded...")
+    else: 
+        print("Models will be skipped...")
+
+    if (not args.no_models and answer == "y"):
         install_models(args)
     else:
         print("Skipping model download...")
