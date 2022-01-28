@@ -111,6 +111,8 @@ struct Filters {
 		        years == other.years);
 	}
 
+	bool operator!=(const Filters& other) const { return !((*this) == other); }
+
 	bool is_default() const {
 		return years == YearFilter{} && time == TimeFilter{} && days == WeekDaysFilter{} &&
 		       dataset_parts == std::vector<bool>{ true, true };

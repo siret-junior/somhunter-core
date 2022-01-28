@@ -370,7 +370,7 @@ void Somhunter::run_basic_test() {
 		}
 		std::cout << "SOM is ready now!" << std::endl;
 
-		//auto d_som = get_display(DisplayType::DSom);
+		// auto d_som = get_display(DisplayType::DSom);
 	}
 
 	SHLOG_E("this is an error log");
@@ -439,7 +439,8 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run) {
 	auto& features{ _dataset_features.primary };
 
 	// Check if temporal queries has changed
-	if (_user_context.ctx.last_temporal_queries != temporal_query) {
+	if (_user_context.ctx.last_temporal_queries != temporal_query ||
+	    _user_context.ctx.filters != query.filters) {
 		reset_scores();  //< Resets scores & used tools
 		size_t moment = 0;
 
