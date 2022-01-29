@@ -1,0 +1,5 @@
+<map id="sh::IServerClient" name="sh::IServerClient">
+<area shape="rect" id="node1" title="Unified interface for all remote evaluation servers." alt="" coords="48,95,164,121"/>
+<area shape="rect" id="node2" href="$classsh_1_1_http.html" title=" " alt="" coords="5,5,73,32"/>
+<area shape="rect" id="node3" href="$structsh_1_1_eval_server_settings.html" title=" " alt="" coords="98,5,250,32"/>
+</map>

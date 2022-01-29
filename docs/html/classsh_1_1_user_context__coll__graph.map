@@ -1,0 +1,19 @@
+<map id="sh::UserContext" name="sh::UserContext">
+<area shape="rect" id="node1" title="Represents exactly one state of ONE user that uses this core." alt="" coords="1153,119,1269,145"/>
+<area shape="rect" id="node2" href="$classsh_1_1_logger.html" title="Class responsible for all the logging for the given user (each user have it&#39;s own Logger...." alt="" coords="1393,56,1476,83"/>
+<area shape="rect" id="node3" href="$structsh_1_1_eval_server_settings.html" title=" " alt="" coords="484,5,636,32"/>
+<area shape="rect" id="node4" href="$classsh_1_1_eval_server_client.html" title=" " alt="" coords="826,39,963,65"/>
+<area shape="rect" id="node5" href="$classsh_1_1_dataset_frames.html" title=" " alt="" coords="828,113,961,140"/>
+<area shape="rect" id="node6" href="$structsh_1_1_datasets_settings_1_1_video_filename_offsets.html" title=" " alt="" coords="481,106,639,147"/>
+<area shape="rect" id="node7" href="$structsh_1_1_search_context.html" title="Represents exactly one momentary state of a search session." alt="" coords="829,295,960,321"/>
+<area shape="rect" id="node8" href="$structsh_1_1_query.html" title="The type representing the whole query." alt="" coords="521,217,599,244"/>
+<area shape="rect" id="node9" href="$structsh_1_1_filters.html" title="Container for all the available filters for the rescore." alt="" coords="261,288,341,315"/>
+<area shape="rect" id="node15" href="$structsh_1_1_used_tools.html" title=" " alt="" coords="507,268,613,295"/>
+<area shape="rect" id="node10" href="$classsh_1_1_week_days_filter.html" title="Container for information about days filtering." alt="" coords="5,237,143,264"/>
+<area shape="rect" id="node11" href="$structsh_1_1_time_filter.html" title="Container for information about time filtering." alt="" coords="23,288,125,315"/>
+<area shape="rect" id="node12" href="$structsh_1_1_year_filter.html" title="Container for information about time filtering." alt="" coords="24,339,124,365"/>
+<area shape="rect" id="node13" href="$structsh_1_1_rescore_metadata.html" title=" " alt="" coords="228,197,375,224"/>
+<area shape="rect" id="node14" href="$classsh_1_1_score_model.html" title=" " alt="" coords="503,319,617,345"/>
+<area shape="rect" id="node16" href="$classsh_1_1_async_som.html" title=" " alt="" coords="841,164,949,191"/>
+<area shape="rect" id="node17" href="$classsh_1_1_frame_features.html" title=" " alt="" coords="805,215,984,271"/>
+</map>

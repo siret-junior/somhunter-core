@@ -1,0 +1,7 @@
+<map id="sh::ClientDres" name="sh::ClientDres">
+<area shape="rect" id="node1" title="Specific DRES server implementation." alt="" coords="173,199,277,225"/>
+<area shape="rect" id="node2" href="$classsh_1_1_i_server_client.html" title="Unified interface for all remote evaluation servers." alt="" coords="48,102,164,129"/>
+<area shape="rect" id="node3" href="$classsh_1_1_http.html" title=" " alt="" coords="5,5,73,32"/>
+<area shape="rect" id="node4" href="$structsh_1_1_eval_server_settings.html" title=" " alt="" coords="98,5,250,32"/>
+<area shape="rect" id="node5" href="$structsh_1_1_eval_server_settings_1_1_server_config_dres.html" title="Config for submitting to the DRES server." alt="" coords="189,95,341,136"/>
+</map>

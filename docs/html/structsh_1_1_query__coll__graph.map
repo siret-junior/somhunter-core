@@ -1,0 +1,8 @@
+<map id="sh::Query" name="sh::Query">
+<area shape="rect" id="node1" title="The type representing the whole query." alt="" coords="281,184,360,211"/>
+<area shape="rect" id="node2" href="$structsh_1_1_filters.html" title="Container for all the available filters for the rescore." alt="" coords="178,95,258,121"/>
+<area shape="rect" id="node3" href="$classsh_1_1_week_days_filter.html" title="Container for information about days filtering." alt="" coords="5,5,143,32"/>
+<area shape="rect" id="node4" href="$structsh_1_1_time_filter.html" title="Container for information about time filtering." alt="" coords="167,5,269,32"/>
+<area shape="rect" id="node5" href="$structsh_1_1_year_filter.html" title="Container for information about time filtering." alt="" coords="293,5,393,32"/>
+<area shape="rect" id="node6" href="$structsh_1_1_rescore_metadata.html" title=" " alt="" coords="282,95,429,121"/>
+</map>

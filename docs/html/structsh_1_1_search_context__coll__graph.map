@@ -1,0 +1,11 @@
+<map id="sh::SearchContext" name="sh::SearchContext">
+<area shape="rect" id="node1" title="Represents exactly one momentary state of a search session." alt="" coords="217,273,348,300"/>
+<area shape="rect" id="node2" href="$structsh_1_1_query.html" title="The type representing the whole query." alt="" coords="91,184,170,211"/>
+<area shape="rect" id="node3" href="$structsh_1_1_filters.html" title="Container for all the available filters for the rescore." alt="" coords="184,95,264,121"/>
+<area shape="rect" id="node9" href="$structsh_1_1_used_tools.html" title=" " alt="" coords="422,184,527,211"/>
+<area shape="rect" id="node4" href="$classsh_1_1_week_days_filter.html" title="Container for information about days filtering." alt="" coords="11,5,149,32"/>
+<area shape="rect" id="node5" href="$structsh_1_1_time_filter.html" title="Container for information about time filtering." alt="" coords="173,5,275,32"/>
+<area shape="rect" id="node6" href="$structsh_1_1_year_filter.html" title="Container for information about time filtering." alt="" coords="299,5,399,32"/>
+<area shape="rect" id="node7" href="$structsh_1_1_rescore_metadata.html" title=" " alt="" coords="5,95,152,121"/>
+<area shape="rect" id="node8" href="$classsh_1_1_score_model.html" title=" " alt="" coords="285,184,398,211"/>
+</map>

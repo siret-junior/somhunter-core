@@ -1,9 +1,0 @@
-digraph "src/common/json" {
-  compound=true
-  node [ fontsize="10", fontname="Helvetica"];
-  edge [ labelfontsize="10", labelfontname="Helvetica"];
-  subgraph clusterdir_fdedb0aba14d44ce9d99bc100e026e6a {
-    graph [ bgcolor="#ddddee", pencolor="black", label="common" fontname="Helvetica", fontsize="10", URL="dir_fdedb0aba14d44ce9d99bc100e026e6a.html"]
-  dir_725d27c0329160e7d35b3cb5d3db777d [shape=box, label="json", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_725d27c0329160e7d35b3cb5d3db777d.html"];
-  }
-}

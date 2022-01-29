@@ -1,0 +1,41 @@
+<map id="sh::Somhunter" name="sh::Somhunter">
+<area shape="rect" id="node1" title="The main C++ API of the SOMHunter Core." alt="" coords="1571,677,1677,704"/>
+<area shape="rect" id="node2" href="$classsh_1_1_dataset_frames.html" title=" " alt="" coords="872,432,1005,459"/>
+<area shape="rect" id="node8" href="$classsh_1_1_user_context.html" title="Represents exactly one state of ONE user that uses this core." alt="" coords="1257,221,1373,248"/>
+<area shape="rect" id="node3" href="$structsh_1_1_datasets_settings_1_1_video_filename_offsets.html" title=" " alt="" coords="498,667,655,709"/>
+<area shape="rect" id="node32" href="$structsh_1_1_datasets_settings.html" title=" " alt="" coords="867,815,1011,841"/>
+<area shape="rect" id="node4" href="$classsh_1_1_canvas_query_ranker.html" title=" " alt="" coords="1233,1028,1396,1055"/>
+<area shape="rect" id="node5" href="$classsh_1_1_keyword_ranker.html" title=" " alt="" coords="871,1028,1006,1055"/>
+<area shape="rect" id="node6" href="$classsh_1_1_embedding_ranker.html" title=" " alt="" coords="487,1053,666,1094"/>
+<area shape="rect" id="node7" href="$classsh_1_1_relocation_ranker.html" title=" " alt="" coords="1063,1080,1209,1107"/>
+<area shape="rect" id="node9" href="$classsh_1_1_logger.html" title="Class responsible for all the logging for the given user (each user have it&#39;s own Logger...." alt="" coords="1583,159,1665,185"/>
+<area shape="rect" id="node10" href="$structsh_1_1_eval_server_settings.html" title=" " alt="" coords="501,245,653,272"/>
+<area shape="rect" id="node11" href="$classsh_1_1_eval_server_client.html" title=" " alt="" coords="870,171,1007,197"/>
+<area shape="rect" id="node25" href="$structsh_1_1_settings.html" title="Parsed current config of the core." alt="" coords="1269,764,1361,791"/>
+<area shape="rect" id="node12" href="$structsh_1_1_search_context.html" title="Represents exactly one momentary state of a search session." alt="" coords="873,100,1004,127"/>
+<area shape="rect" id="node13" href="$structsh_1_1_query.html" title="The type representing the whole query." alt="" coords="537,195,616,221"/>
+<area shape="rect" id="node14" href="$structsh_1_1_filters.html" title="Container for all the available filters for the rescore." alt="" coords="261,131,341,157"/>
+<area shape="rect" id="node20" href="$structsh_1_1_used_tools.html" title=" " alt="" coords="524,144,629,171"/>
+<area shape="rect" id="node15" href="$classsh_1_1_week_days_filter.html" title="Container for information about days filtering." alt="" coords="5,80,143,107"/>
+<area shape="rect" id="node16" href="$structsh_1_1_time_filter.html" title="Container for information about time filtering." alt="" coords="23,131,125,157"/>
+<area shape="rect" id="node17" href="$structsh_1_1_year_filter.html" title="Container for information about time filtering." alt="" coords="24,181,124,208"/>
+<area shape="rect" id="node18" href="$structsh_1_1_rescore_metadata.html" title=" " alt="" coords="228,221,375,248"/>
+<area shape="rect" id="node19" href="$classsh_1_1_score_model.html" title=" " alt="" coords="520,5,633,32"/>
+<area shape="rect" id="node21" href="$classsh_1_1_async_som.html" title=" " alt="" coords="885,221,993,248"/>
+<area shape="rect" id="node22" href="$classsh_1_1_frame_features.html" title=" " alt="" coords="849,272,1028,328"/>
+<area shape="rect" id="node23" href="$classsh_1_1_dataset_features.html" title="Represents all available feature sets." alt="" coords="1245,403,1385,429"/>
+<area shape="rect" id="node24" href="$classsh_1_1_frame_features.html" title=" " alt="" coords="841,352,1037,408"/>
+<area shape="rect" id="node26" href="$structsh_1_1_models_settings.html" title=" " alt="" coords="871,865,1006,892"/>
+<area shape="rect" id="node27" href="$structsh_1_1_remote_services_settings.html" title=" " alt="" coords="845,967,1032,993"/>
+<area shape="rect" id="node28" href="$structsh_1_1_remote_services_settings_1_1_media_server.html" title=" " alt="" coords="483,969,670,1010"/>
+<area shape="rect" id="node29" href="$structsh_1_1_remote_services_settings_1_1_clip_query_to_vec.html" title=" " alt="" coords="483,903,670,945"/>
+<area shape="rect" id="node30" href="$structsh_1_1_logger_settings.html" title=" " alt="" coords="873,713,1004,740"/>
+<area shape="rect" id="node31" href="$structsh_1_1_presentation_views_settings.html" title=" " alt="" coords="839,764,1039,791"/>
+<area shape="rect" id="node33" href="$structsh_1_1_datasets_settings_1_1_secondary_features_settings.html" title=" " alt="" coords="481,757,672,798"/>
+<area shape="rect" id="node34" href="$structsh_1_1_datasets_settings_1_1_primary_features_settings.html" title=" " alt="" coords="489,822,664,863"/>
+<area shape="rect" id="node35" href="$structsh_1_1_tests_settings.html" title="Config needed by the Submitter instance." alt="" coords="877,663,1001,689"/>
+<area shape="rect" id="node36" href="$structsh_1_1_api_config.html" title=" " alt="" coords="889,916,988,943"/>
+<area shape="rect" id="node37" href="$classsh_1_1_keyword_clip_ranker.html" title=" " alt="" coords="1236,549,1393,576"/>
+<area shape="rect" id="node38" href="$classsh_1_1_embedding_ranker.html" title=" " alt="" coords="841,483,1037,525"/>
+<area shape="rect" id="node39" href="$classsh_1_1_http.html" title=" " alt="" coords="905,549,973,576"/>
+</map>

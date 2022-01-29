@@ -1,0 +1,32 @@
+<map id="src/common/math/distances.hpp" name="src/common/math/distances.hpp">
+<area shape="rect" id="node1" title="File implementing distance calculations on vectors." alt="" coords="1465,5,1677,32"/>
+<area shape="rect" id="node2" href="$vector_8hpp.html" title="File implementing oprations with vectors." alt="" coords="1705,177,1896,203"/>
+<area shape="rect" id="node4" href="$dataset-features_8h.html" title=" " alt="" coords="313,80,472,121"/>
+<area shape="rect" id="node18" href="$embedding-ranker_8h.html" title=" " alt="" coords="1350,259,1502,300"/>
+<area shape="rect" id="node19" href="$embedding-ranker_8cpp.html" title=" " alt="" coords="1526,348,1681,389"/>
+<area shape="rect" id="node30" href="$som_8cpp.html" title=" " alt="" coords="1659,80,1801,121"/>
+<area shape="rect" id="node3" href="$keyword-ranker_8cpp.html" title=" " alt="" coords="891,437,1043,479"/>
+<area shape="rect" id="node5" href="$dataset-features_8cpp.html" title=" " alt="" coords="964,169,1123,211"/>
+<area shape="rect" id="node6" href="$dataset-frames_8cpp.html" title=" " alt="" coords="5,795,164,836"/>
+<area shape="rect" id="node7" href="$scores_8h.html" title=" " alt="" coords="777,169,939,211"/>
+<area shape="rect" id="node10" href="$user-context_8h.html" title=" " alt="" coords="273,616,435,657"/>
+<area shape="rect" id="node11" href="$user-context_8cpp.html" title=" " alt="" coords="179,705,342,747"/>
+<area shape="rect" id="node12" href="$somhunter_8h.html" title=" " alt="" coords="566,713,747,739"/>
+<area shape="rect" id="node28" href="$search-context_8cpp.html" title=" " alt="" coords="317,348,479,389"/>
+<area shape="rect" id="node29" href="$async-som_8h.html" title=" " alt="" coords="165,527,306,568"/>
+<area shape="rect" id="node8" href="$logger_8h.html" title=" " alt="" coords="510,527,643,568"/>
+<area shape="rect" id="node17" href="$canvas-query-ranker_8cpp.html" title=" " alt="" coords="841,527,1008,568"/>
+<area shape="rect" id="node22" href="$keyword-ranker_8h.html" title=" " alt="" coords="727,348,879,389"/>
+<area shape="rect" id="node24" href="$relocation-ranker_8h.html" title=" " alt="" coords="1123,348,1275,389"/>
+<area shape="rect" id="node25" href="$relocation-ranker_8cpp.html" title=" " alt="" coords="1118,437,1270,479"/>
+<area shape="rect" id="node26" href="$scores_8cpp.html" title=" " alt="" coords="835,259,998,300"/>
+<area shape="rect" id="node27" href="$search-context_8h.html" title=" " alt="" coords="430,259,593,300"/>
+<area shape="rect" id="node9" href="$logger_8cpp.html" title=" " alt="" coords="394,705,527,747"/>
+<area shape="rect" id="node13" href="$main_8cpp.html" title=" " alt="" coords="779,802,876,829"/>
+<area shape="rect" id="node14" href="$network-api_8cpp.html" title=" " alt="" coords="376,795,535,836"/>
+<area shape="rect" id="node15" href="$somhunter_8cpp.html" title=" " alt="" coords="559,802,754,829"/>
+<area shape="rect" id="node16" href="$async-som_8cpp.html" title=" " alt="" coords="203,795,345,836"/>
+<area shape="rect" id="node20" href="$keyword-clip-ranker_8h.html" title=" " alt="" coords="1350,348,1502,389"/>
+<area shape="rect" id="node21" href="$keyword-clip-ranker_8cpp.html" title=" " alt="" coords="1446,437,1609,479"/>
+<area shape="rect" id="node23" href="$canvas-query-ranker_8h.html" title=" " alt="" coords="612,437,765,479"/>
+</map>
