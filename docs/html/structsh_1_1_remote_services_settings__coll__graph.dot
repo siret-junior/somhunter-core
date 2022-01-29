@@ -1,0 +1,12 @@
+digraph "sh::RemoteServicesSettings"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="sh::RemoteServicesSettings",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" media_server" ,fontname="Helvetica"];
+  Node2 [label="sh::RemoteServicesSettings\l::MediaServer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_remote_services_settings_1_1_media_server.html",tooltip=" "];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" CLIP_query_to_vec" ,fontname="Helvetica"];
+  Node3 [label="sh::RemoteServicesSettings\l::ClipQueryToVec",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_remote_services_settings_1_1_clip_query_to_vec.html",tooltip=" "];
+}

@@ -1,0 +1,14 @@
+digraph "sh::DatasetsSettings"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="sh::DatasetsSettings",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" secondary_features" ,fontname="Helvetica"];
+  Node2 [label="sh::DatasetsSettings\l::SecondaryFeaturesSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_datasets_settings_1_1_secondary_features_settings.html",tooltip=" "];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" filename_offsets" ,fontname="Helvetica"];
+  Node3 [label="sh::DatasetsSettings\l::VideoFilenameOffsets",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_datasets_settings_1_1_video_filename_offsets.html",tooltip=" "];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" primary_features" ,fontname="Helvetica"];
+  Node4 [label="sh::DatasetsSettings\l::PrimaryFeaturesSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_datasets_settings_1_1_primary_features_settings.html",tooltip=" "];
+}

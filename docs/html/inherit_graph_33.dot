@@ -1,0 +1,8 @@
+digraph "Graphical Class Hierarchy"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="sh::GetDisplayResult",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_get_display_result.html",tooltip="Result type get_display returns."];
+}

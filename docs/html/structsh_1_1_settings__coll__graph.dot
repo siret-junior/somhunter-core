@@ -1,0 +1,34 @@
+digraph "sh::Settings"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="sh::Settings",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Parsed current config of the core."];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" models" ,fontname="Helvetica"];
+  Node2 [label="sh::ModelsSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_models_settings.html",tooltip=" "];
+  Node3 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" remote_services" ,fontname="Helvetica"];
+  Node3 [label="sh::RemoteServicesSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_remote_services_settings.html",tooltip=" "];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" media_server" ,fontname="Helvetica"];
+  Node4 [label="sh::RemoteServicesSettings\l::MediaServer",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_remote_services_settings_1_1_media_server.html",tooltip=" "];
+  Node5 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" CLIP_query_to_vec" ,fontname="Helvetica"];
+  Node5 [label="sh::RemoteServicesSettings\l::ClipQueryToVec",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_remote_services_settings_1_1_clip_query_to_vec.html",tooltip=" "];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" logger" ,fontname="Helvetica"];
+  Node6 [label="sh::LoggerSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_logger_settings.html",tooltip=" "];
+  Node7 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" presentation_views" ,fontname="Helvetica"];
+  Node7 [label="sh::PresentationViewsSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_presentation_views_settings.html",tooltip=" "];
+  Node8 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" eval_server" ,fontname="Helvetica"];
+  Node8 [label="sh::EvalServerSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_eval_server_settings.html",tooltip=" "];
+  Node9 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" datasets" ,fontname="Helvetica"];
+  Node9 [label="sh::DatasetsSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_datasets_settings.html",tooltip=" "];
+  Node10 -> Node9 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" secondary_features" ,fontname="Helvetica"];
+  Node10 [label="sh::DatasetsSettings\l::SecondaryFeaturesSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_datasets_settings_1_1_secondary_features_settings.html",tooltip=" "];
+  Node11 -> Node9 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" filename_offsets" ,fontname="Helvetica"];
+  Node11 [label="sh::DatasetsSettings\l::VideoFilenameOffsets",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_datasets_settings_1_1_video_filename_offsets.html",tooltip=" "];
+  Node12 -> Node9 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" primary_features" ,fontname="Helvetica"];
+  Node12 [label="sh::DatasetsSettings\l::PrimaryFeaturesSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_datasets_settings_1_1_primary_features_settings.html",tooltip=" "];
+  Node13 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" tests" ,fontname="Helvetica"];
+  Node13 [label="sh::TestsSettings",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_tests_settings.html",tooltip="Config needed by the Submitter instance."];
+  Node14 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" API" ,fontname="Helvetica"];
+  Node14 [label="sh::ApiConfig",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structsh_1_1_api_config.html",tooltip=" "];
+}

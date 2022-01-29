@@ -1,0 +1,53 @@
+digraph "src/somhunter/rankers/embedding-ranker.h"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="src/somhunter/rankers\l/embedding-ranker.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="src/somhunter/rankers\l/embedding-ranker.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$embedding-ranker_8cpp.html",tooltip=" "];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="src/somhunter/rankers\l/keyword-clip-ranker.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$keyword-clip-ranker_8h.html",tooltip=" "];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="src/somhunter/rankers\l/keyword-clip-ranker.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$keyword-clip-ranker_8cpp.html",tooltip=" "];
+  Node3 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="src/somhunter/somhunter.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$somhunter_8h.html",tooltip=" "];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="src/main.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$main_8cpp.html",tooltip=" "];
+  Node5 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="src/network-api/network\l-api.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$network-api_8cpp.html",tooltip=" "];
+  Node5 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="src/somhunter/datasets\l/dataset-frames.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$dataset-frames_8cpp.html",tooltip=" "];
+  Node5 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="src/somhunter/somhunter.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$somhunter_8cpp.html",tooltip=" "];
+  Node5 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="src/somhunter/soms\l/async-som.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$async-som_8cpp.html",tooltip=" "];
+  Node1 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="src/somhunter/rankers\l/keyword-ranker.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$keyword-ranker_8h.html",tooltip=" "];
+  Node11 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="src/somhunter/logs\l/logger.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$logger_8h.html",tooltip=" "];
+  Node12 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="src/somhunter/logs\l/logger.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$logger_8cpp.html",tooltip=" "];
+  Node12 -> Node14 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="src/somhunter/searches\l/user-context.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$user-context_8h.html",tooltip=" "];
+  Node14 -> Node13 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node15 [label="src/somhunter/searches\l/user-context.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$user-context_8cpp.html",tooltip=" "];
+  Node14 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node16 [label="src/somhunter/rankers\l/canvas-query-ranker.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$canvas-query-ranker_8cpp.html",tooltip=" "];
+  Node11 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 [label="src/somhunter/rankers\l/canvas-query-ranker.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$canvas-query-ranker_8h.html",tooltip=" "];
+  Node17 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node17 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node18 [label="src/somhunter/rankers\l/keyword-ranker.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$keyword-ranker_8cpp.html",tooltip=" "];
+  Node11 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node1 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node19 [label="src/somhunter/rankers\l/relocation-ranker.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$relocation-ranker_8h.html",tooltip=" "];
+  Node19 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node20 [label="src/somhunter/rankers\l/relocation-ranker.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$relocation-ranker_8cpp.html",tooltip=" "];
+  Node19 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}
