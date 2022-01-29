@@ -1,0 +1,27 @@
+var structsh_1_1_query =
+[
+    [ "Query", "structsh_1_1_query.html#ae7c9aba946797845435d2830698715fe", null ],
+    [ "Query", "structsh_1_1_query.html#af52c0669b4823e3da17a24b2d77ce2df", null ],
+    [ "empty", "structsh_1_1_query.html#a9efd271b5c773b85b93379d3106ce99d", null ],
+    [ "get_plain_text_query", "structsh_1_1_query.html#a960bc44d0f20927a5b16884416f05df1", null ],
+    [ "is_bitmap_canvas", "structsh_1_1_query.html#ab765ee27846f974845ad39b2f3b4a3f9", null ],
+    [ "is_canvas", "structsh_1_1_query.html#a7fe4ae559ec7670eb67892cdda95ae2c", null ],
+    [ "is_relocation", "structsh_1_1_query.html#af72ae6052914737f96abcd027b9f8ff5", null ],
+    [ "is_temporal_text", "structsh_1_1_query.html#a63b190b6bc56c2b1d9ae9dd03d0806a5", null ],
+    [ "is_text", "structsh_1_1_query.html#ad5ff0a61f0ca7081bc178af3186f9695", null ],
+    [ "is_text_canvas", "structsh_1_1_query.html#a91e01dca690218e8baf2085f796ec9a7", null ],
+    [ "queries", "structsh_1_1_query.html#a39bdcfc017ef0f75b0cc8a03113ceeaf", null ],
+    [ "score_secondary", "structsh_1_1_query.html#addf6bbb26911699ea6ae10a642a75c3a", null ],
+    [ "score_secondary", "structsh_1_1_query.html#a5d80a71955ab22d8d45d439b99ae544e", null ],
+    [ "serialize", "structsh_1_1_query.html#a24f3e4157db265de46626d130667c4ad", null ],
+    [ "set_targets", "structsh_1_1_query.html#a4603e770e7ea0a16b6c1847e08992474", null ],
+    [ "to_JSON", "structsh_1_1_query.html#a0567cca3ee99a0148d2d7d154686fb13", null ],
+    [ "transform_to_no_pos_queries", "structsh_1_1_query.html#a710b50d6429b4358cc111255eb88fd9a", null ],
+    [ "_score_secondary", "structsh_1_1_query.html#af277b7aa645868b8262b2b936cac6635", null ],
+    [ "filters", "structsh_1_1_query.html#a6cc77b2f2d071937780f036f2e72127d", null ],
+    [ "is_save", "structsh_1_1_query.html#a8f8d0a017f81cdd99d0f54d84095af5c", null ],
+    [ "metadata", "structsh_1_1_query.html#ac9cf62939b2963a3ced74ab92fb9f1a4", null ],
+    [ "relevance_feeedback", "structsh_1_1_query.html#a64356a1b61040c098b8f61ff4e448d07", null ],
+    [ "targets", "structsh_1_1_query.html#a22fc0a2142953fab33e4810158820ab0", null ],
+    [ "temporal_queries", "structsh_1_1_query.html#abbc1499424da16ec3d4efe5921d1e631", null ]
+];

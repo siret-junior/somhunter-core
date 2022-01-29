@@ -1,0 +1,27 @@
+var classsh_1_1_dataset_frames =
+[
+    [ "DatasetFrames", "classsh_1_1_dataset_frames.html#a25e96a5d1fd691572651495209539261", null ],
+    [ "begin", "classsh_1_1_dataset_frames.html#a52d99aad92b0f6a11296fb668721e40e", null ],
+    [ "begin", "classsh_1_1_dataset_frames.html#abcae38f17ea6df2a83e62fbc0a378cdd", null ],
+    [ "end", "classsh_1_1_dataset_frames.html#a2408756510dba74860a9ed35456c99d9", null ],
+    [ "end", "classsh_1_1_dataset_frames.html#a92688e275d2cbd143433ad75e616d26a", null ],
+    [ "get_all_video_frames", "classsh_1_1_dataset_frames.html#a0bf6dc81ee06589a98fc4b1c3ab7562c", null ],
+    [ "get_frame", "classsh_1_1_dataset_frames.html#aefcd7968bf584e20a3214fa8bb5eafea", null ],
+    [ "get_frame", "classsh_1_1_dataset_frames.html#a305ffbfd78fb04447386ad1f63368243", null ],
+    [ "get_frame_it", "classsh_1_1_dataset_frames.html#a03e6d27529441c12f7c9ed6e07536aaa", null ],
+    [ "get_frame_ptr", "classsh_1_1_dataset_frames.html#ab4facf082302bd46b926ace1c6c64f6f", null ],
+    [ "get_frame_ptr", "classsh_1_1_dataset_frames.html#ace8631b40e7ae856f6c038fd91648f05", null ],
+    [ "get_num_videos", "classsh_1_1_dataset_frames.html#a47c0531de21fd7cb224afb212e0c92f5", null ],
+    [ "get_shot_frames", "classsh_1_1_dataset_frames.html#ad4aeb18486723ad48f68a9a352a044ee", null ],
+    [ "get_video_id", "classsh_1_1_dataset_frames.html#a2cafa25808f143b67a1b445233eeca1a", null ],
+    [ "ids_to_video_frame", "classsh_1_1_dataset_frames.html#ab05d8057b0206dcb6425631f70c1b096", null ],
+    [ "operator[]", "classsh_1_1_dataset_frames.html#a2c8f4fa0b60a67a6bbdc7c2cb5fc99ba", null ],
+    [ "parse_metadata_line", "classsh_1_1_dataset_frames.html#ada078477f4581af2142987879284861f", null ],
+    [ "parse_video_filename", "classsh_1_1_dataset_frames.html#a6137a11099ce013880eafddf31801f61", null ],
+    [ "size", "classsh_1_1_dataset_frames.html#a8c8fd017c9b8ac9c8490bce4734eb1bd", null ],
+    [ "_frames", "classsh_1_1_dataset_frames.html#ac2dc7bb7c1ba59b3974a3c3a67d358ec", null ],
+    [ "_video_ID_to_frame_range", "classsh_1_1_dataset_frames.html#ac8678531e1c88dd59b68d357c3036f62", null ],
+    [ "frames_dir", "classsh_1_1_dataset_frames.html#a7b2be3254feb660fe574c26384bd9d82", null ],
+    [ "offs", "classsh_1_1_dataset_frames.html#abbd81483952cb4ba28599230162b357b", null ],
+    [ "thumbs_dir", "classsh_1_1_dataset_frames.html#a304869cfb86be214047b10e323911e3a", null ]
+];

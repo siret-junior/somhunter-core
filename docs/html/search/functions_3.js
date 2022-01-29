@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['d_5fcos_1097',['d_cos',['../classsh_1_1_frame_features.html#ac64665d2b977d02d9df2874c9a4b5eb6',1,'sh::FrameFeatures']]],
+  ['d_5fdot_5fnormalized_1098',['d_dot_normalized',['../classsh_1_1_frame_features.html#a19d6fd38310560c1f3fe3e03e1ef0a18',1,'sh::FrameFeatures']]],
+  ['d_5feucl_1099',['d_eucl',['../classsh_1_1_frame_features.html#a7ba219f60329d0c6bcdd90c66434cbf8',1,'sh::FrameFeatures']]],
+  ['d_5fmanhattan_1100',['d_manhattan',['../classsh_1_1_frame_features.html#af81070595fa6f1ea94ddbeb58003ade7',1,'sh::FrameFeatures']]],
+  ['d_5fsqeucl_1101',['d_sqeucl',['../classsh_1_1_frame_features.html#a2915b221dff21895e34ee5961704af4e',1,'sh::FrameFeatures']]],
+  ['data_1102',['data',['../classsh_1_1_canvas_subquery_bitmap.html#a7f63f1906fc6d594409cdb9c5fafef3c',1,'sh::CanvasSubqueryBitmap::data()'],['../classsh_1_1_canvas_subquery_bitmap.html#a21e124bdd0e18255b0af25e67ac7cbdc',1,'sh::CanvasSubqueryBitmap::data() const']]],
+  ['datasetfeatures_1103',['DatasetFeatures',['../classsh_1_1_dataset_features.html#a8c4315bab67bfa7331c751196d7701ed',1,'sh::DatasetFeatures']]],
+  ['datasetframes_1104',['DatasetFrames',['../classsh_1_1_dataset_frames.html#a25e96a5d1fd691572651495209539261',1,'sh::DatasetFrames']]],
+  ['debuglogstreamptrs_1105',['DebugLogStreamPtrs',['../structsh_1_1_debug_log_stream_ptrs.html#a230b5339ea76d0ab018046a9ebea5578',1,'sh::DebugLogStreamPtrs']]],
+  ['decode_5fkeywords_1106',['decode_keywords',['../classsh_1_1_keyword_ranker.html#a57f624554ed1d974d0520caa313fde6e',1,'sh::KeywordRanker']]],
+  ['deserialize_5ffrom_5ffile_1107',['deserialize_from_file',['../namespacesh_1_1utils.html#aa7591eeeded03e70de5ba996d5895e59',1,'sh::utils']]],
+  ['dim_1108',['dim',['../classsh_1_1_frame_features.html#a36b955dcd427abb2211dde2d7709be65',1,'sh::FrameFeatures']]],
+  ['dir_5fcreate_1109',['dir_create',['../namespaceosutils.html#a096918b0c0ca9045c4f8e4c28fc41977',1,'osutils']]],
+  ['dir_5fexists_1110',['dir_exists',['../namespaceosutils.html#a2a757daa3128b5d7d8ece092fccfbd24',1,'osutils']]],
+  ['disp_5ftype_5fto_5fstr_1111',['disp_type_to_str',['../namespacesh.html#aca063ac03933ea8af89662c14bbf1f52',1,'sh']]],
+  ['do_5fget_5fasync_1112',['do_GET_async',['../classsh_1_1_http.html#aa26e6e0ad929bb3611f686a055ff45a6',1,'sh::Http']]],
+  ['do_5fget_5fsync_5fdistances_1113',['do_GET_sync_distances',['../classsh_1_1_http.html#aa371a02a496afce8b213c1f237c48f0c',1,'sh::Http']]],
+  ['do_5fget_5fsync_5ffloats_1114',['do_GET_sync_floats',['../classsh_1_1_http.html#afe936f00f01be04da5daccee5c67dde3',1,'sh::Http']]],
+  ['do_5fget_5fsync_5fjson_1115',['do_GET_sync_json',['../classsh_1_1_http.html#ae7af50e2ae19d2fa16072c1aa15488fe',1,'sh::Http']]],
+  ['do_5fpost_5fasync_1116',['do_POST_async',['../classsh_1_1_http.html#a061b3f05a2df030975c0d58b45a9890a',1,'sh::Http']]],
+  ['do_5fpost_5fsync_5fjson_1117',['do_POST_sync_json',['../classsh_1_1_http.html#a29aa156f3f8482e47205468fef3ca66a',1,'sh::Http']]],
+  ['do_5frequest_5fsync_1118',['do_request_sync',['../classsh_1_1_http.html#a1824b54a6a4b88b17386f9ba7c9d80a4',1,'sh::Http']]],
+  ['dot_1119',['dot',['../namespacemath_1_1vector.html#a276e470f9b3597bd5e5f6d1cc3108041',1,'math::vector']]]
+];

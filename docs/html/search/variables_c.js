@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['m_5fready_1645',['m_ready',['../classsh_1_1_async_som.html#a99669c0faae8d6b1d09e5dbe29e31cb6',1,'sh::AsyncSom']]],
+  ['mapping_1646',['mapping',['../classsh_1_1_async_som.html#a1d087d9f40d9ddf24da6beb3419de8df',1,'sh::AsyncSom']]],
+  ['max_5ftemporal_5fsize_1647',['MAX_TEMPORAL_SIZE',['../namespacesh.html#a664c9f13a1b6bb216229f0c606c37062',1,'sh']]],
+  ['media_5fserver_1648',['media_server',['../structsh_1_1_remote_services_settings.html#aa73265a94067885f526f2ab171a52c95',1,'sh::RemoteServicesSettings']]],
+  ['member_5fid_1649',['member_ID',['../structsh_1_1_eval_server_settings.html#a86482a1e952296df98c9d693621a9957',1,'sh::EvalServerSettings']]],
+  ['metadata_1650',['metadata',['../structsh_1_1_query.html#ac9cf62939b2963a3ced74ab92fb9f1a4',1,'sh::Query']]],
+  ['model_5fresnet_5ffile_1651',['model_ResNet_file',['../structsh_1_1_models_settings.html#a8b159aa459be7cb187d0c7951675510c',1,'sh::ModelsSettings']]],
+  ['model_5fresnet_5fsha256_1652',['model_ResNet_SHA256',['../structsh_1_1_models_settings.html#aaa41500906dee1e25ddf16c7cab97c1c',1,'sh::ModelsSettings']]],
+  ['model_5fresnext_5ffile_1653',['model_ResNext_file',['../structsh_1_1_models_settings.html#a630d5869a3c552598930fa9604c0a7c7',1,'sh::ModelsSettings']]],
+  ['model_5fresnext_5fsha256_1654',['model_ResNext_SHA256',['../structsh_1_1_models_settings.html#a59977623028f0e66ce053928bd01a192',1,'sh::ModelsSettings']]],
+  ['model_5fw2vv_5fimg_5fbias_1655',['model_W2VV_img_bias',['../structsh_1_1_models_settings.html#adb6e05509bcc8ccaf8f5c4e4623699b8',1,'sh::ModelsSettings']]],
+  ['model_5fw2vv_5fimg_5fweigths_1656',['model_W2VV_img_weigths',['../structsh_1_1_models_settings.html#a1e9fa398d0b17b87153119caa5f9a64a',1,'sh::ModelsSettings']]],
+  ['models_1657',['models',['../structsh_1_1_settings.html#a9f7fc49ef7a37f2700082b731e97d15c',1,'sh::Settings']]],
+  ['models_5fdir_1658',['models_dir',['../structsh_1_1_models_settings.html#a916b8d667aa7092101d5e28472189990',1,'sh::ModelsSettings']]],
+  ['models_5finput_5fheight_1659',['models_input_height',['../classsh_1_1_canvas_query_ranker.html#a29096d44b3d6b6c84a18b70b8fa4939f',1,'sh::CanvasQueryRanker']]],
+  ['models_5finput_5fwidth_1660',['models_input_width',['../classsh_1_1_canvas_query_ranker.html#aa84375e5ba8c234332d6c361a067bb02',1,'sh::CanvasQueryRanker']]],
+  ['models_5fnum_5fchannels_1661',['models_num_channels',['../classsh_1_1_canvas_query_ranker.html#acc3576e17952b8b686d9a7d8b840b450',1,'sh::CanvasQueryRanker']]]
+];

@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['random_5fdisplay_1675',['RANDOM_DISPLAY',['../namespacesh_1_1_l_o_g_g_i_n_g___s_t_r_i_n_g_s_1_1_s_t_d___v_a_l_u_e_s.html#a39a10fe09467db595fe5759b5bbd2055',1,'sh::LOGGING_STRINGS::STD_VALUES']]],
+  ['random_5fdisplay_5fweight_1676',['RANDOM_DISPLAY_WEIGHT',['../namespacesh.html#a1cef348f64313d66b213822310ecf0e8',1,'sh']]],
+  ['random_5fselection_1677',['RANDOM_SELECTION',['../namespacesh_1_1_l_o_g_g_i_n_g___s_t_r_i_n_g_s_1_1_s_t_d___t_y_p_e_s.html#ae70205a071076556dcc121dae6a1b07a',1,'sh::LOGGING_STRINGS::STD_TYPES']]],
+  ['ranked_5flist_1678',['RANKED_LIST',['../namespacesh_1_1_l_o_g_g_i_n_g___s_t_r_i_n_g_s_1_1_s_t_d___t_y_p_e_s.html#aeb61867208e8a5802942d5e2e0cf9ca1',1,'sh::LOGGING_STRINGS::STD_TYPES']]],
+  ['region_5fdata_1679',['region_data',['../classsh_1_1_canvas_query_ranker.html#abd2e404b637b52e67d8462f522054c60',1,'sh::CanvasQueryRanker']]],
+  ['relevance_5ffeeedback_1680',['relevance_feeedback',['../structsh_1_1_query.html#a64356a1b61040c098b8f61ff4e448d07',1,'sh::Query']]],
+  ['relocation_1681',['relocation',['../structsh_1_1_temporal_query.html#a17ee5520c02fc7d1168aba2bd6b0eaa3',1,'sh::TemporalQuery']]],
+  ['relocation_5fgrid_5fheight_1682',['RELOCATION_GRID_HEIGHT',['../namespacesh.html#ab0b07e38f047d1bfca010a13e0f5a506',1,'sh']]],
+  ['relocation_5fgrid_5fwidth_1683',['RELOCATION_GRID_WIDTH',['../namespacesh.html#aedbdc377cf2955de648367d4722bca9c',1,'sh']]],
+  ['relocation_5fused_1684',['relocation_used',['../structsh_1_1_used_tools.html#acdde97ba4edc54190b8f66204dcff48e',1,'sh::UsedTools']]],
+  ['remote_5fservices_1685',['remote_services',['../structsh_1_1_settings.html#a8e26d7cb38d24d103d5c083ff83b0480',1,'sh::Settings']]],
+  ['reset_5fall_1686',['RESET_ALL',['../namespacesh_1_1_l_o_g_g_i_n_g___s_t_r_i_n_g_s_1_1_a_c_t_i_o_n___n_a_m_e_s.html#a1c3f71ca839153cfc86be61b0c71085b',1,'sh::LOGGING_STRINGS::ACTION_NAMES']]],
+  ['resnet152_1687',['resnet152',['../classsh_1_1_extractor.html#a3ab7fa347e97d35a0434cd173509a211',1,'sh::Extractor::resnet152()'],['../classsh_1_1_canvas_query_ranker.html#a13e4c6964c49e6bbb816a831131c7c89',1,'sh::CanvasQueryRanker::resnet152()']]],
+  ['resnext101_1688',['resnext101',['../classsh_1_1_extractor.html#a1eb201b514c19d0a8b776c9b041c9ea8',1,'sh::Extractor::resnext101()'],['../classsh_1_1_canvas_query_ranker.html#a84723f1ccfef090427b5443d82739aab',1,'sh::CanvasQueryRanker::resnext101()']]],
+  ['right_1689',['right',['../structsh_1_1_relative_rect.html#ae9810ca79f990b749041768763d139d0',1,'sh::RelativeRect']]],
+  ['rois_1690',['RoIs',['../classsh_1_1_canvas_query_ranker.html#afe69c025e27244c2463d3cc0d56a8389',1,'sh::CanvasQueryRanker']]],
+  ['run_5fasserts_1691',['RUN_ASSERTS',['../static-logger_8hpp.html#a0dce5f5353d0fd643336294fdcb0008c',1,'static-logger.hpp']]]
+];

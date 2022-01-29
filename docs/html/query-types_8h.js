@@ -1,0 +1,25 @@
+var query_types_8h =
+[
+    [ "WeekDaysFilter", "classsh_1_1_week_days_filter.html", "classsh_1_1_week_days_filter" ],
+    [ "TimeFilter", "structsh_1_1_time_filter.html", "structsh_1_1_time_filter" ],
+    [ "YearFilter", "structsh_1_1_year_filter.html", "structsh_1_1_year_filter" ],
+    [ "Filters", "structsh_1_1_filters.html", "structsh_1_1_filters" ],
+    [ "RescoreMetadata", "structsh_1_1_rescore_metadata.html", "structsh_1_1_rescore_metadata" ],
+    [ "RelativeRect", "structsh_1_1_relative_rect.html", "structsh_1_1_relative_rect" ],
+    [ "CanvasSubqueryBase", "classsh_1_1_canvas_subquery_base.html", "classsh_1_1_canvas_subquery_base" ],
+    [ "CanvasSubqueryBitmap", "classsh_1_1_canvas_subquery_bitmap.html", "classsh_1_1_canvas_subquery_bitmap" ],
+    [ "CanvasSubqueryText", "classsh_1_1_canvas_subquery_text.html", "classsh_1_1_canvas_subquery_text" ],
+    [ "CanvasQuery", "classsh_1_1_canvas_query.html", "classsh_1_1_canvas_query" ],
+    [ "TemporalQuery", "structsh_1_1_temporal_query.html", "structsh_1_1_temporal_query" ],
+    [ "Query", "structsh_1_1_query.html", "structsh_1_1_query" ],
+    [ "BaseBenchmarkQuery", "structsh_1_1_base_benchmark_query.html", "structsh_1_1_base_benchmark_query" ],
+    [ "PlainTextBenchmarkQuery", "structsh_1_1_plain_text_benchmark_query.html", "structsh_1_1_plain_text_benchmark_query" ],
+    [ "CanvasBenchmarkQuery", "structsh_1_1_canvas_benchmark_query.html", "structsh_1_1_canvas_benchmark_query" ],
+    [ "BenchmarkQuery", "query-types_8h.html#a1f69a0e0a4bc90f7f8afcfa3a9b440a7", null ],
+    [ "CanvasSubquery", "query-types_8h.html#aec64f5ed667b9123fa0f65cea82b0d95", null ],
+    [ "RelevanceFeedbackQuery", "query-types_8h.html#aac4825713594a520bf3457b6db688ccc", null ],
+    [ "RelocationQuery", "query-types_8h.html#a55ccd7c7b6858c4d674bb5f054f55345", null ],
+    [ "TextualQuery", "query-types_8h.html#aa45f67c730dfeb41be23f84ab2e7d610", null ],
+    [ "operator<<", "query-types_8h.html#a2fb95a2caac24324ee12253695d8a522", null ],
+    [ "operator<<", "query-types_8h.html#ab06dd7f9118f86e9cb33162d684a2618", null ]
+];
