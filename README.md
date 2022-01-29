@@ -92,6 +92,8 @@ make -j
 API documentation is available at `<server_address>/api/` (e.g. [http://localhost:8080/api/](http://localhost:8888/api/)). It requires the running core.
 
 ## Doxygen documentation
+The pre-built version is available [here](https://siret-junior.github.io/somhunter-core/).
+
 ```sh
 doxygen doxygen.cfg
 ```
