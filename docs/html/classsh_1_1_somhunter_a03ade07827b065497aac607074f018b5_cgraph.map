@@ -1,0 +1,52 @@
+<map id="sh::Somhunter::run_basic_test" name="sh::Somhunter::run_basic_test">
+<area shape="rect" id="node1" title=" " alt="" coords="5,962,139,1003"/>
+<area shape="rect" id="node2" href="$classsh_1_1_somhunter.html#a1724291050b729a6fa4dcd294315064a" title="Returns the nearest supported keyword matches to the provided prefix." alt="" coords="187,49,380,90"/>
+<area shape="rect" id="node5" href="$classsh_1_1_frame_pointer_range.html#a93d18a9d157d03651bcd67f6b43b0d47" title=" " alt="" coords="443,107,601,149"/>
+<area shape="rect" id="node6" href="$classsh_1_1_somhunter.html#af3baf9dff6c4a7a8f74f90f2f6ef061e" title="Returns display of the desired type." alt="" coords="455,377,589,418"/>
+<area shape="rect" id="node21" href="$classsh_1_1_somhunter.html#a0cf4e0ec9d180fa54b8911d0adf3b24b" title="Inverts the like states of the provided frames and returns the new states." alt="" coords="216,351,351,393"/>
+<area shape="rect" id="node24" href="$classsh_1_1_frame_pointer_range.html#afd66f13cb9b5c6ffe2086d28a31a8ede" title=" " alt="" coords="204,166,363,207"/>
+<area shape="rect" id="node26" href="$classsh_1_1_somhunter.html#a653159d1bedd70454454de3213dd1273" title="Applies all algorithms for score computation and updates context." alt="" coords="204,969,363,996"/>
+<area shape="rect" id="node37" href="$classsh_1_1_somhunter.html#a42789b71a1a9e1504e542473b782ab6b" title="Resets current search context and starts new search." alt="" coords="450,1501,594,1542"/>
+<area shape="rect" id="node46" href="$namespacesh_1_1utils.html#aded5691f5a970b8db7738f8b1d315bb3" title="Computes the SHA256 hash for the given file and returns it." alt="" coords="208,1071,359,1097"/>
+<area shape="rect" id="node47" href="$classsh_1_1_image_manipulator.html#ab3bc50db592ad650c63c0aca96ae10ec" title=" " alt="" coords="210,1461,357,1502"/>
+<area shape="rect" id="node49" href="$classsh_1_1_frame_pointer_range.html#a7efb7af9a1439d2b636aaf88d58b6a34" title=" " alt="" coords="204,1187,363,1229"/>
+<area shape="rect" id="node50" href="$classsh_1_1_somhunter.html#a675a8c077612bf99aefe2be6998eb88b" title="Returns true if the user&#39;s SOM is ready." alt="" coords="213,1122,353,1163"/>
+<area shape="rect" id="node3" href="$classsh_1_1_keyword_ranker.html#a38025599c582d24dea8351814b36982d" title=" " alt="" coords="441,5,603,32"/>
+<area shape="rect" id="node4" href="$namespacesh_1_1utils.html#a483cafb40144b95d99f8d4a225e36ebe" title="Returns a copy of old string but all lowercase." alt="" coords="446,56,598,83"/>
+<area shape="rect" id="node7" href="$structsh_1_1_query.html#a960bc44d0f20927a5b16884416f05df1" title=" " alt="" coords="677,762,816,803"/>
+<area shape="rect" id="node8" href="$classsh_1_1_somhunter.html#ad82fbb59b1dd9e0402492eb0dfa1bb49" title=" " alt="" coords="680,383,813,425"/>
+<area shape="rect" id="node11" href="$classsh_1_1_somhunter.html#a3cdab53a85395806c81d95d4aa48814c" title=" " alt="" coords="680,645,813,686"/>
+<area shape="rect" id="node13" href="$classsh_1_1_somhunter.html#a24a54c44ff85f35e2cf33bef35c2d83e" title=" " alt="" coords="664,449,829,490"/>
+<area shape="rect" id="node14" href="$classsh_1_1_somhunter.html#a5e42f6bdfbaa753fc274ac043eea1e35" title=" " alt="" coords="680,253,813,294"/>
+<area shape="rect" id="node15" href="$classsh_1_1_logger.html#aaecc78b18fa39028a01bb059811c1ba2" title="Called whenever we rescore." alt="" coords="890,201,1045,228"/>
+<area shape="rect" id="node16" href="$classsh_1_1_somhunter.html#a7988b563061e3b565573a411d7da4741" title=" " alt="" coords="671,514,823,555"/>
+<area shape="rect" id="node17" href="$classsh_1_1_somhunter.html#aed64cb69bc9f45a26ce5f2f4ffb69a19" title=" " alt="" coords="680,579,813,621"/>
+<area shape="rect" id="node18" href="$classsh_1_1_score_model.html#a5c2fdd3b3a28c10193d127c7c10eb159" title="Gets the images with the highest scores but respecting the provided limits." alt="" coords="891,711,1044,737"/>
+<area shape="rect" id="node19" href="$classsh_1_1_somhunter.html#a1d94398782594d348d48e42b61157b28" title=" " alt="" coords="675,318,819,359"/>
+<area shape="rect" id="node20" href="$classsh_1_1_logger.html#af3421c415f5abb45fe5a48e7183c9d8c" title="Does periodic cleanup &amp; log flush." alt="" coords="691,840,802,867"/>
+<area shape="rect" id="node9" href="$classsh_1_1_dataset_frames.html#ab05d8057b0206dcb6425631f70c1b096" title="Translation to VideoFrameRefs from vector ids or FrameRange." alt="" coords="897,482,1038,523"/>
+<area shape="rect" id="node10" href="$classsh_1_1_logger.html#a4f71ffeeff768c8e98d1f9178bc5e470" title=" " alt="" coords="895,383,1040,425"/>
+<area shape="rect" id="node12" href="$classsh_1_1_async_som.html#abbe99b428735e253a50e505c74b50dbd" title=" " alt="" coords="877,1457,1057,1484"/>
+<area shape="rect" id="node22" href="$classsh_1_1_logger.html#a06dce079ecbe35c8996259b83553ba5a" title=" " alt="" coords="455,224,589,251"/>
+<area shape="rect" id="node23" href="$classsh_1_1_logger.html#a88a31aea25376ab1b3ae6cf498d846ef" title=" " alt="" coords="447,275,597,301"/>
+<area shape="rect" id="node25" href="$classsh_1_1_frame_pointer_range.html#a0074f2156ac850a3844b4942d61454d6" title=" " alt="" coords="428,173,616,200"/>
+<area shape="rect" id="node27" href="$classsh_1_1_somhunter.html#a82132ba1b9f10e98ef35ac17ee006bd6" title=" " alt="" coords="673,1231,820,1273"/>
+<area shape="rect" id="node28" href="$classsh_1_1_dataset_frames.html#a8c8fd017c9b8ac9c8490bce4734eb1bd" title=" " alt="" coords="885,1239,1050,1265"/>
+<area shape="rect" id="node29" href="$classsh_1_1_score_model.html#ae1ca75336179d2cbcca7325b74d10d91" title="Transforms temporal inverse score into temporal scores and aggregates into full image scores." alt="" coords="446,1282,598,1323"/>
+<area shape="rect" id="node30" href="$structsh_1_1_filters.html#a5a6ca0583723170057c659209d9e08ec" title=" " alt="" coords="451,1348,593,1375"/>
+<area shape="rect" id="node31" href="$classsh_1_1_logger.html#ae9735aa4dcc2d63bc8f80e2074f99ba1" title=" " alt="" coords="443,560,601,587"/>
+<area shape="rect" id="node32" href="$classsh_1_1_score_model.html#a0af11105cbc68a9fb750bab05c11ae3a" title="Normalizes the score distribution." alt="" coords="433,611,611,637"/>
+<area shape="rect" id="node33" href="$classsh_1_1_somhunter.html#a9b3c6b915a752e2e552959eb36954483" title="Adds the currently active search context to the history and starts a new context (with next contiguou..." alt="" coords="451,662,593,703"/>
+<area shape="rect" id="node34" href="$classsh_1_1_somhunter.html#a1078d85eb5bc4d66b1f5335978920071" title="Applies the relevance feedback from the user based on images the user already saw (as implicit negati..." alt="" coords="443,494,601,535"/>
+<area shape="rect" id="node35" href="$classsh_1_1_somhunter.html#a8899346bcdeb1b536f14b1eac777716d" title="Applies text query from the user." alt="" coords="443,779,601,821"/>
+<area shape="rect" id="node36" href="$classsh_1_1_somhunter.html#a4662c9bc219c57f381c84b40d90d946e" title=" " alt="" coords="675,1311,819,1353"/>
+<area shape="rect" id="node41" href="$classsh_1_1_somhunter.html#a256a80af6a005fde472a6a7b4cf19f47" title="Gives the SOM worker the new work." alt="" coords="677,1377,817,1418"/>
+<area shape="rect" id="node42" href="$classsh_1_1_canvas_query_ranker.html#a256e44adb95384615ea16d3d24281422" title=" " alt="" coords="441,897,603,938"/>
+<area shape="rect" id="node43" href="$classsh_1_1_relocation_ranker.html#a1556a4a1e383bf602721619f7fcfb20b" title=" " alt="" coords="449,962,595,1003"/>
+<area shape="rect" id="node44" href="$structsh_1_1_query.html#addf6bbb26911699ea6ae10a642a75c3a" title=" " alt="" coords="429,1028,615,1055"/>
+<area shape="rect" id="node45" href="$structsh_1_1_query.html#a4603e770e7ea0a16b6c1847e08992474" title=" " alt="" coords="446,1079,598,1105"/>
+<area shape="rect" id="node38" href="$classsh_1_1_somhunter.html#a3d11aa2dd3b0f3ca2219213122242277" title="Generates the new debug targets." alt="" coords="664,1559,829,1601"/>
+<area shape="rect" id="node39" href="$classsh_1_1_logger.html#a66b66951eaba790a2efa6b3c00be1a9f" title=" " alt="" coords="675,1442,819,1483"/>
+<area shape="rect" id="node40" href="$classsh_1_1_user_context.html#aa02790afc77989a0bae9a99f36a07aa1" title=" " alt="" coords="670,1508,823,1535"/>
+<area shape="rect" id="node48" href="$namespaceosutils.html#a7890702f9bcfcd78d64b353ed45c04a7" title=" " alt="" coords="459,1676,585,1703"/>
+</map>

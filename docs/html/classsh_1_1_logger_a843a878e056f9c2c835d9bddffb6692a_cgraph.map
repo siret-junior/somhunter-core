@@ -1,0 +1,6 @@
+<map id="sh::Logger::~Logger" name="sh::Logger::~Logger">
+<area shape="rect" id="node1" title=" " alt="" coords="5,42,144,69"/>
+<area shape="rect" id="node2" href="$classsh_1_1_logger.html#a01d6c72999588971de1d4769e2fe93c8" title="Sends the accumulated logs to the evaluation server (through _p_eval_server)." alt="" coords="192,35,351,76"/>
+<area shape="rect" id="node3" href="$classsh_1_1_eval_server_client.html#a5d0296e104397f29c14e626cbb3e1988" title=" " alt="" coords="399,5,555,47"/>
+<area shape="rect" id="node4" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="408,71,545,98"/>
+</map>

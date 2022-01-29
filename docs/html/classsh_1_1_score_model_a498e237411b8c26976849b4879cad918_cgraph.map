@@ -1,0 +1,7 @@
+<map id="sh::ScoreModel::apply_bayes" name="sh::ScoreModel::apply_bayes">
+<area shape="rect" id="node1" title="Applies relevance feedback rescore based on the Bayesian update rule." alt="" coords="5,71,157,112"/>
+<area shape="rect" id="node2" href="$classsh_1_1_frame_features.html#a19d6fd38310560c1f3fe3e03e1ef0a18" title=" " alt="" coords="224,5,364,47"/>
+<area shape="rect" id="node3" href="$classsh_1_1_score_model.html#a29e0717a7b4f1da248996ef038733f9e" title=" " alt="" coords="207,71,381,112"/>
+<area shape="rect" id="node4" href="$classsh_1_1_score_model.html#a0af11105cbc68a9fb750bab05c11ae3a" title="Normalizes the score distribution." alt="" coords="205,137,383,163"/>
+<area shape="rect" id="node5" href="$classsh_1_1_score_model.html#a43d0316a2d3f230d148de30173083805" title="Returns number of scores stored." alt="" coords="431,137,576,163"/>
+</map>

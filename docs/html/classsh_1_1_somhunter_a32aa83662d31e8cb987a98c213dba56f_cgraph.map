@@ -1,0 +1,16 @@
+<map id="sh::Somhunter::submit_to_eval_server" name="sh::Somhunter::submit_to_eval_server">
+<area shape="rect" id="node1" title="Sumbits frame with given id to VBS server." alt="" coords="5,220,160,261"/>
+<area shape="rect" id="node2" href="$classsh_1_1_dataset_frames.html#aefcd7968bf584e20a3214fa8bb5eafea" title=" " alt="" coords="215,161,356,203"/>
+<area shape="rect" id="node3" href="$classsh_1_1_logger.html#a2c3ad6cfa984965198a957759d205382" title="Called whenever we want to log submit frame/shot into the server." alt="" coords="208,227,363,254"/>
+<area shape="rect" id="node14" href="$classsh_1_1_eval_server_client.html#a694efa90ad7eb7efcd81c6f57322d8ff" title=" " alt="" coords="217,279,354,320"/>
+<area shape="rect" id="node4" href="$classsh_1_1_logger.html#a1d235a7f098118f9f2922db4d898f35b" title=" " alt="" coords="417,202,579,229"/>
+<area shape="rect" id="node13" href="$structsh_1_1_video_frame.html#a931f0b32f01eb0be59131368949e91cc" title=" " alt="" coords="411,253,585,279"/>
+<area shape="rect" id="node5" href="$classsh_1_1_logger.html#a4e6e88011b3eda18edd431a6af85f845" title=" " alt="" coords="633,13,823,39"/>
+<area shape="rect" id="node7" href="$classsh_1_1_logger.html#ab7767ee78fb6abfadb0877fb0e91cc67" title=" " alt="" coords="643,64,813,105"/>
+<area shape="rect" id="node8" href="$classsh_1_1_eval_server_client.html#a4c1ec8556abae88de8548e785493ffbd" title=" " alt="" coords="659,129,797,171"/>
+<area shape="rect" id="node9" href="$classsh_1_1_eval_server_client.html#aef0425f59d21d7bf89980d7d87e36cb2" title=" " alt="" coords="659,195,797,236"/>
+<area shape="rect" id="node10" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="659,261,797,287"/>
+<area shape="rect" id="node11" href="$classsh_1_1_logger.html#a5f3f303e278be7ebbf4290901720c4a6" title="Writes the log into the local file." alt="" coords="648,311,808,338"/>
+<area shape="rect" id="node12" href="$classsh_1_1_logger.html#a8e9a107641162bb1b5dfaa1f9ce4da4c" title="Writes the log into the local file." alt="" coords="639,362,817,389"/>
+<area shape="rect" id="node6" href="$classsh_1_1_user_context.html#ac1f5a56878b06699d2ba48ba5f55b1b2" title=" " alt="" coords="871,5,1013,47"/>
+</map>

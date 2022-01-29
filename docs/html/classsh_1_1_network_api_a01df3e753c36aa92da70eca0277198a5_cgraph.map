@@ -1,0 +1,6 @@
+<map id="sh::NetworkApi::handle__search__get_som_relocation_display__POST" name="sh::NetworkApi::handle__search__get_som_relocation_display__POST">
+<area shape="rect" id="node1" title=" " alt="" coords="5,20,208,76"/>
+<area shape="rect" id="node2" href="$classsh_1_1_network_api.html#a601e43a38cb47d271ff196002962144c" title=" " alt="" coords="256,5,459,32"/>
+<area shape="rect" id="node3" href="$classsh_1_1_somhunter.html#a675a8c077612bf99aefe2be6998eb88b" title="Returns true if the user&#39;s SOM is ready." alt="" coords="287,57,427,98"/>
+<area shape="rect" id="node4" href="$classsh_1_1_async_som.html#abbe99b428735e253a50e505c74b50dbd" title=" " alt="" coords="507,64,687,91"/>
+</map>

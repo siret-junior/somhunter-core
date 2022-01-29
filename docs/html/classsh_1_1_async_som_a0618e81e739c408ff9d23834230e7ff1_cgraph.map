@@ -1,0 +1,6 @@
+<map id="sh::AsyncSom::start_work" name="sh::AsyncSom::start_work">
+<area shape="rect" id="node1" title=" " alt="" coords="5,64,181,91"/>
+<area shape="rect" id="node2" href="$classsh_1_1_frame_features.html#a9f7dce930cf00a367d435242fa95e606" title=" " alt="" coords="229,5,377,32"/>
+<area shape="rect" id="node3" href="$classsh_1_1_score_model.html#a7c960b7d530f6d832edf982a05095068" title="Returns the current value for the frame." alt="" coords="238,57,369,98"/>
+<area shape="rect" id="node4" href="$classsh_1_1_score_model.html#a43d0316a2d3f230d148de30173083805" title="Returns number of scores stored." alt="" coords="231,123,376,149"/>
+</map>

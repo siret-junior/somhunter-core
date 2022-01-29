@@ -1,0 +1,52 @@
+<map id="sh::NetworkApi::initialize" name="sh::NetworkApi::initialize">
+<area shape="rect" id="node1" title="Initializes the HTTP listeners on the required endpoints." alt="" coords="5,783,171,810"/>
+<area shape="rect" id="node2" href="$classsh_1_1_network_api.html#aba849e7c2b5886555539e06c69514a3c" title=" " alt="" coords="272,123,428,164"/>
+<area shape="rect" id="node7" href="$classsh_1_1_network_api.html#a0e4bcef2063e14a1ffb22c809d1b8826" title=" " alt="" coords="272,907,428,948"/>
+<area shape="rect" id="node8" href="$classsh_1_1_network_api.html#a8eb61e8333ee995736e179fd00372093" title=" " alt="" coords="272,57,428,99"/>
+<area shape="rect" id="node10" href="$classsh_1_1_network_api.html#a85d4a77935e981c7d2e7f783051cc28f" title=" " alt="" coords="250,972,450,1013"/>
+<area shape="rect" id="node12" href="$classsh_1_1_network_api.html#a170bac3859a0d79b6edd7bfbc25a7018" title=" " alt="" coords="255,188,445,229"/>
+<area shape="rect" id="node15" href="$classsh_1_1_network_api.html#a414052e8df342d8fa5505f09ffbeedd6" title=" " alt="" coords="251,253,449,295"/>
+<area shape="rect" id="node18" href="$classsh_1_1_network_api.html#a91f51e675e943367ce01f2cff6fe6e08" title=" " alt="" coords="249,1397,451,1439"/>
+<area shape="rect" id="node19" href="$classsh_1_1_network_api.html#a245f4c0a100588324f094382c41ad531" title=" " alt="" coords="233,319,467,360"/>
+<area shape="rect" id="node22" href="$classsh_1_1_network_api.html#abf9fa64ceba5d12d02098b7fdd68be32" title=" " alt="" coords="272,515,428,556"/>
+<area shape="rect" id="node23" href="$classsh_1_1_network_api.html#a5a348b0a62f0b63fee4e803fca379d96" title=" " alt="" coords="241,580,459,621"/>
+<area shape="rect" id="node24" href="$classsh_1_1_network_api.html#a8bd11252bc15e232ddb345496b27c349" title=" " alt="" coords="233,645,467,687"/>
+<area shape="rect" id="node25" href="$classsh_1_1_network_api.html#adfc33610cfde7965106aaacab7b19b8c" title=" " alt="" coords="264,449,436,491"/>
+<area shape="rect" id="node26" href="$classsh_1_1_network_api.html#a2273108fe353ed89fa4cf3894d7973c0" title=" " alt="" coords="259,711,441,752"/>
+<area shape="rect" id="node27" href="$classsh_1_1_network_api.html#ac4bd006837d6b60c5bebfaaa20b06ff6" title=" " alt="" coords="232,1168,468,1209"/>
+<area shape="rect" id="node31" href="$classsh_1_1_network_api.html#a01df3e753c36aa92da70eca0277198a5" title=" " alt="" coords="249,1234,451,1290"/>
+<area shape="rect" id="node32" href="$classsh_1_1_network_api.html#a877b963ccbc11c87f690a0b7b4ea6de0" title=" " alt="" coords="235,1103,465,1144"/>
+<area shape="rect" id="node35" href="$classsh_1_1_network_api.html#a9770296beead47d060137c346bd71ff0" title=" " alt="" coords="219,776,481,817"/>
+<area shape="rect" id="node36" href="$classsh_1_1_network_api.html#a8aba8787a5aeb913a2ed049089b6fd81" title=" " alt="" coords="251,841,449,883"/>
+<area shape="rect" id="node37" href="$classsh_1_1_network_api.html#a4acdcac3b6083535f4307d3d2453fbed" title=" " alt="" coords="259,1332,441,1373"/>
+<area shape="rect" id="node44" href="$classsh_1_1_network_api.html#a1c367c9ff5c1b74381450008a03c73f6" title=" " alt="" coords="267,384,433,425"/>
+<area shape="rect" id="node46" href="$classsh_1_1_network_api.html#aceb6bf600c9761ef10c77ebb551d7e9c" title=" " alt="" coords="271,1037,429,1079"/>
+<area shape="rect" id="node49" href="$network-api_8cpp.html#a8ba60b012ef5a750a819e4614dcba3ee" title=" " alt="" coords="576,1659,685,1686"/>
+<area shape="rect" id="node50" href="$classsh_1_1_network_api.html#a75531547429f674f85bbeb554547d83f" title="Registers the provided handlers for the given path in the HTTP listener." alt="" coords="277,1496,423,1537"/>
+<area shape="rect" id="node3" href="$classsh_1_1_network_api.html#a5583f82599b817bb55404721c2f578ce" title="Adds the CORS headers to the given HTTP response instance." alt="" coords="561,384,700,425"/>
+<area shape="rect" id="node4" href="$classsh_1_1_network_api.html#a601e43a38cb47d271ff196002962144c" title=" " alt="" coords="529,685,732,711"/>
+<area shape="rect" id="node5" href="$classsh_1_1_somhunter.html#abcf1e1a1a0d3e45cfbe12f95ba280c2e" title=" " alt="" coords="561,123,700,164"/>
+<area shape="rect" id="node6" href="$namespacesh_1_1utils.html#a6799be09a9eb625b596ef9cf43511e52" title="Reads the whole file into string that it will return." alt="" coords="549,71,713,98"/>
+<area shape="rect" id="node9" href="$classsh_1_1_somhunter.html#ab9ce803d922e019d89ab4f65f0bc763e" title=" " alt="" coords="564,5,697,47"/>
+<area shape="rect" id="node11" href="$namespacesh_1_1utils.html#a0d24826a34633c605e3444f0aff8a4b1" title="Tries to parse the integer from the string." alt="" coords="565,837,696,863"/>
+<area shape="rect" id="node13" href="$classsh_1_1_somhunter.html#a6dd0251edf45f4ca67c90e3ca05ecf23" title="Tries to login into the remote evaluation server (competition one)." alt="" coords="559,188,702,229"/>
+<area shape="rect" id="node14" href="$classsh_1_1_eval_server_client.html#aab909c63547bdf27573eeb25ab755908" title=" " alt="" coords="801,188,939,229"/>
+<area shape="rect" id="node16" href="$classsh_1_1_somhunter.html#a380e57794f4a538b1afb753ae71bb84f" title="Tries to logout from the remote evaluation server (competition one)." alt="" coords="555,253,706,295"/>
+<area shape="rect" id="node17" href="$classsh_1_1_eval_server_client.html#ae183f4e8b86492f95cb301f1c3d87f0e" title=" " alt="" coords="801,253,939,295"/>
+<area shape="rect" id="node20" href="$classsh_1_1_somhunter.html#a25acff9d57bb3b5de500f0a14461d0d5" title=" " alt="" coords="552,319,709,360"/>
+<area shape="rect" id="node21" href="$classsh_1_1_logger.html#acc6b3ee5e131a30833af45f4c55a9c56" title=" " alt="" coords="793,319,947,360"/>
+<area shape="rect" id="node28" href="$classsh_1_1_somhunter.html#a675a8c077612bf99aefe2be6998eb88b" title="Returns true if the user&#39;s SOM is ready." alt="" coords="561,1201,701,1243"/>
+<area shape="rect" id="node30" href="$namespacesh.html#a505b53a1ec3238700c83634064ba4927" title=" " alt="" coords="561,1150,701,1177"/>
+<area shape="rect" id="node29" href="$classsh_1_1_async_som.html#abbe99b428735e253a50e505c74b50dbd" title=" " alt="" coords="780,1209,960,1235"/>
+<area shape="rect" id="node33" href="$classsh_1_1_somhunter.html#af3baf9dff6c4a7a8f74f90f2f6ef061e" title="Returns display of the desired type." alt="" coords="564,1084,697,1125"/>
+<area shape="rect" id="node34" href="$network-api_8cpp.html#a3a0ccc8884296e180e46c68761919960" title="OpenAPI: Response__GetTopScreen__Post." alt="" coords="533,1019,728,1060"/>
+<area shape="rect" id="node38" href="$classsh_1_1_network_api.html#aafc39b307b37c877f675cb7fbe6244dc" title="Extracts a vector of CanvasQuery from the body variable." alt="" coords="551,1463,710,1504"/>
+<area shape="rect" id="node39" href="$classsh_1_1_network_api.html#a1b8f7ae5cd2cee3b7f0a9bb2fdecee3c" title="Extracts Filters from the body variable." alt="" coords="551,1528,710,1569"/>
+<area shape="rect" id="node40" href="$classsh_1_1_network_api.html#a1dbba0579300b6b60d93861d33c3c87f" title="Extracts a vector of RelocationQuery from the body variable." alt="" coords="551,1593,710,1635"/>
+<area shape="rect" id="node41" href="$classsh_1_1_network_api.html#a111dc1bca51ff4257487e2be693e5b1e" title="Extracts RescoreMetadata from the body variable." alt="" coords="551,1267,710,1308"/>
+<area shape="rect" id="node42" href="$classsh_1_1_network_api.html#a0a9aa5892bc5310ef853fc25ce059aa6" title="Extracts a vector of TextualQuery from the body variable." alt="" coords="551,1332,710,1373"/>
+<area shape="rect" id="node43" href="$classsh_1_1_somhunter.html#ab4bea33203854246a38ed3143cc1c650" title="Returns a reference to the current user&#39;s search context." alt="" coords="564,1397,697,1439"/>
+<area shape="rect" id="node45" href="$classsh_1_1_somhunter.html#a42789b71a1a9e1504e542473b782ab6b" title="Resets current search context and starts new search." alt="" coords="559,449,703,491"/>
+<area shape="rect" id="node47" href="$classsh_1_1_somhunter.html#a83c6b1ab026ebc989c1faeabac1c0cfb" title="Returns a reference to the current user&#39;s context." alt="" coords="564,953,697,995"/>
+<area shape="rect" id="node48" href="$network-api_8cpp.html#a6f4d375d827090f57f26cabe422ca47c" title="OpenAPI: Response__User__Context__Get." alt="" coords="557,888,704,929"/>
+</map>

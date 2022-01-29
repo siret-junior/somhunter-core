@@ -1,0 +1,4 @@
+<map id="sh::Somhunter::login_to_eval_server" name="sh::Somhunter::login_to_eval_server">
+<area shape="rect" id="node1" title="Tries to login into the remote evaluation server (competition one)." alt="" coords="5,5,148,47"/>
+<area shape="rect" id="node2" href="$classsh_1_1_eval_server_client.html#aab909c63547bdf27573eeb25ab755908" title=" " alt="" coords="196,5,333,47"/>
+</map>

@@ -1,0 +1,21 @@
+<map id="sh::Somhunter::get_som_display" name="sh::Somhunter::get_som_display">
+<area shape="rect" id="node1" title=" " alt="" coords="5,267,139,309"/>
+<area shape="rect" id="node2" href="$classsh_1_1_async_som.html#a36ea1a16598fa32e20ba145a4340e3ef" title=" " alt="" coords="187,115,369,141"/>
+<area shape="rect" id="node7" href="$classsh_1_1_dataset_frames.html#ab05d8057b0206dcb6425631f70c1b096" title="Translation to VideoFrameRefs from vector ids or FrameRange." alt="" coords="207,234,349,275"/>
+<area shape="rect" id="node9" href="$classsh_1_1_logger.html#ac8c7e1155faa55553c51eb52f5b2657b" title=" " alt="" coords="205,299,351,341"/>
+<area shape="rect" id="node19" href="$classsh_1_1_async_som.html#abbe99b428735e253a50e505c74b50dbd" title=" " alt="" coords="188,365,368,392"/>
+<area shape="rect" id="node3" href="$classsh_1_1_async_som.html#ac4b531a32282a66a7bb91e0e7ac29102" title=" " alt="" coords="419,5,588,32"/>
+<area shape="rect" id="node4" href="$classsh_1_1_async_som.html#aed72c3c800016aeafd14434854331b4a" title=" " alt="" coords="433,56,574,83"/>
+<area shape="rect" id="node5" href="$classsh_1_1_async_som.html#ac5c5bb1a6d8ab7f988a58eaba0b2be34" title=" " alt="" coords="424,107,583,149"/>
+<area shape="rect" id="node6" href="$classsh_1_1_score_model.html#afc7ba6ba6df854e1edc60c21d4c55730" title="Samples a random frame from the current scores distribution." alt="" coords="417,173,589,214"/>
+<area shape="rect" id="node8" href="$classsh_1_1_dataset_frames.html#aefcd7968bf584e20a3214fa8bb5eafea" title=" " alt="" coords="433,238,574,279"/>
+<area shape="rect" id="node10" href="$classsh_1_1_logger.html#a1d235a7f098118f9f2922db4d898f35b" title=" " alt="" coords="423,307,584,333"/>
+<area shape="rect" id="node11" href="$classsh_1_1_logger.html#a4e6e88011b3eda18edd431a6af85f845" title=" " alt="" coords="637,117,827,144"/>
+<area shape="rect" id="node13" href="$classsh_1_1_logger.html#ab7767ee78fb6abfadb0877fb0e91cc67" title=" " alt="" coords="647,169,817,210"/>
+<area shape="rect" id="node14" href="$classsh_1_1_eval_server_client.html#a4c1ec8556abae88de8548e785493ffbd" title=" " alt="" coords="663,234,801,275"/>
+<area shape="rect" id="node15" href="$classsh_1_1_eval_server_client.html#aef0425f59d21d7bf89980d7d87e36cb2" title=" " alt="" coords="663,299,801,341"/>
+<area shape="rect" id="node16" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="663,365,801,392"/>
+<area shape="rect" id="node17" href="$classsh_1_1_logger.html#a5f3f303e278be7ebbf4290901720c4a6" title="Writes the log into the local file." alt="" coords="652,416,812,443"/>
+<area shape="rect" id="node18" href="$classsh_1_1_logger.html#a8e9a107641162bb1b5dfaa1f9ce4da4c" title="Writes the log into the local file." alt="" coords="643,467,821,493"/>
+<area shape="rect" id="node12" href="$classsh_1_1_user_context.html#ac1f5a56878b06699d2ba48ba5f55b1b2" title=" " alt="" coords="875,110,1017,151"/>
+</map>

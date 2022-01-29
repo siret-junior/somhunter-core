@@ -1,0 +1,9 @@
+<map id="sh::UserContext::UserContext" name="sh::UserContext::UserContext">
+<area shape="rect" id="node1" title=" " alt="" coords="5,139,201,165"/>
+<area shape="rect" id="node2" href="$classsh_1_1_async_som.html#a0618e81e739c408ff9d23834230e7ff1" title=" " alt="" coords="249,64,425,91"/>
+<area shape="rect" id="node6" href="$classsh_1_1_score_model.html#a63ee5c18ba66d3198516d5411fda6b2f" title=" " alt="" coords="262,139,413,165"/>
+<area shape="rect" id="node7" href="$classsh_1_1_score_model.html#ad8c567cc13021f6ecf93b7825c394d3e" title="Pointer to the begin of the data." alt="" coords="274,189,401,216"/>
+<area shape="rect" id="node3" href="$classsh_1_1_frame_features.html#a9f7dce930cf00a367d435242fa95e606" title=" " alt="" coords="473,5,621,32"/>
+<area shape="rect" id="node4" href="$classsh_1_1_score_model.html#a7c960b7d530f6d832edf982a05095068" title="Returns the current value for the frame." alt="" coords="482,57,613,98"/>
+<area shape="rect" id="node5" href="$classsh_1_1_score_model.html#a43d0316a2d3f230d148de30173083805" title="Returns number of scores stored." alt="" coords="475,123,620,149"/>
+</map>

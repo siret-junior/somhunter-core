@@ -1,0 +1,4 @@
+<map id="sh::DatasetFrames::parse_metadata_line" name="sh::DatasetFrames::parse_metadata_line">
+<area shape="rect" id="node1" title="Parses the desired metadata from the metadata line." alt="" coords="5,5,148,47"/>
+<area shape="rect" id="node2" href="$namespacesh_1_1utils.html#a011bfc1835045a32aa6485b53d8661b5" title="Splits the string with the provided character delimiter." alt="" coords="196,13,296,39"/>
+</map>

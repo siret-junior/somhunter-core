@@ -1,0 +1,5 @@
+<map id="sh::ScoreModel::adjust" name="sh::ScoreModel::adjust">
+<area shape="rect" id="node1" title="Multiplies the relevance score of temporal part with the provided value." alt="" coords="5,54,161,81"/>
+<area shape="rect" id="node2" href="$classsh_1_1_score_model.html#a29e0717a7b4f1da248996ef038733f9e" title=" " alt="" coords="209,5,384,47"/>
+<area shape="rect" id="node3" href="$classsh_1_1_score_model.html#a63ee5c18ba66d3198516d5411fda6b2f" title=" " alt="" coords="221,95,372,122"/>
+</map>

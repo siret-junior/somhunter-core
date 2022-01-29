@@ -1,0 +1,4 @@
+<map id="sh::Settings::parse_JSON_config" name="sh::Settings::parse_JSON_config">
+<area shape="rect" id="node1" title="Parsees the JSON config file that holds initial config." alt="" coords="5,5,137,47"/>
+<area shape="rect" id="node2" href="$namespacesh_1_1utils.html#a6799be09a9eb625b596ef9cf43511e52" title="Reads the whole file into string that it will return." alt="" coords="185,13,349,39"/>
+</map>

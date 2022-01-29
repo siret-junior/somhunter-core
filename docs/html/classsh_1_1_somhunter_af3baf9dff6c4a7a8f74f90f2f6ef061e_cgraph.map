@@ -1,0 +1,52 @@
+<map id="sh::Somhunter::get_display" name="sh::Somhunter::get_display">
+<area shape="rect" id="node1" title="Returns display of the desired type." alt="" coords="5,667,139,709"/>
+<area shape="rect" id="node2" href="$structsh_1_1_query.html#a960bc44d0f20927a5b16884416f05df1" title=" " alt="" coords="200,257,339,298"/>
+<area shape="rect" id="node3" href="$classsh_1_1_somhunter.html#ad82fbb59b1dd9e0402492eb0dfa1bb49" title=" " alt="" coords="203,505,336,546"/>
+<area shape="rect" id="node15" href="$classsh_1_1_somhunter.html#a3cdab53a85395806c81d95d4aa48814c" title=" " alt="" coords="203,374,336,415"/>
+<area shape="rect" id="node23" href="$classsh_1_1_somhunter.html#a24a54c44ff85f35e2cf33bef35c2d83e" title=" " alt="" coords="187,602,352,643"/>
+<area shape="rect" id="node25" href="$classsh_1_1_somhunter.html#a5e42f6bdfbaa753fc274ac043eea1e35" title=" " alt="" coords="203,667,336,709"/>
+<area shape="rect" id="node30" href="$classsh_1_1_logger.html#aaecc78b18fa39028a01bb059811c1ba2" title="Called whenever we rescore." alt="" coords="414,289,569,316"/>
+<area shape="rect" id="node34" href="$classsh_1_1_somhunter.html#a7988b563061e3b565573a411d7da4741" title=" " alt="" coords="193,798,345,839"/>
+<area shape="rect" id="node38" href="$classsh_1_1_score_model.html#a5c2fdd3b3a28c10193d127c7c10eb159" title="Gets the images with the highest scores but respecting the provided limits." alt="" coords="648,1148,801,1175"/>
+<area shape="rect" id="node40" href="$classsh_1_1_somhunter.html#aed64cb69bc9f45a26ce5f2f4ffb69a19" title=" " alt="" coords="203,863,336,905"/>
+<area shape="rect" id="node42" href="$classsh_1_1_somhunter.html#a1d94398782594d348d48e42b61157b28" title=" " alt="" coords="197,1279,341,1321"/>
+<area shape="rect" id="node49" href="$classsh_1_1_logger.html#af3421c415f5abb45fe5a48e7183c9d8c" title="Does periodic cleanup &amp; log flush." alt="" coords="436,1513,547,1540"/>
+<area shape="rect" id="node4" href="$classsh_1_1_dataset_frames.html#ab05d8057b0206dcb6425631f70c1b096" title="Translation to VideoFrameRefs from vector ids or FrameRange." alt="" coords="421,602,562,643"/>
+<area shape="rect" id="node6" href="$classsh_1_1_logger.html#a4f71ffeeff768c8e98d1f9178bc5e470" title=" " alt="" coords="419,406,564,447"/>
+<area shape="rect" id="node14" href="$classsh_1_1_score_model.html#a6e44d5260b4671dfe7328fa383379752" title="Samples n random frames from the current scores distribution." alt="" coords="405,471,577,513"/>
+<area shape="rect" id="node5" href="$classsh_1_1_dataset_frames.html#aefcd7968bf584e20a3214fa8bb5eafea" title=" " alt="" coords="891,875,1032,917"/>
+<area shape="rect" id="node7" href="$classsh_1_1_logger.html#a1d235a7f098118f9f2922db4d898f35b" title=" " alt="" coords="644,609,805,636"/>
+<area shape="rect" id="node8" href="$classsh_1_1_logger.html#a4e6e88011b3eda18edd431a6af85f845" title=" " alt="" coords="867,345,1056,372"/>
+<area shape="rect" id="node10" href="$classsh_1_1_logger.html#ab7767ee78fb6abfadb0877fb0e91cc67" title=" " alt="" coords="877,602,1046,643"/>
+<area shape="rect" id="node11" href="$classsh_1_1_eval_server_client.html#a4c1ec8556abae88de8548e785493ffbd" title=" " alt="" coords="893,443,1030,485"/>
+<area shape="rect" id="node12" href="$classsh_1_1_eval_server_client.html#aef0425f59d21d7bf89980d7d87e36cb2" title=" " alt="" coords="893,255,1030,297"/>
+<area shape="rect" id="node13" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="893,1356,1030,1383"/>
+<area shape="rect" id="node9" href="$classsh_1_1_user_context.html#ac1f5a56878b06699d2ba48ba5f55b1b2" title=" " alt="" coords="1104,338,1247,379"/>
+<area shape="rect" id="node16" href="$classsh_1_1_async_som.html#a36ea1a16598fa32e20ba145a4340e3ef" title=" " alt="" coords="400,115,583,141"/>
+<area shape="rect" id="node21" href="$classsh_1_1_logger.html#ac8c7e1155faa55553c51eb52f5b2657b" title=" " alt="" coords="419,341,564,382"/>
+<area shape="rect" id="node22" href="$classsh_1_1_async_som.html#abbe99b428735e253a50e505c74b50dbd" title=" " alt="" coords="401,239,581,265"/>
+<area shape="rect" id="node17" href="$classsh_1_1_async_som.html#ac4b531a32282a66a7bb91e0e7ac29102" title=" " alt="" coords="640,5,809,32"/>
+<area shape="rect" id="node18" href="$classsh_1_1_async_som.html#aed72c3c800016aeafd14434854331b4a" title=" " alt="" coords="654,56,795,83"/>
+<area shape="rect" id="node19" href="$classsh_1_1_async_som.html#ac5c5bb1a6d8ab7f988a58eaba0b2be34" title=" " alt="" coords="645,107,804,149"/>
+<area shape="rect" id="node20" href="$classsh_1_1_score_model.html#afc7ba6ba6df854e1edc60c21d4c55730" title="Samples a random frame from the current scores distribution." alt="" coords="639,173,811,214"/>
+<area shape="rect" id="node24" href="$classsh_1_1_logger.html#a0ba2701ac803998f81c6f0d626dc5d95" title=" " alt="" coords="409,537,574,578"/>
+<area shape="rect" id="node26" href="$classsh_1_1_somhunter.html#a3a0ed87253d91ebf7041ed6f1b8a9455" title=" " alt="" coords="425,863,558,905"/>
+<area shape="rect" id="node29" href="$classsh_1_1_frame_features.html#aff55040ae9358cb21378e6c7ce544e27" title=" " alt="" coords="421,667,561,709"/>
+<area shape="rect" id="node33" href="$classsh_1_1_logger.html#aa9c600eb71e67c6de3e35aaef019476d" title=" " alt="" coords="419,733,564,774"/>
+<area shape="rect" id="node27" href="$classsh_1_1_frame_pointer_range.html#a93d18a9d157d03651bcd67f6b43b0d47" title=" " alt="" coords="645,902,804,943"/>
+<area shape="rect" id="node28" href="$classsh_1_1_frame_pointer_range.html#a0074f2156ac850a3844b4942d61454d6" title=" " alt="" coords="631,851,819,877"/>
+<area shape="rect" id="node31" href="$classsh_1_1_eval_server_client.html#a5d002796620a658674ef277bf54ae675" title=" " alt="" coords="656,391,793,433"/>
+<area shape="rect" id="node32" href="$classsh_1_1_logger.html#a0074a59deb8acf57066244212e872237" title="Writes the log into the local file." alt="" coords="646,457,803,484"/>
+<area shape="rect" id="node35" href="$classsh_1_1_logger.html#aefbc9e966a28d912067d1f970d50b2ee" title=" " alt="" coords="415,798,567,839"/>
+<area shape="rect" id="node36" href="$classsh_1_1_score_model.html#a747573141e66b6ddb85dc5274e985d0f" title="Gets the images with the highest scores while respecting the provided limits and each frame is wrappe..." alt="" coords="422,1111,561,1153"/>
+<area shape="rect" id="node37" href="$classsh_1_1_dataset_frames.html#a2cafa25808f143b67a1b445233eeca1a" title=" " alt="" coords="654,1053,795,1094"/>
+<area shape="rect" id="node39" href="$classsh_1_1_dataset_frames.html#a47c0531de21fd7cb224afb212e0c92f5" title=" " alt="" coords="891,1141,1032,1182"/>
+<area shape="rect" id="node41" href="$classsh_1_1_logger.html#aa0eec164f6d37f30cb7acda848e80f5e" title=" " alt="" coords="419,929,564,970"/>
+<area shape="rect" id="node43" href="$structsh_1_1_frame_range.html#a149743b29964a115694dc5c16f8f94fd" title=" " alt="" coords="646,1447,803,1473"/>
+<area shape="rect" id="node44" href="$structsh_1_1_frame_range.html#a7a2968989b2bf723e147b91117ed6928" title=" " alt="" coords="651,1345,798,1372"/>
+<area shape="rect" id="node45" href="$classsh_1_1_dataset_frames.html#a0bf6dc81ee06589a98fc4b1c3ab7562c" title="Return copy of FrameRange representing all selected frames from the given video." alt="" coords="420,1279,563,1321"/>
+<area shape="rect" id="node46" href="$classsh_1_1_logger.html#ac8606b8b093d881a3776d846313a97a9" title=" " alt="" coords="419,994,564,1035"/>
+<area shape="rect" id="node47" href="$classsh_1_1_dataset_frames.html#a10e8bdcfb18801a4e33e3184d1a1d55f" title=" " alt="" coords="418,1397,565,1438"/>
+<area shape="rect" id="node48" href="$structsh_1_1_frame_range.html#ad4f3f26cdc0e2da08c1b24a671013819" title=" " alt="" coords="649,1396,800,1423"/>
+<area shape="rect" id="node50" href="$classsh_1_1_logger.html#a01d6c72999588971de1d4769e2fe93c8" title="Sends the accumulated logs to the evaluation server (through _p_eval_server)." alt="" coords="645,1498,804,1539"/>
+</map>

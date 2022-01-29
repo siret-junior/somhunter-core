@@ -1,0 +1,7 @@
+<map id="sh::ScoreModel::top_n_with_context" name="sh::ScoreModel::top_n_with_context">
+<area shape="rect" id="node1" title="Gets the images with the highest scores while respecting the provided limits and each frame is wrappe..." alt="" coords="5,35,144,76"/>
+<area shape="rect" id="node2" href="$classsh_1_1_dataset_frames.html#a2cafa25808f143b67a1b445233eeca1a" title=" " alt="" coords="198,5,339,47"/>
+<area shape="rect" id="node4" href="$classsh_1_1_score_model.html#a5c2fdd3b3a28c10193d127c7c10eb159" title="Gets the images with the highest scores but respecting the provided limits." alt="" coords="192,71,345,98"/>
+<area shape="rect" id="node3" href="$classsh_1_1_dataset_frames.html#aefcd7968bf584e20a3214fa8bb5eafea" title=" " alt="" coords="393,5,535,47"/>
+<area shape="rect" id="node5" href="$classsh_1_1_dataset_frames.html#a47c0531de21fd7cb224afb212e0c92f5" title=" " alt="" coords="393,71,535,112"/>
+</map>

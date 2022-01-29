@@ -1,0 +1,12 @@
+<map id="sh::Logger::log_text_query_change" name="sh::Logger::log_text_query_change">
+<area shape="rect" id="node1" title=" " alt="" coords="5,263,143,304"/>
+<area shape="rect" id="node2" href="$classsh_1_1_logger.html#a1d235a7f098118f9f2922db4d898f35b" title=" " alt="" coords="191,231,352,258"/>
+<area shape="rect" id="node8" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="426,362,563,389"/>
+<area shape="rect" id="node3" href="$classsh_1_1_logger.html#a4e6e88011b3eda18edd431a6af85f845" title=" " alt="" coords="400,13,589,39"/>
+<area shape="rect" id="node5" href="$classsh_1_1_logger.html#ab7767ee78fb6abfadb0877fb0e91cc67" title=" " alt="" coords="410,64,579,105"/>
+<area shape="rect" id="node6" href="$classsh_1_1_eval_server_client.html#a4c1ec8556abae88de8548e785493ffbd" title=" " alt="" coords="426,129,563,171"/>
+<area shape="rect" id="node7" href="$classsh_1_1_eval_server_client.html#aef0425f59d21d7bf89980d7d87e36cb2" title=" " alt="" coords="426,195,563,236"/>
+<area shape="rect" id="node9" href="$classsh_1_1_logger.html#a5f3f303e278be7ebbf4290901720c4a6" title="Writes the log into the local file." alt="" coords="415,261,575,287"/>
+<area shape="rect" id="node10" href="$classsh_1_1_logger.html#a8e9a107641162bb1b5dfaa1f9ce4da4c" title="Writes the log into the local file." alt="" coords="405,311,584,338"/>
+<area shape="rect" id="node4" href="$classsh_1_1_user_context.html#ac1f5a56878b06699d2ba48ba5f55b1b2" title=" " alt="" coords="637,5,780,47"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="sh::NetworkApi::handle__eval_server__logout__POST" name="sh::NetworkApi::handle__eval_server__logout__POST">
+<area shape="rect" id="node1" title=" " alt="" coords="5,64,203,105"/>
+<area shape="rect" id="node2" href="$classsh_1_1_network_api.html#a5583f82599b817bb55404721c2f578ce" title="Adds the CORS headers to the given HTTP response instance." alt="" coords="283,5,421,47"/>
+<area shape="rect" id="node3" href="$classsh_1_1_network_api.html#a601e43a38cb47d271ff196002962144c" title=" " alt="" coords="251,71,453,98"/>
+<area shape="rect" id="node4" href="$classsh_1_1_somhunter.html#a380e57794f4a538b1afb753ae71bb84f" title="Tries to logout from the remote evaluation server (competition one)." alt="" coords="277,123,427,164"/>
+<area shape="rect" id="node5" href="$classsh_1_1_eval_server_client.html#ae183f4e8b86492f95cb301f1c3d87f0e" title=" " alt="" coords="501,123,639,164"/>
+</map>

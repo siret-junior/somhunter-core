@@ -1,0 +1,4 @@
+<map id="sh::NetworkApi::push_endpoint" name="sh::NetworkApi::push_endpoint">
+<area shape="rect" id="node1" title="Registers the provided handlers for the given path in the HTTP listener." alt="" coords="5,5,152,47"/>
+<area shape="rect" id="node2" href="$network-api_8cpp.html#a8ba60b012ef5a750a819e4614dcba3ee" title=" " alt="" coords="200,13,309,39"/>
+</map>

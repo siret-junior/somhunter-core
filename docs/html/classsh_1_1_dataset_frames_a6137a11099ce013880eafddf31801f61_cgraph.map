@@ -1,0 +1,4 @@
+<map id="sh::DatasetFrames::parse_video_filename" name="sh::DatasetFrames::parse_video_filename">
+<area shape="rect" id="node1" title="From filename string it parses useful info as video/shot/frame ID etc." alt="" coords="5,5,151,47"/>
+<area shape="rect" id="node2" href="$namespacesh_1_1utils.html#a0d24826a34633c605e3444f0aff8a4b1" title="Tries to parse the integer from the string." alt="" coords="199,13,329,39"/>
+</map>

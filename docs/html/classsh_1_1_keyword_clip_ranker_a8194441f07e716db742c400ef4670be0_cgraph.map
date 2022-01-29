@@ -1,0 +1,7 @@
+<map id="sh::KeywordClipRanker::rank_sentence_query" name="sh::KeywordClipRanker::rank_sentence_query">
+<area shape="rect" id="node1" title=" " alt="" coords="5,64,163,105"/>
+<area shape="rect" id="node2" href="$classsh_1_1_score_model.html#ad97170971cccaa02f6aa792a5bca6706" title="Multiplies the relevance score with the provided value." alt="" coords="215,13,371,39"/>
+<area shape="rect" id="node4" href="$classsh_1_1_http.html#aa371a02a496afce8b213c1f237c48f0c" title=" " alt="" coords="213,64,372,105"/>
+<area shape="rect" id="node5" href="$classsh_1_1_frame_features.html#a0273375a0315a4d72894c133d1bc9c9e" title=" " alt="" coords="211,130,375,157"/>
+<area shape="rect" id="node3" href="$classsh_1_1_score_model.html#a29e0717a7b4f1da248996ef038733f9e" title=" " alt="" coords="423,5,597,47"/>
+</map>

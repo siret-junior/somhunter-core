@@ -1,0 +1,4 @@
+<map id="sh::ScoreModel::apply_temporals" name="sh::ScoreModel::apply_temporals">
+<area shape="rect" id="node1" title="Transforms temporal inverse score into temporal scores and aggregates into full image scores." alt="" coords="5,5,157,47"/>
+<area shape="rect" id="node2" href="$classsh_1_1_dataset_frames.html#a03e6d27529441c12f7c9ed6e07536aaa" title=" " alt="" coords="205,5,347,47"/>
+</map>

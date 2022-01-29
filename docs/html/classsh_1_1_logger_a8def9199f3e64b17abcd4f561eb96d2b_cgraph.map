@@ -1,0 +1,7 @@
+<map id="sh::Logger::log_canvas_query" name="sh::Logger::log_canvas_query">
+<area shape="rect" id="node1" title=" " alt="" coords="5,104,160,145"/>
+<area shape="rect" id="node2" href="$namespacesh_1_1utils.html#a226820816512da97c98c32bde6a491c6" title="Returns string representing current time and date in formated string based on provided format." alt="" coords="208,5,359,47"/>
+<area shape="rect" id="node3" href="$namespacesh_1_1utils.html#aa725efafea53d97c04681a6934ee9aae" title="Serializes the given data into the file using cereal lib." alt="" coords="221,71,345,112"/>
+<area shape="rect" id="node4" href="$classsh_1_1_image_manipulator.html#ae875a787f3722ec3dbca8163ef73c227" title=" " alt="" coords="210,136,357,177"/>
+<area shape="rect" id="node5" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="215,202,352,229"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="sh::CanvasSubqueryBase::unposition" name="sh::CanvasSubqueryBase::unposition">
+<area shape="rect" id="node1" title="Set canvas positioned query as if they were across the whole canvas." alt="" coords="5,5,176,47"/>
+<area shape="rect" id="node2" href="$structsh_1_1_relative_rect.html#ada68af191ff2fb617ec766f1cd24f98f" title="Set rectangle to cover everything." alt="" coords="224,13,383,39"/>
+</map>

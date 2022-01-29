@@ -1,0 +1,5 @@
+<map id="sh::Somhunter::autocomplete_keywords" name="sh::Somhunter::autocomplete_keywords">
+<area shape="rect" id="node1" title="Returns the nearest supported keyword matches to the provided prefix." alt="" coords="5,23,199,65"/>
+<area shape="rect" id="node2" href="$classsh_1_1_keyword_ranker.html#a38025599c582d24dea8351814b36982d" title=" " alt="" coords="247,5,409,32"/>
+<area shape="rect" id="node3" href="$namespacesh_1_1utils.html#a483cafb40144b95d99f8d4a225e36ebe" title="Returns a copy of old string but all lowercase." alt="" coords="252,56,404,83"/>
+</map>

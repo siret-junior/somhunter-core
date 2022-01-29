@@ -1,0 +1,8 @@
+<map id="sh::ClientDres::send_interactions_log" name="sh::ClientDres::send_interactions_log">
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,145,73"/>
+<area shape="rect" id="node2" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="206,13,343,40"/>
+<area shape="rect" id="node3" href="$classsh_1_1_client_dres.html#acede23616922d037d6b808417d24f9ed" title=" " alt="" coords="193,64,356,91"/>
+<area shape="rect" id="node4" href="$namespaceosutils.html#a7890702f9bcfcd78d64b353ed45c04a7" title=" " alt="" coords="416,5,543,32"/>
+<area shape="rect" id="node5" href="$namespacesh_1_1utils.html#a226820816512da97c98c32bde6a491c6" title="Returns string representing current time and date in formated string based on provided format." alt="" coords="404,57,555,98"/>
+<area shape="rect" id="node6" href="$classsh_1_1_client_dres.html#ac62eb5d568e8bb4e395cee7ee395f89d" title=" " alt="" coords="415,122,544,163"/>
+</map>

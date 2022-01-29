@@ -1,0 +1,4 @@
+<map id="sh::ScoreModel::normalize" name="sh::ScoreModel::normalize">
+<area shape="rect" id="node1" title="Normalizes the score distribution." alt="" coords="5,5,183,32"/>
+<area shape="rect" id="node2" href="$classsh_1_1_score_model.html#a43d0316a2d3f230d148de30173083805" title="Returns number of scores stored." alt="" coords="231,5,376,32"/>
+</map>

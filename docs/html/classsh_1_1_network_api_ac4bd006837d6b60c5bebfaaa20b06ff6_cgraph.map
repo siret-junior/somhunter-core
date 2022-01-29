@@ -1,0 +1,7 @@
+<map id="sh::NetworkApi::handle__search__get_som_display__POST" name="sh::NetworkApi::handle__search__get_som_display__POST">
+<area shape="rect" id="node1" title=" " alt="" coords="5,57,241,98"/>
+<area shape="rect" id="node2" href="$classsh_1_1_network_api.html#a601e43a38cb47d271ff196002962144c" title=" " alt="" coords="289,5,492,32"/>
+<area shape="rect" id="node3" href="$classsh_1_1_somhunter.html#a675a8c077612bf99aefe2be6998eb88b" title="Returns true if the user&#39;s SOM is ready." alt="" coords="321,57,461,98"/>
+<area shape="rect" id="node5" href="$namespacesh.html#a505b53a1ec3238700c83634064ba4927" title=" " alt="" coords="321,123,461,149"/>
+<area shape="rect" id="node4" href="$classsh_1_1_async_som.html#abbe99b428735e253a50e505c74b50dbd" title=" " alt="" coords="540,64,720,91"/>
+</map>

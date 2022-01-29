@@ -1,0 +1,4 @@
+<map id="sh::Somhunter::logout_from_eval_server" name="sh::Somhunter::logout_from_eval_server">
+<area shape="rect" id="node1" title="Tries to logout from the remote evaluation server (competition one)." alt="" coords="5,5,156,47"/>
+<area shape="rect" id="node2" href="$classsh_1_1_eval_server_client.html#ae183f4e8b86492f95cb301f1c3d87f0e" title=" " alt="" coords="204,5,341,47"/>
+</map>

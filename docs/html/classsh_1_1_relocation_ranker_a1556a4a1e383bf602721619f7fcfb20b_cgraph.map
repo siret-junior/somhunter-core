@@ -1,0 +1,7 @@
+<map id="sh::RelocationRanker::score" name="sh::RelocationRanker::score">
+<area shape="rect" id="node1" title=" " alt="" coords="5,56,152,97"/>
+<area shape="rect" id="node2" href="$classsh_1_1_score_model.html#ad97170971cccaa02f6aa792a5bca6706" title="Multiplies the relevance score with the provided value." alt="" coords="205,13,361,39"/>
+<area shape="rect" id="node4" href="$classsh_1_1_frame_features.html#a9f7dce930cf00a367d435242fa95e606" title=" " alt="" coords="209,63,357,90"/>
+<area shape="rect" id="node5" href="$classsh_1_1_embedding_ranker.html#a3eccefc46e2bd755d9435e4f761f0bb6" title=" " alt="" coords="200,114,367,170"/>
+<area shape="rect" id="node3" href="$classsh_1_1_score_model.html#a29e0717a7b4f1da248996ef038733f9e" title=" " alt="" coords="415,5,589,47"/>
+</map>

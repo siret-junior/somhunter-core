@@ -1,0 +1,4 @@
+<map id="sh::Somhunter::get_frames" name="sh::Somhunter::get_frames">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,139,47"/>
+<area shape="rect" id="node2" href="$classsh_1_1_dataset_frames.html#ad4aeb18486723ad48f68a9a352a044ee" title="Returns new instance of FrameRange representing all frames from prvided video ID in interval [frame_n..." alt="" coords="187,5,328,47"/>
+</map>

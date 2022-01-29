@@ -1,0 +1,22 @@
+<map id="sh::CanvasQueryRanker::get_features" name="sh::CanvasQueryRanker::get_features">
+<area shape="rect" id="node1" title=" " alt="" coords="5,136,168,177"/>
+<area shape="rect" id="node2" href="$classsh_1_1_canvas_query.html#a39852125049ed5e67300017791d442fd" title="Emplace new subregion TEXT query." alt="" coords="216,19,429,46"/>
+<area shape="rect" id="node3" href="$classsh_1_1_canvas_query_ranker.html#afd5cf78f0b1cba58b78a3675cd0627d2" title=" " alt="" coords="241,71,404,112"/>
+<area shape="rect" id="node4" href="$classsh_1_1_canvas_subquery_bitmap.html#aadc899e93c7685617d578c54d0b5e34a" title=" " alt="" coords="231,136,414,177"/>
+<area shape="rect" id="node8" href="$classsh_1_1_keyword_ranker.html#a853776e341acbfd6df1b83bb48b09e12" title=" " alt="" coords="245,235,400,276"/>
+<area shape="rect" id="node20" href="$classsh_1_1_canvas_query.html#aaa83285955b4adb547865a440a8ab423" title=" " alt="" coords="246,301,399,327"/>
+<area shape="rect" id="node5" href="$classsh_1_1_canvas_subquery_bitmap.html#a8425e83aab22ac5f1409fe08e4d62535" title=" " alt="" coords="477,5,660,47"/>
+<area shape="rect" id="node6" href="$classsh_1_1_image_manipulator.html#a081ea99ead8b520b94459d50bf367c70" title=" " alt="" coords="495,71,642,112"/>
+<area shape="rect" id="node7" href="$classsh_1_1_canvas_subquery_bitmap.html#a92e9cec8a13a7266d236e1e84310c394" title=" " alt="" coords="477,136,660,177"/>
+<area shape="rect" id="node9" href="$classsh_1_1_keyword_ranker.html#a57f624554ed1d974d0520caa313fde6e" title=" " alt="" coords="497,201,640,243"/>
+<area shape="rect" id="node11" href="$classsh_1_1_keyword_ranker.html#a75aa771630ca987dc7847bd8296f3d20" title=" " alt="" coords="495,267,642,308"/>
+<area shape="rect" id="node15" href="$namespacemath_1_1vector.html#a6fd1e0c9e856d3e9c5147597c04761ec" title=" " alt="" coords="711,354,868,381"/>
+<area shape="rect" id="node19" href="$classsh_1_1_keyword_ranker.html#a979d9f10cbe4bd27400f472ef4c7ffcc" title=" " alt="" coords="491,384,647,425"/>
+<area shape="rect" id="node10" href="$classsh_1_1_keyword_ranker.html#a38025599c582d24dea8351814b36982d" title=" " alt="" coords="708,151,871,178"/>
+<area shape="rect" id="node12" href="$namespacemath_1_1vector.html#aa09b2c44ed3144baec82e9500c1174ec" title="Computes the addition of the given vectors (left + right)." alt="" coords="728,202,851,229"/>
+<area shape="rect" id="node13" href="$namespacemath_1_1vector.html#a8e5fa394ce179a8b5add94196aee127f" title=" " alt="" coords="919,253,1073,279"/>
+<area shape="rect" id="node18" href="$namespacemath_1_1vector.html#a8e6601bed93782900b7b5779e694fe8e" title="Computes the substraction of the given vectors (left &#45; right)." alt="" coords="728,303,851,330"/>
+<area shape="rect" id="node14" href="$namespacemath_1_1vector.html#a276e470f9b3597bd5e5f6d1cc3108041" title="Computes the dot product of the given vectors." alt="" coords="1121,278,1240,305"/>
+<area shape="rect" id="node16" href="$namespacemath_1_1vector.html#a2be4f87c667d556be4320d5707e567ff" title=" " alt="" coords="928,303,1064,330"/>
+<area shape="rect" id="node17" href="$namespacemath_1_1vector.html#a1ad08f1e4f76823ce2da6b4a04457c77" title="Computes the element&#45;wise multiplication of the given vector and constant right." alt="" coords="933,354,1059,381"/>
+</map>

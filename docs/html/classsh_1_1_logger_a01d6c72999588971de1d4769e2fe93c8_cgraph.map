@@ -1,0 +1,5 @@
+<map id="sh::Logger::submit_interaction_logs_buffer" name="sh::Logger::submit_interaction_logs_buffer">
+<area shape="rect" id="node1" title="Sends the accumulated logs to the evaluation server (through _p_eval_server)." alt="" coords="5,35,164,76"/>
+<area shape="rect" id="node2" href="$classsh_1_1_eval_server_client.html#a5d0296e104397f29c14e626cbb3e1988" title=" " alt="" coords="212,5,368,47"/>
+<area shape="rect" id="node3" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="221,71,359,98"/>
+</map>

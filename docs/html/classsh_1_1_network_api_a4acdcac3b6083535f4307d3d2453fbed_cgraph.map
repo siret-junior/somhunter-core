@@ -1,0 +1,12 @@
+<map id="sh::NetworkApi::handle__search__rescore__POST" name="sh::NetworkApi::handle__search__rescore__POST">
+<area shape="rect" id="node1" title=" " alt="" coords="5,187,187,229"/>
+<area shape="rect" id="node2" href="$classsh_1_1_network_api.html#a601e43a38cb47d271ff196002962144c" title=" " alt="" coords="235,5,437,32"/>
+<area shape="rect" id="node3" href="$classsh_1_1_network_api.html#aafc39b307b37c877f675cb7fbe6244dc" title="Extracts a vector of CanvasQuery from the body variable." alt="" coords="257,57,415,98"/>
+<area shape="rect" id="node4" href="$classsh_1_1_network_api.html#a1b8f7ae5cd2cee3b7f0a9bb2fdecee3c" title="Extracts Filters from the body variable." alt="" coords="257,122,415,163"/>
+<area shape="rect" id="node5" href="$classsh_1_1_network_api.html#a1dbba0579300b6b60d93861d33c3c87f" title="Extracts a vector of RelocationQuery from the body variable." alt="" coords="257,187,415,229"/>
+<area shape="rect" id="node6" href="$classsh_1_1_network_api.html#a111dc1bca51ff4257487e2be693e5b1e" title="Extracts RescoreMetadata from the body variable." alt="" coords="257,253,415,294"/>
+<area shape="rect" id="node9" href="$classsh_1_1_network_api.html#a0a9aa5892bc5310ef853fc25ce059aa6" title="Extracts a vector of TextualQuery from the body variable." alt="" coords="257,318,415,359"/>
+<area shape="rect" id="node10" href="$classsh_1_1_somhunter.html#ab4bea33203854246a38ed3143cc1c650" title="Returns a reference to the current user&#39;s search context." alt="" coords="269,383,403,425"/>
+<area shape="rect" id="node7" href="$namespacesh_1_1utils.html#a226820816512da97c98c32bde6a491c6" title="Returns string representing current time and date in formated string based on provided format." alt="" coords="485,221,636,262"/>
+<area shape="rect" id="node8" href="$classsh_1_1_somhunter.html#abb3ca897d1378ad5dc5ba32c45bb0072" title=" " alt="" coords="489,286,633,327"/>
+</map>

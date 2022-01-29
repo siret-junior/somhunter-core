@@ -1,0 +1,6 @@
+<map id="sh::ClientDres::write_log" name="sh::ClientDres::write_log">
+<area shape="rect" id="node1" title=" " alt="" coords="5,64,168,91"/>
+<area shape="rect" id="node2" href="$namespaceosutils.html#a7890702f9bcfcd78d64b353ed45c04a7" title=" " alt="" coords="228,5,355,32"/>
+<area shape="rect" id="node3" href="$namespacesh_1_1utils.html#a226820816512da97c98c32bde6a491c6" title="Returns string representing current time and date in formated string based on provided format." alt="" coords="216,57,367,98"/>
+<area shape="rect" id="node4" href="$classsh_1_1_client_dres.html#ac62eb5d568e8bb4e395cee7ee395f89d" title=" " alt="" coords="227,122,356,163"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="sh::ScoreModel::adjust" name="sh::ScoreModel::adjust">
+<area shape="rect" id="node1" title="Multiplies the relevance score with the provided value." alt="" coords="5,13,161,39"/>
+<area shape="rect" id="node2" href="$classsh_1_1_score_model.html#a29e0717a7b4f1da248996ef038733f9e" title=" " alt="" coords="209,5,384,47"/>
+</map>

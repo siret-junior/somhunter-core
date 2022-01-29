@@ -1,0 +1,7 @@
+<map id="sh::ClientDres::ClientDres" name="sh::ClientDres::ClientDres">
+<area shape="rect" id="node1" title=" " alt="" coords="5,97,177,124"/>
+<area shape="rect" id="node2" href="$classsh_1_1_http.html#ae7af50e2ae19d2fa16072c1aa15488fe" title=" " alt="" coords="225,5,415,32"/>
+<area shape="rect" id="node3" href="$classsh_1_1_http.html#a30e9514bc602ae5d08c435c0b1246cd2" title=" " alt="" coords="255,57,385,98"/>
+<area shape="rect" id="node4" href="$classsh_1_1_i_server_client.html#a15f8dff6f7055313cd7e213bec981aa6" title=" " alt="" coords="258,122,382,163"/>
+<area shape="rect" id="node5" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="251,188,389,215"/>
+</map>

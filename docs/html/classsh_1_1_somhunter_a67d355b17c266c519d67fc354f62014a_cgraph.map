@@ -1,0 +1,21 @@
+<map id="sh::Somhunter::switch_search_context" name="sh::Somhunter::switch_search_context">
+<area shape="rect" id="node1" title="Switches the search context for the user to the provided index in the history and returns reference t..." alt="" coords="5,345,157,387"/>
+<area shape="rect" id="node2" href="$classsh_1_1_logger.html#a401d82c7bfddc1a335f2c90b824fa570" title=" " alt="" coords="218,245,373,287"/>
+<area shape="rect" id="node12" href="$classsh_1_1_async_som.html#abbe99b428735e253a50e505c74b50dbd" title=" " alt="" coords="205,353,385,379"/>
+<area shape="rect" id="node13" href="$classsh_1_1_somhunter.html#a256a80af6a005fde472a6a7b4cf19f47" title="Gives the SOM worker the new work." alt="" coords="225,488,365,529"/>
+<area shape="rect" id="node3" href="$classsh_1_1_logger.html#a1d235a7f098118f9f2922db4d898f35b" title=" " alt="" coords="441,213,602,239"/>
+<area shape="rect" id="node4" href="$classsh_1_1_logger.html#a4e6e88011b3eda18edd431a6af85f845" title=" " alt="" coords="657,13,847,39"/>
+<area shape="rect" id="node6" href="$classsh_1_1_logger.html#ab7767ee78fb6abfadb0877fb0e91cc67" title=" " alt="" coords="667,64,837,105"/>
+<area shape="rect" id="node7" href="$classsh_1_1_eval_server_client.html#a4c1ec8556abae88de8548e785493ffbd" title=" " alt="" coords="683,129,821,171"/>
+<area shape="rect" id="node8" href="$classsh_1_1_eval_server_client.html#aef0425f59d21d7bf89980d7d87e36cb2" title=" " alt="" coords="683,195,821,236"/>
+<area shape="rect" id="node9" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="683,261,821,287"/>
+<area shape="rect" id="node10" href="$classsh_1_1_logger.html#a5f3f303e278be7ebbf4290901720c4a6" title="Writes the log into the local file." alt="" coords="672,311,832,338"/>
+<area shape="rect" id="node11" href="$classsh_1_1_logger.html#a8e9a107641162bb1b5dfaa1f9ce4da4c" title="Writes the log into the local file." alt="" coords="663,362,841,389"/>
+<area shape="rect" id="node5" href="$classsh_1_1_user_context.html#ac1f5a56878b06699d2ba48ba5f55b1b2" title=" " alt="" coords="895,5,1037,47"/>
+<area shape="rect" id="node14" href="$classsh_1_1_async_som.html#a0618e81e739c408ff9d23834230e7ff1" title=" " alt="" coords="433,442,609,469"/>
+<area shape="rect" id="node18" href="$classsh_1_1_score_model.html#a63ee5c18ba66d3198516d5411fda6b2f" title=" " alt="" coords="446,517,597,543"/>
+<area shape="rect" id="node19" href="$classsh_1_1_score_model.html#ad8c567cc13021f6ecf93b7825c394d3e" title="Pointer to the begin of the data." alt="" coords="458,567,585,594"/>
+<area shape="rect" id="node15" href="$classsh_1_1_frame_features.html#a9f7dce930cf00a367d435242fa95e606" title=" " alt="" coords="678,413,826,439"/>
+<area shape="rect" id="node16" href="$classsh_1_1_score_model.html#a7c960b7d530f6d832edf982a05095068" title="Returns the current value for the frame." alt="" coords="687,464,817,505"/>
+<area shape="rect" id="node17" href="$classsh_1_1_score_model.html#a43d0316a2d3f230d148de30173083805" title="Returns number of scores stored." alt="" coords="679,530,825,557"/>
+</map>

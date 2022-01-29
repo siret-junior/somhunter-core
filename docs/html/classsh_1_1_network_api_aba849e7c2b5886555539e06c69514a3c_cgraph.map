@@ -1,0 +1,7 @@
+<map id="sh::NetworkApi::handle__api__config__GET" name="sh::NetworkApi::handle__api__config__GET">
+<area shape="rect" id="node1" title=" " alt="" coords="5,93,161,135"/>
+<area shape="rect" id="node2" href="$classsh_1_1_network_api.html#a5583f82599b817bb55404721c2f578ce" title="Adds the CORS headers to the given HTTP response instance." alt="" coords="241,5,380,47"/>
+<area shape="rect" id="node3" href="$classsh_1_1_network_api.html#a601e43a38cb47d271ff196002962144c" title=" " alt="" coords="209,71,412,98"/>
+<area shape="rect" id="node4" href="$classsh_1_1_somhunter.html#abcf1e1a1a0d3e45cfbe12f95ba280c2e" title=" " alt="" coords="241,123,380,164"/>
+<area shape="rect" id="node5" href="$namespacesh_1_1utils.html#a6799be09a9eb625b596ef9cf43511e52" title="Reads the whole file into string that it will return." alt="" coords="229,189,393,215"/>
+</map>

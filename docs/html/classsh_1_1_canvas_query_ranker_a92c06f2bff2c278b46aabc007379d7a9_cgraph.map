@@ -1,0 +1,5 @@
+<map id="sh::CanvasQueryRanker::CanvasQueryRanker" name="sh::CanvasQueryRanker::CanvasQueryRanker">
+<area shape="rect" id="node1" title=" " alt="" coords="5,39,168,80"/>
+<area shape="rect" id="node2" href="$classsh_1_1_keyword_ranker.html#a184c8f491bc975895e1ab6872241bb4a" title="Parses float matrix from a binary file that is written in row&#45;major format and starts at begin_offset..." alt="" coords="216,5,359,47"/>
+<area shape="rect" id="node3" href="$classsh_1_1_keyword_ranker.html#a66d2e55fd049f243ae2bea46988c8956" title="FORMAT: Matrix of 4B floats:" alt="" coords="216,71,359,112"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="osutils::initialize_aplication" name="osutils::initialize_aplication">
+<area shape="rect" id="node1" title="Runs all initialization routines related to the OS." alt="" coords="5,23,120,65"/>
+<area shape="rect" id="node2" href="$namespaceosutils.html#a1abd4340f55df448e00a6fb8cb3db332" title=" " alt="" coords="186,5,303,32"/>
+<area shape="rect" id="node3" href="$namespaceosutils.html#ae558b8757db33dd918e922a24bf775fa" title="Setups the attached terminal accordingly." alt="" coords="168,56,321,83"/>
+</map>

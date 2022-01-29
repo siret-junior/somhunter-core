@@ -1,0 +1,6 @@
+<map id="sh::Logger::poll" name="sh::Logger::poll">
+<area shape="rect" id="node1" title="Does periodic cleanup &amp; log flush." alt="" coords="5,42,116,69"/>
+<area shape="rect" id="node2" href="$classsh_1_1_logger.html#a01d6c72999588971de1d4769e2fe93c8" title="Sends the accumulated logs to the evaluation server (through _p_eval_server)." alt="" coords="164,5,323,47"/>
+<area shape="rect" id="node4" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="380,71,517,98"/>
+<area shape="rect" id="node3" href="$classsh_1_1_eval_server_client.html#a5d0296e104397f29c14e626cbb3e1988" title=" " alt="" coords="371,5,527,47"/>
+</map>

@@ -1,0 +1,52 @@
+<map id="sh::Somhunter::rescore" name="sh::Somhunter::rescore">
+<area shape="rect" id="node1" title="Applies all algorithms for score computation and updates context." alt="" coords="5,714,164,741"/>
+<area shape="rect" id="node2" href="$classsh_1_1_somhunter.html#a82132ba1b9f10e98ef35ac17ee006bd6" title=" " alt="" coords="232,173,379,215"/>
+<area shape="rect" id="node6" href="$classsh_1_1_dataset_frames.html#a8c8fd017c9b8ac9c8490bce4734eb1bd" title=" " alt="" coords="690,231,855,258"/>
+<area shape="rect" id="node7" href="$classsh_1_1_score_model.html#ae1ca75336179d2cbcca7325b74d10d91" title="Transforms temporal inverse score into temporal scores and aggregates into full image scores." alt="" coords="229,247,381,288"/>
+<area shape="rect" id="node9" href="$structsh_1_1_query.html#a960bc44d0f20927a5b16884416f05df1" title=" " alt="" coords="236,312,375,353"/>
+<area shape="rect" id="node10" href="$structsh_1_1_filters.html#a5a6ca0583723170057c659209d9e08ec" title=" " alt="" coords="234,378,377,405"/>
+<area shape="rect" id="node11" href="$classsh_1_1_logger.html#ae9735aa4dcc2d63bc8f80e2074f99ba1" title=" " alt="" coords="226,429,385,455"/>
+<area shape="rect" id="node12" href="$classsh_1_1_logger.html#aaecc78b18fa39028a01bb059811c1ba2" title="Called whenever we rescore." alt="" coords="464,711,619,738"/>
+<area shape="rect" id="node21" href="$classsh_1_1_score_model.html#a0af11105cbc68a9fb750bab05c11ae3a" title="Normalizes the score distribution." alt="" coords="684,345,861,371"/>
+<area shape="rect" id="node23" href="$classsh_1_1_logger.html#af3421c415f5abb45fe5a48e7183c9d8c" title="Does periodic cleanup &amp; log flush." alt="" coords="486,879,597,906"/>
+<area shape="rect" id="node25" href="$classsh_1_1_somhunter.html#a9b3c6b915a752e2e552959eb36954483" title="Adds the currently active search context to the history and starts a new context (with next contiguou..." alt="" coords="234,648,377,689"/>
+<area shape="rect" id="node26" href="$classsh_1_1_somhunter.html#a1078d85eb5bc4d66b1f5335978920071" title="Applies the relevance feedback from the user based on images the user already saw (as implicit negati..." alt="" coords="226,531,385,572"/>
+<area shape="rect" id="node29" href="$classsh_1_1_score_model.html#a5c2fdd3b3a28c10193d127c7c10eb159" title="Gets the images with the highest scores but respecting the provided limits." alt="" coords="696,446,849,473"/>
+<area shape="rect" id="node30" href="$classsh_1_1_somhunter.html#a8899346bcdeb1b536f14b1eac777716d" title="Applies text query from the user." alt="" coords="226,831,385,872"/>
+<area shape="rect" id="node31" href="$classsh_1_1_somhunter.html#a4662c9bc219c57f381c84b40d90d946e" title=" " alt="" coords="469,931,613,972"/>
+<area shape="rect" id="node34" href="$classsh_1_1_somhunter.html#a42789b71a1a9e1504e542473b782ab6b" title="Resets current search context and starts new search." alt="" coords="233,765,377,807"/>
+<area shape="rect" id="node38" href="$classsh_1_1_somhunter.html#a256a80af6a005fde472a6a7b4cf19f47" title="Gives the SOM worker the new work." alt="" coords="471,996,611,1037"/>
+<area shape="rect" id="node39" href="$classsh_1_1_canvas_query_ranker.html#a256e44adb95384615ea16d3d24281422" title=" " alt="" coords="224,1224,387,1265"/>
+<area shape="rect" id="node47" href="$classsh_1_1_relocation_ranker.html#a1556a4a1e383bf602721619f7fcfb20b" title=" " alt="" coords="232,1289,379,1331"/>
+<area shape="rect" id="node49" href="$structsh_1_1_query.html#addf6bbb26911699ea6ae10a642a75c3a" title=" " alt="" coords="212,1355,399,1382"/>
+<area shape="rect" id="node50" href="$structsh_1_1_query.html#a4603e770e7ea0a16b6c1847e08992474" title=" " alt="" coords="229,1406,381,1433"/>
+<area shape="rect" id="node3" href="$classsh_1_1_somhunter.html#a5c88c4b24985c7d023a15f6935772352" title="Returns true if LSC metadata file provided inside the config." alt="" coords="473,64,609,105"/>
+<area shape="rect" id="node4" href="$classsh_1_1_score_model.html#ae0176bb97e67bd4b9531414a407f1e60" title=" " alt="" coords="447,130,636,157"/>
+<area shape="rect" id="node5" href="$classsh_1_1_score_model.html#a8d0c353e8f1e61127bf0117761a796bc" title="Sets the mask value for the frame." alt="" coords="452,181,631,207"/>
+<area shape="rect" id="node8" href="$classsh_1_1_dataset_frames.html#a03e6d27529441c12f7c9ed6e07536aaa" title=" " alt="" coords="471,283,612,324"/>
+<area shape="rect" id="node13" href="$classsh_1_1_logger.html#a4e6e88011b3eda18edd431a6af85f845" title=" " alt="" coords="909,589,1099,615"/>
+<area shape="rect" id="node14" href="$classsh_1_1_dataset_frames.html#aefcd7968bf584e20a3214fa8bb5eafea" title=" " alt="" coords="933,439,1075,480"/>
+<area shape="rect" id="node15" href="$classsh_1_1_eval_server_client.html#a4c1ec8556abae88de8548e785493ffbd" title=" " alt="" coords="935,725,1073,767"/>
+<area shape="rect" id="node16" href="$classsh_1_1_eval_server_client.html#aef0425f59d21d7bf89980d7d87e36cb2" title=" " alt="" coords="935,800,1073,841"/>
+<area shape="rect" id="node17" href="$classsh_1_1_logger.html#a1d235a7f098118f9f2922db4d898f35b" title=" " alt="" coords="692,817,853,843"/>
+<area shape="rect" id="node18" href="$namespacesh_1_1utils.html#ae3d8c8e164023f2fd8388378460029aa" title="Returns the actual UNIX timestamp (ms)." alt="" coords="935,893,1073,919"/>
+<area shape="rect" id="node19" href="$classsh_1_1_eval_server_client.html#a5d002796620a658674ef277bf54ae675" title=" " alt="" coords="704,548,841,589"/>
+<area shape="rect" id="node20" href="$classsh_1_1_logger.html#a0074a59deb8acf57066244212e872237" title="Writes the log into the local file." alt="" coords="694,614,851,641"/>
+<area shape="rect" id="node22" href="$classsh_1_1_score_model.html#a43d0316a2d3f230d148de30173083805" title="Returns number of scores stored." alt="" coords="931,345,1077,371"/>
+<area shape="rect" id="node24" href="$classsh_1_1_logger.html#a01d6c72999588971de1d4769e2fe93c8" title="Sends the accumulated logs to the evaluation server (through _p_eval_server)." alt="" coords="693,969,852,1011"/>
+<area shape="rect" id="node27" href="$classsh_1_1_score_model.html#a498e237411b8c26976849b4879cad918" title="Applies relevance feedback rescore based on the Bayesian update rule." alt="" coords="465,400,617,441"/>
+<area shape="rect" id="node28" href="$classsh_1_1_somhunter.html#aed64cb69bc9f45a26ce5f2f4ffb69a19" title=" " alt="" coords="475,531,608,572"/>
+<area shape="rect" id="node32" href="$structsh_1_1_used_tools.html#a2c12b0978e73bcf790a8a08b7ccc0477" title=" " alt="" coords="701,1086,844,1113"/>
+<area shape="rect" id="node33" href="$classsh_1_1_score_model.html#a3655b0a6f771ccaa234e78e0de8807f6" title=" " alt="" coords="697,1035,848,1062"/>
+<area shape="rect" id="node35" href="$classsh_1_1_somhunter.html#a3d11aa2dd3b0f3ca2219213122242277" title="Generates the new debug targets." alt="" coords="459,465,624,507"/>
+<area shape="rect" id="node36" href="$classsh_1_1_logger.html#a66b66951eaba790a2efa6b3c00be1a9f" title=" " alt="" coords="469,763,613,804"/>
+<area shape="rect" id="node37" href="$classsh_1_1_user_context.html#aa02790afc77989a0bae9a99f36a07aa1" title=" " alt="" coords="465,829,618,855"/>
+<area shape="rect" id="node40" href="$classsh_1_1_score_model.html#ad97170971cccaa02f6aa792a5bca6706" title="Multiplies the relevance score with the provided value." alt="" coords="463,1441,619,1467"/>
+<area shape="rect" id="node41" href="$classsh_1_1_canvas_query_ranker.html#ad2b071e61efdbe99403c95f4b8b06e9d" title=" " alt="" coords="460,1127,623,1168"/>
+<area shape="rect" id="node42" href="$classsh_1_1_canvas_query_ranker.html#a2e27794a53eb692aa82b56d2ef70dc51" title=" " alt="" coords="460,1257,623,1299"/>
+<area shape="rect" id="node43" href="$classsh_1_1_canvas_query.html#aaa83285955b4adb547865a440a8ab423" title=" " alt="" coords="696,1265,849,1291"/>
+<area shape="rect" id="node44" href="$classsh_1_1_canvas_query_ranker.html#a36f3d2cf7f2d1a77abea4843b7d06ec8" title=" " alt="" coords="460,1192,623,1233"/>
+<area shape="rect" id="node45" href="$classsh_1_1_canvas_query_ranker.html#ade4d5c9a590184b0d1dab3abc58959ad" title=" " alt="" coords="460,1375,623,1416"/>
+<area shape="rect" id="node46" href="$classsh_1_1_score_model.html#a2c53f8e39816612bf7371f6c38dd7b74" title="Sorts images by given score vector." alt="" coords="470,1061,613,1103"/>
+<area shape="rect" id="node48" href="$classsh_1_1_frame_features.html#a9f7dce930cf00a367d435242fa95e606" title=" " alt="" coords="467,1491,615,1518"/>
+</map>
