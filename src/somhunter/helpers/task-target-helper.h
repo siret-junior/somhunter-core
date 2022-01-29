@@ -1,6 +1,6 @@
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2021 Frantisek Mejzlek <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 Frantisek Mejzlek <frankmejzlik@protonmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
  *                    Patrik Vesely <prtrikvesely@gmail.com>
  *
