@@ -1,8 +1,8 @@
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2021 František Mejzlík <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 Frantisek Mejzlik <frankmejzlik@gmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
- *                    Patrik Veselý <prtrikvesely@gmail.com>
+ *                    Patrik Vesely <prtrikvesely@gmail.com>
  *
  * SOMHunter is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -53,7 +53,6 @@ namespace sh {
  */
 class Somhunter {
 public:
-	
 	Somhunter() = delete;
 	/** The main ctor with the config from the JSON config file. */
 	Somhunter(const std::string& config_filepath);

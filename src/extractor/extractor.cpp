@@ -1,3 +1,24 @@
+/* This file is part of SOMHunter.
+ *
+ * Copyright (C) 2021 Frantisek Mejzlik <frankmejzlik@gmail.com>
+ *                    Mirek Kratochvil <exa.exa@gmail.com>
+ *                    Patrik Vesely <prtrikvesely@gmail.com>
+ * 									  Marek Dobransky <marekdobr@gmail.com>
+ *
+ * SOMHunter is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * SOMHunter is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * SOMHunter. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 // g++ -std=c++17 extract_features.cpp -I libtorch/include -I libtorch/include/torch/csrc/api/include -L libtorch/lib
 // -lc10 -ltorch -ltorch_cpu  -lstdc++fs -D_GLIBCXX_USE_CXX11_ABI=1 `pkg-config --cflags --libs opencv` -o cpp_inference
 

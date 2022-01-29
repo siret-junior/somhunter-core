@@ -1,9 +1,9 @@
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2021 František Mejzlík <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 Frantisek Mejzlik <frankmejzlik@gmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
- *                    Patrik Veselý <prtrikvesely@gmail.com>
- *                    Vít Škrhák <v.skrhak@gmail.com>
+ *                    Patrik Vesely <prtrikvesely@gmail.com>
+ *                    Vit Skrhak <v.skrhak@gmail.com>
  *
  * SOMHunter is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free

@@ -1,9 +1,9 @@
 /* This file is part of SOMHunter.
  *
- * Copyright (C) 2021 František Mejzlík <frankmejzlik@gmail.com>
+ * Copyright (C) 2021 Frantisek Mejzlik <frankmejzlik@gmail.com>
  *                    Mirek Kratochvil <exa.exa@gmail.com>
- *                    Patrik Veselý <prtrikvesely@gmail.com>
- *                    Vít Škrhák <v.skrhak@gmail.com>
+ *                    Patrik Vesely <prtrikvesely@gmail.com>
+ *                    Vit Skrhak <v.skrhak@gmail.com>
  *
  * SOMHunter is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -439,8 +439,7 @@ RescoreResult Somhunter::rescore(Query& query, bool benchmark_run) {
 	auto& features{ _dataset_features.primary };
 
 	// Check if temporal queries has changed
-	if (_user_context.ctx.last_temporal_queries != temporal_query ||
-	    _user_context.ctx.filters != query.filters) {
+	if (_user_context.ctx.last_temporal_queries != temporal_query || _user_context.ctx.filters != query.filters) {
 		reset_scores();  //< Resets scores & used tools
 		size_t moment = 0;
 
