@@ -89,7 +89,7 @@ make -j
 ```
 
 ## Core HTTP API
-API documentation is available at `<server_address>/api/` (e.g. [http://localhost:8080/api/](http://localhost:8888/api/)). It requires the running core.
+API documentation is available at `<server_address>/api/` (e.g. [http://localhost:8082/api/](http://localhost:8082/api/)). It requires the running core.
 
 ## Doxygen documentation
 The pre-built version is available [here](https://siret-junior.github.io/somhunter-core/).
